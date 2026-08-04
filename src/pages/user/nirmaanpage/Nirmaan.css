@@ -1,0 +1,342 @@
+/* Nirmaan page — faithful to svastrino_resources/A-natural.html.
+   Brown is used sparingly (text, the trust band, footer); the hero and most
+   sections are light (cream/white) with GREEN as the lead accent. */
+
+/* ---- Hero: light cream→white gradient with a soft green glow ---- */
+.nirmaan-hero {
+  background: linear-gradient(135deg, var(--nirmaan-cream) 0%, var(--white) 100%);
+  padding: var(--space-7) 0;
+  position: relative;
+  overflow: hidden;
+}
+.nirmaan-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(63, 121, 50, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.nirmaan-hero-inner {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.nirmaan-back {
+  display: inline-block;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+}
+.nirmaan-back:hover {
+  color: var(--nirmaan-green);
+}
+
+.nirmaan-eyebrow {
+  display: inline-block;
+  background: var(--nirmaan-cream-dark);
+  color: var(--nirmaan-green-dark);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 18px;
+}
+
+/* 60/40 green:brown balance — the big hero heading is BROWN so green stays
+   an accent, not the whole page. Only the italic phrase stays green. */
+.nirmaan-hero-text h1 {
+  color: var(--nirmaan-brown);
+  font-size: 54px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.nirmaan-hero-text h1 .accent {
+  color: var(--nirmaan-green);
+  font-style: italic;
+}
+
+.nirmaan-hero-sub {
+  color: var(--color-text-muted);
+  font-size: 19px;
+  margin: 18px 0 28px;
+  max-width: 540px;
+}
+
+.nirmaan-hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* secondary button on the light hero = brown outline (per reference) */
+.nirmaan-hero .btn-secondary {
+  background: transparent;
+  color: var(--nirmaan-green-dark);
+  border-color: var(--nirmaan-green-dark);
+}
+.nirmaan-hero .btn-secondary:hover {
+  background: var(--nirmaan-green-dark);
+  color: #fff;
+}
+
+.nirmaan-hero-img {
+  display: flex;
+  justify-content: center;
+}
+.nirmaan-hero-img img {
+  width: 100%;
+  max-width: 420px;
+  filter: drop-shadow(0 12px 24px rgba(59, 40, 34, 0.12));
+}
+
+/* ---- Benefits: what you get ---- */
+.nirmaan-benefits {
+  margin-top: var(--space-5);
+  text-align: left;
+}
+/* Rounded green badge that holds an inline SVG icon. `color` themes the
+   SVG stroke (icons use currentColor). */
+.nirmaan-benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(63, 121, 50, 0.10);     /* soft nirmaan-green tint */
+  color: var(--nirmaan-green-dark);
+  line-height: 0;
+}
+
+.nirmaan-benefit-icon svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+.nirmaan-benefit h3 {
+  font-size: 18px;
+  margin: var(--space-2) 0 6px;
+}
+.nirmaan-benefit p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ---- How it works: cream cards, green step circle, centered ---- */
+.nirmaan-steps {
+  margin-top: var(--space-5);
+}
+.nirmaan-step {
+  background: var(--nirmaan-cream);
+  border: 1px solid var(--nirmaan-cream-dark);
+  text-align: center;
+}
+.nirmaan-step-n {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--nirmaan-green);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.nirmaan-step h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.nirmaan-step p {
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+/* ---- Packages: cream section, white cards, green featured ---- */
+.nirmaan-pkgs {
+  margin-top: var(--space-5);
+  text-align: left;
+  align-items: stretch;
+}
+.nirmaan-pkg {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.nirmaan-pkg.featured {
+  border-color: var(--nirmaan-green);
+  box-shadow: 0 0 0 2px var(--nirmaan-green), var(--shadow-md);
+}
+.nirmaan-pkg-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: var(--nirmaan-green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+}
+.nirmaan-pkg-name {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--nirmaan-green-dark);
+}
+.nirmaan-pkg-tagline {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.nirmaan-pkg-price {
+  font-family: var(--font-serif);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--nirmaan-green-dark);
+  margin-bottom: 4px;
+}
+.nirmaan-pkg-price span {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+.nirmaan-pkg-price em {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nirmaan-green);
+}
+.nirmaan-pkg-list {
+  flex: 1;
+  padding: 22px 0;
+  border-top: 1px solid var(--nirmaan-cream-dark);
+  margin: 12px 0 var(--space-3);
+}
+.nirmaan-pkg-list li {
+  padding: 0 0 10px 24px;
+  position: relative;
+  font-size: 14px;
+  color: var(--nirmaan-brown);
+}
+.nirmaan-pkg-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--nirmaan-green);
+  font-weight: 700;
+}
+.nirmaan-pkg .btn {
+  width: 100%;
+}
+/* Enrolled-user states: current plan / owned lower tier / window closed. */
+.nirmaan-pkg-cta-disabled {
+  opacity: 0.6;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ---- Testimonials placeholder (SRS lists the section, no content yet) ---- */
+.nirmaan-testimonials-placeholder {
+  border: 2px dashed var(--nirmaan-cream-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+  background: var(--nirmaan-cream);
+}
+
+/* ---- Closing CTA: the one brown band ---- */
+.nirmaan-cta {
+  background: var(--nirmaan-green-dark);
+  color: var(--nirmaan-cream);
+}
+.nirmaan-cta-inner {
+  text-align: center;
+  padding: var(--space-7) var(--container-pad);
+}
+.nirmaan-cta-inner h2 {
+  color: #fff;
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+.nirmaan-cta-inner p {
+  color: rgba(250, 246, 236, 0.8);
+  margin-bottom: var(--space-4);
+}
+.nirmaan-cta-btn {
+  background: var(--nirmaan-green);
+  color: #fff;
+  border-color: var(--nirmaan-green);
+}
+.nirmaan-cta-btn:hover {
+  background: var(--nirmaan-green-dark);
+  border-color: var(--nirmaan-green-dark);
+  transform: translateY(-2px);
+}
+
+/* ---- 50/50 brown:green balance ----
+   Headings alternate down the page: Hero(brown) · Benefits(green) ·
+   How-it-works(brown) · Packages(green) · Scholarship(brown). Green still
+   owns every accent/action (buttons, checks, badges, prices, hero phrase),
+   so the two colours land ~50/50. Scoped to each section id. */
+#how .section-title,
+#scholarship .section-title {
+  color: var(--nirmaan-brown);
+}
+#how .section-eyebrow,
+#scholarship .section-eyebrow {
+  color: var(--nirmaan-brown);
+}
+#how .nirmaan-step-n,
+#scholarship .nirmaan-step-n {
+  background: var(--nirmaan-brown);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .nirmaan-hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .nirmaan-hero-img {
+    order: -1;
+  }
+  .nirmaan-hero-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .nirmaan-hero-ctas {
+    justify-content: center;
+  }
+  .nirmaan-hero-text h1 {
+    font-size: 40px;
+  }
+}
+@media (max-width: 600px) {
+  .nirmaan-hero-text h1 {
+    font-size: 32px;
+  }
+}
+
+/* Scholarship section — closing note under the steps */
+.nirmaan-scholarship-note {
+  margin-top: var(--space-4);
+}
+.nirmaan-scholarship-note a {
+  color: var(--color-accent, #2f7ae5);
+  font-weight: 600;
+  text-decoration: underline;
+}

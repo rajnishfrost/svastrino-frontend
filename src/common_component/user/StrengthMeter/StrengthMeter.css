@@ -1,0 +1,42 @@
+/* Track (grows to fill) on the left, label pinned right — one tidy row, no
+   absolute positioning so nothing overlaps the input above it. */
+.pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.pw-strength-track {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-100, #f3f4f6);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.pw-strength-bar {
+  height: 100%;
+  border-radius: 100px;
+  transition: width .25s ease, background .25s ease;
+}
+
+.pw-strength-bar--none    { background: transparent; }
+.pw-strength-bar--weak    { background: #ef4444; }   /* red */
+.pw-strength-bar--fair    { background: #f59e0b; }   /* amber */
+.pw-strength-bar--good    { background: #84cc16; }   /* lime */
+.pw-strength-bar--strong  { background: #16a34a; }   /* green */
+
+.pw-strength-label {
+  flex: none;
+  min-width: 62px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+.pw-strength-label--weak   { color: #ef4444; }
+.pw-strength-label--fair   { color: #b45309; }
+.pw-strength-label--good   { color: #4d7c0f; }
+.pw-strength-label--strong { color: #16a34a; }

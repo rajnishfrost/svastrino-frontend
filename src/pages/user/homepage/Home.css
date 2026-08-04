@@ -1,0 +1,306 @@
+/* ---- Hero ---- */
+.home-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: #fff;
+  padding: var(--space-7) 0;
+}
+
+.home-hero-inner {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.home-hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: var(--space-2);
+}
+
+.home-hero-text h1 {
+  color: #fff;
+  font-size: 52px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.home-hero-text h1 span {
+  color: var(--blue);
+}
+
+.home-hero-sub {
+  color: rgba(234, 242, 253, 0.82);
+  font-size: 18px;
+  margin: var(--space-3) 0 var(--space-4);
+  max-width: 520px;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* secondary button on dark hero needs light border */
+.home-hero .btn-secondary {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.home-hero .btn-secondary:hover {
+  background: #fff;
+  color: var(--navy);
+}
+
+.home-hero-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.home-hero-stat strong {
+  display: block;
+  font-size: 34px;
+  font-family: var(--font-serif);
+  color: #fff;
+}
+
+.home-hero-stat span {
+  font-size: 14px;
+  color: rgba(234, 242, 253, 0.7);
+}
+
+/* ---- Programs preview ---- */
+.home-program-card {
+  text-align: left;
+}
+.home-program-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-2);
+}
+.home-program-card h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.home-program-card p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ---- Courses teaser ---- */
+.home-courses {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+.home-courses-list {
+  margin-bottom: var(--space-4);
+}
+.home-courses-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--color-text-muted);
+}
+.home-courses-list strong {
+  color: var(--navy);
+}
+.home-courses-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-courses-glyph {
+  font-size: 120px;
+  color: var(--badge-nirmaan);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- Why ---- */
+.home-why-card {
+  text-align: center;
+  padding: var(--space-4);
+}
+.home-why-icon {
+  font-size: 36px;
+  color: var(--color-accent);
+}
+.home-why-card h3 {
+  margin: var(--space-2) 0 6px;
+  font-size: 19px;
+}
+.home-why-card p {
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .home-hero-inner,
+  .home-courses {
+    grid-template-columns: 1fr;
+  }
+  .home-hero-text h1 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-hero-text h1 {
+    font-size: 32px;
+  }
+}
+
+/* ---- Nirmaan product highlight (uses the Nirmaan green/brown/cream palette) ---- */
+.home-nirmaan-card {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+  background: var(--nirmaan-cream);
+  border: 1px solid var(--nirmaan-cream-dark);
+  border-radius: var(--radius-lg, 18px);
+  padding: var(--space-6);
+}
+.home-nirmaan-badge {
+  display: inline-block;
+  background: var(--nirmaan-green);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill, 999px);
+}
+.home-nirmaan-title {
+  font-size: 32px;
+  color: var(--nirmaan-brown);
+  margin: 14px 0 10px;
+}
+.home-nirmaan-title span { color: var(--nirmaan-green); }
+.home-nirmaan-sub {
+  color: var(--nirmaan-brown-soft);
+  font-size: 16px;
+  max-width: 52ch;
+}
+.home-nirmaan-points {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0;
+  display: grid;
+  gap: 8px;
+}
+.home-nirmaan-points li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--nirmaan-brown);
+  font-size: 15px;
+}
+.home-nirmaan-points li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 18px;
+  height: 18px;
+  color: var(--nirmaan-green);
+  font-weight: 700;
+}
+.home-nirmaan-scholarship {
+  background: #fff;
+  border: 1px dashed var(--nirmaan-green);
+  border-radius: var(--radius-md, 12px);
+  padding: 12px 16px;
+  font-size: 14.5px;
+  color: var(--nirmaan-brown);
+  margin-bottom: 20px;
+}
+.home-nirmaan-scholarship a {
+  color: var(--nirmaan-green-dark);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.home-nirmaan-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+/* Nirmaan-green buttons within this card (Home uses the Svastrino theme). */
+.home-nirmaan .btn-primary {
+  background: var(--nirmaan-green);
+  border-color: var(--nirmaan-green);
+}
+.home-nirmaan .btn-primary:hover {
+  background: var(--nirmaan-green-dark);
+  border-color: var(--nirmaan-green-dark);
+}
+.home-nirmaan .btn-secondary {
+  color: var(--nirmaan-green-dark);
+  border-color: var(--nirmaan-green);
+}
+.home-nirmaan-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+/* Branded circular badge: the tree-in-hands emblem on a soft cream-to-green
+   backdrop with a dashed inner ring — a bigger, richer graphic than a bare logo. */
+.home-nirmaan-emblem {
+  position: relative;
+  width: min(320px, 92%);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, var(--nirmaan-cream) 60%, var(--nirmaan-cream-dark) 100%);
+  border: 1px solid var(--nirmaan-cream-dark);
+  box-shadow: 0 22px 48px -20px rgba(74, 124, 47, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.home-nirmaan-emblem::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(74, 124, 47, 0.35);
+}
+.home-nirmaan-emblem img {
+  width: 66%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(60, 42, 30, 0.20));
+}
+.home-nirmaan-art-tag {
+  font-family: var(--font-serif, Georgia, serif);
+  color: var(--nirmaan-green-dark);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@media (max-width: 760px) {
+  .home-nirmaan-card { grid-template-columns: 1fr; }
+  .home-nirmaan-art { order: -1; }
+  .home-nirmaan-emblem { width: min(240px, 72%); }
+}

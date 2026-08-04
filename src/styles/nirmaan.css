@@ -1,0 +1,71 @@
+/* =====================================================================
+   Nirmaan course theme — "A Natural" palette (green / brown / cream).
+   ---------------------------------------------------------------------
+   SCOPED: these tokens only take effect when an ancestor (we use <body>)
+   carries the `.theme-nirmaan` class. The Nirmaan course page adds that
+   class on mount and removes it on unmount, so the ENTIRE chrome
+   (navbar, footer, buttons, page) flips to the Nirmaan brand — and every
+   other Svastrino page stays on the default white/navy/blue theme.
+
+   The raw colour values live in theme.css as --nirmaan-* tokens (single
+   source of truth, taken from svastrino_resources/A-natural.html). Here we
+   just remap them onto the same Svastrino token NAMES the components use,
+   so no component needs changing.
+   ===================================================================== */
+
+.theme-nirmaan {
+  /* Nirmaan colour system (see client/document/nirmaan-color-system.md):
+       GREEN  = headings/titles + actions & accents (buttons, links, progress…)
+       BROWN  = body text, muted text, footer & dark bands
+       CREAM  = warm surfaces (cards, sections); white = page base
+     Palette values come from svastrino_resources/A-natural.html. */
+  --navy: var(--nirmaan-brown);          /* headers / dark sections / footer → brown */
+  --navy-dark: #2d1e18;                  /* deeper brown (footer-bottom) */
+  --blue: var(--nirmaan-green);          /* accent / links / highlights → green */
+  --blue-dark: var(--nirmaan-green-dark);
+  --blue-light: var(--nirmaan-cream-dark);
+
+  /* ---- Neutrals → warm cream surfaces ---- */
+  --gray-50: var(--nirmaan-cream);
+  --gray-100: var(--nirmaan-cream-dark);
+  --gray-200: var(--nirmaan-gray-200);
+  --gray-400: var(--nirmaan-olive-light);
+  --gray-600: var(--nirmaan-gray-500);
+  --gray-800: var(--nirmaan-brown);
+
+  /* ---- Semantic aliases ---- */
+  --color-text: var(--nirmaan-brown);           /* body text = brown */
+  --color-heading: var(--nirmaan-green-dark);   /* headings = green (lead brand colour) */
+  --color-text-muted: var(--nirmaan-brown-soft);
+  --color-bg: #ffffff;
+  --color-surface: var(--nirmaan-cream);        /* warm cream */
+  --color-surface-border: var(--nirmaan-cream-dark);
+  --color-primary: var(--nirmaan-green);        /* primary action = green */
+  --color-primary-hover: var(--nirmaan-green-dark);
+  --color-on-primary: #ffffff;
+  --color-accent: var(--nirmaan-green);         /* accent / links = green */
+  --color-accent-hover: var(--nirmaan-green-dark);
+  --color-accent-soft: rgba(63, 121, 50, 0.10);
+  --color-inverse-bg: var(--nirmaan-brown);     /* dark bands → brown */
+  --color-inverse-text: var(--nirmaan-cream);
+
+  --badge-svastrino: var(--nirmaan-green);
+
+  /* ---- Elevation tinted warm brown (A-natural) ---- */
+  --shadow-sm: 0 2px 8px rgba(59, 40, 34, 0.08);
+  --shadow-md: 0 8px 24px rgba(59, 40, 34, 0.12);
+  --shadow-lg: 0 20px 50px rgba(59, 40, 34, 0.16);
+
+  /* ---- Nirmaan uses a classic serif for headings ---- */
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+/* The footer keeps the warm Nirmaan brown even in the green theme (per request) —
+   brown as the intentional third colour. Headings/nav stay green (--navy). */
+.theme-nirmaan .footer { background: var(--nirmaan-brown); }
+.theme-nirmaan .footer-bottom { background: #2d2019; }
+
+/* The nav brand is ALWAYS Svastrino (even on the Nirmaan page), so its wordmark
+   stays the original Svastrino navy — the green remap must not touch it. */
+.theme-nirmaan .nav-brand-title,
+.theme-nirmaan .nav-brand-slogan { color: #0f2c5c; }

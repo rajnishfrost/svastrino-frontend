@@ -1,0 +1,228 @@
+/* Nirmaan scholarship page — uses the Nirmaan palette via body.theme-nirmaan. */
+
+.sch-steps { margin-top: var(--space-5); }
+.sch-step {
+  background: var(--nirmaan-cream);
+  border: 1px solid var(--nirmaan-cream-dark);
+  text-align: center;
+}
+.sch-step-n {
+  display: inline-flex;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--nirmaan-green);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.sch-step h3 { font-size: 20px; margin-bottom: 8px; }
+.sch-step p { color: var(--color-text-muted); font-size: 14.5px; }
+
+/* Eligibility + prize row */
+.sch-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: stretch;
+}
+.sch-panel { padding: var(--space-6); }
+.sch-panel h2 { font-size: 24px; margin-bottom: var(--space-3); }
+.sch-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.sch-list li {
+  position: relative;
+  padding-left: 28px;
+  color: var(--color-text);
+  font-size: 15px;
+}
+.sch-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--nirmaan-green);
+  font-weight: 700;
+}
+/* `.card.sch-prize` (0,2,0) beats the global `.card` white background (0,1,0)
+   regardless of stylesheet order — without this the green never showed and the
+   white text sat invisibly on a white card. */
+.sch-prize,
+.card.sch-prize {
+  background: var(--nirmaan-green);
+  color: #fff;
+  border-color: var(--nirmaan-green);
+}
+/* These are static info panels, not clickable cards — kill the hover lift so an
+   empty-looking box doesn't jump on hover. */
+.card.sch-panel:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+.sch-prize h2 { color: #fff; }
+.sch-prize p { color: rgba(255, 255, 255, 0.9); font-size: 15px; }
+.sch-prize-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill, 999px);
+  margin-bottom: var(--space-3);
+}
+.sch-link {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* FAQ */
+.sch-faqs {
+  margin-top: var(--space-5);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.sch-faq { padding: var(--space-5); }
+.sch-faq h3 { font-size: 17px; margin-bottom: 8px; color: var(--color-heading); }
+.sch-faq p { color: var(--color-text-muted); font-size: 14.5px; }
+
+/* Partner CTA */
+.sch-cta-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 760px) {
+  .sch-two,
+  .sch-faqs { grid-template-columns: 1fr; }
+}
+
+/* ---------------- Interactive: enrol, partner form, test ---------------- */
+.sch-enrol { max-width: 720px; margin: 0 auto; }
+/* The badge style is built for the green prize card (white-on-translucent). On
+   the white enrol card that's invisible — give it a solid green pill here. */
+.sch-enrol .sch-prize-badge { background: var(--nirmaan-green); }
+.sch-enrol h2 { margin: 10px 0 8px; }
+.sch-enrol-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+.sch-select,
+.sch-form input,
+.sch-form select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--nirmaan-cream-dark);
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fff;
+  color: var(--nirmaan-brown, #3a2a1e);
+}
+.sch-enrol-row .sch-select { flex: 1; min-width: 220px; width: auto; }
+.sch-note { font-size: 13px; color: var(--nirmaan-brown-soft, #7a6a5c); margin-top: 10px; }
+.sch-error { color: #b3261e; font-size: 14px; margin-top: 8px; }
+
+.sch-status { margin-top: 8px; }
+.sch-status-box {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--nirmaan-cream);
+  border: 1px solid var(--nirmaan-cream-dark);
+}
+.sch-status-box.ok { border-color: var(--nirmaan-green); }
+.sch-status-box.warn { border-color: #d9a441; }
+.sch-status-box .btn { margin-top: 12px; }
+
+.sch-thanks { text-align: center; max-width: 560px; margin: 24px auto 0; }
+.sch-score { font-size: 44px; font-weight: 800; color: var(--nirmaan-green); margin: 10px 0; }
+.sch-score span { font-size: 22px; color: var(--nirmaan-brown-soft, #7a6a5c); font-weight: 600; }
+
+/* Partner form */
+.sch-form { max-width: 760px; margin: 24px auto 0; }
+.sch-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.sch-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--nirmaan-brown, #3a2a1e); }
+.sch-form .btn { margin-top: 16px; }
+@media (max-width: 620px) { .sch-form-grid { grid-template-columns: 1fr; } }
+
+/* Timed test */
+.sch-test-bar { position: sticky; top: 0; z-index: 20; background: var(--nirmaan-green); color: #fff; }
+.sch-test-bar-inner { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 15px; }
+.sch-timer { font-weight: 800; font-variant-numeric: tabular-nums; background: rgba(255,255,255,0.18); padding: 4px 12px; border-radius: 999px; }
+.sch-timer.low { background: #b3261e; }
+.sch-q { margin-bottom: 16px; }
+.sch-q h3 { display: flex; gap: 10px; align-items: baseline; font-size: 17px; }
+.sch-q-n { flex: none; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--nirmaan-green); color: #fff; font-size: 13px; }
+.sch-options { display: grid; gap: 10px; margin-top: 14px; }
+.sch-option { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border: 1px solid var(--nirmaan-cream-dark); border-radius: 10px; cursor: pointer; transition: border-color .15s, background .15s; }
+.sch-option:hover { border-color: var(--nirmaan-green); }
+.sch-option.picked { border-color: var(--nirmaan-green); background: var(--nirmaan-cream); }
+.sch-submit-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+
+/* Winner announcement banner */
+.sch-winner-wrap { padding-top: 0; }
+.sch-winner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 22px 28px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--nirmaan-green), var(--nirmaan-green-dark, #2d5723));
+  color: #fff;
+  box-shadow: 0 18px 40px -18px rgba(47, 90, 43, 0.6);
+}
+.sch-winner-trophy { font-size: 44px; line-height: 1; flex: none; }
+.sch-winner-label { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+.sch-winner-name { margin: 4px 0 2px; color: #fff; font-size: 26px; }
+.sch-winner-sub { margin: 0; color: rgba(255,255,255,0.9); font-size: 15px; }
+@media (max-width: 480px) { .sch-winner { flex-direction: column; text-align: center; } }
+
+/* Enrol modal (public) */
+.sch-modal-overlay { position: fixed; inset: 0; z-index: 120; background: rgba(30, 20, 12, 0.55); display: grid; place-items: center; padding: 20px; }
+.sch-modal { background: #fff; border-radius: 16px; padding: 24px; width: 100%; max-width: 460px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); }
+.sch-modal h3 { margin: 0 0 16px; font-size: 20px; color: var(--nirmaan-green-dark, #2d5723); }
+.sch-modal-field { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--nirmaan-brown, #3a2a1e); margin-bottom: 12px; min-width: 0; }
+.sch-modal-field input,
+.sch-modal-field select { width: 100%; box-sizing: border-box; min-width: 0; padding: 11px 12px; border: 1px solid var(--nirmaan-cream-dark); border-radius: 10px; font-size: 15px; font-weight: 400; background: #fff; color: var(--nirmaan-brown, #3a2a1e); }
+.sch-modal-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.sch-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+@media (max-width: 480px) { .sch-modal-row { grid-template-columns: 1fr; } }
+
+/* Open-ended answer box (AI-graded test) */
+.sch-answer {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--nirmaan-cream-dark);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--nirmaan-brown, #3a2a1e);
+  background: #fff;
+  resize: vertical;
+  min-height: 130px;
+}
+.sch-answer:focus {
+  outline: none;
+  border-color: var(--nirmaan-green);
+}
+.sch-wordcount {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--nirmaan-brown-soft, #7a6a5c);
+  text-align: right;
+}
+.sch-wordcount.at-limit { color: #b3261e; font-weight: 600; }

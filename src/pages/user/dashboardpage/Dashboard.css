@@ -1,0 +1,159 @@
+.dash-head {
+  margin-bottom: var(--space-5);
+}
+
+.dash-head h1 {
+  font-size: 30px;
+}
+
+.dash-head p {
+  color: var(--color-text-muted);
+}
+
+/* ---- Stacked sections: heading, then card(s) ---- */
+.dash-section {
+  margin-bottom: var(--space-5);
+}
+
+.dash-section-title {
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
+/* Static card — cancel the global .card:hover lift (0,3,0 beats .card:hover). */
+.card.dash-card:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.dash-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dash-item-main {
+  min-width: 0;
+}
+
+.dash-item-title {
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+.dash-item-meta {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* Status pills */
+.dash-badge {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.dash-badge--active {
+  color: #1b7a43;
+  background: #e9f7ef;
+}
+
+.dash-badge--upcoming {
+  color: var(--blue-dark);
+  background: var(--blue-light);
+}
+
+/* Progress bar (e.g. course completion) */
+.dash-progress {
+  margin-top: 10px;
+  height: 6px;
+  max-width: 280px;
+  background: var(--gray-100);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.dash-progress span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 100px;
+}
+
+/* Card footer action */
+.dash-card-foot {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.dash-action {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.dash-action:hover {
+  text-decoration: underline;
+}
+
+.dash-empty {
+  color: var(--color-text-muted);
+  font-size: 14.5px;
+}
+
+/* ---- Mentoring session table ---- */
+.dash-table-wrap {
+  margin-top: 14px;
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 560px;
+}
+
+.dash-table th {
+  text-align: left;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.dash-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: top;
+}
+
+.dash-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.dash-table-action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dash-tasks {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.dash-tasks li {
+  margin-bottom: 2px;
+}
+
+.dash-done-tag {
+  color: #1b7a43;
+  font-weight: 600;
+}

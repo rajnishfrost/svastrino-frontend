@@ -1,0 +1,110 @@
+/* =====================================================================
+   Svastrino — Design Tokens (brand: white · navy · blue · grey)
+   ---------------------------------------------------------------------
+   SINGLE SOURCE OF TRUTH FOR ALL COLORS, SPACING & TYPE.
+   Change a value here once and it updates everywhere across the app.
+   Never hard-code a hex value in a component — always use var(--token).
+
+   Brand brief: white background, blue + grey, with TWO shades of blue
+   (a deep navy for headers/primary, a brighter blue for accents/links).
+   Svastrino badge colour = navy (per integration plan).
+
+   NOTE: Nirmaan course pages keep their own "A Natural" palette
+   (green/brown/cream — see nirmaan/client/src/styles/theme.css). Those
+   tokens are scoped under a `.theme-nirmaan` wrapper in nirmaan.css so the
+   two brands can co-exist on one site. This file is the Svastrino default.
+   ===================================================================== */
+
+:root {
+  /* ---- Brand palette (Svastrino) ---- */
+  --navy: #0f2c5c;          /* deep blue — primary, headers, dark sections */
+  --navy-dark: #0a1f43;     /* primary hover / footer base */
+  --blue: #2f7ae5;          /* brighter blue — accents, links, secondary CTA */
+  --blue-dark: #1c5fc4;     /* brighter-blue hover */
+  --blue-light: #eaf2fd;    /* soft blue tint — surfaces, chips, highlights */
+
+  /* ---- Neutrals / surfaces ---- */
+  --white: #ffffff;         /* base background */
+  --gray-50: #f7f9fc;       /* soft surface (alternating sections, cards) */
+  --gray-100: #eef1f6;      /* subtle fills */
+  --gray-200: #dfe4ec;      /* hairline borders */
+  --gray-400: #9aa4b5;      /* muted icons / placeholders */
+  --gray-600: #5b6677;      /* muted text */
+  --gray-800: #2b3340;      /* strong body text on light bg */
+
+  /* ---- Semantic aliases (USE THESE in components) ---- */
+  --color-text: var(--gray-800);
+  --color-heading: var(--navy);
+  --color-text-muted: var(--gray-600);
+  --color-bg: var(--white);
+  --color-surface: var(--gray-50);
+  --color-surface-border: var(--gray-200);
+  --color-primary: var(--navy);
+  --color-primary-hover: var(--navy-dark);
+  --color-on-primary: #ffffff;
+  --color-accent: var(--blue);
+  --color-accent-hover: var(--blue-dark);
+  --color-accent-soft: var(--blue-light);
+  --color-inverse-bg: var(--navy);
+  --color-inverse-text: #eaf2fd;
+  --color-danger: #d8413a;
+  --color-success: #1f9d62;
+  --color-warning: #d39a1e;
+
+  /* =====================================================================
+     Nirmaan course palette — "A Natural" (source: svastrino_resources/A-natural.html)
+     Kept here alongside Svastrino so colours for BOTH brands live in one
+     source of truth. These raw tokens are remapped onto the semantic
+     aliases inside `.theme-nirmaan` (see nirmaan.css), which the Nirmaan
+     page applies to <body>.
+     ===================================================================== */
+  --nirmaan-brown: #3b2822;        /* primary text + dark sections (footer) */
+  --nirmaan-brown-soft: #5a3f33;   /* secondary text */
+  --nirmaan-green: #3f7932;        /* primary action / accent */
+  --nirmaan-green-dark: #2d5723;   /* primary action hover */
+  --nirmaan-green-light: #5a9a4d;  /* subtle green highlights */
+  --nirmaan-olive: #90743c;        /* eyebrows / small accents */
+  --nirmaan-olive-light: #b09462;  /* footer headings / muted accents */
+  --nirmaan-cream: #faf6ec;        /* warm cream surface (A-natural reference) */
+  --nirmaan-cream-dark: #f1ead5;   /* cream borders / chips */
+  --nirmaan-gray-200: #e5e0d4;     /* warm hairline borders */
+  --nirmaan-gray-500: #786c5b;     /* muted text */
+
+  /* ---- Brand badge colours (content ownership — see integration plan) ---- */
+  --badge-svastrino: var(--navy);            /* Svastrino-owned content */
+  --badge-nirmaan: var(--nirmaan-green);     /* Nirmaan-owned content (green) */
+
+  /* ---- Elevation ---- */
+  --shadow-sm: 0 2px 8px rgba(15, 44, 92, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 44, 92, 0.10);
+  --shadow-lg: 0 20px 50px rgba(15, 44, 92, 0.14);
+
+  /* ---- Shape ---- */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 100px;
+
+  /* ---- Typography ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Poppins', Georgia, sans-serif;
+  --font-deva: 'Noto Sans Devanagari', sans-serif;
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --container-pad: 24px;
+  --nav-height: 68px;
+
+  /* ---- Spacing scale ---- */
+  --space-1: 6px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --space-4: 24px;
+  --space-5: 36px;
+  --space-6: 60px;
+  --space-7: 80px;
+
+  /* ---- Motion ---- */
+  --transition-fast: 0.15s ease;
+  --transition: 0.2s ease;
+}

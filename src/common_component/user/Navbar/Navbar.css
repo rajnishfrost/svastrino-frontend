@@ -1,0 +1,494 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: var(--nav-height);
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-brand img {
+  width: auto;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* Nirmaan full-lockup logo in the nav (used only on the Nirmaan page) */
+.nav-brand-logo {
+  width: auto !important;
+  height: 60px !important;
+}
+
+/* Two-line stacked wordmark: bold "SVASTRINO" over a small "CONSULTANCY SERVICES"
+   tagline. Matches the treatment used on the original Svastrino logo lock-up. */
+.nav-brand-name {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 3px;
+}
+
+.nav-brand-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 1.5px;
+}
+
+.nav-brand-slogan {
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 2.6px;
+  padding-top: 3px;
+  border-top: 1px solid var(--navy);
+  align-self: stretch;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  padding: 6px 0;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--color-accent);
+}
+
+/* Skill Build (green) capsule — static (no bob), with a fresh, restrained shine sweep. */
+.nav-courses-btn {
+  position: relative;
+  overflow: hidden;               /* clip the shine to the pill shape */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  background: linear-gradient(
+    135deg,
+    var(--nirmaan-green-light) 0%,
+    var(--nirmaan-green) 50%,
+    var(--nirmaan-green-dark) 100%
+  );
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: filter var(--transition-fast);
+}
+
+.nav-courses-btn > * {
+  position: relative;
+  z-index: 1;                     /* keep label above the shine layer */
+}
+
+/* NEW shine — a soft vertical light bar that sweeps across gently.
+   Slower + softer than the old one so it feels premium, not shouty. */
+.nav-courses-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.28) 45%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.28) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-22deg);
+  animation: nav-shine-v2 4.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes nav-shine-v2 {
+  0%, 20% {
+    left: -120%;
+  }
+  70%, 100% {
+    left: 140%;
+  }
+}
+
+.nav-courses-btn:hover,
+.nav-courses-btn.active,
+.nav-skill-build.is-open .nav-courses-btn {
+  filter: brightness(1.06);
+  color: #fff;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .nav-courses-btn::before {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Skill Build dropdown — menu is flush with the pill's bottom (no margin gap)
+   so the mouse can travel from pill → menu without leaving the hover area.
+   Visual breathing room comes from padding INSIDE the menu, not a gap. */
+.nav-skill-build {
+  position: relative;
+}
+
+.nav-dropdown-menu--skill-build {
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 160px;
+  margin-top: 0;
+  padding-top: 12px;   /* extra top padding for breathing room */
+}
+
+/* Invisible bridge: ::before extends the hoverable surface UP into the pill's
+   own area so hover survives micro-jitters between pill and menu. */
+.nav-dropdown-menu--skill-build::before {
+  content: '';
+  position: absolute;
+  top: -6px;                          /* small overlap into the pill zone */
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+}
+
+.nav-caret {
+  font-size: 10px;
+  transition: transform var(--transition-fast);
+}
+
+/* ---- Dropdown ---- */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown.is-open .nav-caret {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+}
+
+.nav-dropdown.is-open .nav-dropdown-menu {
+  display: flex;
+}
+
+.nav-dropdown-menu a {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.nav-dropdown-menu a:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.nav-dropdown-head {
+  font-weight: 600;
+  color: var(--navy) !important;
+  border-bottom: 1px solid var(--gray-100);
+  margin-bottom: 4px;
+}
+
+/* ---- Profile / account menu ---- */
+.nav-profile {
+  position: relative;
+  display: flex;
+  align-items: center;   /* avatar sits on the nav's centre line, no baseline drift */
+}
+
+.nav-avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-avatar-img,
+.nav-avatar-initial {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm); /* square avatar (no frame) */
+  flex: none;
+  transition: box-shadow var(--transition-fast);
+}
+
+.nav-avatar-img {
+  object-fit: cover;
+}
+
+.nav-avatar-initial {
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* No ring/border on the avatar — not on hover, not when the menu is open. */
+
+/* Name sits next to the avatar only in the mobile drawer. */
+.nav-avatar-name {
+  display: none;
+}
+
+.nav-profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 230px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+}
+
+.nav-profile.is-open .nav-profile-menu {
+  display: flex;
+}
+
+.nav-profile-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px 10px;
+  border-bottom: 1px solid var(--gray-100);
+  margin-bottom: 6px;
+}
+
+.nav-profile-name {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 14px;
+}
+
+.nav-profile-email {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-profile-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--color-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  width: 100%;
+}
+
+.nav-profile-item:hover {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.nav-profile-ico {
+  flex: none;
+}
+
+.nav-profile-signout {
+  color: var(--color-danger);
+}
+
+.nav-profile-signout:hover {
+  background: #fdecec;
+  color: var(--color-danger);
+}
+
+/* ---- Mobile toggle (hamburger) ---- */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.nav-toggle span {
+  width: 24px;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+}
+
+/* ---- Tablet / mobile ---- */
+@media (max-width: 940px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 8px var(--container-pad) 18px;
+    box-shadow: var(--shadow-md);
+    display: none;
+    max-height: calc(100vh - var(--nav-height));
+    overflow-y: auto;
+  }
+
+  .nav-links.is-open {
+    display: flex;
+  }
+
+  .nav-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav-dropdown {
+    width: 100%;
+  }
+
+  /* On mobile the dropdown menu shows inline (no hover) */
+  .nav-dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0 0 8px 12px;
+    display: none;
+  }
+
+  .nav-dropdown.is-open .nav-dropdown-menu {
+    display: flex;
+  }
+
+  .nav-links .btn {
+    margin-top: 14px;
+    width: 100%;
+  }
+
+  /* Profile in the drawer: avatar + name as a header row, items listed inline. */
+  .nav-profile {
+    width: 100%;
+    margin-top: 6px;
+    flex-direction: column;   /* stack the (now in-flow) menu below the avatar row */
+    align-items: stretch;
+  }
+
+  .nav-avatar {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 0 10px;
+    border-top: 1px solid var(--gray-100);
+  }
+
+  .nav-avatar-name {
+    display: inline;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 15px;
+  }
+
+  .nav-profile-menu {
+    position: static;
+    display: flex;             /* always visible inside the open drawer */
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0 0 8px;
+    min-width: 0;
+  }
+
+  .nav-profile-head {
+    display: none;             /* name already shown in the avatar row */
+  }
+
+  .nav-profile-item {
+    padding: 13px 8px;
+  }
+
+  /* Nirmaan capsule in the mobile/tablet drawer — keep it a centered pill */
+  .nav-courses-btn {
+    align-self: center;
+    width: auto;
+    margin: 14px 0 6px;
+    padding: 8px 20px;
+    animation: none;            /* no bob inside the stacked menu */
+  }
+}

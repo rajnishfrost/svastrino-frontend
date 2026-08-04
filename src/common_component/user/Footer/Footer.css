@@ -1,0 +1,139 @@
+.footer {
+  background: var(--navy);
+  color: var(--color-inverse-text);
+  margin-top: auto;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr;
+  align-items: start;
+  gap: var(--space-6);
+  padding: var(--space-7) var(--container-pad) var(--space-6);
+}
+
+/* breathing room above the brand logo so it isn't glued to the top edge */
+.footer-brand {
+  padding-top: var(--space-3);
+}
+
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.footer-logo img {
+  width: auto;
+  height: 52px;
+  object-fit: contain;
+}
+
+/* Two-line stacked wordmark: bold "SVASTRINO" over a thin "CONSULTANCY SERVICES"
+   tagline — same treatment as the Navbar, inverted white for the dark footer. */
+.footer-logo-name {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 3px;
+}
+
+.footer-logo-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1.5px;
+}
+
+.footer-logo-slogan {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 2.6px;
+  padding-top: 3px;
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
+  align-self: stretch;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.footer-tagline {
+  margin: var(--space-3) 0 var(--space-2);
+  color: rgba(234, 242, 253, 0.75);
+  font-size: 15px;
+  max-width: 320px;
+}
+
+.footer-offices {
+  font-size: 13px;
+  color: rgba(234, 242, 253, 0.55);
+}
+
+.footer-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  padding-top: var(--space-3);
+}
+
+.footer-col h4 {
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.footer-col li {
+  margin-bottom: 14px;
+}
+
+.footer-col a {
+  color: rgba(234, 242, 253, 0.8);
+  font-size: 14px;
+}
+
+.footer-col a:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--navy-dark);
+}
+
+.footer-bottom-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--container-pad);
+  font-size: 13px;
+  color: rgba(234, 242, 253, 0.6);
+}
+
+.footer-legal {
+  display: flex;
+  gap: var(--space-3);
+}
+
+@media (max-width: 900px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}

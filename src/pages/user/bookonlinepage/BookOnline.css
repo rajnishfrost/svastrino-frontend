@@ -1,0 +1,133 @@
+/* Booking wizard (/book-online) */
+
+.bo-wrap { max-width: 900px; }
+.bo-card { padding: var(--space-6); }
+.bo-h2 { font-size: 1.15rem; margin-bottom: var(--space-4); }
+.bo-h3 { font-size: 1rem; margin: var(--space-4) 0 var(--space-2); }
+.bo-muted { color: var(--color-text-muted); }
+.bo-error { color: #b3261e; font-size: 0.9rem; margin-top: var(--space-3); }
+.bo-hint { color: var(--color-text-muted); font-size: 0.82rem; margin-top: var(--space-3); }
+.bo-full { width: 100%; margin-top: var(--space-4); }
+
+.bo-link {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--color-primary, #2e5d3f); text-decoration: underline; font: inherit; font-size: 0.9rem;
+}
+.bo-link:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Step indicator */
+.bo-steps {
+  display: flex; gap: var(--space-4); flex-wrap: wrap;
+  list-style: none; padding: 0; margin: 0 0 var(--space-5);
+}
+.bo-step {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--color-text-muted); font-size: 0.9rem;
+}
+.bo-step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid currentColor; font-size: 0.78rem; font-weight: 600;
+}
+.bo-step.is-current { color: var(--color-primary, #2e5d3f); font-weight: 600; }
+.bo-step.is-done { color: var(--color-primary, #2e5d3f); opacity: 0.75; }
+
+/* Program picker */
+.bo-programs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
+.bo-program { position: relative; display: flex; flex-direction: column; gap: var(--space-2); }
+.bo-program .btn { margin-top: auto; }
+.bo-program.is-featured { border: 2px solid var(--color-primary, #2e5d3f); }
+.bo-badge {
+  position: absolute; top: -10px; right: 14px;
+  background: var(--color-primary, #2e5d3f); color: #fff;
+  font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+}
+.bo-price { font-size: 1.3rem; font-weight: 700; }
+.bo-features { padding-left: 1.1em; margin: 0 0 var(--space-3); font-size: 0.9rem; color: var(--color-text-muted); }
+.bo-features li { margin-bottom: 4px; }
+
+/* Selected-program strip */
+.bo-selected {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
+  flex-wrap: wrap; margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface, #faf7f2); border-radius: 10px;
+}
+.bo-paid-tag { color: var(--color-primary, #2e5d3f); font-weight: 600; font-size: 0.88rem; margin-left: 6px; }
+
+/* Two-column step layout */
+.bo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
+@media (max-width: 760px) { .bo-grid { grid-template-columns: 1fr; } }
+
+/* Calendar */
+.bo-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
+.bo-cal-month { font-weight: 600; }
+.bo-cal-nav {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--color-border, #ddd);
+  background: #fff; cursor: pointer; font-size: 1.1rem; line-height: 1;
+}
+.bo-cal-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+.bo-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.bo-cal-dows { margin-bottom: 4px; }
+.bo-cal-dows span { text-align: center; font-size: 0.72rem; color: var(--color-text-muted); font-weight: 600; }
+.bo-cal-day {
+  aspect-ratio: 1; border-radius: 8px; border: 1px solid transparent;
+  background: none; cursor: pointer; font-size: 0.88rem;
+}
+.bo-cal-day:hover:not(:disabled) { background: var(--color-surface, #f2ede4); }
+.bo-cal-day:disabled { color: #c9c4bb; cursor: default; }
+.bo-cal-day.is-picked { background: var(--color-primary, #2e5d3f); color: #fff; font-weight: 600; }
+
+/* Slot chips */
+.bo-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.bo-slot {
+  padding: 10px 6px; border-radius: 8px; border: 1px solid var(--color-border, #ddd);
+  background: #fff; cursor: pointer; font-size: 0.85rem; white-space: nowrap;
+}
+.bo-slot:hover { border-color: var(--color-primary, #2e5d3f); }
+.bo-slot.is-picked { background: var(--color-primary, #2e5d3f); color: #fff; border-color: var(--color-primary, #2e5d3f); font-weight: 600; }
+
+/* Forms */
+.bo-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: var(--space-3); }
+.bo-input {
+  display: block; width: 100%; margin-top: 4px;
+  padding: 10px 12px; border-radius: 8px; border: 1px solid var(--color-border, #ddd);
+  font: inherit; font-size: 0.95rem;
+}
+.bo-input:disabled { background: var(--color-surface, #f5f2ec); color: var(--color-text-muted); }
+.bo-exists {
+  margin-top: var(--space-3); padding: var(--space-3);
+  background: #fdf3e0; border-radius: 8px; font-size: 0.9rem;
+}
+
+/* Fees */
+.bo-lines { display: flex; flex-direction: column; gap: 6px; }
+.bo-line { display: flex; justify-content: space-between; font-size: 0.95rem; gap: var(--space-3); }
+.bo-line span:first-child { color: var(--color-text-muted); }
+.bo-total {
+  display: flex; justify-content: space-between; font-weight: 700; font-size: 1.05rem;
+  border-top: 1px solid var(--color-border, #e5e0d6); padding-top: 8px; margin-top: 4px;
+}
+.bo-strike { text-decoration: line-through; color: var(--color-text-muted); }
+.bo-good { color: var(--color-primary, #2e5d3f); font-weight: 600; }
+.bo-coupon { display: flex; gap: 8px; margin-top: var(--space-4); }
+.bo-coupon .bo-input { margin-top: 0; }
+.bo-coupon-applied { margin-top: var(--space-4); font-size: 0.9rem; display: flex; gap: 10px; align-items: center; }
+
+/* Verify / pay / success */
+.bo-verify { max-width: 560px; margin: 0 auto; }
+.bo-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin-top: var(--space-5); flex-wrap: wrap; }
+.bo-gateway-tag { font-size: 0.72rem; letter-spacing: 0.08em; font-weight: 700; color: #b3261e; margin-bottom: var(--space-2); }
+.bo-payable {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--color-surface, #faf7f2); border-radius: 10px;
+  padding: var(--space-3) var(--space-4); margin: var(--space-4) 0; font-size: 1.05rem;
+}
+.bo-success { max-width: 560px; margin: 0 auto; text-align: center; }
+.bo-success .bo-lines { text-align: left; margin: var(--space-4) 0; }
+.bo-success .bo-actions { justify-content: center; }
+.bo-tick {
+  width: 56px; height: 56px; margin: 0 auto var(--space-3); border-radius: 50%;
+  background: var(--color-primary, #2e5d3f); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+}

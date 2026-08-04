@@ -1,0 +1,22 @@
+.notfound {
+  text-align: center;
+  padding: var(--space-7) 0;
+}
+
+.notfound-code {
+  font-family: var(--font-serif);
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--color-accent-soft);
+  line-height: 1;
+}
+
+.notfound h1 {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.notfound-sub {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}

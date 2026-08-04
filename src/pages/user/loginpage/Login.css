@@ -1,0 +1,339 @@
+.login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--container-pad);
+  min-height: calc(100vh - var(--nav-height));
+  background: var(--color-surface);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  padding: clamp(20px, 4vw, 32px);
+}
+
+.login-card h1 {
+  font-size: clamp(22px, 4.5vw, 26px);
+  margin-bottom: 4px;
+}
+
+.login-sub {
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+  font-size: 14px;
+}
+
+/* ---- Forms ---- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: left;
+}
+
+/* Field wrapper — label + control + inline error */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.2px;
+}
+
+.login-form input,
+.login-form select {
+  padding: 12px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 16px;                       /* 16px prevents iOS zoom-on-focus */
+  font-family: var(--font-sans);
+  font-weight: 400;
+  width: 100%;
+  min-height: 46px;
+  background: #fff;
+  color: var(--navy);
+  box-sizing: border-box;
+}
+
+.login-form input:focus,
+.login-form select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.field.has-error input,
+.field.has-error select,
+.field.has-error .password-wrap input {
+  border-color: var(--color-danger);
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+/* ---- Phone (react-international-phone) — every country built in ----
+   Skinned to match the form via the library's CSS variables. */
+.phone-intl {
+  width: 100%;
+  --react-international-phone-height: 46px;
+  --react-international-phone-font-size: 16px;
+  --react-international-phone-border-radius: var(--radius-sm);
+  --react-international-phone-border-color: var(--gray-200);
+  --react-international-phone-background-color: #fff;
+  --react-international-phone-text-color: var(--navy);
+}
+
+/* The inner text input carries the generic .login-form input rules too, so
+   pull off the left border/radius to keep it flush against the flag button. */
+.login-form .phone-intl-input {
+  width: 100%;
+  min-height: 46px;
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.field.has-error .phone-intl-input,
+.field.has-error .phone-intl-btn {
+  border-color: var(--color-danger);
+}
+
+/* ---- Password field with eye toggle ---- */
+.password-wrap {
+  position: relative;
+  display: block;
+}
+
+.password-wrap input {
+  padding-right: 48px;                   /* leave room for the eye button */
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+.password-toggle:hover { color: var(--navy); background: var(--gray-100, #f3f4f6); }
+.password-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Password strength meter styles now live in the shared StrengthMeter component. */
+
+/* ---- Confirm password match indicator ---- */
+.pw-match {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-danger);
+}
+
+.pw-match.ok { color: #16a34a; }
+
+/* ---- Buttons (login submit uses shared .btn) ---- */
+.login-form .btn {
+  margin-top: 6px;
+  min-height: 48px;
+  font-size: 15px;
+}
+
+/* ---- OR divider ---- */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: var(--space-4) 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+/* ---- Google button ---- */
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 48px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--navy);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+.google-btn:hover:not(:disabled) {
+  border-color: var(--navy);
+  box-shadow: 0 2px 8px rgba(15, 33, 75, 0.08);
+}
+
+.google-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---- Error banner ---- */
+.login-error {
+  background: #fdecec;
+  color: var(--color-danger);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+  text-align: left;
+  border: 1px solid #f5c2c2;
+}
+
+/* Success / info banner (email sent, verified, …) */
+.login-notice {
+  background: #e9f7ef;
+  color: #1b7a43;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+  text-align: left;
+  border: 1px solid #b6e3c6;
+}
+
+/* "Forgot password?" — right-aligned above the login button */
+.login-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 4px;
+}
+
+/* The auth card is a static form container, not an interactive card — cancel
+   the global .card:hover lift (global.css). Uses .login-card.card (0,3,0) to
+   beat .card:hover (0,2,0) regardless of stylesheet order. */
+.login-card.card:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);   /* same as resting state — nothing moves */
+}
+
+/* Kill the site-wide button "lift" on hover, but only inside the auth card —
+   the rest of the site keeps its translateY(-2px). Overrides .btn-primary:hover
+   from global.css via higher specificity. */
+.login-card .btn:hover {
+  transform: none;
+}
+
+/* ---- Verify-email panel (post-signup) ---- */
+.verify-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.verify-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  margin-bottom: 6px;
+}
+
+.verify-lead {
+  font-size: 15px;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.verify-lead strong {
+  color: var(--navy);
+  word-break: break-all;
+}
+
+.verify-hint {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.verify-panel .btn-primary {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.verify-back {
+  margin-top: 12px;
+}
+
+.verify-foot {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-200);
+  width: 100%;
+}
+
+/* ---- Foot / inline link ---- */
+.login-foot {
+  margin-top: var(--space-4);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.login-link {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  padding: 0;
+}
+
+.login-link:hover { text-decoration: underline; }
+
+/* ---- Mobile optimisation ---- */
+@media (max-width: 520px) {
+  .login-wrap {
+    padding: var(--space-4) 12px;
+    align-items: flex-start;
+  }
+  .login-card { padding: 18px; }
+}
