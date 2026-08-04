@@ -79,6 +79,14 @@
   --shadow-md: 0 8px 24px rgba(15, 44, 92, 0.10);
   --shadow-lg: 0 20px 50px rgba(15, 44, 92, 0.14);
 
+  /* ---- Modernize pass (additive — safe to adopt gradually) ----
+     New tokens for the refreshed look. Nothing above changes until a
+     component opts into these, so they can be rolled out page by page. */
+  --brand-gradient: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  --accent-gradient: linear-gradient(135deg, var(--blue) 0%, #5aa0ff 100%);
+  --shadow-brand: 0 24px 60px -24px rgba(15, 44, 92, 0.35);
+  --focus-ring: 0 0 0 3px rgba(47, 122, 229, 0.35);
+
   /* ---- Shape ---- */
   --radius-sm: 8px;
   --radius: 12px;

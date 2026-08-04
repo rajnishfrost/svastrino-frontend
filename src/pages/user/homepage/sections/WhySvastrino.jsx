@@ -6,7 +6,7 @@ const POINTS = [
 
 export default function WhySvastrino() {
   return (
-    <section className="section">
+    <section className="section home-band home-band--navy">
       <div className="container">
         <div className="text-center">
           <p className="section-eyebrow">Why Svastrino</p>

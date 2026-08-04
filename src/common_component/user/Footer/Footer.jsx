@@ -42,7 +42,8 @@ export default function Footer() {
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
             {/* White wordmark variant so the navy-text logo reads on the dark footer. */}
-            <img src="/logo-white.png" alt="Svastrino Consultancy Services" />
+            {/* <img src="/logo-white.png" alt="Svastrino Consultancy Services" /> */}
+            <img src="/logo.png" alt="Svastrino Consultancy Services" />
           </Link>
           <p className="footer-tagline">
             Futuristic career guidance — personalised mentoring &amp; courses to shape your path.
