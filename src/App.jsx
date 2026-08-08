@@ -12,6 +12,13 @@ import GuestRoute from './common_component/user/GuestRoute/GuestRoute.jsx'
 import AdminLayout from './common_component/admin/AdminLayout/AdminLayout.jsx'
 import AdminProtectedRoute from './common_component/admin/AdminProtectedRoute/AdminProtectedRoute.jsx'
 
+// ---- Partner organisation portal ----
+import OrgLayout from './common_component/org/OrgLayout/OrgLayout.jsx'
+import OrgDashboard from './pages/org/dashboardpage/OrgDashboard.jsx'
+import OrgStudents from './pages/org/studentspage/OrgStudents.jsx'
+import OrgScholarship from './pages/org/scholarshippage/OrgScholarship.jsx'
+import OrgProfile from './pages/org/profilepage/OrgProfile.jsx'
+
 // ---- User pages ----
 import Home from './pages/user/homepage/Home.jsx'
 import About from './pages/user/aboutpage/About.jsx'
@@ -20,6 +27,7 @@ import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
 import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
 import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
+import Organisations from './pages/user/organisationspage/Organisations.jsx'
 import Resources from './pages/user/resourcespage/Resources.jsx'
 import CourseDetail from './pages/user/careerlibrarypage/CourseDetail.jsx'
 import LegalPage from './pages/user/legalpage/LegalPage.jsx'
@@ -40,6 +48,8 @@ import NotFound from './pages/user/notfoundpage/NotFound.jsx'
 import AdminDashboard from './pages/admin/dashboardpage/AdminDashboard.jsx'
 import AdminSkillBuilds from './pages/admin/skillbuildspage/AdminSkillBuilds.jsx'
 import AdminContent from './pages/admin/contentpage/AdminContent.jsx'
+import AdminBlogs from './pages/admin/blogspage/AdminBlogs.jsx'
+import AdminCareerLibrary from './pages/admin/careerlibrarypage/AdminCareerLibrary.jsx'
 import AdminUsers from './pages/admin/userspage/AdminUsers.jsx'
 import AdminCoupons from './pages/admin/couponspage/AdminCoupons.jsx'
 import AdminOrders from './pages/admin/orderspage/AdminOrders.jsx'
@@ -68,6 +78,8 @@ function PublicSite() {
           <Route path="/nirmaan-scholarship/test" element={<ProtectedRoute><ScholarshipTest /></ProtectedRoute>} />
           {/* Renamed — it's Nirmaan-only. Keep old links working. */}
           <Route path="/scholarship" element={<Navigate to="/nirmaan-scholarship" replace />} />
+          {/* Public partner directory — schools, colleges, villages, NGOs, … */}
+          <Route path="/organisations" element={<Organisations />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/career-library/:slug" element={<CourseDetail />} />
           <Route path="/legal/:slug" element={<LegalPage />} />
@@ -147,6 +159,8 @@ export default function App() {
                   {/* Packages now live inside Skill Builds — keep old links working. */}
                   <Route path="/packages" element={<Navigate to="/admin/skill-builds" replace />} />
                   <Route path="/content" element={<AdminContent />} />
+                  <Route path="/blogs" element={<AdminBlogs />} />
+                  <Route path="/career-library" element={<AdminCareerLibrary />} />
                   <Route path="/users" element={<AdminUsers />} />
                   <Route path="/coupons" element={<AdminCoupons />} />
                   <Route path="/orders" element={<AdminOrders />} />
@@ -158,6 +172,24 @@ export default function App() {
                 </Routes>
               </AdminLayout>
             </AdminProtectedRoute>
+          }
+        />
+
+        {/* Partner organisation portal — its own chrome. The guard IS the data
+            load (see OrgLayout): /org/me only answers for an approved, active
+            organisation's owner, so there's no separate protected-route wrapper. */}
+        <Route
+          path="/organisation/*"
+          element={
+            <OrgLayout>
+              <Routes>
+                <Route path="/" element={<OrgDashboard />} />
+                <Route path="/students" element={<OrgStudents />} />
+                <Route path="/scholarship" element={<OrgScholarship />} />
+                <Route path="/profile" element={<OrgProfile />} />
+                <Route path="*" element={<Navigate to="/organisation" replace />} />
+              </Routes>
+            </OrgLayout>
           }
         />
 

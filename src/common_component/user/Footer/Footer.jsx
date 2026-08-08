@@ -21,6 +21,14 @@ const COLUMNS = [
     ],
   },
   {
+    title: 'Scholarship',
+    links: [
+      { label: 'Nirmaan Scholarship', to: '/nirmaan-scholarship' },
+      { label: 'Partner organisations', to: '/organisations' },
+      { label: 'Partner with us', to: '/nirmaan-scholarship#partner' },
+    ],
+  },
+  {
     title: 'Company',
     links: [
       { label: 'About', to: '/about' },

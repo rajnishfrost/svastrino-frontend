@@ -35,6 +35,7 @@ function Accounts({ me }) {
   const [savingId, setSavingId] = useState(null)
   const [editing, setEditing] = useState(null) // account object
   const [adding, setAdding] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
 
   const loadList = (search = '') =>
     api(`/admin/users${search ? `?q=${encodeURIComponent(search)}` : ''}`, { auth: 'admin' })
@@ -58,6 +59,15 @@ function Accounts({ me }) {
       const { user } = await api(`/admin/users/${id}/role`, { method: 'PATCH', auth: 'admin', body: { role } })
       setUsers((list) => list.map((u) => (u.id === id ? { ...u, role: user.role } : u)))
     } catch (e) { setError(e.message); loadList(q) } finally { setSavingId(null) }
+  }
+
+  const removeAccount = async (u) => {
+    if (!window.confirm(`Delete ${u.name || u.email}? This permanently removes the account and cannot be undone.`)) return
+    setDeletingId(u.id); setError('')
+    try {
+      await api(`/admin/admins/${u.id}`, { method: 'DELETE', auth: 'admin' })
+      setUsers((list) => list.filter((x) => x.id !== u.id))
+    } catch (e) { setError(e.message) } finally { setDeletingId(null) }
   }
 
   // Options for the inline dropdown — always keep the row's current role visible.
@@ -124,8 +134,18 @@ function Accounts({ me }) {
                   </td>
                   {isSuper && (
                     <td>
-                      <button className="adm-btn adm-btn--ghost adm-btn--sm"
-                              onClick={() => { setAdding(false); setEditing(u) }}>Edit</button>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                        <button className="adm-btn adm-btn--ghost adm-btn--sm"
+                                onClick={() => { setAdding(false); setEditing(u) }}>Edit</button>
+                        {me.id !== u.id && (
+                          <button className="adm-btn adm-btn--ghost adm-btn--sm"
+                                  style={{ color: 'var(--color-danger, #b3261e)' }}
+                                  disabled={deletingId === u.id}
+                                  onClick={() => removeAccount(u)}>
+                            {deletingId === u.id ? '…' : 'Delete'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   )}
                 </tr>

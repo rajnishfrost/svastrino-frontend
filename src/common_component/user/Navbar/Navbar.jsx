@@ -229,6 +229,13 @@ function ProfileMenu({ user, onNavigate }) {
             <ShieldIcon /> Admin Panel
           </Link>
         )}
+        {/* Same for a partner organisation's owner — only once it's approved
+            and active, so the link never lands on a 403. */}
+        {user.organisation?.portal && (
+          <Link to="/organisation" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+            <ShieldIcon /> Organisation Portal
+          </Link>
+        )}
         <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
           <GridIcon /> Dashboard
         </Link>

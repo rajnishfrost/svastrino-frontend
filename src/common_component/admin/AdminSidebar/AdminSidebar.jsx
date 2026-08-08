@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { api, adminTokenStore } from '../../../api/client.js'
+import { api } from '../../../api/client.js'
+import { useAuth } from '../../../context/AuthContext.jsx'
 import './AdminSidebar.css'
 
 // Clean line icons (Feather/Lucide style — 24×24, currentColor stroke).
@@ -15,6 +16,10 @@ const ICON = {
   dashboard: <Svg><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></Svg>,
   // Assessments — clipboard with a tick (psychometric report)
   assessments: <Svg><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="m9 14 2 2 4-4" /></Svg>,
+  // Blog — pen writing on a page (articles)
+  blogs: <Svg><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></Svg>,
+  // Career Library — open book (course reference pages)
+  careerLibrary: <Svg><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2Z" /><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22Z" /></Svg>,
   // Content — video (course lessons)
   content: <Svg><path d="m22 8-6 4 6 4V8Z" /><rect x="2" y="6" width="14" height="12" rx="2" /></Svg>,
   // Coupons — ticket
@@ -42,6 +47,8 @@ const NAV = [
   { label: 'Dashboard', to: '/admin', end: true, icon: 'dashboard' }, // always visible
   // ---- A → Z ----
   { label: 'Assessments', to: '/admin/assessments', icon: 'assessments', module: 'assessments' },
+  { label: 'Blog', to: '/admin/blogs', icon: 'blogs', module: 'blogs' },
+  { label: 'Career Library', to: '/admin/career-library', icon: 'careerLibrary', module: 'career-library' },
   { label: 'Content', to: '/admin/content', icon: 'content', module: 'content' },
   { label: 'Coupons', to: '/admin/coupons', icon: 'coupons', module: 'coupons' },
   { label: 'Mentoring', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
@@ -54,6 +61,7 @@ const NAV = [
 
 export default function AdminSidebar({ open, onClose }) {
   const navigate = useNavigate()
+  const { logout: authLogout } = useAuth()
   const [me, setMe] = useState(null) // { role, permissions } — null while loading
 
   useEffect(() => {
@@ -70,8 +78,11 @@ export default function AdminSidebar({ open, onClose }) {
     return (me.permissions || []).includes(item.module)
   }
 
+  // One shared session, so signing out of the panel signs out the whole account
+  // — clear the token AND the cached profile / auth state (not just the token,
+  // or the public site would still show you logged in).
   const logout = () => {
-    adminTokenStore.clear()
+    authLogout()
     navigate('/login', { replace: true })
   }
 

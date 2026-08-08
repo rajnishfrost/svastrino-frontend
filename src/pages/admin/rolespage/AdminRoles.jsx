@@ -12,10 +12,13 @@ import '../adminShared.css'
  */
 const MODULES = [
   { key: 'assessments', label: 'Assessments' },
+  { key: 'blogs', label: 'Blog' },
+  { key: 'career-library', label: 'Career Library' },
   { key: 'content', label: 'Content' },
   { key: 'coupons', label: 'Coupons' },
   { key: 'mentoring', label: 'Mentoring' },
   { key: 'orders', label: 'Orders' },
+  { key: 'scholarship', label: 'Scholarship' },
   { key: 'skill-builds', label: 'Skill Builds' },
   { key: 'users', label: 'Users' },
 ]

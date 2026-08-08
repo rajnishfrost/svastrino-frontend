@@ -151,8 +151,26 @@
 .sch-form { max-width: 760px; margin: 24px auto 0; }
 .sch-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .sch-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--nirmaan-brown, #3a2a1e); }
+/* Full-width field under the two-column grid (the "about us" blurb). */
+.sch-form-full { margin-top: 14px; }
+.sch-form-full textarea {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  padding: 11px 12px;
+  border: 1px solid var(--nirmaan-cream-dark);
+  border-radius: 10px;
+  resize: vertical;
+  color: var(--nirmaan-brown, #3a2a1e);
+}
 .sch-form .btn { margin-top: 16px; }
 @media (max-width: 620px) { .sch-form-grid { grid-template-columns: 1fr; } }
+
+/* A student's earlier years — the scholarship repeats annually per partner. */
+.sch-history { margin-top: var(--space-4); border-top: 1px solid var(--nirmaan-cream-dark); padding-top: var(--space-3); }
+.sch-history h3 { font-size: 16px; margin: 0 0 8px; color: var(--nirmaan-green-dark, #2d5723); }
+.sch-history ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sch-history li { font-size: 14.5px; color: var(--color-text-muted); }
 
 /* Timed test */
 .sch-test-bar { position: sticky; top: 0; z-index: 20; background: var(--nirmaan-green); color: #fff; }
@@ -168,14 +186,14 @@
 .sch-option.picked { border-color: var(--nirmaan-green); background: var(--nirmaan-cream); }
 .sch-submit-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
 
-/* Winner announcement banner */
+/* Winner announcement banner — one per partner organisation, stacked. */
 .sch-winner-wrap { padding-top: 0; }
 .sch-winner {
   display: flex;
   align-items: center;
   gap: 20px;
   max-width: 720px;
-  margin: 0 auto;
+  margin: 0 auto 14px;
   padding: 22px 28px;
   border-radius: 16px;
   background: linear-gradient(135deg, var(--nirmaan-green), var(--nirmaan-green-dark, #2d5723));
@@ -226,3 +244,7 @@
   text-align: right;
 }
 .sch-wordcount.at-limit { color: #b3261e; font-weight: 600; }
+
+/* Test paper header — the organisation's own title + instructions. */
+.sch-paper-head h2 { font-size: 22px; margin: 0 0 8px; color: var(--nirmaan-green-dark, #2d5723); }
+.sch-paper-head p { margin: 0; color: var(--color-text-muted); font-size: 15px; line-height: 1.6; white-space: pre-wrap; }

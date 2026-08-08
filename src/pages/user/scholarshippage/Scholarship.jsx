@@ -12,25 +12,30 @@ const fmtDate = (iso) =>
  * Nirmaan scholarship — full detail page (linked from the Home highlight and the
  * Nirmaan page). Adds `.theme-nirmaan` to <body> so the page uses the Nirmaan
  * green/brown/cream palette, matching the product it belongs to.
+ *
+ * Each partner organisation now runs its OWN scholarship, one cycle per year —
+ * so a student's enrolment, test window and winner all belong to the
+ * organisation they picked, not to one global contest.
  */
 const STEPS = [
-  { n: 1, title: 'Partner institution', text: 'Your school or college partners with Svastrino to host the scholarship for its students.' },
+  { n: 1, title: 'Partner organisation', text: 'Your school, college, village body or NGO partners with Svastrino to host the scholarship for its students.' },
   { n: 2, title: 'Take the test', text: 'Eligible students sit a timed, auto-scored scholarship test on the Nirmaan platform.' },
   { n: 3, title: 'Top the leaderboard', text: 'Students are ranked by score — ties broken by who finished fastest.' },
   { n: 4, title: 'Win it free', text: 'The top scorer wins their entire Nirmaan package — 100% free.' },
 ]
 
 const ELIGIBILITY = [
-  'Open to students of classes 9–12 at a partner school or college.',
-  'One entry per student; the test is taken once, under timed conditions.',
-  'Your institution must be enrolled as a Nirmaan scholarship partner.',
+  'Open to students of a partner organisation — a school, college, village body, NGO or company.',
+  'One entry per student per year; the test is taken once, under timed conditions.',
+  'Your organisation must be enrolled as a Nirmaan scholarship partner.',
 ]
 
 const FAQS = [
   { q: 'What does the winner get?', a: 'The complete Nirmaan package — psychometric test, career report, mentoring sessions and worksheets — entirely free.' },
-  { q: 'How are winners decided?', a: 'Purely on merit: the highest scorer on the auto-scored test wins. If two students tie, the one who finished faster ranks higher.' },
-  { q: 'Is there any fee to enter?', a: 'No. The scholarship test is free for students of partner institutions.' },
-  { q: 'Can any school join?', a: 'Yes — any school or college can partner with us to bring the Nirmaan scholarship to its students.' },
+  { q: 'How are winners decided?', a: 'Purely on merit: the highest scorer on the auto-scored test wins. If two students tie, the one who finished faster ranks higher. Each partner organisation picks its own winner.' },
+  { q: 'Is there any fee to enter?', a: 'No. The scholarship test is free for students of partner organisations.' },
+  { q: 'Who can become a partner?', a: 'Any school, college, village panchayat, NGO, coaching centre or company can partner with us to bring the Nirmaan scholarship to its students.' },
+  { q: 'Does it run every year?', a: 'Yes — each partner runs its own cycle per year, so a student who misses one year can compete in the next.' },
 ]
 
 export default function Scholarship() {
@@ -44,14 +49,14 @@ export default function Scholarship() {
       <PageHero
         eyebrow="Nirmaan Scholarship"
         title="Win a full Nirmaan scholarship"
-        subtitle="We partner with schools and colleges to give one deserving student their entire Nirmaan package — completely free. Compete, top the test, and it’s yours."
+        subtitle="We partner with schools, colleges, villages and NGOs to give one deserving student their entire Nirmaan package — completely free. Compete, top the test, and it’s yours."
       >
         <a href="#enrol" className="btn btn-primary btn-large">Enrol &amp; take the test</a>
-        <a href="#partner" className="btn btn-secondary btn-large">Partner your institution</a>
+        <a href="#partner" className="btn btn-secondary btn-large">Partner your organisation</a>
       </PageHero>
 
-      {/* Winner announcement (public, once declared) */}
-      <WinnerBanner />
+      {/* Winner announcements (public, once declared — one per partner) */}
+      <WinnersBanner />
 
       {/* Student: enrol + take the test */}
       <EnrolSection />
@@ -81,6 +86,7 @@ export default function Scholarship() {
             <ul className="sch-list">
               {ELIGIBILITY.map((e) => <li key={e}>{e}</li>)}
             </ul>
+            <Link to="/organisations" className="sch-link">See our partner organisations →</Link>
           </div>
           <div className="card sch-panel sch-prize">
             <span className="sch-prize-badge">The prize</span>
@@ -112,30 +118,35 @@ export default function Scholarship() {
         </div>
       </section>
 
-      {/* Partner form (institutions) */}
+      {/* Partner form (organisations) */}
       <PartnerSection />
     </div>
   )
 }
 
-/* ---------------- Winner announcement (public) ---------------- */
-function WinnerBanner() {
-  const [winner, setWinner] = useState(null)
-  useEffect(() => { api('/user/scholarship/winner').then((d) => setWinner(d.winner)).catch(() => {}) }, [])
-  if (!winner) return null
+/* ---------------- Winner announcements (public) ---------------- */
+function WinnersBanner() {
+  const [winners, setWinners] = useState([])
+  useEffect(() => {
+    api('/user/scholarship/winners').then((d) => setWinners(d.winners || [])).catch(() => {})
+  }, [])
+  if (!winners.length) return null
+
   return (
     <section className="section sch-winner-wrap">
       <div className="container">
-        <div className="sch-winner">
-          <span className="sch-winner-trophy" aria-hidden>🏆</span>
-          <div>
-            <p className="sch-winner-label">Scholarship winner</p>
-            <h2 className="sch-winner-name">{winner.name}</h2>
-            <p className="sch-winner-sub">
-              {winner.institution}{winner.score != null ? ` · scored ${winner.score}/${winner.total}` : ''}
-            </p>
+        {winners.slice(0, 3).map((w) => (
+          <div className="sch-winner" key={`${w.userId}-${w.year}`}>
+            <span className="sch-winner-trophy" aria-hidden>🏆</span>
+            <div>
+              <p className="sch-winner-label">Scholarship winner · {w.year}</p>
+              <h2 className="sch-winner-name">{w.name}</h2>
+              <p className="sch-winner-sub">
+                {w.organisation}{w.score != null ? ` · scored ${w.score}/${w.total}` : ''}
+              </p>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   )
@@ -145,18 +156,18 @@ function WinnerBanner() {
 function EnrolSection() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [institutions, setInstitutions] = useState([])
+  const [organisations, setOrganisations] = useState([])
   const [me, setMe] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
   const loadMe = () => { if (user) api('/user/scholarship/me', { auth: 'user' }).then(setMe).catch(() => {}) }
   useEffect(() => {
-    api('/user/scholarship/institutions/approved').then((d) => setInstitutions(d.institutions)).catch(() => {})
+    api('/user/organisations/enrollable').then((d) => setOrganisations(d.organisations)).catch(() => {})
     loadMe()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  const t = me?.test
+  const c = me?.cycle
 
   return (
     <section id="enrol" className="section">
@@ -176,22 +187,23 @@ function EnrolSection() {
             </>
           )}
 
-          {/* Logged in, not yet enrolled */}
+          {/* Logged in, not yet enrolled in a live cycle */}
           {user && me?.canEnroll && (
             <>
-              <p>Enrol to compete — you’ll pick your partner institution and enter your class &amp; roll number.</p>
-              {institutions.length === 0
-                ? <p className="sch-note">No partner institutions yet — ask your school to partner with us below.</p>
+              <p>Enrol to compete — you’ll pick your partner organisation and enter your class &amp; roll number.</p>
+              {organisations.length === 0
+                ? <p className="sch-note">No partner organisations yet — ask yours to partner with us below.</p>
                 : <button className="btn btn-primary btn-large" onClick={() => setShowModal(true)}>Enrol now</button>}
             </>
           )}
 
-          {/* Enrolled — show status + test entry based on the window */}
-          {user && me && !me.canEnroll && (
+          {/* Enrolled — status + test entry based on this cycle's window */}
+          {user && me?.enrolled && (
             <div className="sch-status">
               <p>
-                Enrolled via <strong>{me.institution?.name}</strong>{me.institution?.branch ? ` (${me.institution.branch})` : ''}
-                {me.student ? ` · Class ${me.student.studentClass}${me.student.section ? `-${me.student.section}` : ''}, Roll ${me.student.rollNo}` : ''}.
+                Enrolled with <strong>{me.organisation?.name}</strong>{me.organisation?.branch ? ` (${me.organisation.branch})` : ''}
+                {me.student ? ` · Class ${me.student.studentClass}${me.student.section ? `-${me.student.section}` : ''}, Roll ${me.student.rollNo}` : ''}
+                {c?.year ? ` · ${c.year}` : ''}.
               </p>
 
               {me.isWinner && (
@@ -207,22 +219,38 @@ function EnrolSection() {
                   <p>
                     You scored <strong>{me.attempt.score}/{me.attempt.total}</strong>.{' '}
                     {me.winner && !me.isWinner
-                      ? <>The winner is <strong>{me.winner.name}</strong>{me.winner.institution ? ` from ${me.winner.institution}` : ''}. Thanks for participating!</>
+                      ? <>The winner is <strong>{me.winner.name}</strong>{me.winner.organisation ? ` from ${me.winner.organisation}` : ''}. Thanks for participating!</>
                       : 'Winners are announced after the window closes.'}
                   </p>
                 </div>
-              ) : t?.open ? (
+              ) : c?.open ? (
                 <div className="sch-status-box">
-                  <p><strong>The test is open.</strong> You have {t.durationMins} minutes once you start. Closes {fmtDate(t.endAt)}.</p>
+                  <p><strong>The test is open.</strong> You have {c.durationMins} minutes once you start. Closes {fmtDate(c.endAt)}.</p>
                   <button className="btn btn-primary btn-large" onClick={() => navigate('/nirmaan-scholarship/test')}>Start test</button>
                 </div>
-              ) : t?.upcoming ? (
-                <div className="sch-status-box">Your test opens on <strong>{fmtDate(t.startAt)}</strong>. Come back then!</div>
-              ) : t?.ended ? (
+              ) : c?.upcoming ? (
+                <div className="sch-status-box">Your test opens on <strong>{fmtDate(c.startAt)}</strong>. Come back then!</div>
+              ) : c?.ended ? (
                 <div className="sch-status-box warn">The test window has closed.</div>
               ) : (
-                <div className="sch-status-box">The scholarship test isn’t scheduled yet — check back soon.</div>
+                <div className="sch-status-box">Your organisation hasn’t scheduled the test yet — check back soon.</div>
               )}
+            </div>
+          )}
+
+          {/* Past years */}
+          {user && me?.history?.length > 1 && (
+            <div className="sch-history">
+              <h3>Your past attempts</h3>
+              <ul>
+                {me.history.filter((h) => h.cycleId !== c?.id).map((h) => (
+                  <li key={h.cycleId}>
+                    <strong>{h.year}</strong> · {h.organisation} ·{' '}
+                    {h.attempt === 'submitted' ? `${h.score}/${h.total}` : 'not attempted'}
+                    {h.isWinner && ' · 🏆 winner'}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
@@ -230,7 +258,7 @@ function EnrolSection() {
 
       {showModal && (
         <EnrolModal
-          institutions={institutions}
+          organisations={organisations}
           onClose={() => setShowModal(false)}
           onDone={(m) => { setMe(m); setShowModal(false) }}
         />
@@ -239,16 +267,16 @@ function EnrolSection() {
   )
 }
 
-/* ---------------- Enrol modal (institution + class/section/roll) ---------------- */
-function EnrolModal({ institutions, onClose, onDone }) {
-  const [f, setF] = useState({ institutionId: '', studentClass: '', section: '', rollNo: '' })
+/* ---------------- Enrol modal (organisation + class/section/roll) ---------------- */
+function EnrolModal({ organisations, onClose, onDone }) {
+  const [f, setF] = useState({ organisationId: '', studentClass: '', section: '', rollNo: '' })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
   const submit = async (e) => {
     e.preventDefault()
-    if (!f.institutionId) { setError('Please select your institution.'); return }
+    if (!f.organisationId) { setError('Please select your organisation.'); return }
     setBusy(true); setError('')
     try { onDone(await api('/user/scholarship/enroll', { method: 'POST', auth: 'user', body: f })) }
     catch (err) { setError(err.message) } finally { setBusy(false) }
@@ -258,10 +286,10 @@ function EnrolModal({ institutions, onClose, onDone }) {
     <div className="sch-modal-overlay" onClick={() => !busy && onClose()}>
       <form className="sch-modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <h3>Enrol for the scholarship</h3>
-        <label className="sch-modal-field">Institution
-          <select value={f.institutionId} onChange={(e) => set('institutionId', e.target.value)} required>
-            <option value="">— Select your school / college —</option>
-            {institutions.map((i) => <option key={i.id} value={i.id}>{i.label}</option>)}
+        <label className="sch-modal-field">Organisation
+          <select value={f.organisationId} onChange={(e) => set('organisationId', e.target.value)} required>
+            <option value="">— Select your organisation —</option>
+            {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
           </select>
         </label>
         <div className="sch-modal-row">
@@ -279,8 +307,24 @@ function EnrolModal({ institutions, onClose, onDone }) {
   )
 }
 
-/* ---------------- Institution partner form ---------------- */
-const BLANK = { name: '', type: 'school', branch: '', city: '', state: '', contactPerson: '', phone: '', email: '' }
+/* ---------------- Organisation partner form ---------------- */
+// Mirrors ORG_TYPES on the server — a fixed list keeps the public directory's
+// filters meaningful.
+const ORG_TYPES = [
+  { key: 'school', label: 'School' },
+  { key: 'college', label: 'College' },
+  { key: 'village', label: 'Village / Panchayat' },
+  { key: 'ngo', label: 'NGO / Trust' },
+  { key: 'coaching', label: 'Coaching centre' },
+  { key: 'corporate', label: 'Corporate' },
+  { key: 'other', label: 'Other' },
+]
+
+const BLANK = {
+  name: '', type: 'school', description: '', branch: '', city: '', state: '',
+  contactPerson: '', phone: '', email: '',
+}
+
 function PartnerSection() {
   const [f, setF] = useState(BLANK)
   const [busy, setBusy] = useState(false)
@@ -292,7 +336,7 @@ function PartnerSection() {
     e.preventDefault()
     setBusy(true); setError('')
     try {
-      await api('/user/scholarship/institutions', { method: 'POST', body: f })
+      await api('/user/organisations', { method: 'POST', body: f })
       setDone(true)
     } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
@@ -301,24 +345,30 @@ function PartnerSection() {
     <section id="partner" className="section section--alt">
       <div className="container sch-cta">
         <div className="text-center">
-          <p className="section-eyebrow">For institutions</p>
+          <p className="section-eyebrow">For organisations</p>
           <h2 className="section-title">Partner with us</h2>
-          <p className="section-sub">Are you a school or college? Register to host the Nirmaan scholarship for your students. We review every request and email you the outcome.</p>
+          <p className="section-sub">
+            A school, college, village body, NGO or company? Register to host the Nirmaan
+            scholarship for your students. Once approved you get your own portal — add students in
+            bulk, set your test, and pick your winner. We review every request and email you the outcome.
+          </p>
         </div>
 
         {done ? (
           <div className="card sch-panel sch-thanks">
             <h3>Request received 🎉</h3>
-            <p>Thanks! We’ll review your institution and email you at <strong>{f.email}</strong> once it’s approved.</p>
+            <p>
+              Thanks! We’ll review your organisation and email you at <strong>{f.email}</strong> once
+              it’s approved — that email carries the link to set your password and open your portal.
+            </p>
           </div>
         ) : (
           <form className="card sch-panel sch-form" onSubmit={submit}>
             <div className="sch-form-grid">
-              <label>Institution name<input value={f.name} onChange={(e) => set('name', e.target.value)} required maxLength={120} /></label>
+              <label>Organisation name<input value={f.name} onChange={(e) => set('name', e.target.value)} required maxLength={120} /></label>
               <label>Type
                 <select value={f.type} onChange={(e) => set('type', e.target.value)}>
-                  <option value="school">School</option>
-                  <option value="college">College</option>
+                  {ORG_TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
                 </select>
               </label>
               <label>Branch / campus<input value={f.branch} onChange={(e) => set('branch', e.target.value)} maxLength={120} /></label>
@@ -326,8 +376,11 @@ function PartnerSection() {
               <label>State<input value={f.state} onChange={(e) => set('state', e.target.value)} maxLength={80} /></label>
               <label>Contact person<input value={f.contactPerson} onChange={(e) => set('contactPerson', e.target.value)} maxLength={80} /></label>
               <label>Phone<input value={f.phone} onChange={(e) => set('phone', e.target.value)} maxLength={20} /></label>
-              <label>Email<input type="email" value={f.email} onChange={(e) => set('email', e.target.value)} required maxLength={254} /></label>
+              <label>Email (this becomes your login)<input type="email" value={f.email} onChange={(e) => set('email', e.target.value)} required maxLength={254} /></label>
             </div>
+            <label className="sch-form-full">About your organisation (optional — shown in our public directory)
+              <textarea value={f.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={1200} />
+            </label>
             {error && <p className="sch-error">{error}</p>}
             <button className="btn btn-primary btn-large" disabled={busy || !f.name.trim() || !f.email.trim()}>
               {busy ? 'Submitting…' : 'Submit partner request'}
