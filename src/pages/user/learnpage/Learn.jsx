@@ -544,7 +544,7 @@ export default function Learn() {
               <>
                 <HlsPlayer key={active.id} src={active.videoUrl} videoRef={videoRef}
                            onTimeUpdate={onTimeUpdate} lockSeek={!active.videoDone}
-                           watermark={user?.email || ''} />
+                           watermark={user?.email || ''} captions={active.captions || []} />
                 {!active.videoDone && (
                   <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
                 )}

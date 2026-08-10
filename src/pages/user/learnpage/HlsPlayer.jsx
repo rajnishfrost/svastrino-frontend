@@ -25,11 +25,12 @@ const fmt = (s) => {
   return `${m}:${String(sec).padStart(2, '0')}`
 }
 
-export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = false, watermark = '' }) {
+export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = false, watermark = '', captions = [] }) {
   const wrapRef = useRef(null)
   const hlsRef = useRef(null)
   const maxWatched = useRef(0) // furthest continuously-watched point (seek-lock)
   const idleTimer = useRef(null)
+  const settingsRef = useRef(null) // gear button + popover, for click-outside
   const isHls = /\.m3u8($|\?)/i.test(src || '')
 
   const [levels, setLevels] = useState([]) // [{ i, height }]
@@ -47,6 +48,36 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
   const [waiting, setWaiting] = useState(false)
   const [full, setFull] = useState(false)
   const [covered, setCovered] = useState(false) // focus-loss cover
+  const [subtitle, setSubtitle] = useState('') // '' = off, else caption lang
+
+  // Toggle native text-track modes so only the chosen language shows.
+  const chooseSubtitle = useCallback((lang) => {
+    setSubtitle(lang)
+    const tracks = videoRef.current?.textTracks
+    if (!tracks) return
+    for (let i = 0; i < tracks.length; i += 1) {
+      tracks[i].mode = tracks[i].language === lang ? 'showing' : 'disabled'
+    }
+  }, [videoRef])
+
+  // Re-apply the selection whenever the track list changes (new video/captions).
+  useEffect(() => {
+    const tracks = videoRef.current?.textTracks
+    if (!tracks) return
+    for (let i = 0; i < tracks.length; i += 1) {
+      tracks[i].mode = tracks[i].language === subtitle ? 'showing' : 'disabled'
+    }
+  }, [captions, subtitle, videoRef])
+
+  // Close the settings popover on ANY click/tap outside it (not just the gear).
+  useEffect(() => {
+    if (!menu) return
+    const onDown = (e) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target)) setMenu(false)
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [menu])
 
   // ---- hls.js attach ----
   useEffect(() => {
@@ -178,6 +209,8 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
         playsInline
         controlsList="nodownload"
         disablePictureInPicture
+        // Needed so cross-origin (CDN) caption files can load; harmless same-origin.
+        crossOrigin={captions.length ? 'anonymous' : undefined}
         onClick={togglePlay}
         onPlay={() => { setPlaying(true); wake() }}
         onPause={() => { setPlaying(false); setShowBar(true) }}
@@ -188,7 +221,11 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
         onVolumeChange={(e) => { setMuted(e.target.muted); setVolume(e.target.volume) }}
         onWaiting={() => setWaiting(true)}
         onPlaying={() => setWaiting(false)}
-      />
+      >
+        {captions.map((c) => (
+          <track key={c.lang} kind="subtitles" src={c.url} srcLang={c.lang} label={c.label} />
+        ))}
+      </video>
 
       {/* moving watermark (traceability) */}
       {watermark && <div className="vp-watermark" aria-hidden>{watermark}</div>}
@@ -233,7 +270,7 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
 
           <div className="vp-spacer" />
 
-          <div className="vp-settings">
+          <div className="vp-settings" ref={settingsRef}>
             <button type="button" className="vp-btn" onClick={() => setMenu((m) => !m)} aria-label="Settings"><IconGear /></button>
             {menu && (
               <div className="vp-menu">
@@ -258,6 +295,17 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
                     </button>
                   ))}
                 </div>
+                {captions.length > 0 && (
+                  <div className="vp-menu-sec">
+                    <p className="vp-menu-title">Subtitles</p>
+                    <button className={`vp-menu-item${subtitle === '' ? ' on' : ''}`} onClick={() => chooseSubtitle('')}>Off</button>
+                    {captions.map((c) => (
+                      <button key={c.lang} className={`vp-menu-item${subtitle === c.lang ? ' on' : ''}`} onClick={() => chooseSubtitle(c.lang)}>
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

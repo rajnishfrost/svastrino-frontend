@@ -27,10 +27,12 @@ export default function NirmaanHighlight() {
               {POINTS.map((p) => <li key={p}>{p}</li>)}
             </ul>
 
+            {/* Scholarship teaser — hidden for now (kept for easy re-enable).
             <div className="home-nirmaan-scholarship">
               <strong>🎓 Scholarship available.</strong> One deserving student can win their entire
               Nirmaan package free. <Link to="/nirmaan-scholarship">See how the scholarship works →</Link>
             </div>
+            */}
 
             <div className="home-nirmaan-ctas">
               <Link to="/skill-build/nirmaan#packages" className="btn btn-primary btn-large">Enrol in Nirmaan</Link>

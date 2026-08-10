@@ -25,9 +25,10 @@ import About from './pages/user/aboutpage/About.jsx'
 import Mentoring from './pages/user/mentoringpage/Mentoring.jsx'
 import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
-import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
-import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
-import Organisations from './pages/user/organisationspage/Organisations.jsx'
+// Scholarship (user-facing) temporarily hidden — see routes below.
+// import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
+// import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
+// import Organisations from './pages/user/organisationspage/Organisations.jsx'
 import Resources from './pages/user/resourcespage/Resources.jsx'
 import CourseDetail from './pages/user/careerlibrarypage/CourseDetail.jsx'
 import LegalPage from './pages/user/legalpage/LegalPage.jsx'
@@ -74,12 +75,12 @@ function PublicSite() {
           <Route path="/mentoring" element={<Mentoring />} />
           <Route path="/book-online" element={<BookOnline />} />
           <Route path="/skill-build/nirmaan" element={<Nirmaan />} />
+          {/* Scholarship (user-facing) hidden for now — admin side stays active.
           <Route path="/nirmaan-scholarship" element={<Scholarship />} />
           <Route path="/nirmaan-scholarship/test" element={<ProtectedRoute><ScholarshipTest /></ProtectedRoute>} />
-          {/* Renamed — it's Nirmaan-only. Keep old links working. */}
           <Route path="/scholarship" element={<Navigate to="/nirmaan-scholarship" replace />} />
-          {/* Public partner directory — schools, colleges, villages, NGOs, … */}
           <Route path="/organisations" element={<Organisations />} />
+          */}
           <Route path="/resources" element={<Resources />} />
           <Route path="/career-library/:slug" element={<CourseDetail />} />
           <Route path="/legal/:slug" element={<LegalPage />} />

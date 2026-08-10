@@ -22,11 +22,16 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  /* White plate behind the trademark — matches the Navbar, where the same
+     navy-text logo sits on white. Tight 3px inset, softly rounded corners. */
+  background: #fff;
+  padding: 2px;
+  border-radius: 4px;
 }
 
 .footer-logo img {
   width: auto;
-  height: 52px;
+  height: 48px;
   object-fit: contain;
 }
 

@@ -20,14 +20,15 @@ const COLUMNS = [
       { label: 'Book Online', to: '/book-online' },
     ],
   },
-  {
-    title: 'Scholarship',
-    links: [
-      { label: 'Nirmaan Scholarship', to: '/nirmaan-scholarship' },
-      { label: 'Partner organisations', to: '/organisations' },
-      { label: 'Partner with us', to: '/nirmaan-scholarship#partner' },
-    ],
-  },
+  // Scholarship column hidden for now (user-facing scholarship is disabled).
+  // {
+  //   title: 'Scholarship',
+  //   links: [
+  //     { label: 'Nirmaan Scholarship', to: '/nirmaan-scholarship' },
+  //     { label: 'Partner organisations', to: '/organisations' },
+  //     { label: 'Partner with us', to: '/nirmaan-scholarship#partner' },
+  //   ],
+  // },
   {
     title: 'Company',
     links: [
@@ -49,8 +50,9 @@ export default function Footer() {
             page. Users always know they're inside the Svastrino ecosystem. */}
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
-            {/* White wordmark variant so the navy-text logo reads on the dark footer. */}
-            <img src="/logo-white.png" alt="Svastrino Consultancy Services" />
+            {/* Same trademark as the Navbar, on a white plate so it reads on the
+                dark footer (the logo's own background is white by design). */}
+            <img src="/logo.png" alt="Svastrino Consultancy Services" />
           </Link>
           <p className="footer-tagline">
             Futuristic career guidance — personalised mentoring &amp; courses to shape your path.
