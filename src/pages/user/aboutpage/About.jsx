@@ -143,7 +143,7 @@ export default function About() {
         </div>
 
         <div className="container text-center" style={{ marginTop: 'var(--space-6)' }}>
-          <Link to="/mentoring" className="btn btn-primary btn-large">Explore our programs</Link>
+          <Link to="/services" className="btn btn-primary btn-large">Explore our programs</Link>
         </div>
       </section>
     </>

@@ -1,10 +1,20 @@
 import { Link } from 'react-router-dom'
 
-const PROGRAMS = [
-  { name: 'Model Session', desc: '15-min exploratory call to identify your needs.', tag: '15 min' },
-  { name: "Bull's Eye", desc: 'Focused 2-hour session for immediate clarity.', tag: '2 hours' },
-  { name: 'Bloom', desc: '2-month journey ending in a 5-year career plan.', tag: '2 months' },
-  { name: 'Breakthrough', desc: '2-year mentoring for leadership & entrepreneurship.', tag: '2 years' },
+// Two sub-categories → their programs, each linking to its own page.
+const GROUPS = [
+  {
+    category: 'Career Counselling',
+    programs: [
+      { name: "Bull's Eye Program", desc: 'Focused sessions for immediate clarity.', tag: '3 sessions', to: '/services/bulls-eye' },
+    ],
+  },
+  {
+    category: 'Personalised Mentoring',
+    programs: [
+      { name: 'Bloom Program', desc: 'A journey ending in a 5-year career plan.', tag: '5 sessions', to: '/services/bloom' },
+      { name: 'Breakthrough Program', desc: 'Long-term mentoring for leadership & entrepreneurship.', tag: '22 sessions', to: '/services/breakthrough' },
+    ],
+  },
 ]
 
 export default function ProgramsPreview() {
@@ -12,24 +22,25 @@ export default function ProgramsPreview() {
     <section className="section">
       <div className="container">
         <div className="text-center">
-          <p className="section-eyebrow">Mentoring</p>
-          <h2 className="section-title">1-on-1 guidance, your pace</h2>
+          <p className="section-eyebrow">Services</p>
+          <h2 className="section-title">Career Counselling & Mentoring</h2>
           <p className="section-sub">
-            Consultancy programs tailored to where you are in your journey.
+            One-on-one guidance tailored to where you are in your journey.
           </p>
         </div>
-        <div className="grid grid-4">
-          {PROGRAMS.map((p) => (
-            <div key={p.name} className="card home-program-card">
+        <div className="grid grid-3">
+          {GROUPS.flatMap((g) => g.programs.map((p) => (
+            <Link key={p.name} to={p.to} className="card home-program-card">
               <span className="home-program-tag">{p.tag}</span>
               <h3>{p.name}</h3>
+              <p className="home-program-cat">{g.category}</p>
               <p>{p.desc}</p>
-            </div>
-          ))}
+            </Link>
+          )))}
         </div>
         <div className="text-center" style={{ marginTop: 'var(--space-5)' }}>
-          <Link to="/mentoring" className="btn btn-secondary">
-            View all mentoring programs
+          <Link to="/services" className="btn btn-secondary">
+            View all services
           </Link>
         </div>
       </div>

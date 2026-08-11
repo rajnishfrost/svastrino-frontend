@@ -3,12 +3,11 @@ import './Footer.css'
 
 const COLUMNS = [
   {
-    title: 'Mentoring',
+    title: 'Services',
     links: [
-      { label: 'Model Session', to: '/mentoring#model-session' },
-      { label: "Bull's Eye", to: '/mentoring#bulls-eye' },
-      { label: 'Bloom', to: '/mentoring#bloom' },
-      { label: 'Breakthrough', to: '/mentoring#breakthrough' },
+      { label: "Bull's Eye Program", to: '/services/bulls-eye' },
+      { label: 'Bloom Program', to: '/services/bloom' },
+      { label: 'Breakthrough Program', to: '/services/breakthrough' },
     ],
   },
   {

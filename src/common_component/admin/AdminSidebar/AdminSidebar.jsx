@@ -51,10 +51,10 @@ const NAV = [
   { label: 'Career Library', to: '/admin/career-library', icon: 'careerLibrary', module: 'career-library' },
   { label: 'Content', to: '/admin/content', icon: 'content', module: 'content' },
   { label: 'Coupons', to: '/admin/coupons', icon: 'coupons', module: 'coupons' },
-  { label: 'Mentoring', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
   { label: 'Orders', to: '/admin/orders', icon: 'orders', module: 'orders' },
   { label: 'Roles', to: '/admin/roles', icon: 'roles', superadmin: true },
   { label: 'Scholarship', to: '/admin/scholarship', icon: 'scholarship', module: 'scholarship' },
+  { label: 'Services', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
   { label: 'Skill Builds', to: '/admin/skill-builds', icon: 'skillbuilds', module: 'skill-builds' },
   { label: 'Users', to: '/admin/users', icon: 'users', module: 'users' },
 ]

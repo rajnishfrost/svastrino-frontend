@@ -22,7 +22,8 @@ import OrgProfile from './pages/org/profilepage/OrgProfile.jsx'
 // ---- User pages ----
 import Home from './pages/user/homepage/Home.jsx'
 import About from './pages/user/aboutpage/About.jsx'
-import Mentoring from './pages/user/mentoringpage/Mentoring.jsx'
+import Services from './pages/user/servicespage/Services.jsx'
+import ServiceProgram from './pages/user/servicespage/ServiceProgram.jsx'
 import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
 // Scholarship (user-facing) temporarily hidden — see routes below.
@@ -72,7 +73,10 @@ function PublicSite() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mentoring" element={<Mentoring />} />
+          {/* Services (was Mentoring) — landing + per-program pages */}
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:slug" element={<ServiceProgram />} />
+          <Route path="/mentoring" element={<Navigate to="/services" replace />} />
           <Route path="/book-online" element={<BookOnline />} />
           <Route path="/skill-build/nirmaan" element={<Nirmaan />} />
           {/* Scholarship (user-facing) hidden for now — admin side stays active.
@@ -81,7 +85,10 @@ function PublicSite() {
           <Route path="/scholarship" element={<Navigate to="/nirmaan-scholarship" replace />} />
           <Route path="/organisations" element={<Organisations />} />
           */}
-          <Route path="/resources" element={<Resources />} />
+          <Route path="/resources" element={<Resources view="all" />} />
+          <Route path="/resources/career-library" element={<Resources view="career-library" />} />
+          <Route path="/resources/faqs" element={<Resources view="faqs" />} />
+          <Route path="/resources/success-stories" element={<Resources view="success-stories" />} />
           <Route path="/career-library/:slug" element={<CourseDetail />} />
           <Route path="/legal/:slug" element={<LegalPage />} />
           <Route path="/blog" element={<Blog />} />
