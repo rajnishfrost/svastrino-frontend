@@ -10,11 +10,9 @@ import './Navbar.css'
  * Fully responsive: collapses to a hamburger drawer on tablet/mobile.
  */
 const MENTORING_LINKS = [
-  { label: 'Model Session', to: '/mentoring#model-session' },
   { label: "Bull's Eye Program", to: '/mentoring#bulls-eye' },
   { label: 'Bloom Program', to: '/mentoring#bloom' },
   { label: 'Breakthrough Program', to: '/mentoring#breakthrough' },
-  { label: 'Program Finder', to: '/mentoring#program-finder' },
 ]
 
 const RESOURCES_LINKS = [
