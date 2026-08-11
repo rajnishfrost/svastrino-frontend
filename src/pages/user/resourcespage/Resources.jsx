@@ -2,23 +2,19 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
-import { fetchFaqs, fetchTestimonials, fetchCareerLibrary, fetchNews } from '../../../api/content.js'
+import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
 import './Resources.css'
 
 // Resources = renamed "Library". Holds the Career Library (was "Courselist"),
-// FAQs, Quick News and Success Stories — all served from /api/user/content.
+// FAQs and Success Stories — all served from /api/user/content.
 const TABS = [
   { key: 'career-library', label: 'Career Library' },
   { key: 'faqs', label: "FAQ's" },
-  { key: 'quick-news', label: 'Quick News' },
   { key: 'success-stories', label: 'Success Stories' },
 ]
 
-const NEWS_PER_PAGE = 30
 
-const formatNewsDate = (iso) =>
-  new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 
 export default function Resources() {
   // Deep links like /resources#faqs open straight onto that tab.
@@ -34,25 +30,8 @@ export default function Resources() {
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
 
-  // Quick News loads lazily on first visit to its tab and appends page by page.
-  const [news, setNews] = useState([])
-  const [newsPages, setNewsPages] = useState({ page: 0, pages: 1, total: 0 })
-  const [newsBusy, setNewsBusy] = useState(false)
-
-  const loadMoreNews = () => {
-    if (newsBusy || (newsPages.page > 0 && newsPages.page >= newsPages.pages)) return
-    setNewsBusy(true)
-    fetchNews(newsPages.page + 1, NEWS_PER_PAGE)
-      .then((d) => {
-        setNews((prev) => [...prev, ...d.news])
-        setNewsPages(d.pagination)
-      })
-      .catch(() => { /* the main error state covers connectivity; ignore here */ })
-      .finally(() => setNewsBusy(false))
-  }
 
   useEffect(() => {
-    if (tab === 'quick-news' && news.length === 0) loadMoreNews()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
@@ -166,34 +145,6 @@ export default function Resources() {
             </div>
           )}
 
-          {/* ---- Quick News ---- */}
-          {!loading && !error && tab === 'quick-news' && (
-            <div id="quick-news" className="resource-news">
-              <p className="resource-intro">
-                Short education &amp; career headlines curated by the Svastrino team
-                {newsPages.total ? ` — ${newsPages.total} entries.` : '.'}
-              </p>
-
-              <ul className="resource-news-list">
-                {news.map((n) => (
-                  <li key={n.id}>
-                    <span className="resource-news-date">{formatNewsDate(n.date)}</span>
-                    <p>{n.text}</p>
-                  </li>
-                ))}
-              </ul>
-
-              {news.length === 0 && newsBusy && <p className="resource-state">Loading news…</p>}
-
-              {newsPages.page < newsPages.pages && news.length > 0 && (
-                <div className="text-center" style={{ marginTop: 'var(--space-4)' }}>
-                  <button className="btn btn-secondary" onClick={loadMoreNews} disabled={newsBusy}>
-                    {newsBusy ? 'Loading…' : `Load more (${newsPages.total - news.length} left)`}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* ---- Success stories ---- */}
           {!loading && !error && tab === 'success-stories' && (

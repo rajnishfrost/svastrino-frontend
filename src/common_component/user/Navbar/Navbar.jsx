@@ -18,7 +18,6 @@ const MENTORING_LINKS = [
 const RESOURCES_LINKS = [
   { label: 'Career Library', to: '/resources#career-library' },
   { label: "FAQ's", to: '/resources#faqs' },
-  { label: 'Quick News', to: '/resources#quick-news' },
   { label: 'Success Stories', to: '/resources#success-stories' },
 ]
 

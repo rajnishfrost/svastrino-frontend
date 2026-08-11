@@ -21,7 +21,3 @@ export const fetchCourse = (slug) => api(`/user/content/courses/${encodeURICompo
 
 /** One policy/legal page (markdown body). → { page } */
 export const fetchSitePage = (slug) => api(`/user/content/pages/${encodeURIComponent(slug)}`)
-
-/** Quick News headlines, newest first. → { news, pagination } */
-export const fetchNews = (page = 1, limit = 30) =>
-  api(`/user/content/news?page=${page}&limit=${limit}`)

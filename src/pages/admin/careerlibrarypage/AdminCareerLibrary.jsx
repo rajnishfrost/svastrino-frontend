@@ -8,7 +8,6 @@ import '../adminShared.css'
  * Career Library — the three things that make up /resources#career-library:
  *   Streams  — categories such as Commerce or Engineering
  *   Courses  — the detail page behind each course (/career-library/<slug>)
- *   Quick News — the dated headline archive on the same page
  *
  * A course can sit in several streams, so membership is edited on the COURSE
  * (pick its streams there) and a stream's list is derived from that — which is
@@ -21,7 +20,6 @@ const PER_PAGE = 20
 const TABS = [
   { key: 'fields', label: 'Streams' },
   { key: 'courses', label: 'Courses' },
-  { key: 'news', label: 'Quick News' },
 ]
 
 export default function AdminCareerLibrary() {
@@ -42,7 +40,7 @@ export default function AdminCareerLibrary() {
   return (
     <div>
       <h1 className="adm-title">Career Library</h1>
-      <p className="adm-sub">Streams, the course pages filed under them, and the Quick News headlines.</p>
+      <p className="adm-sub">Streams and the course pages filed under them.</p>
 
       <div className="adm-tabs">
         {TABS.map((t) => (
@@ -56,7 +54,6 @@ export default function AdminCareerLibrary() {
 
       {tab === 'fields' && <StreamsTab fields={fields} reload={loadFields} />}
       {tab === 'courses' && <CoursesTab fields={fields || []} onCourseSaved={loadFields} />}
-      {tab === 'news' && <NewsTab />}
     </div>
   )
 }
@@ -481,150 +478,6 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           </button>
           <button className="adm-btn adm-btn--ghost" onClick={onCancel} disabled={busy}>Cancel</button>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* ================= Quick News ================= */
-
-const toDateInput = (iso) => {
-  if (!iso) return ''
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return ''
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-const fmtDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
-
-function NewsTab() {
-  const [news, setNews] = useState(null)
-  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
-  const [page, setPage] = useState(1)
-  const [editing, setEditing] = useState(null) // item | 'new' | null
-  const [del, setDel] = useState(null)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-
-  const load = useCallback(() => {
-    api(`/admin/career-library/news?page=${page}&limit=${PER_PAGE}`, { auth: 'admin' })
-      .then((d) => { setNews(d.news); setPagination(d.pagination); setError('') })
-      .catch((e) => setError(e.message))
-  }, [page])
-
-  useEffect(() => { load() }, [load])
-
-  const doDelete = async () => {
-    setBusy(true)
-    try {
-      await api(`/admin/career-library/news/${del.id}`, { method: 'DELETE', auth: 'admin' })
-      setDel(null)
-      load()
-    } catch (e) { setError(e.message) } finally { setBusy(false) }
-  }
-
-  return (
-    <div>
-      <div className="adm-toolbar">
-        <button className="adm-btn" onClick={() => setEditing('new')}>+ Add headline</button>
-      </div>
-
-      {error && <p className="adm-error">{error}</p>}
-
-      {editing === 'new' && (
-        <div className="adm-panel">
-          <NewsForm onCancel={() => setEditing(null)} onSaved={() => { setEditing(null); load() }} />
-        </div>
-      )}
-
-      {!news ? <p className="adm-empty">Loading…</p> : news.length === 0 ? (
-        <p className="adm-empty">No headlines yet. Add the first one above.</p>
-      ) : (
-        <>
-          <div className="adm-panel adm-table-wrap">
-            <table className="adm-table">
-              <thead><tr><th>Date</th><th>Headline</th><th>Status</th><th></th></tr></thead>
-              <tbody>
-                {news.map((n) => (
-                  editing !== 'new' && editing?.id === n.id ? (
-                    <tr key={n.id}><td colSpan={4}>
-                      <NewsForm item={n} onCancel={() => setEditing(null)} onSaved={() => { setEditing(null); load() }} />
-                    </td></tr>
-                  ) : (
-                    <tr key={n.id}>
-                      <td className="adm-num" style={{ whiteSpace: 'nowrap' }}>{fmtDate(n.date)}</td>
-                      <td>{n.text}</td>
-                      <td><span className={`adm-badge adm-badge--${n.active ? 'ok' : 'muted'}`}>{n.active ? 'Visible' : 'Hidden'}</span></td>
-                      <td style={{ whiteSpace: 'nowrap' }}>
-                        <button className="adm-link" onClick={() => setEditing(n)}>Edit</button>
-                        <button className="adm-link" style={{ color: 'var(--color-danger)' }} onClick={() => setDel(n)}>Delete</button>
-                      </td>
-                    </tr>
-                  )
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <Pager page={pagination.page} pages={pagination.pages} total={pagination.total} onChange={setPage} unit="headline" />
-        </>
-      )}
-
-      {del && (
-        <ConfirmModal
-          title="Delete this headline?"
-          message={del.text}
-          confirmLabel="Delete"
-          danger
-          busy={busy}
-          onConfirm={doDelete}
-          onCancel={() => setDel(null)}
-        />
-      )}
-    </div>
-  )
-}
-
-function NewsForm({ item, onCancel, onSaved }) {
-  const [f, setF] = useState({
-    date: toDateInput(item?.date) || toDateInput(new Date().toISOString()),
-    text: item?.text || '', order: item?.order ?? '', active: item?.active ?? true,
-  })
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState('')
-  const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
-
-  const save = async () => {
-    setBusy(true); setErr('')
-    const body = { date: f.date, text: f.text, order: f.order === '' ? 0 : Number(f.order), active: f.active }
-    try {
-      if (item) await api(`/admin/career-library/news/${item.id}`, { method: 'PATCH', auth: 'admin', body })
-      else await api('/admin/career-library/news', { method: 'POST', auth: 'admin', body })
-      onSaved()
-    } catch (e) { setErr(e.message) } finally { setBusy(false) }
-  }
-
-  return (
-    <div>
-      <h3 style={{ fontSize: 15, marginBottom: 12 }}>{item ? 'Edit headline' : 'New headline'}</h3>
-      <div className="adm-row2">
-        <div className="adm-field"><label>Date</label>
-          <input className="adm-input" type="date" value={f.date} onChange={(e) => set('date', e.target.value)} /></div>
-        <div className="adm-field"><label>Order (tie-breaker within a date)</label>
-          <input className="adm-input adm-num" type="number" value={f.order} onChange={(e) => set('order', e.target.value)} /></div>
-      </div>
-      <div className="adm-field"><label>Headline</label>
-        <textarea className="adm-textarea" rows={2} value={f.text} onChange={(e) => set('text', e.target.value)}
-                  placeholder="CBSE announces the 2026 board exam schedule" /></div>
-      <div style={{ margin: '4px 0 14px', fontSize: 14 }}>
-        <label><input type="checkbox" checked={f.active} onChange={(e) => set('active', e.target.checked)} /> Visible on site</label>
-      </div>
-      {err && <p className="adm-error">{err}</p>}
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button className="adm-btn" onClick={save} disabled={busy || !f.text.trim() || !f.date}>
-          {busy ? 'Saving…' : item ? 'Save changes' : 'Add headline'}
-        </button>
-        <button className="adm-btn adm-btn--ghost" onClick={onCancel} disabled={busy}>Cancel</button>
       </div>
     </div>
   )

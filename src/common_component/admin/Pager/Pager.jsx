@@ -1,5 +1,5 @@
 /**
- * Page control for the paginated admin tables (blog posts, course pages, news).
+ * Page control for the paginated admin tables (blog posts, course pages).
  * With a single page there's nothing to click, so it collapses to just the
  * total — which is still worth showing.
  */
