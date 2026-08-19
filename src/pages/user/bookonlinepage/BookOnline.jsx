@@ -52,6 +52,25 @@ function istToday() {
 
 const STEPS = ['Date & time', 'Your details', 'Verify', 'Payment']
 
+const RZP_SRC = 'https://checkout.razorpay.com/v1/checkout.js'
+// Load Razorpay's checkout.js once; resolves true when window.Razorpay is ready.
+function loadRazorpay() {
+  return new Promise((resolve) => {
+    if (window.Razorpay) return resolve(true)
+    const existing = document.querySelector(`script[src="${RZP_SRC}"]`)
+    if (existing) {
+      existing.addEventListener('load', () => resolve(true))
+      existing.addEventListener('error', () => resolve(false))
+      return
+    }
+    const s = document.createElement('script')
+    s.src = RZP_SRC
+    s.onload = () => resolve(true)
+    s.onerror = () => resolve(false)
+    document.body.appendChild(s)
+  })
+}
+
 export default function BookOnline() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
@@ -237,7 +256,12 @@ export default function BookOnline() {
           body: { packageId: skuParam, couponCode: quote?.couponCode || undefined },
         })
         setOrder(res)
-        setStep('pay')
+        if (res.mock) {
+          setStep('pay') // no real keys → local mock panel
+        } else {
+          setStep('pay')
+          await openRazorpay(res) // real Razorpay hosted widget
+        }
       }
     } catch (e) {
       if (e.code === 'SLOT_TAKEN') onSlotTaken()
@@ -247,14 +271,14 @@ export default function BookOnline() {
     }
   }
 
-  // ---- step 4: pay → verify → book ----
-  const pay = async () => {
+  // ---- verify the payment on our server, then create the booking ----
+  const finalize = async (paymentFields = {}) => {
     setErr(''); setBusy(true)
     try {
       const { order: paid } = await api('/user/payments/verify', {
         method: 'POST',
         auth: 'user',
-        body: { orderId: order.orderId },
+        body: { orderId: order.orderId, ...paymentFields },
       })
       setReceipt(paid)
       try {
@@ -273,6 +297,36 @@ export default function BookOnline() {
     } finally {
       setBusy(false)
     }
+  }
+
+  // Mock panel "Pay" button → verify with no payment fields (server simulates it).
+  const pay = () => finalize()
+
+  // Open the hosted Razorpay checkout; its handler returns the payment id +
+  // signature, which we verify server-side before creating the booking.
+  const openRazorpay = async (res) => {
+    const ready = await loadRazorpay()
+    if (!ready || !window.Razorpay) {
+      setErr('Could not load the payment gateway. Check your connection and try again.')
+      return
+    }
+    const rzp = new window.Razorpay({
+      key: res.key,
+      order_id: res.gatewayOrderId,
+      amount: res.amount,
+      currency: res.currency || 'INR',
+      name: 'Svastrino',
+      description: res.packageLabel || program?.name,
+      prefill: { name: details.name || user?.name || '', email: details.email || user?.email || '', contact: details.phone || user?.phone || '' },
+      theme: { color: '#2f7ae5' },
+      handler: (resp) => finalize({
+        razorpay_payment_id: resp.razorpay_payment_id,
+        razorpay_order_id: resp.razorpay_order_id,
+        razorpay_signature: resp.razorpay_signature,
+      }),
+    })
+    rzp.on('payment.failed', (resp) => setErr(resp?.error?.description || 'Payment failed — please try again.'))
+    rzp.open()
   }
 
   /* ================================ render ================================ */
@@ -511,20 +565,37 @@ export default function BookOnline() {
             </div>
           )}
 
-          {/* ---- Step 4 · payment (mock gateway; Razorpay drops in here) ---- */}
+          {/* ---- Step 4 · payment ---- */}
           {step === 'pay' && program && (
             <div className="card bo-card bo-verify">
-              <p className="bo-gateway-tag">TEST MODE · Mock gateway</p>
-              <h2 className="bo-h2">Confirm payment</h2>
-              <p className="bo-muted">This simulates the payment gateway. Cards, UPI, net-banking &amp; EMI are supported in production.</p>
-              <div className="bo-payable">
-                <span>{order?.packageLabel || program.name}</span>
-                <strong>{inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}</strong>
-              </div>
-              {err && <p className="bo-error">{err}</p>}
-              <button className="btn btn-primary bo-full" onClick={pay} disabled={busy}>
-                {busy ? 'Processing…' : `Pay ${inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}`}
-              </button>
+              {order?.mock ? (
+                <>
+                  <p className="bo-gateway-tag">TEST MODE · Mock gateway</p>
+                  <h2 className="bo-h2">Confirm payment</h2>
+                  <p className="bo-muted">This simulates the payment gateway. Cards, UPI, net-banking &amp; EMI are supported in production.</p>
+                  <div className="bo-payable">
+                    <span>{order?.packageLabel || program.name}</span>
+                    <strong>{inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}</strong>
+                  </div>
+                  {err && <p className="bo-error">{err}</p>}
+                  <button className="btn btn-primary bo-full" onClick={pay} disabled={busy}>
+                    {busy ? 'Processing…' : `Pay ${inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}`}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h2 className="bo-h2">Complete your payment</h2>
+                  <p className="bo-muted">The secure Razorpay window should have opened. If you closed it, reopen it below.</p>
+                  <div className="bo-payable">
+                    <span>{order?.packageLabel || program.name}</span>
+                    <strong>{inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}</strong>
+                  </div>
+                  {err && <p className="bo-error">{err}</p>}
+                  <button className="btn btn-primary bo-full" onClick={() => openRazorpay(order)} disabled={busy}>
+                    {busy ? 'Processing…' : 'Open payment window'}
+                  </button>
+                </>
+              )}
               <button type="button" className="bo-link" onClick={() => setStep('verify')} disabled={busy}>Cancel</button>
             </div>
           )}
