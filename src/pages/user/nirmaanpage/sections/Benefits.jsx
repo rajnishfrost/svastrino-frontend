@@ -57,26 +57,32 @@ function MentorIcon() {
 
 // Benefits = "what you get" — every point maps to an SRS feature.
 const BENEFITS = [
-  {
-    Icon: CompassIcon,
-    title: 'Psychometric assessment',
-    text: 'A Mindler-powered test that maps your interests and aptitude (RIASEC model).',
-  },
-  {
-    Icon: ReportIcon,
-    title: 'Personalised report',
-    text: 'A detailed career report (PDF) with a report-explanation video.',
-  },
-  {
-    Icon: RoadmapIcon,
-    title: 'Career roadmap',
-    text: 'Your top 5 careers with clear, actionable next steps.',
-  },
-  {
-    Icon: MentorIcon,
-    title: 'Mentoring & community',
-    text: 'Mindset mentoring sessions, worksheets, community access and scholarship info.',
-  },
+  { Icon: CompassIcon, title: 'Self-Awareness',
+    text: 'Understand your strengths, interests, emotions & overall life.' },
+  { Icon: ReportIcon, title: 'Confidence',
+    text: 'Develop confidence through small actions rather than motivation.' },
+  { Icon: RoadmapIcon, title: 'Mindset',
+    text: 'Learn to handle & evolve from failure, fear, criticism & uncertainty.' },
+  { Icon: MentorIcon, title: 'Personal Growth',
+    text: 'Build awareness, discipline, focus, and habits.' },
+  { Icon: CompassIcon, title: 'Academic Development',
+    text: 'Ask questions, handle setbacks & improve performance.' },
+  { Icon: RoadmapIcon, title: 'Career Readiness',
+    text: 'Explore options & pick the one you dream & desire.' },
+]
+
+/** The specific changes the programme sets out to produce. */
+const DEVELOPMENTS = [
+  'Understand your strengths, potential, and the person you want to become',
+  'Develop the confidence to take on challenges and trust your ability to grow',
+  'Build the courage to ask, try, explore, and step out of your comfort zone',
+  'Learn from failures, improve, and try again with greater resilience',
+  'Build discipline, focus, and consistency through daily actions',
+  'Challenge limiting beliefs, embrace new ideas, and adapt to change',
+  'Understand your emotions, respond calmly, and manage pressure effectively',
+  'Explore career paths beyond traditional and familiar choices',
+  'Learn to take greater ownership of your future',
+  'See yourself as capable of creating a meaningful future',
 ]
 
 export default function Benefits() {
@@ -84,11 +90,9 @@ export default function Benefits() {
     <section className="section section--alt">
       <div className="container text-center">
         <p className="section-eyebrow">What you get</p>
-        <h2 className="section-title">Everything to make a confident choice</h2>
-        <p className="section-sub">
-          Career awareness, a personalised plan, and the support to act on it.
-        </p>
-        <div className="grid grid-4 nirmaan-benefits">
+        <h2 className="section-title">Why Choose the Nirmaan Course</h2>
+        <p className="section-sub">Overall benefits of the process.</p>
+        <div className="grid grid-3 nirmaan-benefits">
           {BENEFITS.map(({ Icon, title, text }) => (
             <div key={title} className="card nirmaan-benefit">
               <span className="nirmaan-benefit-icon" aria-hidden>
@@ -99,6 +103,16 @@ export default function Benefits() {
             </div>
           ))}
         </div>
+
+        <div className="nirmaan-devs">
+          <h3>Specific developments of the programme</h3>
+          <ul>{DEVELOPMENTS.map((d) => <li key={d}>{d}</li>)}</ul>
+        </div>
+
+        <p className="nirmaan-transformation">
+          From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I
+          know what I can do next.”
+        </p>
       </div>
     </section>
   )

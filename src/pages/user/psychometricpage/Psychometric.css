@@ -1,0 +1,162 @@
+/* ---- Hero ---- */
+.psy-hero {
+  background: linear-gradient(160deg, var(--nirmaan-cream) 0%, #fff 70%);
+  padding: var(--space-7) 0 var(--space-6);
+  text-align: center;
+}
+.psy-hero-inner { max-width: 780px; margin: 0 auto; }
+.psy-hero h1 {
+  font-size: 38px;
+  line-height: 1.2;
+  color: var(--nirmaan-brown);
+  margin: var(--space-2) 0 var(--space-3);
+}
+.psy-hero-sub {
+  font-size: 18px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+.psy-hero-ctas {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.psy-hero-ctas .btn { flex-direction: column; line-height: 1.25; }
+.psy-hero-ctas .btn span {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+.psy-hero-after {
+  margin-top: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+/* ---- What is it ---- */
+.psy-analogy { font-size: 18px; color: var(--nirmaan-brown); font-weight: 600; }
+.psy-uncovers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-3) 0;
+}
+.psy-uncovers li {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--nirmaan-cream);
+  color: var(--nirmaan-brown);
+  font-size: 14px;
+  font-weight: 600;
+}
+.psy-uncovers-after { max-width: 620px; margin: 0 auto; }
+
+/* ---- Student journey ---- */
+.psy-journey { list-style: none; padding: 0; margin: var(--space-5) 0 0; }
+.psy-journey li {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-surface-border);
+}
+.psy-journey li:last-child { border-bottom: 0; }
+.psy-journey-n {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--nirmaan-green);
+  color: #fff;
+  font-weight: 700;
+}
+.psy-journey strong { display: block; color: var(--color-heading); margin-bottom: 2px; }
+.psy-journey p { color: var(--color-text-muted); font-size: 15px; }
+
+/* ---- Who it helps ---- */
+.psy-help h3 { margin-bottom: var(--space-2); color: var(--nirmaan-brown); }
+.psy-help ul { list-style: none; padding: 0; margin: 0; }
+.psy-help li { position: relative; padding-left: 18px; margin-bottom: 7px; font-size: 15px; }
+.psy-help li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nirmaan-green);
+}
+
+/* ---- Which test ---- */
+.psy-test { display: flex; flex-direction: column; text-align: left; }
+.psy-test h3 { color: var(--nirmaan-brown); margin-bottom: 4px; }
+.psy-test-who { font-size: 13px; color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.psy-test ul { list-style: none; padding: 0; margin: 0 0 var(--space-3); flex: 1; }
+.psy-test li { position: relative; padding-left: 18px; margin-bottom: 7px; font-size: 14.5px; }
+.psy-test li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--nirmaan-green);
+}
+.psy-test-price {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--nirmaan-brown);
+  margin-bottom: var(--space-3);
+}
+.psy-test-note {
+  text-align: center;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ---- Bundle ---- */
+.psy-bundle { font-size: 17px; margin-bottom: var(--space-4); }
+.psy-bundle strong { color: var(--nirmaan-green); }
+
+/* ---- Testimonies ---- */
+.psy-quote blockquote { font-size: 15px; margin-bottom: var(--space-3); }
+.psy-quote figcaption strong { display: block; font-size: 14px; }
+.psy-quote figcaption span { font-size: 12px; color: var(--color-text-muted); }
+
+/* ---- FAQs ---- */
+.psy-faqs { max-width: 760px; margin: var(--space-5) auto 0; }
+.psy-faq { border-bottom: 1px solid var(--color-surface-border); }
+.psy-faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: none;
+  border: 0;
+  padding: var(--space-3) 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-heading);
+  text-align: left;
+  cursor: pointer;
+}
+.psy-faq-icon { color: var(--nirmaan-green); font-size: 20px; flex: none; }
+.psy-faq-a { padding: 0 0 var(--space-3); color: var(--color-text-muted); }
+
+@media (max-width: 600px) {
+  .psy-hero h1 { font-size: 28px; }
+  .psy-hero-ctas { flex-direction: column; }
+}

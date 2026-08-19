@@ -25,7 +25,13 @@ const fmt = (s) => {
   return `${m}:${String(sec).padStart(2, '0')}`
 }
 
-export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = false, watermark = '', captions = [] }) {
+export default function HlsPlayer({
+  src, videoRef, onTimeUpdate, lockSeek = false, watermark = '', captions = [],
+  // Anti-piracy: the parent counts plays on the server. `onFirstPlay` is called
+  // once per mount, the moment playback actually starts; if it resolves false
+  // the video is stopped again and `playBlockedMessage` is shown over it.
+  onFirstPlay = null, playBlockedMessage = '',
+}) {
   const wrapRef = useRef(null)
   const hlsRef = useRef(null)
   const maxWatched = useRef(0) // furthest continuously-watched point (seek-lock)
@@ -37,6 +43,8 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
   const [level, setLevel] = useState(-1) // -1 = Auto
   const [curHeight, setCurHeight] = useState(0) // the rung actually playing right now
   const [playing, setPlaying] = useState(false)
+  const [blocked, setBlocked] = useState(false)
+  const countedRef = useRef(false)
   const [muted, setMuted] = useState(false)
   const [volume, setVolume] = useState(1)
   const [current, setCurrent] = useState(0)
@@ -212,7 +220,20 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
         // Needed so cross-origin (CDN) caption files can load; harmless same-origin.
         crossOrigin={captions.length ? 'anonymous' : undefined}
         onClick={togglePlay}
-        onPlay={() => { setPlaying(true); wake() }}
+        onPlay={async () => {
+          setPlaying(true); wake()
+          // Count this play once per mount, before letting it run on.
+          if (onFirstPlay && !countedRef.current) {
+            countedRef.current = true
+            const allowed = await onFirstPlay()
+            if (allowed === false) {
+              const v = videoRef?.current
+              if (v) { v.pause(); v.currentTime = 0 }
+              setPlaying(false)
+              setBlocked(true)
+            }
+          }
+        }}
         onPause={() => { setPlaying(false); setShowBar(true) }}
         onTimeUpdate={onTime}
         onSeeking={onSeeking}
@@ -226,6 +247,11 @@ export default function HlsPlayer({ src, videoRef, onTimeUpdate, lockSeek = fals
           <track key={c.lang} kind="subtitles" src={c.url} srcLang={c.lang} label={c.label} />
         ))}
       </video>
+      {blocked && (
+        <div className="vp-blocked" role="alert">
+          <p>{playBlockedMessage || 'You have reached the play limit for this video.'}</p>
+        </div>
+      )}
 
       {/* moving watermark (traceability) */}
       {watermark && <div className="vp-watermark" aria-hidden>{watermark}</div>}

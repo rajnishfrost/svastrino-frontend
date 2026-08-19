@@ -577,3 +577,10 @@
   font-weight: 600;
   color: var(--color-heading);
 }
+
+/* How many plays are left on the open video. */
+.learn-plays-note {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}

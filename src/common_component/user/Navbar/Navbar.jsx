@@ -4,9 +4,11 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import './Navbar.css'
 
 /**
- * Top navigation — mirrors the agreed Svastrino rebuild structure:
- *   Home · Mentoring ▾ · Book Online · Courses · Resources ▾ · Blog · Contact · Login
- * Mentoring & Resources have dropdowns; Courses is a direct link (no dropdown).
+ * Top navigation:
+ *   Skill Build ▾ · Services ▾ · Book Online · Resources ▾ · Contact · Login
+ * Skill Build, Services and Resources open dropdowns; Services is two levels
+ * deep (category → its programs). On a Skill-Build page the green Skill Build
+ * pill is replaced by a plain "Home" link back to the main site.
  * Fully responsive: collapses to a hamburger drawer on tablet/mobile.
  */
 // Services → two main categories; hover a category to reveal its programs.
@@ -28,6 +30,7 @@ const SERVICES_LINKS = [
 
 const RESOURCES_LINKS = [
   { label: 'Career Library', to: '/resources/career-library' },
+  { label: 'Blog', to: '/blog' },
   { label: "FAQ's", to: '/resources/faqs' },
   { label: 'Success Stories', to: '/resources/success-stories' },
 ]
@@ -36,7 +39,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { user } = useAuth()
   const { pathname } = useLocation()
-  const isNirmaan = pathname.startsWith('/skill-build/nirmaan')
+  const isNirmaan = pathname.startsWith('/skill-build/')
   const close = () => setOpen(false)
 
   return (
@@ -78,10 +81,6 @@ export default function Navbar() {
 
           <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} />
 
-          <NavLink to="/blog" onClick={close} className={navClass}>
-            Blog
-          </NavLink>
-
           <NavLink to="/contact" onClick={close} className={navClass}>
             Contact
           </NavLink>
@@ -105,7 +104,10 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
  *  add more items to the array as new skill-build courses launch. */
 function SkillBuildDropdown({ onNavigate }) {
   const [open, setOpen] = useState(false)
-  const items = [{ label: 'Nirmaan', to: '/skill-build/nirmaan' }]
+  const items = [
+    { label: 'Nirmaan', to: '/skill-build/nirmaan' },
+    { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+  ]
 
   return (
     <div

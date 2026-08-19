@@ -203,3 +203,18 @@
 }
 .vp-menu-item:hover { background: rgba(255, 255, 255, 0.12); }
 .vp-menu-item.on { color: var(--nirmaan-green-light, #5a9a4d); font-weight: 700; }
+
+/* Play limit reached — cover the video and say why. */
+.vp-blocked {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(10, 18, 32, 0.92);
+  color: #fff;
+  text-align: center;
+  z-index: 6;
+}
+.vp-blocked p { font-size: 15px; max-width: 320px; }

@@ -129,3 +129,97 @@
     gap: 4px;
   }
 }
+
+/* ---- Ideology strip ---- */
+.about-ideology-strip { background: var(--color-accent-soft); padding: var(--space-4) 0; }
+.about-ideology-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.about-ideology-inner p { margin: 0; color: var(--color-heading); font-size: 17px; }
+
+/* ---- Media recognition rail ---- */
+.about-media-rail { overflow: hidden; margin-top: var(--space-5); }
+.about-media-reel {
+  display: flex;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: max-content;
+  animation: about-media-scroll 40s linear infinite;
+}
+.about-media-rail:hover .about-media-reel { animation-play-state: paused; }
+.about-media-reel img {
+  height: 200px;
+  width: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-surface-border);
+}
+@keyframes about-media-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-media-reel { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
+}
+
+/* ---- Meet Rohit ---- */
+.about-founder-wrap {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+.about-founder-photo img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  display: block;
+  margin-bottom: var(--space-3);
+}
+.about-founder-photo h3 { margin-bottom: 2px; }
+.about-founder-story p { margin-bottom: var(--space-3); }
+
+/* ---- Our team ---- */
+.about-team { margin-top: var(--space-5); }
+.about-member { text-align: center; }
+.about-member-photo {
+  width: 92px;
+  height: 92px;
+  margin: 0 auto var(--space-3);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 26px;
+}
+.about-member-photo img { width: 100%; height: 100%; object-fit: cover; }
+.about-member h3 { font-size: 17px; margin-bottom: 2px; }
+.about-member-role { font-size: 14px; color: var(--color-text-muted); }
+.about-member-years { font-size: 12.5px; color: var(--color-text-muted); margin-top: 2px; }
+
+/* ---- Closing service routes ---- */
+.about-routes { list-style: none; padding: 0; margin: var(--space-5) auto 0; max-width: 760px; }
+.about-routes li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-surface-border);
+  flex-wrap: wrap;
+}
+.about-route-need { color: var(--color-text); }
+.about-route-link { font-weight: 600; color: var(--color-accent); white-space: nowrap; }
+
+@media (max-width: 800px) {
+  .about-founder-wrap { grid-template-columns: 1fr; }
+  .about-founder-photo img { max-width: 240px; }
+}

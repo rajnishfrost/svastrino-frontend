@@ -22,10 +22,12 @@ import OrgProfile from './pages/org/profilepage/OrgProfile.jsx'
 // ---- User pages ----
 import Home from './pages/user/homepage/Home.jsx'
 import About from './pages/user/aboutpage/About.jsx'
+import Ideology from './pages/user/ideologypage/Ideology.jsx'
 import Services from './pages/user/servicespage/Services.jsx'
 import ServiceProgram from './pages/user/servicespage/ServiceProgram.jsx'
 import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
+import Psychometric from './pages/user/psychometricpage/Psychometric.jsx'
 // Scholarship (user-facing) temporarily hidden — see routes below.
 // import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
 // import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
@@ -73,12 +75,14 @@ function PublicSite() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/our-ideology" element={<Ideology />} />
           {/* Services (was Mentoring) — landing + per-program pages */}
           <Route path="/services" element={<Services />} />
           <Route path="/services/:slug" element={<ServiceProgram />} />
           <Route path="/mentoring" element={<Navigate to="/services" replace />} />
           <Route path="/book-online" element={<BookOnline />} />
           <Route path="/skill-build/nirmaan" element={<Nirmaan />} />
+          <Route path="/skill-build/psychometric-testing" element={<Psychometric />} />
           {/* Scholarship (user-facing) hidden for now — admin side stays active.
           <Route path="/nirmaan-scholarship" element={<Scholarship />} />
           <Route path="/nirmaan-scholarship/test" element={<ProtectedRoute><ScholarshipTest /></ProtectedRoute>} />

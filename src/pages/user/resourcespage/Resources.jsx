@@ -26,6 +26,7 @@ export default function Resources({ view = 'all' }) {
   const [stories, setStories] = useState([])
   const [latest, setLatest] = useState([])
   const [openFaq, setOpenFaq] = useState(null)
+  const [q, setQ] = useState('') // Career Library search box
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -52,6 +53,21 @@ export default function Resources({ view = 'all' }) {
 
   const retry = () => setReloadKey((k) => k + 1)
   const meta = SUBPAGES.find((s) => s.key === view)
+
+  // Career Library search. Matching a STREAM keeps all of its courses; matching
+  // only a course narrows that stream down to the courses that matched, so the
+  // visitor sees exactly what they searched for and nothing else.
+  const term = q.trim().toLowerCase()
+  const shownFields = !term
+    ? fields
+    : fields
+        .map((f) => {
+          if (f.name.toLowerCase().includes(term)) return f
+          const courses = f.courses.filter((c) => c.name.toLowerCase().includes(term))
+          return courses.length ? { ...f, courses } : null
+        })
+        .filter(Boolean)
+  const matchCount = shownFields.reduce((n, f) => n + f.courses.length, 0)
 
   return (
     <>
@@ -86,10 +102,33 @@ export default function Resources({ view = 'all' }) {
                 Explore career streams and the courses that sit under each. Not sure where you fit?
                 A <Link to="/services">counselling session</Link> will help you narrow it down.
               </p>
+
+              <div className="resource-search">
+                <input
+                  type="search"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search a career or a stream — try “design” or “commerce”"
+                  aria-label="Search the career library"
+                />
+                {term && (
+                  <button type="button" className="resource-search-clear" onClick={() => setQ('')}>
+                    Clear
+                  </button>
+                )}
+              </div>
+              {term && (
+                <p className="resource-search-count">
+                  {matchCount
+                    ? `${matchCount} career${matchCount === 1 ? '' : 's'} across ${shownFields.length} stream${shownFields.length === 1 ? '' : 's'}`
+                    : 'Nothing matched that search.'}
+                </p>
+              )}
+
               <div className="grid grid-3">
-                {fields.map((f) => (
+                {shownFields.map((f) => (
                   <article key={f.slug} className="card resource-card">
-                    <h3>{f.name}<span className="resource-count">{f.courseCount}</span></h3>
+                    <h3>{f.name}<span className="resource-count">{term ? f.courses.length : f.courseCount}</span></h3>
                     {f.courses.length > 0 ? (
                       <ul className="resource-courses">
                         {f.courses.map((c) => (

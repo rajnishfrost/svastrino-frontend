@@ -5,15 +5,16 @@ export default function Hero() {
         <div className="nirmaan-hero-text">
           <span className="nirmaan-eyebrow">Soch Se Vikas Tak</span>
           <h1>
-            From “I don’t know what to do” to a <span className="accent">clear career roadmap</span>
+            Nirmaan — A Mindset &amp; Skill-Building Journey for{' '}
+            <span className="accent">India’s Teens and Youth</span>
           </h1>
           <p className="nirmaan-hero-sub">
-            Nirmaan is a one-stop career development ecosystem for classes 9–12 — career awareness,
-            a personalised roadmap, and actionable steps to get there.
+            Nirmaan is a personally crafted all-in-one resource to help you build yourself
+            first and turn your dreams into reality, from Class 7th onwards.
           </p>
           <div className="nirmaan-hero-ctas">
             <a href="#packages" className="btn btn-primary btn-large">View Packages</a>
-            <a href="#how" className="btn btn-secondary btn-large">How it works</a>
+            <a href="#journey" className="btn btn-secondary btn-large">Explore the Course Below</a>
           </div>
         </div>
 
