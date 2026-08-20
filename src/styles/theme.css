@@ -19,9 +19,15 @@
   /* ---- Brand palette (Svastrino) ---- */
   --navy: #0f2c5c;          /* deep blue — primary, headers, dark sections */
   --navy-dark: #0a1f43;     /* primary hover / footer base */
-  --blue: #2f7ae5;          /* brighter blue — accents, links, secondary CTA */
+  --blue: #2f7ae5;          /* brighter blue — links, secondary CTA */
   --blue-dark: #1c5fc4;     /* brighter-blue hover */
   --blue-light: #eaf2fd;    /* soft blue tint — surfaces, chips, highlights */
+
+  /* ---- Brand accent = crimson (approved UI, from the logo) ----
+     Locked in sitewide after the crimson/blue A/B decision on the home page. */
+  --crimson: #c8102e;       /* primary accent — CTAs, active links, highlights */
+  --crimson-dark: #a30c25;  /* accent hover */
+  --crimson-soft: #fdeef1;  /* soft rose tint — accent surfaces, icon chips */
 
   /* ---- Neutrals / surfaces ---- */
   --white: #ffffff;         /* base background */
@@ -42,9 +48,9 @@
   --color-primary: var(--navy);
   --color-primary-hover: var(--navy-dark);
   --color-on-primary: #ffffff;
-  --color-accent: var(--blue);
-  --color-accent-hover: var(--blue-dark);
-  --color-accent-soft: var(--blue-light);
+  --color-accent: var(--crimson);
+  --color-accent-hover: var(--crimson-dark);
+  --color-accent-soft: var(--crimson-soft);
   --color-inverse-bg: var(--navy);
   --color-inverse-text: #eaf2fd;
   --color-danger: #d8413a;

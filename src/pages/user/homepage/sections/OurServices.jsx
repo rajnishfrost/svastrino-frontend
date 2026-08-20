@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight, Check } from 'lucide-react'
+import SectionHeading from './SectionHeading.jsx'
 
 /**
  * Home · section 3 — "Our Services".
@@ -17,7 +19,7 @@ const SERVICES = [
       'Make a Confident & Informed Career Decision',
     ],
     duration: '10 Days',
-    cta: "Explore Bull's Eye Program →",
+    cta: "Explore Bull's Eye",
     to: '/services/bulls-eye',
   },
   {
@@ -31,7 +33,7 @@ const SERVICES = [
       'Build a clear 5-year Career Plan',
     ],
     duration: '2 Months',
-    cta: 'Explore Bloom Program →',
+    cta: 'Explore Bloom',
     to: '/services/bloom',
   },
   {
@@ -44,7 +46,7 @@ const SERVICES = [
       'Overall Life & Career Mentoring',
     ],
     duration: '2 Years',
-    cta: 'Explore Breakthrough Program →',
+    cta: 'Explore Breakthrough',
     to: '/services/breakthrough',
   },
   {
@@ -57,13 +59,13 @@ const SERVICES = [
       'Turn Learning Into Real-World Experience',
     ],
     duration: '6 months',
-    cta: 'Explore Nirmaan →',
+    cta: 'Nirmaan',
     to: '/skill-build/nirmaan',
     skillBuild: true,
   },
   {
     need: 'I want a Scientific Analysis to decide my Career',
-    who: 'For individuals who want to verify their potential & career options scientifically',
+    who: 'For individuals who want to verify their Potential & Career options Scientifically',
     points: [
       'Know yourself like never before',
       'Discover Suitable Streams, Careers & Directions',
@@ -71,7 +73,7 @@ const SERVICES = [
       'Decide your personal journey confidently',
     ],
     duration: '1 day',
-    cta: 'Explore Psychometric Testing →',
+    cta: 'Psychometric Testing',
     to: '/skill-build/psychometric-testing',
     skillBuild: true,
   },
@@ -79,31 +81,59 @@ const SERVICES = [
 
 export default function OurServices() {
   return (
-    <section className="section section--alt">
+    <section className="bg-soft py-20 md:py-24">
       <div className="container">
-        <div className="text-center">
-          <h2 className="section-title">Let’s first understand why you are here!</h2>
-          <p className="section-sub">
-            We know that not every student needs the same kind of career guidance. Whatever
-            stage you’re at, we have a solution for it.
-          </p>
-        </div>
+        <SectionHeading
+          title="Let's first understand why you are here!"
+          subtitle="We know that not every student needs the same kind of career guidance. Whatever stage you're at, we have a solution for it."
+        />
 
-        <div className="home-services">
-          {SERVICES.map((s) => (
-            <article
-              key={s.to}
-              className={`card home-service${s.skillBuild ? ' home-service--skill' : ''}`}
-            >
-              <span className="home-service-duration">{s.duration}</span>
-              <h3 className="home-service-need">{s.need}</h3>
-              <p className="home-service-who">{s.who}</p>
-              <ul className="home-service-points">
-                {s.points.map((p) => <li key={p}>{p}</li>)}
-              </ul>
-              <Link to={s.to} className="home-service-cta">{s.cta}</Link>
-            </article>
-          ))}
+        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {SERVICES.map((s) => {
+            const accentText = s.skillBuild ? 'text-nirmaan-green' : 'text-brand-crimson'
+            const chipBg = s.skillBuild ? 'bg-nirmaan-green/10' : 'bg-brand-crimson/10'
+            const bulletBg = s.skillBuild ? 'bg-nirmaan-green/15' : 'bg-brand-rose'
+            const btn = s.skillBuild
+              ? 'bg-nirmaan-green text-white hover:bg-nirmaan-green-dark'
+              : 'bg-brand-crimson text-white hover:bg-brand-crimson-dark'
+            return (
+              <div
+                key={s.to}
+                className="relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+              >
+                <span
+                  className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-xs font-semibold ${chipBg} ${accentText}`}
+                >
+                  {s.duration}
+                </span>
+
+                <h3 className="mt-6 pr-16 font-display text-base font-bold leading-snug text-brand-navy">
+                  {s.need}
+                </h3>
+                <p className="mt-2 text-sm text-brand-slate">{s.who}</p>
+
+                <ul className="mt-5 flex-1 space-y-2.5">
+                  {s.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-2 text-sm text-brand-navy">
+                      <span
+                        className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${bulletBg}`}
+                      >
+                        <Check className={`size-3 ${accentText}`} />
+                      </span>
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  to={s.to}
+                  className={`mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${btn}`}
+                >
+                  {s.cta} <ArrowRight className="size-4" />
+                </Link>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

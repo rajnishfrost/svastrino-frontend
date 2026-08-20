@@ -4,15 +4,17 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import './Navbar.css'
 
 /**
- * Top navigation:
- *   Skill Build ▾ · Services ▾ · Book Online · Resources ▾ · Contact · Login
- * Skill Build, Services and Resources open dropdowns; Services is two levels
+ * Top navigation (order per src/content/header.md):
+ *   Skill Build ▾ · Mentoring ▾ · Book Online · Resources ▾ · Blog · Contact · Login
+ * Skill Build, Mentoring and Resources open dropdowns; Mentoring is two levels
  * deep (category → its programs). On a Skill-Build page the green Skill Build
  * pill is replaced by a plain "Home" link back to the main site.
  * Fully responsive: collapses to a hamburger drawer on tablet/mobile.
  */
-// Services → two main categories; hover a category to reveal its programs.
-const SERVICES_LINKS = [
+// Mentoring → two main categories; hover a category to reveal its programs.
+// (Routes kept as implemented — /services/* — even though the label reads
+// "Mentoring"; /services is the mentoring landing page in the router.)
+const MENTORING_LINKS = [
   {
     label: 'Career Counselling',
     children: [
@@ -28,9 +30,11 @@ const SERVICES_LINKS = [
   },
 ]
 
+// Blog is now a top-level menu item (per header.md), so it is no longer listed
+// inside the Resources dropdown. "Quick News" from the spec is omitted until it
+// has a destination.
 const RESOURCES_LINKS = [
   { label: 'Career Library', to: '/resources/career-library' },
-  { label: 'Blog', to: '/blog' },
   { label: "FAQ's", to: '/resources/faqs' },
   { label: 'Success Stories', to: '/resources/success-stories' },
 ]
@@ -73,13 +77,17 @@ export default function Navbar() {
             <SkillBuildDropdown onNavigate={close} />
           )}
 
-          <Dropdown label="Services" to="/services" items={SERVICES_LINKS} onNavigate={close} />
+          <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} />
 
           <NavLink to="/book-online" onClick={close} className={navClass}>
             Book Online
           </NavLink>
 
           <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} />
+
+          <NavLink to="/blog" onClick={close} className={navClass}>
+            Blog
+          </NavLink>
 
           <NavLink to="/contact" onClick={close} className={navClass}>
             Contact

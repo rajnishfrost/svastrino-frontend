@@ -6,6 +6,7 @@ import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { startOutboxSync } from './utils/outbox.js'
 import './styles/global.css'
+import './styles/tailwind.css' // opt-in Tailwind utilities (Home page + Footer); Preflight disabled
 import './styles/nirmaan.css' // scoped under .theme-nirmaan (applied only on the Nirmaan page)
 
 if (import.meta.env.DEV) {

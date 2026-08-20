@@ -1,0 +1,30 @@
+/* =====================================================================
+   Tailwind entry — used by the new Home page + Footer only.
+   Preflight (global reset) is disabled in tailwind.config.js, so this file
+   adds NO base/element resets; it only emits the opt-in utility + component
+   classes those components use, plus a few custom brand utilities below.
+   Imported AFTER global.css so utilities win ties on Tailwind-built pages.
+   ===================================================================== */
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Dark navy gradient (hero / final band) */
+  .bg-brand-gradient {
+    background: linear-gradient(135deg, #0a1f43 0%, #0f2c5c 55%, #14396f 100%);
+  }
+  /* Light, airy hero wash — white fading into a soft blue, with a rose glow */
+  .bg-hero {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #fdeef1 0%, transparent 55%),
+      radial-gradient(1000px 500px at 10% 0%, #eef4ff 0%, transparent 50%),
+      linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+  }
+  /* Soft blue band used by lighter alternating sections */
+  .bg-soft {
+    background: linear-gradient(180deg, #f6f9fc 0%, #eef4fb 100%);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight, GraduationCap, School, Star, Users } from 'lucide-react'
 import EnquireForm from './EnquireForm.jsx'
+import Wave from './Wave.jsx'
 
 /**
  * Home · section 1 — "Banner".
@@ -7,87 +9,68 @@ import EnquireForm from './EnquireForm.jsx'
  * or leave an enquiry without choosing anything yet.
  */
 const STATS = [
-  { figure: '17', caption: 'Years of experience' },
-  { figure: '14k+', caption: 'Students counselled' },
-  { figure: '290', caption: 'Students mentored' },
-  { figure: '49', caption: 'Partner institutions' },
+  { icon: Star, figure: '17 Years', caption: 'of experience' },
+  { icon: GraduationCap, figure: '14k+', caption: 'Students counselled' },
+  { icon: Users, figure: '290', caption: 'Students mentored' },
+  { icon: School, figure: '49', caption: 'Partner institutions' },
 ]
-
-/* Small inline icons — no icon dependency in this project. */
-const IconClipboard = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <rect x="8" y="3" width="8" height="4" rx="1" /><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-  </svg>
-)
-const IconDoc = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M9 13h6M9 17h4" />
-  </svg>
-)
-const IconUsers = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="3" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13A4 4 0 0 1 16 11" />
-  </svg>
-)
 
 export default function Hero() {
   return (
-    <section className="home-hero">
-      <div className="container home-hero-inner">
-        <div className="home-hero-text">
-          <p className="home-hero-eyebrow">Build Yourself to Build Your Career</p>
-          <h1>
-            Helping you make informed career choices while developing your{' '}
-            <span>Mindset, Skills and Actions</span> to build your successful future
-          </h1>
+    <section className="relative overflow-hidden bg-hero">
+      <div className="container relative pb-28 pt-14 md:pb-36 md:pt-20">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+          {/* Left — message */}
+          <div className="text-center lg:text-left">
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
+              Build Yourself to Build Your Career
+            </p>
 
-          <ul className="home-hero-stats">
-            {STATS.map((s) => (
-              <li key={s.caption}>
-                <strong>{s.figure}</strong>
-                <span>{s.caption}</span>
-              </li>
-            ))}
-          </ul>
+            <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-navy sm:text-5xl md:text-[3.25rem]">
+              Helping you make informed career choices while developing your{' '}
+              <span className="text-brand-crimson">Mindset, Skills and then Actions</span> to build
+              your successful future
+            </h1>
 
-          <div className="home-hero-actions">
-            <Link to="/services" className="btn btn-primary btn-large">
-              Explore our Programs →
-            </Link>
+            {/* Stats — proof figures as chips */}
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              {STATS.map((s) => (
+                <div
+                  key={s.caption}
+                  className="inline-flex items-center gap-2.5 rounded-2xl border border-brand-navy/10 bg-white/70 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+                >
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
+                    <s.icon className="size-[18px]" />
+                  </span>
+                  <span className="leading-tight">
+                    <strong className="block font-display text-base font-bold text-brand-navy">
+                      {s.figure}
+                    </strong>
+                    <span className="text-xs text-brand-slate">{s.caption}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <Link
+                to="/services"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark"
+              >
+                Explore our Programs <ArrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
 
-          {/* Feature strip (true product facts). Swap for real social-proof
-              numbers — students guided, rating — once those are available. */}
-          <ul className="home-hero-trust">
-            <li><span className="home-hero-trust-ic"><IconClipboard /></span> Psychometric assessment</li>
-            <li><span className="home-hero-trust-ic"><IconDoc /></span> Personalised career report</li>
-            <li><span className="home-hero-trust-ic"><IconUsers /></span> 1-on-1 mentoring</li>
-          </ul>
+          {/* Right — enquiry form (stacks below the message on mobile/tablet) */}
+          <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5">
+            <EnquireForm />
+          </div>
         </div>
-
-        <div className="home-hero-card">
-          <div className="home-hero-stat">
-            <strong>4</strong>
-            <span>Mentoring programs</span>
-          </div>
-          <div className="home-hero-stat">
-            <strong>9–12</strong>
-            <span>Classes covered (Nirmaan)</span>
-          </div>
-          <div className="home-hero-stat">
-            <strong>1</strong>
-            <span>Unified account</span>
-          </div>
-        </div>
-        <EnquireForm />
       </div>
 
       {/* Curved divider into the next (white) section. */}
-      <div className="home-hero-wave" aria-hidden>
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-          <path d="M0 80 L0 34 C 280 78 620 -6 900 20 C 1140 42 1320 62 1440 30 L 1440 80 Z" />
-        </svg>
-      </div>
+      <Wave color="#ffffff" />
     </section>
   )
 }
