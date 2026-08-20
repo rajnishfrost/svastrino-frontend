@@ -27,7 +27,18 @@ export default function Packages() {
   // What the CTA should do for a given package, given the user's enrollment.
   const ctaFor = (pkg) => {
     if (!upg) return { kind: 'buy' }
-    if (upg.currentPackage.packageId === pkg.sku) return { kind: 'current' }
+    if (upg.currentPackage.packageId === pkg.sku) {
+      // On a pay-as-you-use plan the same card is how you buy the NEXT phase.
+      const ph = upg.phase
+      if (ph?.paymentMode === 'per-phase') {
+        return ph.nextPhase
+          ? { kind: 'next-phase', phase: ph.nextPhase, total: ph.total, amount: ph.amount }
+          : { kind: 'all-paid' }
+      }
+      return { kind: 'current' }
+    }
+    // A pay-as-you-use student cannot switch plans mid-course.
+    if (upg.phase?.paymentMode === 'per-phase') return { kind: 'locked-payu' }
     const opt = upg.options.find((o) => o.packageId === pkg.sku)
     if (opt) return upg.withinWindow ? { kind: 'upgrade', amount: opt.amount } : { kind: 'closed' }
     return { kind: 'owned' } // a lower tier than the one they already own
@@ -51,8 +62,25 @@ export default function Packages() {
                 <div className="nirmaan-pkg-name">{pkg.name}</div>
                 <p className="nirmaan-pkg-tagline">{pkg.tagline}</p>
                 <div className="nirmaan-pkg-price">
-                  {pkg.price} <span>{pkg.period}</span>
-                  {pkg.earlyBird && <em>early bird {pkg.earlyBird}</em>}
+                  {/* Pay-once plans show the discounted price with the list price
+                      struck through; pay-as-you-use shows the instalment and the
+                      full run underneath. */}
+                  {pkg.earlyBird ? (
+                    <>
+                      {pkg.earlyBird} <span>{pkg.period}</span>
+                      <em>
+                        <s>{pkg.price}</s>
+                        {pkg.savingPercent ? ` · save ${pkg.savingPercent}%` : ''}
+                      </em>
+                    </>
+                  ) : (
+                    <>
+                      {pkg.price} <span>{pkg.period}</span>
+                      {pkg.totalPrice && (
+                        <em>{pkg.phases} phases · {pkg.totalPrice} in total</em>
+                      )}
+                    </>
+                  )}
                 </div>
                 <ul className="nirmaan-pkg-list">
                   {pkg.features.map((f) => (
@@ -63,6 +91,16 @@ export default function Packages() {
                   const cta = ctaFor(pkg)
                   if (cta.kind === 'current')
                     return <button className="btn btn-secondary nirmaan-pkg-cta-disabled" disabled>Current plan</button>
+                  if (cta.kind === 'next-phase')
+                    return (
+                      <Link to={`/checkout?pkg=${pkg.sku}`} className="btn btn-primary">
+                        Pay for phase {cta.phase} of {cta.total} · {inr(cta.amount)}
+                      </Link>
+                    )
+                  if (cta.kind === 'all-paid')
+                    return <button className="btn btn-secondary nirmaan-pkg-cta-disabled" disabled>All phases paid</button>
+                  if (cta.kind === 'locked-payu')
+                    return <button className="btn btn-secondary nirmaan-pkg-cta-disabled" disabled>Continue your current plan</button>
                   if (cta.kind === 'upgrade')
                     return <Link to={`/checkout?pkg=${pkg.sku}`} className="btn btn-primary">Upgrade · pay {inr(cta.amount)}</Link>
                   if (cta.kind === 'closed')

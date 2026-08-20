@@ -70,6 +70,38 @@ export async function api(path, { method = 'GET', body, auth = false } = {}) {
 }
 
 /**
+ * Fetch a non-JSON endpoint (e.g. a CSV template) as text, with auth. The plain
+ * `api()` helper always parses JSON, and a bare <a href> can't carry the bearer
+ * token — so downloads of authenticated files go through here and become a blob.
+ */
+export async function apiText(path, { auth = false } = {}) {
+  const headers = {}
+  if (auth) {
+    const token = auth === 'admin' ? adminTokenStore.get() : tokenStore.get()
+    if (token) headers.Authorization = `Bearer ${token}`
+  }
+  const res = await fetch(`${API_BASE}${path}`, { headers })
+  if (!res.ok) {
+    const err = new Error(`Download failed (${res.status})`)
+    err.status = res.status
+    throw err
+  }
+  return res.text()
+}
+
+/** Save a string the browser already has as a file, without a round trip. */
+export function downloadText(filename, text, mime = 'text/csv;charset=utf-8') {
+  const url = URL.createObjectURL(new Blob([text], { type: mime }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+/**
  * File upload with a real progress percentage. `fetch` cannot report upload
  * progress, so this uses XMLHttpRequest (the only API that exposes it).
  * @param {string} path              e.g. "/admin/upload/video?uploadId=abc"

@@ -32,6 +32,9 @@ export default function ScholarshipTest() {
   const [deadline, setDeadline] = useState(null)
   const [remaining, setRemaining] = useState(0)
   const [result, setResult] = useState(null)
+  // The paper belongs to the student's organisation, so its title and
+  // instructions come from their cycle rather than being hard-coded here.
+  const [paper, setPaper] = useState({ title: '', instructions: '' })
   const submittingRef = useRef(false)
 
   useEffect(() => {
@@ -41,7 +44,12 @@ export default function ScholarshipTest() {
 
   useEffect(() => {
     api('/user/scholarship/attempt/start', { method: 'POST', auth: 'user', body: {} })
-      .then((d) => { setQuestions(d.questions); setDeadline(d.deadline); setState('taking') })
+      .then((d) => {
+        setQuestions(d.questions)
+        setDeadline(d.deadline)
+        setPaper({ title: d.title || '', instructions: d.instructions || '' })
+        setState('taking')
+      })
       .catch((e) => { setError(e.message); setState('error') })
   }, [])
 
@@ -125,6 +133,13 @@ export default function ScholarshipTest() {
       </div>
 
       <div className="container section">
+        {(paper.title || paper.instructions) && (
+          <div className="card sch-panel sch-paper-head">
+            {paper.title && <h2>{paper.title}</h2>}
+            {paper.instructions && <p>{paper.instructions}</p>}
+          </div>
+        )}
+
         {questions.map((q, i) => {
           const max = q.maxWords || 1000
           const used = countWords(answers[q.id])

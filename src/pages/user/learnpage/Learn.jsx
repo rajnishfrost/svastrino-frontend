@@ -281,6 +281,26 @@ export default function Learn() {
       setPending(pendingCount())
     }
   }
+  /**
+   * Count one play on the server. Returns false when the limit is spent so the
+   * player can stop the video. Offline we let it run — the count is only
+   * enforced where we can actually reach the server.
+   */
+  const countPlay = async (sessionId) => {
+    try {
+      const r = await api(`/user/learn/sessions/${sessionId}/play`, { method: 'POST', auth: 'user' })
+      setCourse((c) => c && ({
+        ...c,
+        sessions: c.sessions.map((s) =>
+          s.id === sessionId ? { ...s, plays: r.plays, playsLeft: r.playsLeft } : s),
+      }))
+      return true
+    } catch (e) {
+      if (e.code === 'PLAY_LIMIT_REACHED' || e.code === 'PHASE_LOCKED') return false
+      return true // network trouble must not block a paying student
+    }
+  }
+
   const onTimeUpdate = (e) => {
     const v = e.target
     if (!active || active.videoDone) return
@@ -544,9 +564,18 @@ export default function Learn() {
               <>
                 <HlsPlayer key={active.id} src={active.videoUrl} videoRef={videoRef}
                            onTimeUpdate={onTimeUpdate} lockSeek={!active.videoDone}
-                           watermark={user?.email || ''} />
+                           watermark={user?.email || ''} captions={active.captions || []}
+                           onFirstPlay={() => countPlay(active.id)}
+                           playBlockedMessage={`You have watched this video the maximum of ${course?.playLimit ?? 5} times.`} />
                 {!active.videoDone && (
                   <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
+                )}
+                {active.playsLeft != null && (
+                  <p className="learn-plays-note">
+                    {active.playsLeft > 0
+                      ? `${active.playsLeft} of ${course?.playLimit ?? 5} plays left for this video.`
+                      : 'You have used all the plays for this video.'}
+                  </p>
                 )}
 
                 {/* Offline: saved inside the app — never as a file on the device */}

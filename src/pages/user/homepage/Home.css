@@ -64,7 +64,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: 1.15fr 1fr;
   gap: var(--space-6);
   align-items: center;
 }
@@ -88,6 +88,9 @@
   font-size: 54px;
   line-height: 1.08;
   letter-spacing: -1.2px;
+  /* font-size: 36px;
+  line-height: 1.25;
+  letter-spacing: -0.5px; */
 }
 /* Gradient wordmark accent — follows the chosen accent. */
 .home-hero-text h1 span {
@@ -558,6 +561,46 @@
 /* =====================================================================
    Responsive
    ===================================================================== */
+/* ---- Programs preview ---- */
+/* ---- Courses teaser ---- */
+/* .home-courses {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+}
+.home-courses-list {
+  margin-bottom: var(--space-4);
+}
+.home-courses-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--color-text-muted);
+}
+.home-courses-list strong {
+  color: var(--navy);
+}
+.home-courses-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-courses-glyph {
+  font-size: 120px;
+  color: var(--badge-nirmaan);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+} */
+
+/* ---- Why ---- */
+/* ---- Responsive ---- */
 @media (max-width: 900px) {
   .home-hero-inner {
     grid-template-columns: 1fr;
@@ -746,4 +789,277 @@
   .home-nirmaan-card { grid-template-columns: 1fr; }
   .home-nirmaan-art { order: -1; }
   .home-nirmaan-emblem { width: min(240px, 72%); }
+}
+
+/* ---- Hero · proof figures ---- */
+.home-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0 var(--space-5);
+}
+.home-hero-stats li {
+  display: flex;
+  flex-direction: column;
+}
+.home-hero-stats strong {
+  font-size: 26px;
+  line-height: 1.1;
+  color: #fff;
+}
+.home-hero-stats span {
+  font-size: 12px;
+  color: rgba(234, 242, 253, 0.75);
+  margin-top: 2px;
+}
+
+/* ---- Hero · enquiry form ---- */
+.home-enquire-title {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: var(--space-1);
+}
+.home-enquire-sub {
+  font-size: 13px;
+  color: rgba(234, 242, 253, 0.78);
+  margin-bottom: var(--space-3);
+}
+.home-enquire-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.home-enquire-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.home-enquire-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(234, 242, 253, 0.85);
+}
+.home-enquire-form input,
+.home-enquire-form select,
+.home-enquire-form textarea {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius);
+  color: #fff;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  width: 100%;
+}
+.home-enquire-form input::placeholder,
+.home-enquire-form textarea::placeholder { color: rgba(234, 242, 253, 0.45); }
+.home-enquire-form select option { color: var(--color-text); }
+.home-enquire-form input:focus,
+.home-enquire-form select:focus,
+.home-enquire-form textarea:focus {
+  outline: none;
+  border-color: var(--blue-light);
+  background: rgba(255, 255, 255, 0.16);
+}
+.home-enquire-phone { display: flex; align-items: stretch; gap: 6px; }
+.home-enquire-cc {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: rgba(234, 242, 253, 0.85);
+}
+.home-enquire-submit { margin-top: var(--space-1); width: 100%; }
+.home-enquire-done { color: #fff; font-size: 15px; padding: var(--space-3) 0; }
+
+/* ---- Problems we solve ---- */
+.home-problem { text-align: center; padding: var(--space-2); }
+.home-problem-glyph {
+  display: block;
+  font-size: 22px;
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+.home-problem-stat {
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: var(--space-2);
+}
+.home-problem-answer { color: var(--color-text-muted); font-size: 15px; }
+
+/* ---- Our services · five routing cards ---- */
+.home-services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+.home-service { display: flex; flex-direction: column; }
+.home-service-duration {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+.home-service-need {
+  font-size: 16px;
+  line-height: 1.35;
+  margin-bottom: var(--space-1);
+}
+.home-service-who {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+.home-service-points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-3);
+  font-size: 13.5px;
+  color: var(--color-text);
+  flex: 1;
+}
+.home-service-points li { position: relative; padding-left: 16px; margin-bottom: 5px; }
+.home-service-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.home-service-cta {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-accent);
+  margin-top: auto;
+}
+/* the two Skill-Build cards wear the Nirmaan colours */
+.home-service--skill { border-color: var(--nirmaan-green, #4b7f52); }
+.home-service--skill .home-service-duration {
+  background: var(--nirmaan-cream, #f5efe2);
+  color: var(--nirmaan-brown, #5b4636);
+}
+.home-service--skill .home-service-points li::before { background: var(--nirmaan-green, #4b7f52); }
+.home-service--skill .home-service-cta { color: var(--nirmaan-green, #4b7f52); }
+
+/* ---- Your journey ---- */
+.home-journey {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: var(--space-5) 0 0;
+  counter-reset: journey;
+}
+.home-journey-step { text-align: center; padding: 0 var(--space-2); }
+.home-journey-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+.home-journey-label { display: block; color: var(--color-heading); margin-bottom: 4px; }
+.home-journey-step p { font-size: 14px; color: var(--color-text-muted); }
+
+/* ---- Other ways in ---- */
+.home-way { text-align: center; }
+.home-way h3 { margin-bottom: var(--space-2); }
+.home-way p { color: var(--color-text-muted); margin-bottom: var(--space-3); }
+
+/* ---- Testimonies ---- */
+.home-quote blockquote { font-size: 15px; color: var(--color-text); margin-bottom: var(--space-3); }
+.home-quote figcaption { display: flex; align-items: center; gap: var(--space-2); }
+.home-quote figcaption img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.home-quote figcaption strong { display: block; font-size: 14px; }
+.home-quote figcaption span { font-size: 12px; color: var(--color-text-muted); }
+
+/* ---- Partner logos · self-scrolling rail ---- */
+.home-partner-rail {
+  overflow: hidden;
+  margin-top: var(--space-5);
+  /* fade the two ends so logos slide in and out rather than getting cut */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.home-partner-reel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-7);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: max-content;
+  animation: home-partner-scroll 38s linear infinite;
+}
+.home-partner-rail:hover .home-partner-reel { animation-play-state: paused; }
+.home-partner { display: flex; align-items: center; flex: none; }
+.home-partner img {
+  height: 34px;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+.home-partner:hover img { filter: grayscale(0); opacity: 1; }
+.home-partner-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+@keyframes home-partner-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+/* Someone who asked for less motion gets a plain, static wall instead. */
+@media (prefers-reduced-motion: reduce) {
+  .home-partner-reel {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+    gap: var(--space-4);
+  }
+}
+
+/* ---- About us close ---- */
+.home-about-ctas {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 900px) {
+  .home-hero-inner { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .home-hero-text h1 { font-size: 28px; }
+  .home-enquire-row { grid-template-columns: 1fr; }
+  .home-hero-stats { gap: var(--space-3); }
 }

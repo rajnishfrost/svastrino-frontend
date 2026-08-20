@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom'
  * the full scholarship page.
  */
 const POINTS = [
-  'Psychometric test + personalised career report',
-  'A clear, step-by-step career roadmap',
-  'Mentoring sessions & worksheets for classes 9–12',
+  'Youth-Focused Life & Career Development Course',
+  '24 videos with real-life concepts & examples',
+  'Daily 10 min tasks to build habits, mindsets & skills',
+  'Learn at your own pace',
+  'Find a ‘New You’ through the course',
 ]
 
 export default function NirmaanHighlight() {
@@ -20,21 +22,25 @@ export default function NirmaanHighlight() {
             <span className="home-nirmaan-badge">New · Skill Build</span>
             <h2 className="home-nirmaan-title">Nirmaan — <span>Soch Se Vikas Tak</span></h2>
             <p className="home-nirmaan-sub">
-              Our new career-development program for classes 9–12. From “I don’t know what to do”
-              to a clear career roadmap — with a psychometric report, mentoring, and actionable steps.
+              Nirmaan is a structured journey to build self-awareness, self-control, discipline,
+              communication, confidence, and other essential skills for life and growth. For
+              students from Grade 7 onwards who want to understand themselves better and handle
+              life and its choices with total self-belief &amp; confidence.
             </p>
             <ul className="home-nirmaan-points">
               {POINTS.map((p) => <li key={p}>{p}</li>)}
             </ul>
 
+            {/* Scholarship teaser — hidden for now (kept for easy re-enable).
             <div className="home-nirmaan-scholarship">
               <strong>🎓 Scholarship available.</strong> One deserving student can win their entire
               Nirmaan package free. <Link to="/nirmaan-scholarship">See how the scholarship works →</Link>
             </div>
+            */}
 
             <div className="home-nirmaan-ctas">
-              <Link to="/skill-build/nirmaan#packages" className="btn btn-primary btn-large">Enrol in Nirmaan</Link>
-              <Link to="/skill-build/nirmaan" className="btn btn-secondary btn-large">Learn more</Link>
+              <Link to="/skill-build/nirmaan" className="btn btn-primary btn-large">Explore Nirmaan →</Link>
+              <Link to="/skill-build/nirmaan#free-trial" className="btn btn-secondary btn-large">Start Your Free Trial →</Link>
             </div>
           </div>
 

@@ -3,11 +3,12 @@ import { api } from '../../../api/client.js'
 import '../adminShared.css'
 
 /**
- * Mentoring admin — two tabs:
+ * Services admin — two tabs:
  *   Bookings  → every appointment; the mentor writes per-session updates/tasks
  *               (shown verbatim in the student's dashboard table).
- *   Programs  → the mentoring catalog (level 2: Model Session / Bull's Eye /
- *               Bloom / Breakthrough) — create & edit programs here.
+ *   Programs  → the Services catalog, grouped by sub-category
+ *               (Career Counselling → Bull's Eye · Personalised Mentoring →
+ *               Bloom, Breakthrough). Create & edit programs here.
  */
 const STATUS_CLS = { booked: 'ok', completed: 'muted', cancelled: 'warn' }
 const toPaise = (r) => (r === '' || r == null ? null : Math.round(Number(r) * 100))
@@ -25,9 +26,10 @@ export default function AdminMentoring() {
 
   return (
     <div>
-      <h1 className="adm-title">Mentoring</h1>
+      <h1 className="adm-title">Services</h1>
       <p className="adm-sub">
-        Bookings and session notes, plus the program catalog (Model Session, Bull's Eye, Bloom, Breakthrough…).
+        Bookings and session notes, plus the Services catalog grouped by sub-category
+        (Career Counselling, Personalised Mentoring).
       </p>
 
       <div className="adm-toolbar">
@@ -187,7 +189,7 @@ function BookingsTab() {
 
 function ProgramsTab() {
   const [programs, setPrograms] = useState(null) // mentoring packages
-  const [parentSlug, setParentSlug] = useState('') // the Mentoring category slug
+  const [subcats, setSubcats] = useState([]) // Services sub-categories (kind='mentoring')
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // package id
   const [adding, setAdding] = useState(false)
@@ -197,7 +199,7 @@ function ProgramsTab() {
       .then((d) => setPrograms(d.packages.filter((p) => p.skillBuild?.kind === 'mentoring')))
       .catch((e) => setError(e.message))
     api('/admin/skill-builds?all=1', { auth: 'admin' })
-      .then((d) => setParentSlug((d.skillBuilds || []).find((b) => b.kind === 'mentoring')?.slug || ''))
+      .then((d) => setSubcats((d.skillBuilds || []).filter((b) => b.kind === 'mentoring')))
       .catch(() => {})
   }
 
@@ -211,47 +213,60 @@ function ProgramsTab() {
 
       {adding && (
         <div className="adm-panel">
-          <ProgramForm parentSlug={parentSlug} onCancel={() => setAdding(false)} onSaved={() => { setAdding(false); load() }} />
+          <ProgramForm subcats={subcats} onCancel={() => setAdding(false)} onSaved={() => { setAdding(false); load() }} />
         </div>
       )}
 
       {error && <p className="adm-error">{error}</p>}
       {!programs && !error && <p className="adm-empty">Loading…</p>}
 
-      {programs && programs.map((p) => (
-        <div key={p.id} className="adm-panel">
-          {editing === p.id ? (
-            <ProgramForm pkg={p} onCancel={() => setEditing(null)} onSaved={() => { setEditing(null); load() }} />
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-              <div>
-                <h2 style={{ fontSize: 18 }}>{p.name}
-                  {' '}<span className={`adm-badge adm-badge--${p.active ? 'ok' : 'muted'}`}>{p.active ? 'Active' : 'Hidden'}</span>
-                  {p.featured && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 6 }}>Featured</span>}
-                </h2>
-                <p className="adm-sub" style={{ margin: '4px 0 8px' }}>
-                  ₹{p.priceInr.toLocaleString('en-IN')}
-                  {p.earlyBirdInr != null && ` · early bird ₹${p.earlyBirdInr.toLocaleString('en-IN')}`}
-                  {p.sessionsCount != null && ` · ${p.sessionsCount} session${p.sessionsCount > 1 ? 's' : ''} × ${(p.sessionMins || 120) / 60} hrs`}
-                  {` · SKU: ${p.sku}`}
-                </p>
-                <ul style={{ fontSize: 13.5, color: 'var(--color-text-muted)', listStyle: 'disc', paddingLeft: 18 }}>
-                  {p.features.map((f, i) => <li key={i}>{f}</li>)}
-                </ul>
+      {/* Grouped by Services sub-category */}
+      {programs && subcats.map((sc) => {
+        const items = programs.filter((p) => p.skillBuild?.slug === sc.slug)
+        if (!items.length) return null
+        return (
+          <section key={sc.slug} style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: 15, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', margin: '18px 0 10px' }}>
+              {sc.name}
+            </h2>
+            {items.map((p) => (
+              <div key={p.id} className="adm-panel">
+                {editing === p.id ? (
+                  <ProgramForm pkg={p} subcats={subcats} onCancel={() => setEditing(null)} onSaved={() => { setEditing(null); load() }} />
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                    <div>
+                      <h3 style={{ fontSize: 18 }}>{p.name}
+                        {' '}<span className={`adm-badge adm-badge--${p.active ? 'ok' : 'muted'}`}>{p.active ? 'Active' : 'Hidden'}</span>
+                        {p.featured && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 6 }}>Featured</span>}
+                      </h3>
+                      <p className="adm-sub" style={{ margin: '4px 0 8px' }}>
+                        ₹{p.priceInr.toLocaleString('en-IN')}
+                        {p.earlyBirdInr != null && ` · early bird ₹${p.earlyBirdInr.toLocaleString('en-IN')}`}
+                        {p.sessionsCount != null && ` · ${p.sessionsCount} session${p.sessionsCount > 1 ? 's' : ''} × ${(p.sessionMins || 120) / 60} hrs`}
+                        {` · SKU: ${p.sku}`}
+                      </p>
+                      <ul style={{ fontSize: 13.5, color: 'var(--color-text-muted)', listStyle: 'disc', paddingLeft: 18 }}>
+                        {p.features.map((f, i) => <li key={i}>{f}</li>)}
+                      </ul>
+                    </div>
+                    <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => setEditing(p.id)}>Edit</button>
+                  </div>
+                )}
               </div>
-              <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => setEditing(p.id)}>Edit</button>
-            </div>
-          )}
-        </div>
-      ))}
+            ))}
+          </section>
+        )
+      })}
     </div>
   )
 }
 
-/** Create/edit a mentoring program (a package under the Mentoring category). */
-function ProgramForm({ pkg, parentSlug, onCancel, onSaved }) {
+/** Create/edit a Services program (a package under a sub-category). */
+function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
   const isNew = !pkg
   const [f, setF] = useState({
+    skillBuildSlug: pkg?.skillBuild?.slug || subcats[0]?.slug || '',
     name: pkg?.name || '', sku: pkg?.sku || '', tagline: pkg?.tagline || '',
     priceInr: pkg?.priceInr ?? '', earlyBirdInr: pkg?.earlyBirdInr ?? '',
     sessionsCount: pkg?.sessionsCount ?? '', sessionMins: pkg?.sessionMins ?? '120',
@@ -263,7 +278,7 @@ function ProgramForm({ pkg, parentSlug, onCancel, onSaved }) {
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
   const onName = (name) => {
-    const sug = (p) => (slugify(p.name) ? `${parentSlug || 'mentoring'}-${slugify(p.name)}` : '')
+    const sug = (p) => (slugify(p.name) ? `${p.skillBuildSlug || 'mentoring'}-${slugify(p.name)}` : '')
     setF((p) => ({ ...p, name, sku: !isNew || (p.sku && p.sku !== sug(p)) ? p.sku : sug({ ...p, name }) }))
   }
 
@@ -285,7 +300,7 @@ function ProgramForm({ pkg, parentSlug, onCancel, onSaved }) {
       if (isNew) {
         await api('/admin/packages', {
           method: 'POST', auth: 'admin',
-          body: { ...body, skillBuildSlug: parentSlug || 'mentoring', sku: f.sku },
+          body: { ...body, skillBuildSlug: f.skillBuildSlug, sku: f.sku },
         })
       } else {
         await api(`/admin/packages/${pkg.id}`, { method: 'PATCH', auth: 'admin', body })
@@ -297,6 +312,13 @@ function ProgramForm({ pkg, parentSlug, onCancel, onSaved }) {
   return (
     <div>
       <h2 style={{ fontSize: 16, marginBottom: 12 }}>{isNew ? 'New program' : `Edit ${pkg.name}`}</h2>
+      <div className="adm-field">
+        <label>Sub-category</label>
+        <select className="adm-select" value={f.skillBuildSlug} disabled={!isNew}
+                onChange={(e) => set('skillBuildSlug', e.target.value)}>
+          {subcats.map((sc) => <option key={sc.slug} value={sc.slug}>{sc.name}</option>)}
+        </select>
+      </div>
       <div className="adm-row2">
         <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="e.g. Bloom Plus" /></div>
         <div className="adm-field">

@@ -4,31 +4,42 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import './Navbar.css'
 
 /**
- * Top navigation — mirrors the agreed Svastrino rebuild structure:
- *   Home · Mentoring ▾ · Book Online · Courses · Resources ▾ · Blog · Contact · Login
- * Mentoring & Resources have dropdowns; Courses is a direct link (no dropdown).
+ * Top navigation:
+ *   Skill Build ▾ · Services ▾ · Book Online · Resources ▾ · Contact · Login
+ * Skill Build, Services and Resources open dropdowns; Services is two levels
+ * deep (category → its programs). On a Skill-Build page the green Skill Build
+ * pill is replaced by a plain "Home" link back to the main site.
  * Fully responsive: collapses to a hamburger drawer on tablet/mobile.
  */
-const MENTORING_LINKS = [
-  { label: 'Model Session', to: '/mentoring#model-session' },
-  { label: "Bull's Eye Program", to: '/mentoring#bulls-eye' },
-  { label: 'Bloom Program', to: '/mentoring#bloom' },
-  { label: 'Breakthrough Program', to: '/mentoring#breakthrough' },
-  { label: 'Program Finder', to: '/mentoring#program-finder' },
+// Services → two main categories; hover a category to reveal its programs.
+const SERVICES_LINKS = [
+  {
+    label: 'Career Counselling',
+    children: [
+      { label: "Bull's Eye Program", to: '/services/bulls-eye' },
+    ],
+  },
+  {
+    label: 'Personalised Mentoring',
+    children: [
+      { label: 'Bloom Program', to: '/services/bloom' },
+      { label: 'Breakthrough Program', to: '/services/breakthrough' },
+    ],
+  },
 ]
 
 const RESOURCES_LINKS = [
-  { label: 'Career Library', to: '/resources#career-library' },
-  { label: "FAQ's", to: '/resources#faqs' },
-  { label: 'Quick News', to: '/resources#quick-news' },
-  { label: 'Success Stories', to: '/resources#success-stories' },
+  { label: 'Career Library', to: '/resources/career-library' },
+  { label: 'Blog', to: '/blog' },
+  { label: "FAQ's", to: '/resources/faqs' },
+  { label: 'Success Stories', to: '/resources/success-stories' },
 ]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { user } = useAuth()
   const { pathname } = useLocation()
-  const isNirmaan = pathname.startsWith('/skill-build/nirmaan')
+  const isNirmaan = pathname.startsWith('/skill-build/')
   const close = () => setOpen(false)
 
   return (
@@ -62,17 +73,13 @@ export default function Navbar() {
             <SkillBuildDropdown onNavigate={close} />
           )}
 
-          <Dropdown label="Mentoring" to="/mentoring" items={MENTORING_LINKS} onNavigate={close} />
+          <Dropdown label="Services" to="/services" items={SERVICES_LINKS} onNavigate={close} />
 
           <NavLink to="/book-online" onClick={close} className={navClass}>
             Book Online
           </NavLink>
 
           <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} />
-
-          <NavLink to="/blog" onClick={close} className={navClass}>
-            Blog
-          </NavLink>
 
           <NavLink to="/contact" onClick={close} className={navClass}>
             Contact
@@ -97,7 +104,10 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
  *  add more items to the array as new skill-build courses launch. */
 function SkillBuildDropdown({ onNavigate }) {
   const [open, setOpen] = useState(false)
-  const items = [{ label: 'Nirmaan', to: '/skill-build/nirmaan' }]
+  const items = [
+    { label: 'Nirmaan', to: '/skill-build/nirmaan' },
+    { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+  ]
 
   return (
     <div
@@ -151,9 +161,38 @@ function Dropdown({ label, to, items, onNavigate }) {
           All {label}
         </Link>
         {items.map((item) => (
-          <Link key={item.to} to={item.to} onClick={onNavigate}>
-            {item.label}
-          </Link>
+          item.children ? (
+            <SubMenu key={item.label} item={item} onNavigate={onNavigate} />
+          ) : item.heading ? (
+            <span key={item.label} className="nav-dropdown-section">{item.label}</span>
+          ) : (
+            <Link key={item.to} to={item.to} onClick={onNavigate}>
+              {item.label}
+            </Link>
+          )
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** A category row that reveals its programs — flyout on hover (desktop),
+ *  expands inline on tap (mobile drawer). */
+function SubMenu({ item, onNavigate }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div
+      className={`nav-sub${open ? ' is-open' : ''}`}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button type="button" className="nav-sub-trigger" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        {item.label}
+        <span className="nav-sub-caret" aria-hidden>›</span>
+      </button>
+      <div className="nav-sub-menu">
+        {item.children.map((c) => (
+          <Link key={c.to} to={c.to} onClick={onNavigate}>{c.label}</Link>
         ))}
       </div>
     </div>
@@ -227,6 +266,13 @@ function ProfileMenu({ user, onNavigate }) {
         {user.panel && (
           <Link to="/admin" className="nav-profile-item" role="menuitem" onClick={closeAll}>
             <ShieldIcon /> Admin Panel
+          </Link>
+        )}
+        {/* Same for a partner organisation's owner — only once it's approved
+            and active, so the link never lands on a 403. */}
+        {user.organisation?.portal && (
+          <Link to="/organisation" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+            <ShieldIcon /> Organisation Portal
           </Link>
         )}
         <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>

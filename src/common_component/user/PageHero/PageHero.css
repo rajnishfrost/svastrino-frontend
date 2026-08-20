@@ -35,6 +35,19 @@
   margin-top: var(--space-4);
 }
 
+/* Secondary buttons sit on the dark hero band — the default navy text/border is
+   invisible there. Make them white-outlined by default, inverting on hover. */
+.page-hero-actions .btn-secondary {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+}
+.page-hero-actions .btn-secondary:hover {
+  background: #fff;
+  color: var(--navy);
+  border-color: #fff;
+}
+
 @media (max-width: 600px) {
   .page-hero-title {
     font-size: 32px;

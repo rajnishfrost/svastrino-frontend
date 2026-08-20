@@ -35,6 +35,7 @@ export default function AdminContent() {
   const [editing, setEditing] = useState(null) // session id | 'new' | null
   const [qEditing, setQEditing] = useState(null) // session id whose questions are open
   const [aViewing, setAViewing] = useState(null) // session id whose ANSWERS are open
+  const [capEditing, setCapEditing] = useState(null) // session id whose CAPTIONS are open
 
   useEffect(() => {
     api('/admin/skill-builds', { auth: 'admin' })
@@ -47,7 +48,7 @@ export default function AdminContent() {
       .then((d) => setSessions(d.sessions || []))
       .catch((e) => setError(e.message))
 
-  useEffect(() => { if (slug) { setSessions(null); setEditing(null); setQEditing(null); load(slug) } /* eslint-disable-next-line */ }, [slug])
+  useEffect(() => { if (slug) { setSessions(null); setEditing(null); setQEditing(null); setCapEditing(null); load(slug) } /* eslint-disable-next-line */ }, [slug])
 
   const del = async (id) => {
     if (!confirm('Delete this session?')) return
@@ -89,6 +90,7 @@ export default function AdminContent() {
                 const isEdit = !!sid && editing === sid
                 const isQ = !!sid && qEditing === sid
                 const isA = !!sid && aViewing === sid
+                const isC = !!sid && capEditing === sid
                 const key = sid || `row-${i}`
 
                 if (isEdit) {
@@ -112,6 +114,13 @@ export default function AdminContent() {
                     </td></tr>
                   )
                 }
+                if (isC) {
+                  return (
+                    <tr key={key}><td colSpan={6}>
+                      <CaptionsEditor session={s} onClose={() => setCapEditing(null)} onChanged={() => load()} />
+                    </td></tr>
+                  )
+                }
                 return (
                   <tr key={key}>
                     <td className="adm-num">{s.order}</td>
@@ -122,6 +131,9 @@ export default function AdminContent() {
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="adm-link" onClick={() => setEditing(sid)}>Edit</button>
                       <button className="adm-link" onClick={() => setQEditing(sid)}>Questions</button>
+                      <button className="adm-link" onClick={() => setCapEditing(sid)}>
+                        Captions{s.captions?.length ? ` (${s.captions.length})` : ''}
+                      </button>
                       <button className="adm-link" onClick={() => setAViewing(sid)}>Answers</button>
                       <button className="adm-link" style={{ color: 'var(--color-danger)' }} onClick={() => del(sid)}>Delete</button>
                     </td>
@@ -403,6 +415,105 @@ function AnswersViewer({ session, onClose }) {
         </>
       )}
       <button className="adm-btn adm-btn--ghost" onClick={onClose}>Close</button>
+    </div>
+  )
+}
+
+// ---- Captions: upload SRT/VTT per language, delete, AI-translate ------------
+const LANGS = [
+  { v: 'hi', label: 'Hindi' }, { v: 'en', label: 'English' },
+  { v: 'mr', label: 'Marathi' }, { v: 'gu', label: 'Gujarati' },
+  { v: 'ta', label: 'Tamil' }, { v: 'te', label: 'Telugu' },
+  { v: 'bn', label: 'Bengali' }, { v: 'kn', label: 'Kannada' },
+]
+const langLabel = (v) => LANGS.find((l) => l.v === v)?.label || v.toUpperCase()
+
+function CaptionsEditor({ session, onClose, onChanged }) {
+  const sid = sidOf(session)
+  const [tracks, setTracks] = useState(session.captions || [])
+  const [lang, setLang] = useState('hi')
+  const [file, setFile] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [tgt, setTgt] = useState('en') // translate target
+
+  const upload = async () => {
+    if (!file) { setError('Pick a .srt or .vtt file'); return }
+    setBusy(true); setError('')
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('lang', lang)
+      fd.append('label', langLabel(lang))
+      const d = await apiUpload(`/admin/sessions/${sid}/captions`, fd, { auth: 'admin' })
+      setTracks(d.captions); setFile(null); onChanged?.()
+    } catch (e) { setError(e.message) } finally { setBusy(false) }
+  }
+
+  const remove = async (l) => {
+    if (!confirm(`Remove ${langLabel(l)} captions?`)) return
+    setBusy(true); setError('')
+    try {
+      const d = await api(`/admin/sessions/${sid}/captions/${l}`, { method: 'DELETE', auth: 'admin' })
+      setTracks(d.captions); onChanged?.()
+    } catch (e) { setError(e.message) } finally { setBusy(false) }
+  }
+
+  const translate = async (fromLang) => {
+    if (tgt === fromLang) { setError('Pick a different target language'); return }
+    setBusy(true); setError('')
+    try {
+      const d = await api(`/admin/sessions/${sid}/captions/${fromLang}/translate`, {
+        method: 'POST', auth: 'admin', body: { targetLang: tgt, targetLabel: langLabel(tgt) },
+      })
+      setTracks(d.captions); onChanged?.()
+    } catch (e) { setError(e.message) } finally { setBusy(false) }
+  }
+
+  return (
+    <div>
+      <h3 style={{ fontSize: 15, marginBottom: 8 }}>Captions — {session.title}</h3>
+      <p className="adm-sub" style={{ marginBottom: 12 }}>
+        Upload a <strong>.srt</strong> (or .vtt) per language — we convert to WebVTT and keep the exact
+        timings, so captions stay in sync. Students pick the language in the player.
+      </p>
+
+      {tracks.length === 0 ? (
+        <p className="adm-empty">No captions yet.</p>
+      ) : (
+        <div className="adm-table-wrap" style={{ marginBottom: 12 }}>
+          <table className="adm-table">
+            <thead><tr><th>Language</th><th>File</th><th>Translate to →</th><th></th></tr></thead>
+            <tbody>
+              {tracks.map((t) => (
+                <tr key={t.lang}>
+                  <td>{t.label} <span className="adm-sub">({t.lang})</span></td>
+                  <td><a className="adm-link" href={t.url} target="_blank" rel="noreferrer">view ↗</a></td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <select className="adm-select" style={{ width: 120 }} value={tgt} onChange={(e) => setTgt(e.target.value)}>
+                      {LANGS.filter((l) => l.v !== t.lang).map((l) => <option key={l.v} value={l.v}>{l.label}</option>)}
+                    </select>
+                    <button className="adm-btn adm-btn--ghost adm-btn--sm" style={{ marginLeft: 6 }}
+                            disabled={busy} onClick={() => translate(t.lang)}>AI translate</button>
+                  </td>
+                  <td><button className="adm-link" style={{ color: 'var(--color-danger)' }} disabled={busy} onClick={() => remove(t.lang)}>Remove</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+        <select className="adm-select" style={{ width: 130 }} value={lang} onChange={(e) => setLang(e.target.value)}>
+          {LANGS.map((l) => <option key={l.v} value={l.v}>{l.label}</option>)}
+        </select>
+        <input type="file" accept=".srt,.vtt" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        <button className="adm-btn" disabled={busy || !file} onClick={upload}>{busy ? 'Uploading…' : 'Upload captions'}</button>
+      </div>
+
+      {error && <p className="adm-error">{error}</p>}
+      <button className="adm-btn adm-btn--ghost" style={{ marginTop: 12 }} onClick={onClose}>Close</button>
     </div>
   )
 }

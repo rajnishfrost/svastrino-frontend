@@ -1,0 +1,35 @@
+/* ---- The five pillars ---- */
+.ideology-pillars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+.ideology-pillar { position: relative; padding-top: var(--space-5); }
+.ideology-pillar-n {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-accent-soft);
+}
+.ideology-pillar h2 { font-size: 19px; margin-bottom: var(--space-2); }
+.ideology-pillar p { color: var(--color-text-muted); }
+
+/* ---- Closing service routes ---- */
+.ideology-routes { list-style: none; padding: 0; margin: var(--space-5) auto 0; max-width: 760px; }
+.ideology-routes li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-surface-border);
+  flex-wrap: wrap;
+}
+.ideology-route-need { color: var(--color-text); }
+.ideology-route-link { font-weight: 600; color: var(--color-accent); white-space: nowrap; }

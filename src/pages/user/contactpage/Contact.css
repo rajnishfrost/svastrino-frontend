@@ -114,3 +114,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Note shown when the form has been filled in from the visitor's account. */
+.contact-prefill {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: var(--space-3);
+}

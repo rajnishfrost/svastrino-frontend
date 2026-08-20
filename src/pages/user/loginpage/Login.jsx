@@ -33,7 +33,11 @@ const sanitise = (s) => (s ?? '').replace(/[<>]/g, '').slice(0, 500)
 const cleanDigits = (s) => (s ?? '').replace(/\D+/g, '')
 
 export default function Login() {
-  const [mode, setMode] = useState('login')       // 'login' | 'signup'
+  // ?mode=signup opens straight on the sign-up form (the footer's
+  // "Students Registration" link uses it); anything else opens on log in.
+  const [mode, setMode] = useState(
+    () => (new URLSearchParams(window.location.search).get('mode') === 'signup' ? 'signup' : 'login')
+  )                                              // 'login' | 'signup'
   const [showPw, setShowPw] = useState(false)
   const [showPw2, setShowPw2] = useState(false)
   const [error, setError] = useState('')

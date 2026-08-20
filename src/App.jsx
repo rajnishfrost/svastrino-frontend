@@ -12,14 +12,26 @@ import GuestRoute from './common_component/user/GuestRoute/GuestRoute.jsx'
 import AdminLayout from './common_component/admin/AdminLayout/AdminLayout.jsx'
 import AdminProtectedRoute from './common_component/admin/AdminProtectedRoute/AdminProtectedRoute.jsx'
 
+// ---- Partner organisation portal ----
+import OrgLayout from './common_component/org/OrgLayout/OrgLayout.jsx'
+import OrgDashboard from './pages/org/dashboardpage/OrgDashboard.jsx'
+import OrgStudents from './pages/org/studentspage/OrgStudents.jsx'
+import OrgScholarship from './pages/org/scholarshippage/OrgScholarship.jsx'
+import OrgProfile from './pages/org/profilepage/OrgProfile.jsx'
+
 // ---- User pages ----
 import Home from './pages/user/homepage/Home.jsx'
 import About from './pages/user/aboutpage/About.jsx'
-import Mentoring from './pages/user/mentoringpage/Mentoring.jsx'
+import Ideology from './pages/user/ideologypage/Ideology.jsx'
+import Services from './pages/user/servicespage/Services.jsx'
+import ServiceProgram from './pages/user/servicespage/ServiceProgram.jsx'
 import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
-import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
-import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
+import Psychometric from './pages/user/psychometricpage/Psychometric.jsx'
+// Scholarship (user-facing) temporarily hidden — see routes below.
+// import Scholarship from './pages/user/scholarshippage/Scholarship.jsx'
+// import ScholarshipTest from './pages/user/scholarshippage/ScholarshipTest.jsx'
+// import Organisations from './pages/user/organisationspage/Organisations.jsx'
 import Resources from './pages/user/resourcespage/Resources.jsx'
 import CourseDetail from './pages/user/careerlibrarypage/CourseDetail.jsx'
 import LegalPage from './pages/user/legalpage/LegalPage.jsx'
@@ -40,6 +52,8 @@ import NotFound from './pages/user/notfoundpage/NotFound.jsx'
 import AdminDashboard from './pages/admin/dashboardpage/AdminDashboard.jsx'
 import AdminSkillBuilds from './pages/admin/skillbuildspage/AdminSkillBuilds.jsx'
 import AdminContent from './pages/admin/contentpage/AdminContent.jsx'
+import AdminBlogs from './pages/admin/blogspage/AdminBlogs.jsx'
+import AdminCareerLibrary from './pages/admin/careerlibrarypage/AdminCareerLibrary.jsx'
 import AdminUsers from './pages/admin/userspage/AdminUsers.jsx'
 import AdminCoupons from './pages/admin/couponspage/AdminCoupons.jsx'
 import AdminOrders from './pages/admin/orderspage/AdminOrders.jsx'
@@ -61,14 +75,24 @@ function PublicSite() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/mentoring" element={<Mentoring />} />
+          <Route path="/our-ideology" element={<Ideology />} />
+          {/* Services (was Mentoring) — landing + per-program pages */}
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:slug" element={<ServiceProgram />} />
+          <Route path="/mentoring" element={<Navigate to="/services" replace />} />
           <Route path="/book-online" element={<BookOnline />} />
           <Route path="/skill-build/nirmaan" element={<Nirmaan />} />
+          <Route path="/skill-build/psychometric-testing" element={<Psychometric />} />
+          {/* Scholarship (user-facing) hidden for now — admin side stays active.
           <Route path="/nirmaan-scholarship" element={<Scholarship />} />
           <Route path="/nirmaan-scholarship/test" element={<ProtectedRoute><ScholarshipTest /></ProtectedRoute>} />
-          {/* Renamed — it's Nirmaan-only. Keep old links working. */}
           <Route path="/scholarship" element={<Navigate to="/nirmaan-scholarship" replace />} />
-          <Route path="/resources" element={<Resources />} />
+          <Route path="/organisations" element={<Organisations />} />
+          */}
+          <Route path="/resources" element={<Resources view="all" />} />
+          <Route path="/resources/career-library" element={<Resources view="career-library" />} />
+          <Route path="/resources/faqs" element={<Resources view="faqs" />} />
+          <Route path="/resources/success-stories" element={<Resources view="success-stories" />} />
           <Route path="/career-library/:slug" element={<CourseDetail />} />
           <Route path="/legal/:slug" element={<LegalPage />} />
           <Route path="/blog" element={<Blog />} />
@@ -147,6 +171,8 @@ export default function App() {
                   {/* Packages now live inside Skill Builds — keep old links working. */}
                   <Route path="/packages" element={<Navigate to="/admin/skill-builds" replace />} />
                   <Route path="/content" element={<AdminContent />} />
+                  <Route path="/blogs" element={<AdminBlogs />} />
+                  <Route path="/career-library" element={<AdminCareerLibrary />} />
                   <Route path="/users" element={<AdminUsers />} />
                   <Route path="/coupons" element={<AdminCoupons />} />
                   <Route path="/orders" element={<AdminOrders />} />
@@ -158,6 +184,24 @@ export default function App() {
                 </Routes>
               </AdminLayout>
             </AdminProtectedRoute>
+          }
+        />
+
+        {/* Partner organisation portal — its own chrome. The guard IS the data
+            load (see OrgLayout): /org/me only answers for an approved, active
+            organisation's owner, so there's no separate protected-route wrapper. */}
+        <Route
+          path="/organisation/*"
+          element={
+            <OrgLayout>
+              <Routes>
+                <Route path="/" element={<OrgDashboard />} />
+                <Route path="/students" element={<OrgStudents />} />
+                <Route path="/scholarship" element={<OrgScholarship />} />
+                <Route path="/profile" element={<OrgProfile />} />
+                <Route path="*" element={<Navigate to="/organisation" replace />} />
+              </Routes>
+            </OrgLayout>
           }
         />
 

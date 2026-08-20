@@ -1,0 +1,104 @@
+# =============================================================================
+# Deploy the Svastrino React app to S3 + CloudFront
+# =============================================================================
+# Triggered by a push to `production`. Builds with Vite, syncs dist/ to the
+# frontend bucket, and invalidates the CDN.
+#
+# Authentication is OIDC - no AWS keys are stored in this repo. The role's trust
+# policy pins this repo AND this branch.
+#
+# Repository variables required (Settings -> Secrets and variables -> Actions):
+#   AWS_DEPLOY_ROLE = arn:aws:iam::559258887400:role/svastrino-prod-gha-client-deploy
+#                     (terraform output github_client_deploy_role_arn)
+#   S3_BUCKET       = svastrino-prod-frontend          (terraform output frontend_bucket)
+#   CF_DISTRIBUTION = E...                             (terraform output cloudfront_distribution_id)
+# Repository secret required:
+#   VITE_GOOGLE_CLIENT_ID = the Google OAuth client id (baked in at BUILD time,
+#                           so it cannot come from Secrets Manager like the
+#                           server's config does)
+#
+# Note there is no VITE_API_BASE: the client falls back to the relative path
+# /api (src/api/client.js), and CloudFront routes /api/* to the ALB on the same
+# domain. Same origin means no CORS and nothing to configure per environment.
+# =============================================================================
+name: Deploy Web
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: true # a newer build supersedes an in-flight one
+
+env:
+  AWS_REGION: ap-south-1
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Two passes, because the right cache header differs per file type.
+      #
+      # Pass 1: everything with a content hash in its name (Vite puts these in
+      # assets/) can be cached forever - a new build produces new filenames.
+      - name: Upload hashed assets (immutable)
+        run: |
+          aws s3 sync dist/ "s3://${{ vars.S3_BUCKET }}/" \
+            --delete \
+            --exclude "index.html" \
+            --exclude "sw.js" \
+            --exclude "*.webmanifest" \
+            --cache-control "public,max-age=31536000,immutable"
+
+      # Pass 2: the entry point and the service worker keep their NAMES across
+      # builds, so caching them would pin users to the old app. This is a PWA
+      # (vite-plugin-pwa, registerType autoUpdate) - a stale sw.js is especially
+      # bad because the service worker then keeps serving the old shell offline.
+      - name: Upload entry point and service worker (no-cache)
+        run: |
+          aws s3 sync dist/ "s3://${{ vars.S3_BUCKET }}/" \
+            --exclude "*" \
+            --include "index.html" \
+            --include "sw.js" \
+            --include "*.webmanifest" \
+            --cache-control "no-cache,must-revalidate"
+
+      - name: Invalidate CloudFront
+        run: |
+          ID=$(aws cloudfront create-invalidation \
+            --distribution-id "${{ vars.CF_DISTRIBUTION }}" \
+            --paths "/*" \
+            --query 'Invalidation.Id' --output text)
+          echo "Invalidation $ID created"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "${{ vars.CF_DISTRIBUTION }}" \
+            --id "$ID"

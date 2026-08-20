@@ -1,0 +1,99 @@
+/* Public partner directory — uses the Nirmaan palette via body.theme-nirmaan,
+   matching the scholarship page it belongs to. */
+
+/* Filter bar: search grows, the two selects keep a fixed comfortable width. */
+.orgs-filters {
+  display: grid;
+  grid-template-columns: 1fr 200px 200px;
+  gap: 12px;
+  margin-bottom: var(--space-5);
+}
+.orgs-filters input,
+.orgs-filters select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--nirmaan-cream-dark);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 15px;
+  background: #fff;
+  color: var(--nirmaan-brown, #3a2a1e);
+}
+.orgs-filters input:focus,
+.orgs-filters select:focus {
+  outline: none;
+  border-color: var(--nirmaan-green);
+  box-shadow: 0 0 0 3px rgba(61, 110, 45, 0.15);
+}
+
+.orgs-count {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-bottom: var(--space-3);
+}
+
+.orgs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.orgs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-5);
+  background: var(--nirmaan-cream);
+  border: 1px solid var(--nirmaan-cream-dark);
+}
+.orgs-card h3 {
+  font-size: 19px;
+  margin: 0;
+  color: var(--nirmaan-green-dark, #2d5723);
+}
+
+.orgs-type {
+  align-self: flex-start;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--nirmaan-green);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.orgs-place {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.orgs-desc {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+.orgs-link {
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nirmaan-green);
+}
+.orgs-link:hover { text-decoration: underline; }
+
+.orgs-empty,
+.orgs-error {
+  color: var(--color-text-muted);
+  padding: var(--space-5) 0;
+  text-align: center;
+}
+.orgs-error { color: var(--color-danger); }
+
+.orgs-cta .section-sub { max-width: 620px; margin: 0 auto var(--space-4); }
+
+@media (max-width: 720px) {
+  .orgs-filters { grid-template-columns: 1fr; }
+}
