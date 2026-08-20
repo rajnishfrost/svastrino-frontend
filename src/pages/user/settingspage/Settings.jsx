@@ -23,6 +23,15 @@ const TABS = [
   { key: 'orders', label: 'Orders' },
 ]
 
+/**
+ * The same answers the home enquiry form offers, so a student who already told
+ * us their class there meets the identical wording here rather than a near-miss
+ * synonym. The class is stored as free text and the server reads the number out
+ * of it when it decides whether a psychometric plan may be bought, which is why
+ * 'Graduate' and 'Other' are allowed to sit in the list unnumbered.
+ */
+const CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduate', 'Other']
+
 const inr = (n) => '₹' + Number(n).toLocaleString('en-IN')
 // Money with 2 decimals (paise → rupees), for exact invoice amounts.
 const money = (paise) =>
@@ -124,6 +133,7 @@ function AccountPanel() {
 
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('+91')
+  const [studentClass, setStudentClass] = useState('')
   const [curPw, setCurPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confPw, setConfPw] = useState('')
@@ -135,6 +145,7 @@ function AccountPanel() {
     setNotice('')
     setName(user.name || '')
     setPhone(user.phone || '+91')
+    setStudentClass(user.studentClass || '')
     setCurPw('')
     setNewPw('')
     setConfPw('')
@@ -165,6 +176,8 @@ function AccountPanel() {
     patchProfile({ name: name.trim() }, 'Name updated.')
   }
   const savePhone = () => patchProfile({ phone }, 'Phone updated — verify it when you get the option.')
+  const saveClass = () =>
+    patchProfile({ studentClass }, studentClass ? 'Class updated.' : 'Class removed.')
 
   const savePassword = async () => {
     setError('')
@@ -190,6 +203,11 @@ function AccountPanel() {
   }
 
   const hasPhoto = user.avatar && avatarOk
+  // An account can arrive carrying wording we never offered — an organisation
+  // import, or an older list — so keep whatever is on it in the dropdown. Opening
+  // this row must never quietly rewrite a class the student did not touch.
+  const classOptions =
+    studentClass && !CLASSES.includes(studentClass) ? [studentClass, ...CLASSES] : CLASSES
 
   return (
     <div className="card settings-card">
@@ -257,6 +275,25 @@ function AccountPanel() {
           <ViewRow label="Phone" value={user.phone || 'Not added'}
                    badge={!user.phone ? undefined : user.phoneVerified ? 'verified' : 'unverified'}
                    action={user.phone ? 'Edit' : 'Add'} onAction={() => open('phone')} />
+        )}
+
+        {/* Class — free text on the server, a list here. It gates which
+            psychometric plans this account may buy, so it has to be settable
+            somewhere; this is that somewhere. */}
+        {editing === 'class' ? (
+          <EditField label="Class" onSave={saveClass} onCancel={cancel} busy={busy}>
+            <select className="settings-input" value={studentClass} autoFocus
+                    onChange={(e) => setStudentClass(e.target.value)}>
+              <option value="">Not added</option>
+              {classOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <p className="settings-muted">
+              Plans that include the psychometric test are sold to classes 7 to 12 only.
+            </p>
+          </EditField>
+        ) : (
+          <ViewRow label="Class" value={user.studentClass || 'Not added'}
+                   action={user.studentClass ? 'Edit' : 'Add'} onAction={() => open('class')} />
         )}
 
         {/* Password */}

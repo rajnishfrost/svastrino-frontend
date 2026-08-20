@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 
 /**
  * Psychometric · section 7 — the bundle nudge. Taking the test alongside
- * Nirmaan is cheaper than buying the two separately.
+ * Nirmaan is cheaper than buying the two separately. The class rule travels
+ * with the offer, so nobody follows this link to a plan they cannot buy.
  */
 export default function PackagePlans() {
   return (
@@ -16,6 +17,9 @@ export default function PackagePlans() {
         <Link to="/skill-build/nirmaan#packages" className="btn btn-primary btn-large">
           See Nirmaan plans →
         </Link>
+        <p className="psy-bundle-who">
+          The Nirmaan plans that include this test are for students in classes 7 to 12.
+        </p>
       </div>
     </section>
   )

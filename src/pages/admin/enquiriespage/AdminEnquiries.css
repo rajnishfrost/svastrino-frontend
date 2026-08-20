@@ -1,0 +1,27 @@
+/* Enquiries table — a few things the shared admin table does not cover. */
+
+.enq-table td { vertical-align: top; }
+
+.enq-contact { display: grid; gap: 2px; margin-top: 4px; }
+.enq-contact a, .enq-contact span { font-size: 12.5px; color: var(--color-text-muted); }
+.enq-contact a:hover { text-decoration: underline; }
+
+.enq-meta { font-size: 12px; color: var(--color-text-muted); margin-top: 4px; }
+
+.enq-msg { max-width: 340px; white-space: pre-wrap; }
+.enq-when { white-space: nowrap; font-size: 12.5px; color: var(--color-text-muted); }
+
+.enq-status { width: 150px; }
+
+.enq-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+
+/* Which form it came from, at a glance. */
+.enq-tag {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-pill);
+  font-size: 11.5px; font-weight: 600; white-space: nowrap;
+  background: var(--color-surface-border); color: var(--color-heading);
+}
+.enq-tag.enq-expert-call { background: var(--color-accent-soft); color: var(--color-accent); }
+
+.enq-note-row td { background: var(--color-bg); }
+.enq-note-row .adm-textarea { margin-bottom: 8px; }

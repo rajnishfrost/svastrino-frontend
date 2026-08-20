@@ -22,6 +22,16 @@ export default function OfflineBanner() {
     }
   }, [])
 
+  // The bar and the navbar are both sticky at the top, so the navbar has to sit
+  // BELOW the bar rather than under it. The bar publishes its height and the
+  // navbar offsets itself by that much; the variable is cleared on unmount.
+  useEffect(() => {
+    const root = document.documentElement
+    if (offline) root.style.setProperty('--offline-h', '38px')
+    else root.style.removeProperty('--offline-h')
+    return () => root.style.removeProperty('--offline-h')
+  }, [offline])
+
   if (!offline) return null
 
   return (

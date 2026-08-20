@@ -48,6 +48,8 @@
   --color-inverse-bg: var(--navy);
   --color-inverse-text: #eaf2fd;
   --color-danger: #d8413a;
+  /* Tinted danger, for hover states on destructive actions. */
+  --color-danger-soft: #fdecec;
   --color-success: #1f9d62;
   --color-warning: #d39a1e;
 

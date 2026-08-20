@@ -10,6 +10,7 @@ const COLUMNS = [
       { label: 'Bloom', to: '/services/bloom' },
       { label: 'Breakthrough', to: '/services/breakthrough' },
       { label: 'Nirmaan', to: '/skill-build/nirmaan' },
+      { label: 'Compare programs', to: '/services/compare' },
       { label: 'Book Online', to: '/book-online' },
     ],
   },
@@ -51,6 +52,10 @@ function registerColumn(user) {
             { label: 'Dashboard', to: '/dashboard' },
             { label: 'My Downloads', to: '/downloads' },
             { label: 'Settings', to: '/settings' },
+            // Signed-in only: support threads belong to an account, so there is
+            // nothing for a signed-out visitor to see there. They have Contact
+            // Us in the Company column instead.
+            { label: 'Help & support', to: '/support' },
           ]
         : [
             { label: 'Students Registration', to: '/login?mode=signup' },

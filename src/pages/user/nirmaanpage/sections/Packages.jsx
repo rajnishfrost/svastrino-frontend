@@ -1,15 +1,40 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../../../api/client.js'
+import { useAuth } from '../../../../context/AuthContext.jsx'
 
 /**
  * Pricing tiers — fetched from the backend Skill-Build catalog
  * (GET /user/skill-build/nirmaan → { skillBuild, packages }). Prices, features
  * and copy all live in the DB (packages collection), not the client.
+ *
+ * Two of the plans bundle the psychometric test, which is written for classes
+ * 7 to 12 and sold to nobody outside that band. Checkout refuses the payment
+ * either way; these cards say the rule out loud first, so nobody meets it for
+ * the first time with their card details already typed in.
  */
 const inr = (paise) => '₹' + (Math.round(Number(paise) || 0) / 100).toLocaleString('en-IN')
 
+// The band the test is written and scored for (2026 plans sheet).
+const PSY_MIN_CLASS = 7
+const PSY_MAX_CLASS = 12
+
+/**
+ * The class number hiding in a profile's free-text class, or null when there is
+ * nothing usable there. Students write 'Class 9', '9', '10th' and everything in
+ * between, so take the first standalone one- or two-digit number; a longer run
+ * of digits is a year or a phone number, never a class. The server reads the
+ * field the same way at checkout, so the card and the payment step agree.
+ */
+const classNumber = (raw) => {
+  const match = String(raw || '').match(/(^|\D)(\d{1,2})(\D|$)/)
+  if (!match) return null
+  const n = Number(match[2])
+  return n > 0 ? n : null
+}
+
 export default function Packages() {
+  const { user } = useAuth()
   const [packages, setPackages] = useState(null)
   const [error, setError] = useState('')
   const [upg, setUpg] = useState(null) // enrolled user's upgrade status (null = not enrolled / logged out)
@@ -23,6 +48,17 @@ export default function Packages() {
       .then((u) => setUpg(u?.hasEnrollment ? u : null))
       .catch(() => setUpg(null))
   }, [])
+
+  // We only judge a visitor we actually know something about. An account with
+  // no class on it gets the plain eligibility line and nothing else — guessing
+  // at someone's class and turning them away would be worse than saying less.
+  const myClass = classNumber(user?.studentClass)
+  const outOfBand = myClass != null && (myClass < PSY_MIN_CLASS || myClass > PSY_MAX_CLASS)
+
+  // Every plan with the test has a twin without it on the same payment terms.
+  // Naming that twin turns "you cannot buy this" into "buy this one instead".
+  const twinWithoutTest = (pkg) =>
+    (packages || []).find((p) => !p.includesPsychometric && p.paymentMode === pkg.paymentMode)
 
   // What the CTA should do for a given package, given the user's enrollment.
   const ctaFor = (pkg) => {
@@ -87,6 +123,24 @@ export default function Packages() {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
+                {/* Sits between the features and the button on purpose: it is the
+                    last thing read before the click that starts a payment. */}
+                {pkg.includesPsychometric && (
+                  <div className="nirmaan-pkg-psy">
+                    <p className="nirmaan-pkg-psy-rule">
+                      Psychometric testing is for students in classes {PSY_MIN_CLASS} to {PSY_MAX_CLASS}.
+                    </p>
+                    {outOfBand && (
+                      <p className="nirmaan-pkg-psy-you">
+                        Your profile says class {myClass}. The test is not offered for that
+                        class, so this plan is not the one for you.{' '}
+                        {twinWithoutTest(pkg)
+                          ? `Take ${twinWithoutTest(pkg).name} instead — same course, same terms, without the test.`
+                          : 'Please pick one of the plans without the test.'}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {(() => {
                   const cta = ctaFor(pkg)
                   if (cta.kind === 'current')
@@ -111,6 +165,34 @@ export default function Packages() {
                 })()}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Half the plans on this page cost more because of a test most parents
+            have never taken. It is worth the space to say what they are buying. */}
+        {packages && packages.some((p) => p.includesPsychometric) && (
+          <div className="nirmaan-psy-about">
+            <h3>About the psychometric test</h3>
+            <p>
+              Some of the plans above include a psychometric test. It is a set of simple
+              questions about what you enjoy, what comes easily to you and how you like to
+              work. There is no pass or fail, and no studying for it.
+            </p>
+            <ul>
+              <li>
+                It is scored on the RIASEC scale, which sorts what interests a student into
+                six broad types.
+              </li>
+              <li>
+                You get a report of up to 40 pages — strengths, weaker areas, personality,
+                interests and preferences, in plain language.
+              </li>
+              <li>The report names the top 5 careers that suit the student best.</li>
+              <li>The test is for students in classes {PSY_MIN_CLASS} to {PSY_MAX_CLASS}.</li>
+            </ul>
+            <Link to="/skill-build/psychometric-testing" className="nirmaan-psy-about-more">
+              Read more about the test →
+            </Link>
           </div>
         )}
       </div>

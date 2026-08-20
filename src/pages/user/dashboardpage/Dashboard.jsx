@@ -10,8 +10,16 @@ import './Dashboard.css'
  *   Mentoring    → per-program session tables (GET /user/mentoring/my)
  *   Skill Build  → the user's real enrollments (GET /user/payments/enrollments)
  */
+// Course dates are read in IST here, as they are on the course pages. The end
+// of a student's year is a moment in time, and a student reading this card from
+// another country would otherwise be shown one date here and a different one on
+// the course record screen.
 const fmtDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : null
+  iso
+    ? new Date(iso).toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+      })
+    : null
 
 const fmtWhen = (iso) =>
   iso
@@ -27,6 +35,21 @@ const canReschedule = (s) =>
 
 // Per-product theme class (scopes the Nirmaan green/brown palette to that card).
 const THEME_CLASS = { nirmaan: 'theme-nirmaan' }
+
+/**
+ * Where this enrolment stands against the one-year rule.
+ *
+ * The server decides this, not the card. An enrolment whose year has gone by
+ * deliberately keeps status 'active' in the database — the dates are the truth
+ * there, not the status — and the year itself is anchored on the student's
+ * FIRST enrolment for the course, which a single listed row cannot see. So the
+ * answer is read from `access.state`, the same reading the course page is
+ * locked by, and the rule is not written out a second time here.
+ *
+ * 'active' is the fallback for a payload without it, because a card that has
+ * been told nothing should not announce that a course has closed.
+ */
+const accessState = (e) => e.access?.state || 'active'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -143,7 +166,10 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            enrollments.map((e) => (
+            enrollments.map((e) => {
+              const state = accessState(e)
+              const open = state === 'active'
+              return (
               <div key={e.id} className={`card dash-card ${THEME_CLASS[e.courseSlug] || ''}`}>
                 <div className="dash-item">
                   <div className="dash-item-main">
@@ -152,20 +178,36 @@ export default function Dashboard() {
                       {e.progress && e.progress.total > 0
                         ? `${e.progress.completed} of ${e.progress.total} sessions complete`
                         : 'Skill Build subscription'}
-                      {e.expiresAt ? ` · valid till ${fmtDate(e.expiresAt)}` : ''}
+                      {e.expiresAt
+                        ? open
+                          ? ` · valid till ${fmtDate(e.expiresAt)}`
+                          : ` · ended on ${fmtDate(e.expiresAt)}`
+                        : ''}
                     </p>
                     {e.progress && e.progress.total > 0 && (
                       <div className="dash-progress"><span style={{ width: `${e.progress.percent}%` }} /></div>
                     )}
                   </div>
-                  <span className="dash-badge dash-badge--active">Active</span>
+                  {/* Once the year is over the course is shut whether or not the
+                      student finished it, so the badge says so plainly rather
+                      than promising an Active course that will not open. */}
+                  {open ? (
+                    <span className="dash-badge dash-badge--active">Active</span>
+                  ) : (
+                    <span className="dash-badge dash-badge--closed">Course closed</span>
+                  )}
                 </div>
                 <div className="dash-card-foot">
                   {/* With course content → learn player; otherwise (e.g. a Model
-                      Session / no-content tier) send them to the packages page. */}
+                      Session / no-content tier) send them to the packages page.
+                      A closed course keeps the same link: that page hands them
+                      their own work instead of the videos, so the label is what
+                      changes, not the destination. */}
                   {e.progress && e.progress.total > 0 ? (
                     <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className="dash-action">
-                      {e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'}
+                      {open
+                        ? e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'
+                        : state === 'expired' ? 'Download your work →' : 'View course details →'}
                     </Link>
                   ) : (
                     <Link to={`/skill-build/${e.courseSlug || 'nirmaan'}#packages`} className="dash-action">
@@ -174,7 +216,8 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-            ))
+              )
+            })
           )}
         </section>
       </div>

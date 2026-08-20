@@ -57,6 +57,46 @@
 }
 .psy-uncovers-after { max-width: 620px; margin: 0 auto; }
 
+/* The report is the thing a parent is actually buying, so it gets a panel of
+   its own rather than another line of body copy. */
+.psy-report {
+  max-width: 720px;
+  margin: var(--space-5) auto 0;
+  text-align: left;
+  background: var(--color-bg);
+  border: 1px solid var(--nirmaan-gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.psy-report h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--nirmaan-brown);
+  margin-bottom: var(--space-2);
+}
+.psy-report ul { display: grid; gap: 10px; margin: 0; }
+.psy-report li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--nirmaan-brown);
+}
+.psy-report li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--nirmaan-green);
+  font-weight: 700;
+}
+.psy-report-who {
+  margin: var(--space-3) 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nirmaan-green-dark);
+}
+
 /* ---- Student journey ---- */
 .psy-journey { list-style: none; padding: 0; margin: var(--space-5) 0 0; }
 .psy-journey li {
@@ -129,6 +169,12 @@
 /* ---- Bundle ---- */
 .psy-bundle { font-size: 17px; margin-bottom: var(--space-4); }
 .psy-bundle strong { color: var(--nirmaan-green); }
+/* Same rule as the plan cards carry, repeated where the link is clicked. */
+.psy-bundle-who {
+  margin-top: var(--space-3);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
 
 /* ---- Testimonies ---- */
 .psy-quote blockquote { font-size: 15px; margin-bottom: var(--space-3); }

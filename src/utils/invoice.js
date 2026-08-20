@@ -10,7 +10,7 @@
 const COMPANY = {
   name: 'Svastrino Consultancy Services',
   tagline: 'Soch Se Vikas Tak',
-  address: 'Thane · Mumbai · Dharamshala, India',
+  address: 'Thane · Dharamshala, India',
   email: 'support@svastrino.com',
   website: 'svastrino.com',
   gstin: '', // e.g. '27ABCDE1234F1Z5' — appears only when set
@@ -23,8 +23,15 @@ const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ))
+// Anchored to IST, as every other printed date on the site is. An invoice is
+// kept and compared against the course record and the dashboard, so a customer
+// reading it from outside India must not be shown a different day here.
 const fmtDate = (iso) =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
+  iso
+    ? new Date(iso).toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+      })
+    : '—'
 
 // Split "Nirmaan — Launch" → { product: 'Nirmaan', pkg: 'Launch' }.
 const splitItem = (label = '') => {

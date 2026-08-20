@@ -25,6 +25,7 @@ import About from './pages/user/aboutpage/About.jsx'
 import Ideology from './pages/user/ideologypage/Ideology.jsx'
 import Services from './pages/user/servicespage/Services.jsx'
 import ServiceProgram from './pages/user/servicespage/ServiceProgram.jsx'
+import CompareServices from './pages/user/servicespage/CompareServices.jsx'
 import BookOnline from './pages/user/bookonlinepage/BookOnline.jsx'
 import Nirmaan from './pages/user/nirmaanpage/Nirmaan.jsx'
 import Psychometric from './pages/user/psychometricpage/Psychometric.jsx'
@@ -38,6 +39,7 @@ import LegalPage from './pages/user/legalpage/LegalPage.jsx'
 import Blog from './pages/user/blogpage/Blog.jsx'
 import BlogPost from './pages/user/blogpage/BlogPost.jsx'
 import Contact from './pages/user/contactpage/Contact.jsx'
+import Offers from './pages/user/offerspage/Offers.jsx'
 import Login from './pages/user/loginpage/Login.jsx'
 import ResetPassword from './pages/user/loginpage/ResetPassword.jsx'
 import VerifyEmail from './pages/user/loginpage/VerifyEmail.jsx'
@@ -46,6 +48,9 @@ import Settings from './pages/user/settingspage/Settings.jsx'
 import Checkout from './pages/user/checkoutpage/Checkout.jsx'
 import Learn from './pages/user/learnpage/Learn.jsx'
 import Downloads from './pages/user/downloadspage/Downloads.jsx'
+import Support from './pages/user/supportpage/Support.jsx'
+import NewTicket from './pages/user/supportpage/NewTicket.jsx'
+import TicketThread from './pages/user/supportpage/TicketThread.jsx'
 import NotFound from './pages/user/notfoundpage/NotFound.jsx'
 
 // ---- Admin pages ----
@@ -60,6 +65,8 @@ import AdminOrders from './pages/admin/orderspage/AdminOrders.jsx'
 import AdminAssessments from './pages/admin/assessmentspage/AdminAssessments.jsx'
 import AdminMentoring from './pages/admin/mentoringpage/AdminMentoring.jsx'
 import AdminRoles from './pages/admin/rolespage/AdminRoles.jsx'
+import AdminEnquiries from './pages/admin/enquiriespage/AdminEnquiries.jsx'
+import AdminTickets from './pages/admin/ticketspage/AdminTickets.jsx'
 import AdminSettings from './pages/admin/settingspage/AdminSettings.jsx'
 import AdminScholarship from './pages/admin/scholarshippage/AdminScholarship.jsx'
 
@@ -79,6 +86,7 @@ function PublicSite() {
           <Route path="/our-ideology" element={<Ideology />} />
           {/* Services (was Mentoring) — landing + per-program pages */}
           <Route path="/services" element={<Services />} />
+          <Route path="/services/compare" element={<CompareServices />} />
           <Route path="/services/:slug" element={<ServiceProgram />} />
           <Route path="/mentoring" element={<Navigate to="/services" replace />} />
           <Route path="/book-online" element={<BookOnline />} />
@@ -99,6 +107,7 @@ function PublicSite() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/offers" element={<Offers />} />
 
           {/* Auth + unified account */}
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
@@ -144,6 +153,32 @@ function PublicSite() {
               </ProtectedRoute>
             }
           />
+          {/* Help & support. "/support/new" is declared before "/support/:id"
+              so the word "new" is never read as a ticket id. */}
+          <Route
+            path="/support"
+            element={
+              <ProtectedRoute>
+                <Support />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support/new"
+            element={
+              <ProtectedRoute>
+                <NewTicket />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/support/:id"
+            element={
+              <ProtectedRoute>
+                <TicketThread />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -175,6 +210,8 @@ export default function App() {
                   <Route path="/blogs" element={<AdminBlogs />} />
                   <Route path="/career-library" element={<AdminCareerLibrary />} />
                   <Route path="/users" element={<AdminUsers />} />
+                  <Route path="/enquiries" element={<AdminEnquiries />} />
+                  <Route path="/tickets" element={<AdminTickets />} />
                   <Route path="/coupons" element={<AdminCoupons />} />
                   <Route path="/orders" element={<AdminOrders />} />
                   <Route path="/assessments" element={<AdminAssessments />} />

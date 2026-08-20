@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import NotificationBell from '../NotificationBell/NotificationBell.jsx'
 import './Navbar.css'
 
 /**
@@ -86,7 +87,10 @@ export default function Navbar() {
           </NavLink>
 
           {user ? (
-            <ProfileMenu user={user} onNavigate={close} />
+            <>
+              <NotificationBell onNavigate={close} />
+              <ProfileMenu user={user} onNavigate={close} />
+            </>
           ) : (
             <Link to="/login" className="btn btn-primary" onClick={close}>
               Login
@@ -96,6 +100,25 @@ export default function Navbar() {
       </div>
     </nav>
   )
+}
+
+/**
+ * True only on devices that genuinely hover. Touch browsers fire a synthetic
+ * mouseenter on tap, which used to open a dropdown and then let the click
+ * handler immediately close it again — so on a phone the menus never opened.
+ * Hover handlers are attached only where hovering is real; tapping always works
+ * through the click handler.
+ */
+const canHover = () =>
+  typeof window !== 'undefined' && window.matchMedia?.('(hover: hover)').matches === true
+
+/** Hover props for a dropdown, or nothing at all on a touch device. */
+function hoverProps(setOpen) {
+  if (!canHover()) return {}
+  return {
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false),
+  }
 }
 
 const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
@@ -112,8 +135,7 @@ function SkillBuildDropdown({ onNavigate }) {
   return (
     <div
       className={`nav-dropdown nav-skill-build${open ? ' is-open' : ''}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      {...hoverProps(setOpen)}
     >
       <button
         type="button"
@@ -143,8 +165,7 @@ function Dropdown({ label, to, items, onNavigate }) {
   return (
     <div
       className={`nav-dropdown${open ? ' is-open' : ''}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      {...hoverProps(setOpen)}
     >
       <button
         type="button"

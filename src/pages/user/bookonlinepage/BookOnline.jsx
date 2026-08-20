@@ -98,6 +98,9 @@ export default function BookOnline() {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [emailExists, setEmailExists] = useState(false)
+  // Set when a visitor on an expert-call programme says they have already
+  // spoken to us, so the wizard steps aside and lets them carry on.
+  const [callDone, setCallDone] = useState(false)
 
   // ---- calendar ----
   const [win, setWin] = useState(null) // { minDate, maxDate }
@@ -115,6 +118,13 @@ export default function BookOnline() {
   )
   const isFree = !!rescheduleId || (owned && owned.sessionsRemaining > 0)
   const soldOut = owned && owned.sessionsRemaining === 0 && !rescheduleId
+
+  // Programmes sold after a call (Breakthrough) are not bought from here. Show
+  // the reason instead of the wizard — unless they already own it, are
+  // rescheduling, or say they have had the call. If they say so and have not,
+  // the server refuses at the payment step with the same explanation.
+  const gateByCall =
+    program?.buyMode === 'expert-call' && !owned && !rescheduleId && !callDone
 
   // ---- load catalog + booking window ----
   useEffect(() => {
@@ -358,7 +368,7 @@ export default function BookOnline() {
         <div className="container bo-wrap">
 
           {/* Step indicator */}
-          {step !== 'program' && step !== 'success' && (
+          {step !== 'program' && step !== 'success' && !gateByCall && (
             <ol className="bo-steps" aria-label="Booking steps">
               {STEPS.map((label, i) => {
                 if (isFree && i === 3) return null // free flow has no payment step
@@ -420,8 +430,28 @@ export default function BookOnline() {
             </div>
           )}
 
+          {gateByCall && (
+            <div className="card bo-card bo-gate">
+              <h2 className="bo-h2">{program.name} starts with a call</h2>
+              <p>
+                This one runs for a long time and costs a lot, so we do not ask
+                anyone to pay for it from a booking page. Talk to one of our
+                mentors first — no payment, no commitment. If it is the right
+                fit, we open your booking straight after the call.
+              </p>
+              <div className="bo-gate-actions">
+                <Link to={`/services/${program.slug}#talk-to-an-expert`} className="btn btn-primary">
+                  Request a call back
+                </Link>
+                <button type="button" className="btn btn-secondary" onClick={() => setCallDone(true)}>
+                  I have already spoken to you
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ---- Step 1 · date & time ---- */}
-          {step === 'schedule' && program && !soldOut && (
+          {step === 'schedule' && program && !soldOut && !gateByCall && (
             <div className="bo-grid">
               <div className="card bo-card">
                 <h2 className="bo-h2">Pick a date</h2>

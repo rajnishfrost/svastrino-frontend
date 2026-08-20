@@ -67,6 +67,13 @@
   background: var(--blue-light);
 }
 
+/* A course whose year has ended. Deliberately quiet — it is a statement of
+   fact, not a warning, and the student has done nothing wrong. */
+.dash-badge--closed {
+  color: var(--color-text-muted);
+  background: var(--gray-100);
+}
+
 /* Progress bar (e.g. course completion) */
 .dash-progress {
   margin-top: 10px;

@@ -1,0 +1,314 @@
+/* =====================================================================
+   Help & support — the student's own conversations with our team.
+   Three screens share this file: the list, the "ask for help" form and
+   one thread. Colours come from theme.css only.
+   ===================================================================== */
+
+/* Support is reading, not scanning a table, so the column stays narrow
+   enough for a comfortable line length. */
+.sup-wrap { max-width: 820px; }
+
+.sup-state { color: var(--color-text-muted); }
+
+.sup-sub {
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+/* ---- The list of conversations ---- */
+.sup-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 16px 20px;
+}
+
+.sup-item-main { min-width: 0; }
+
+.sup-item-title {
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+.sup-item-meta {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+}
+
+/* ---- Status pill ----
+   The dot carries the meaning and the text stays dark, so every status
+   reads clearly instead of relying on pale coloured type. */
+.sup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-surface-border);
+  background: var(--gray-100);
+  color: var(--color-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sup-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gray-400);
+}
+
+.sup-badge--wait::before { background: var(--color-accent); }
+.sup-badge--you::before { background: var(--color-warning); }
+.sup-badge--done::before { background: var(--color-success); }
+.sup-badge--shut::before { background: var(--gray-400); }
+
+.sup-badge--wait { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.sup-badge--you { border-color: var(--color-warning); }
+.sup-badge--done { border-color: var(--color-success); }
+
+/* ---- Empty / closed panels ---- */
+.sup-empty,
+.sup-closed {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.sup-empty-title {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.sup-empty .btn,
+.sup-closed .btn { margin-top: var(--space-3); }
+
+/* ---- The "ask for help" form ---- */
+.sup-new-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.sup-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sup-form label,
+.sup-reply label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.sup-form input,
+.sup-form select,
+.sup-form textarea,
+.sup-reply textarea {
+  padding: 11px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--color-text);
+  font-size: 15px;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+.sup-form textarea,
+.sup-reply textarea { resize: vertical; }
+
+.sup-form input:focus,
+.sup-form select:focus,
+.sup-form textarea:focus,
+.sup-reply textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+/* Says the first message was written for the student, so nobody wonders
+   where the words came from. */
+.sup-prefill,
+.sup-notice {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+}
+
+.sup-notice { margin-bottom: var(--space-4); }
+
+.sup-field-hint {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-warning);
+}
+
+.sup-error {
+  font-size: 13.5px;
+  color: var(--color-danger);
+}
+
+.sup-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---- "A person reads this" ---- */
+.sup-aside {
+  background: var(--color-surface);
+}
+
+.sup-aside-title {
+  font-size: 17px;
+  margin-bottom: var(--space-2);
+}
+
+.sup-aside p {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.sup-aside-note {
+  border-top: 1px solid var(--color-surface-border);
+  padding-top: var(--space-2);
+  margin-bottom: 0 !important;
+}
+
+/* ---- One conversation ---- */
+.sup-thread-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.sup-thread-course {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.sup-thread-course:hover { text-decoration: underline; }
+
+.sup-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Each side of the conversation gets its own edge colour and its own side
+   of the column, so who said what is obvious without reading the label. */
+.sup-msg {
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  max-width: 88%;
+}
+
+.sup-msg--you {
+  align-self: flex-end;
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent-soft);
+}
+
+.sup-msg--team {
+  align-self: flex-start;
+  background: var(--white);
+  border-left: 3px solid var(--color-primary);
+}
+
+.sup-msg-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: 6px;
+}
+
+.sup-msg-who {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-heading);
+}
+
+.sup-msg-when {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Students type in paragraphs and their line breaks are part of what they
+   said, so they are kept exactly as written. */
+.sup-msg-text {
+  font-size: 15px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Access given back ---- */
+.sup-grant {
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.sup-grant-title {
+  font-size: 18px;
+  color: var(--color-success);
+  margin-bottom: 6px;
+}
+
+.sup-grant p {
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+/* ---- Reply box ---- */
+.sup-reply {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.sup-reply label { width: 100%; }
+
+/* ---- Tablet & phone ---- */
+@media (max-width: 900px) {
+  .sup-new-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .sup-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .sup-msg { max-width: 100%; }
+  .sup-reply .btn { width: 100%; }
+}

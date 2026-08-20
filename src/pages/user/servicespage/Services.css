@@ -65,3 +65,72 @@
 
 .svc-cta { text-align: center; }
 .svc-cta .svc-actions { justify-content: center; }
+
+/* ── Programme page: the trust line under the hero buttons ───────────────── */
+.svc-hero-trust {
+  width: 100%; margin: var(--space-3) 0 0;
+  font-size: 13.5px; opacity: 0.85;
+}
+
+/* ── Programme page: journey intro + what the programme includes ─────────── */
+.svc-journey-intro {
+  font-size: 15px; line-height: 1.6;
+  color: var(--color-text-muted); margin: 0 0 var(--space-4);
+}
+
+.svc-inclusions {
+  margin-top: var(--space-5); padding-top: var(--space-4);
+  border-top: 1px solid var(--color-surface-border);
+}
+.svc-inclusions h3 { font-size: 16px; margin: 0 0 var(--space-3); }
+.svc-inclusions ul {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: var(--space-3);
+}
+@media (min-width: 620px) {
+  .svc-inclusions ul { grid-template-columns: repeat(3, 1fr); }
+}
+.svc-inclusions li {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.svc-inclusions li strong {
+  display: block; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--color-text-muted); margin-bottom: 4px;
+}
+.svc-inclusions li span { font-size: 14.5px; color: var(--color-heading); }
+
+/* ── Programme page: mid-page booking band ───────────────────────────────── */
+.svc-book-strip {
+  background: var(--color-inverse-bg); color: var(--color-inverse-text);
+  border-radius: var(--radius-lg); padding: var(--space-5);
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: var(--space-4);
+}
+.svc-book-strip h2 { font-size: 22px; margin: 0 0 6px; color: inherit; }
+.svc-book-strip p { margin: 0; font-size: 14px; opacity: 0.85; }
+
+/* ── Programme page: proof + questions ───────────────────────────────────── */
+.svc-panel-plain { display: grid; gap: var(--space-4); }
+.svc-panel-plain .svc-h2 { margin-bottom: 0; }
+
+.svc-faqs { display: grid; gap: 10px; }
+.svc-faq {
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.svc-faq.open { border-color: var(--color-primary); }
+.svc-faq-q {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-3); background: none; border: 0; cursor: pointer;
+  padding: 14px 16px; text-align: left;
+  font: inherit; font-size: 15px; font-weight: 600;
+  color: var(--color-heading);
+}
+.svc-faq-q:hover { background: var(--color-accent-soft); }
+.svc-faq-icon { font-size: 20px; line-height: 1; color: var(--color-primary); flex-shrink: 0; }
+.svc-faq-a {
+  margin: 0; padding: 0 16px 16px;
+  font-size: 14.5px; line-height: 1.65; color: var(--color-text);
+}

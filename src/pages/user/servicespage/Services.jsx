@@ -54,6 +54,7 @@ export default function Services() {
         subtitle="One-on-one guidance for every stage — from a focused counselling session to long-term personalised mentoring."
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
+        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare programs</Link>
       </PageHero>
 
       <section className="section">
@@ -80,11 +81,17 @@ export default function Services() {
                     </ul>
                     <div className="svc-actions">
                       <Link to={`/services/${p.slug}`} className="btn btn-primary">View details</Link>
+                      {/* Programmes sold after a call (Breakthrough) send you to
+                          their own page's call-back form, not to the checkout. */}
                       <Link
-                        to={p.bookingSku ? `/book-online?program=${p.bookingSku}` : '/book-online'}
+                        to={
+                          p.buyMode === 'expert-call'
+                            ? `/services/${p.slug}#talk-to-an-expert`
+                            : p.bookingSku ? `/book-online?program=${p.bookingSku}` : '/book-online'
+                        }
                         className="btn btn-secondary"
                       >
-                        Book now
+                        {p.buyMode === 'expert-call' ? 'Talk to an expert' : 'Book now'}
                       </Link>
                     </div>
                   </article>

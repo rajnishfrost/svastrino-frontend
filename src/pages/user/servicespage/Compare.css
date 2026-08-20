@@ -1,0 +1,104 @@
+/* The table is wider than a phone, so it scrolls inside this box — the page
+   itself never scrolls sideways. */
+.cmp-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  font-size: 14.5px;
+}
+
+.cmp-caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: 13px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-surface-border);
+}
+
+.cmp-table th,
+.cmp-table td {
+  padding: 11px var(--space-3);
+  border-bottom: 1px solid var(--color-surface-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Row labels stay visible while the table scrolls across. */
+.cmp-table tbody th,
+.cmp-corner {
+  position: sticky;
+  left: 0;
+  background: var(--color-surface);
+  font-weight: 600;
+  color: var(--color-heading);
+  min-width: 230px;
+  z-index: 1;
+}
+
+.cmp-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  z-index: 2;
+  border-bottom: 2px solid var(--color-accent);
+}
+.cmp-corner { z-index: 3; }
+
+.cmp-cat {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+.cmp-table thead a { color: var(--color-heading); font-size: 15px; }
+.cmp-table thead a:hover { color: var(--color-accent); }
+
+/* The five headline facts read as words, so give them room. */
+.cmp-detail td { color: var(--color-text); }
+
+.cmp-divider th {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  position: static;
+}
+
+.cmp-yes,
+.cmp-no { text-align: center; font-size: 17px; }
+.cmp-yes { color: var(--color-success, #2e7d32); }
+.cmp-no { color: var(--gray-400); }
+
+.cmp-table tfoot td { padding: var(--space-4) var(--space-3); text-align: center; }
+
+.cmp-note {
+  text-align: center;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+/* Visually hidden but read out — the tick/dash columns need a real word. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

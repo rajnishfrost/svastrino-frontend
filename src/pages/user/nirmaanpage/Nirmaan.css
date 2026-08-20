@@ -249,6 +249,81 @@
   pointer-events: none;
 }
 
+/* ---- The psychometric rule, said on the card itself ----
+   The test is sold to classes 7 to 12 only, and checkout enforces that. The
+   line sits under the features and above the button so it is the last thing
+   read before a payment starts. */
+.nirmaan-pkg-psy {
+  border-top: 1px solid var(--nirmaan-cream-dark);
+  padding-top: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.nirmaan-pkg-psy-rule {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--nirmaan-green-dark);
+}
+/* Shown only when we already know the visitor's class and it falls outside the
+   band. Muted rather than red: they have done nothing wrong. */
+.nirmaan-pkg-psy-you {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--nirmaan-gray-500);
+}
+
+/* ---- What the test actually is, next to the plans that include it ---- */
+.nirmaan-psy-about {
+  margin-top: var(--space-5);
+  text-align: left;
+  background: var(--color-bg);
+  border: 1px solid var(--nirmaan-gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.nirmaan-psy-about h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--nirmaan-brown);
+  margin-bottom: 10px;
+}
+.nirmaan-psy-about p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+.nirmaan-psy-about ul {
+  display: grid;
+  gap: 10px;
+  margin-bottom: var(--space-3);
+}
+.nirmaan-psy-about li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--nirmaan-brown);
+}
+.nirmaan-psy-about li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--nirmaan-green);
+  font-weight: 700;
+}
+.nirmaan-psy-about-more {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nirmaan-green);
+}
+.nirmaan-psy-about-more:hover {
+  color: var(--nirmaan-green-dark);
+}
+
 /* ---- Testimonials placeholder (SRS lists the section, no content yet) ---- */
 .nirmaan-testimonials-placeholder {
   border: 2px dashed var(--nirmaan-cream-dark);

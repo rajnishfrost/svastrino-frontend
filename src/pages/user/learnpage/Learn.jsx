@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } from '../../../utils/offlineVideo.js'
 import { enqueue, flush, pendingCount, onOutboxChange } from '../../../utils/outbox.js'
 import HlsPlayer from './HlsPlayer.jsx'
+import CourseExpired from './sections/CourseExpired.jsx'
 import './Learn.css'
 
 /**
@@ -354,8 +355,22 @@ export default function Learn() {
       </div></section>
     )
   }
+  // The year can run out while the student is mid-answer. The server refuses
+  // that write with COURSE_EXPIRED, and the kind reply is the record screen
+  // rather than one red line where the course used to be.
+  if (err?.code === 'COURSE_EXPIRED' && course) {
+    return <CourseExpired course={course} user={user} slug={slug} />
+  }
   if (err) return <section className="section"><div className="container learn-wrap"><p className="learn-err">{err.message}</p></div></section>
   if (!course) return <section className="section"><div className="container learn-wrap"><p>Loading course…</p></div></section>
+
+  // ---- The year is up → their record, not the player ----
+  // The server has already shut the videos and the tasks by this point, so
+  // showing the player would only be a door that opens onto a 403. This says
+  // the same thing in plain words and hands the student their own work.
+  if (course.access && course.access.state !== 'active') {
+    return <CourseExpired course={course} user={user} slug={slug} />
+  }
 
   // ---- Not started yet → Start screen + consent ----
   if (!course.started) {
