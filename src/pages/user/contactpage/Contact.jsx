@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { api } from '../../../api/client.js'
 import './Contact.css'
 
 // Real contact details from the Svastrino site. Static on purpose — offices and
@@ -48,10 +49,20 @@ export default function Contact() {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  const onSubmit = (e) => {
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+
+  const onSubmit = async (e) => {
     e.preventDefault()
-    // Scaffold: wire to /api/user/contact later.
-    setSent(true)
+    setErr(''); setBusy(true)
+    try {
+      await api('/user/enquiry', { method: 'POST', body: { ...form, source: 'contact' } })
+      setSent(true)
+    } catch (ex) {
+      setErr(ex.message || 'Could not send that just now — please try again.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -93,7 +104,10 @@ export default function Contact() {
                   <textarea rows="4" required placeholder="How can we help?"
                             value={form.message} onChange={set('message')} />
                 </label>
-                <button type="submit" className="btn btn-primary">Send message</button>
+                {err && <p className="contact-error">{err}</p>}
+                <button type="submit" className="btn btn-primary" disabled={busy}>
+                  {busy ? 'Sending…' : 'Send message'}
+                </button>
               </>
             )}
           </form>

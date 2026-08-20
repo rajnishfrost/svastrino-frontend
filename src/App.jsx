@@ -60,6 +60,7 @@ import AdminOrders from './pages/admin/orderspage/AdminOrders.jsx'
 import AdminAssessments from './pages/admin/assessmentspage/AdminAssessments.jsx'
 import AdminMentoring from './pages/admin/mentoringpage/AdminMentoring.jsx'
 import AdminRoles from './pages/admin/rolespage/AdminRoles.jsx'
+import AdminSettings from './pages/admin/settingspage/AdminSettings.jsx'
 import AdminScholarship from './pages/admin/scholarshippage/AdminScholarship.jsx'
 
 /**
@@ -179,6 +180,7 @@ export default function App() {
                   <Route path="/assessments" element={<AdminAssessments />} />
                   <Route path="/mentoring" element={<AdminMentoring />} />
                   <Route path="/roles" element={<AdminRoles />} />
+                  <Route path="/settings" element={<AdminSettings />} />
                   <Route path="/scholarship" element={<AdminScholarship />} />
                   <Route path="/admins" element={<Navigate to="/admin/users" replace />} />
                 </Routes>

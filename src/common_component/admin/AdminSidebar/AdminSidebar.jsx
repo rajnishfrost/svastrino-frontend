@@ -34,6 +34,8 @@ const ICON = {
   scholarship: <Svg><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4" /><circle cx="20" cy="17" r="2.4" /></Svg>,
   // Skill Builds — graduation cap (courses)
   skillbuilds: <Svg><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c3 2.5 9 2.5 12 0v-5" /><path d="M22 10v6" /></Svg>,
+  // Settings — gear (site-wide options)
+  settings: <Svg><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></Svg>,
   // Users — people
   users: <Svg><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></Svg>,
 }
@@ -53,6 +55,7 @@ const NAV = [
   { label: 'Coupons', to: '/admin/coupons', icon: 'coupons', module: 'coupons' },
   { label: 'Orders', to: '/admin/orders', icon: 'orders', module: 'orders' },
   { label: 'Roles', to: '/admin/roles', icon: 'roles', superadmin: true },
+  { label: 'Settings', to: '/admin/settings', icon: 'settings', superadmin: true },
   { label: 'Scholarship', to: '/admin/scholarship', icon: 'scholarship', module: 'scholarship' },
   { label: 'Services', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
   { label: 'Skill Builds', to: '/admin/skill-builds', icon: 'skillbuilds', module: 'skill-builds' },

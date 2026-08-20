@@ -124,3 +124,10 @@
   padding: 8px 12px;
   margin-bottom: var(--space-3);
 }
+
+/* Enquiry form — submit error */
+.contact-error {
+  font-size: 13.5px;
+  color: var(--color-danger);
+  margin-bottom: var(--space-2);
+}

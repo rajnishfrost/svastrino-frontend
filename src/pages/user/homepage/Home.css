@@ -538,3 +538,13 @@
   .home-enquire-row { grid-template-columns: 1fr; }
   .home-hero-stats { gap: var(--space-3); }
 }
+
+/* Enquiry form — submit error */
+.home-enquire-error {
+  font-size: 13px;
+  color: #ffd0d0;
+  background: rgba(220, 38, 38, 0.22);
+  border-radius: var(--radius);
+  padding: 7px 11px;
+  margin-top: var(--space-2);
+}
