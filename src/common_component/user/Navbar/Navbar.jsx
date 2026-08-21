@@ -77,7 +77,8 @@ export default function Navbar() {
             <SkillBuildDropdown onNavigate={close} />
           )}
 
-          <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} />
+          {/* <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} /> */}
+          <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} />
 
           <NavLink to="/book-online" onClick={close} className={navClass}>
             Book Online
