@@ -4,7 +4,10 @@
   margin-top: auto;
 }
 
-.footer-inner {
+/* `.footer .footer-inner` (two classes) so this padding always beats the
+   single-class `.container` rule it shares an element with — otherwise the
+   cascade can zero the top/bottom padding and the footer looks cramped. */
+.footer .footer-inner {
   display: grid;
   grid-template-columns: 1.4fr 2fr;
   align-items: start;
@@ -22,11 +25,14 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  background-color: whitesmoke;
+  padding: 16px;
+  border-radius: 20px;
   /* White plate behind the trademark — matches the Navbar, where the same
      navy-text logo sits on white. Tight 3px inset, softly rounded corners. */
-  background: #fff;
+  /* background: #fff;
   padding: 2px;
-  border-radius: 4px;
+  border-radius: 4px; */
 }
 
 .footer-logo img {
@@ -111,7 +117,7 @@
   background: var(--navy-dark);
 }
 
-.footer-bottom-inner {
+.footer .footer-bottom-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;

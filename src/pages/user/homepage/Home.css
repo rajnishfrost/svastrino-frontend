@@ -1,11 +1,68 @@
-/* ---- Hero ---- */
+/* =====================================================================
+   Home — "Modernize" proof-of-concept (prototype-aligned).
+   Scoped to .home-root so the rest of the site is untouched until a
+   direction is approved. The [data-accent] switch repoints the accent
+   tokens so crimson vs blue can be compared live; the winning accent then
+   moves into theme.css site-wide.
+   ===================================================================== */
+
+/* ---- Accent variants (the live A/B toggle) ---- */
+.home-root[data-accent="crimson"] {
+  --accent: #c8203f;         /* deeper/magenta than --color-danger so "buy" ≠ "delete" */
+  --accent-dark: #a01730;
+  --accent-soft: #fcebee;
+  --accent-on-dark: #ff8098; /* lightened accent for text/icons on navy bands */
+  --accent-grad: linear-gradient(135deg, #d0233f 0%, #9c1631 100%);
+}
+.home-root[data-accent="blue"] {
+  --accent: #2f7ae5;
+  --accent-dark: #1c5fc4;
+  --accent-soft: #eaf2fd;
+  --accent-on-dark: #8fb6ff;
+  --accent-grad: linear-gradient(135deg, #2f7ae5 0%, #5aa0ff 100%);
+}
+/* Remap the shared semantic tokens onto the chosen accent so global
+   primitives (.section-eyebrow, tags, links) follow automatically. */
+.home-root[data-accent] {
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-dark);
+  --color-accent-soft: var(--accent-soft);
+}
+/* Prototype uses the accent for primary CTAs (not navy). Scoped to Home. */
+.home-root .btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.home-root .btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+/* =====================================================================
+   Hero
+   ===================================================================== */
 .home-hero {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--brand-gradient);
   color: #fff;
-  padding: var(--space-7) 0;
+  padding: calc(var(--space-7) + 12px) 0 calc(var(--space-7) + 44px);
+}
+/* Layered glows give the flat navy depth without an image. */
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 55% at 82% 12%, rgba(47, 122, 229, 0.38) 0%, transparent 60%),
+    radial-gradient(45% 45% at 8% 92%, rgba(47, 122, 229, 0.18) 0%, transparent 55%);
 }
 
 .home-hero-inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: var(--space-6);
@@ -13,30 +70,43 @@
 }
 
 .home-hero-eyebrow {
+  display: inline-block;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: var(--space-2);
+  color: #dbe9ff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-3);
 }
 
 .home-hero-text h1 {
   color: #fff;
-  font-size: 36px;
+  font-size: 54px;
+  line-height: 1.08;
+  letter-spacing: -1.2px;
+  /* font-size: 36px;
   line-height: 1.25;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.5px; */
 }
-
+/* Gradient wordmark accent — follows the chosen accent. */
 .home-hero-text h1 span {
-  color: var(--blue);
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--accent); /* fallback */
 }
 
 .home-hero-sub {
-  color: rgba(234, 242, 253, 0.82);
+  color: rgba(234, 242, 253, 0.85);
   font-size: 18px;
+  line-height: 1.65;
   margin: var(--space-3) 0 var(--space-4);
-  max-width: 520px;
+  max-width: 540px;
 }
 
 .home-hero-actions {
@@ -44,42 +114,456 @@
   gap: var(--space-2);
   flex-wrap: wrap;
 }
-
-/* secondary button on dark hero needs light border */
+/* Primary CTA pops off the navy hero (was navy-on-navy before). */
+.home-hero .btn-primary {
+  background: var(--accent);
+  border-color: transparent;
+  box-shadow: 0 12px 28px -10px rgba(15, 44, 92, 0.5);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+.home-hero .btn-primary:hover {
+  filter: brightness(1.06);
+}
 .home-hero .btn-secondary {
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.04);
 }
 .home-hero .btn-secondary:hover {
   background: #fff;
   color: var(--navy);
+  border-color: #fff;
+}
+
+/* Trust / social-proof row under the CTAs. */
+.home-hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: var(--space-5);
+}
+.home-hero-trust li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(234, 242, 253, 0.82);
+}
+.home-hero-trust-ic {
+  display: inline-flex;
+  color: #8fb6ff;
+}
+.home-hero-trust-ic--star {
+  color: #ffca3a;
 }
 
 .home-hero-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  box-shadow: var(--shadow-brand), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
 }
-
+.home-hero-stat {
+  padding: var(--space-3) 0;
+}
+.home-hero-stat + .home-hero-stat {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
 .home-hero-stat strong {
   display: block;
-  font-size: 34px;
+  font-size: 38px;
   font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+}
+.home-hero-stat span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  color: rgba(234, 242, 253, 0.72);
+}
+
+/* Curved divider into the next (white) section. */
+.home-hero-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  line-height: 0;
+  z-index: 0;
+}
+.home-hero-wave svg {
+  width: 100%;
+  height: 72px;
+  display: block;
+}
+.home-hero-wave path {
+  fill: var(--color-bg);
+}
+
+/* =====================================================================
+   Section band system (light / navy)
+   ===================================================================== */
+.home-band--navy {
+  position: relative;
+  background: var(--brand-gradient);
+  color: #fff;
+}
+.home-band--navy .section-title {
+  color: #fff;
+}
+.home-band--navy .section-eyebrow {
+  color: var(--accent-on-dark);
+}
+.home-band--navy .section-sub {
+  color: rgba(234, 242, 253, 0.8);
+}
+
+/* =====================================================================
+   Programs preview (service cards)
+   ===================================================================== */
+.home-program-card {
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+}
+.home-program-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-grad);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition);
+}
+.home-program-card:hover::before {
+  transform: scaleX(1);
+}
+.home-program-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-2);
+}
+.home-program-card h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.home-program-card p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* =====================================================================
+   Why Svastrino (cards — recolour on the navy band)
+   ===================================================================== */
+.home-why-card {
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  background: var(--white);
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.home-why-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.home-why-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: var(--space-2);
+  font-size: 28px;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-lg);
+}
+.home-why-card h3 {
+  margin: var(--space-2) 0 6px;
+  font-size: 19px;
+}
+.home-why-card p {
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+/* Dark-band variant: translucent cards + blue icon chips (like the prototype). */
+.home-band--navy .home-why-card {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+.home-band--navy .home-why-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-brand);
+}
+.home-band--navy .home-why-card h3 {
+  color: #fff;
+}
+.home-band--navy .home-why-card p {
+  color: rgba(234, 242, 253, 0.72);
+}
+.home-band--navy .home-why-icon {
+  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent-on-dark);
+}
+
+/* =====================================================================
+   How it works — horizontal numbered timeline
+   ===================================================================== */
+.home-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  text-align: center;
+}
+.home-step {
+  position: relative;
+  padding: 0 8px;
+}
+.home-step-num {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  box-shadow: 0 10px 20px -8px rgba(15, 44, 92, 0.4);
+  box-shadow: 0 10px 20px -8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+/* Connecting line between the step numbers. */
+.home-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: calc(50% + 32px);
+  right: calc(-50% + 32px);
+  height: 2px;
+  background: var(--color-surface-border);
+  z-index: 0;
+}
+.home-step-title {
+  margin: 16px 0 6px;
+  font-size: 17px;
+}
+.home-step-desc {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* =====================================================================
+   Pricing — "Most Popular" tier treatment
+   ===================================================================== */
+.home-plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  align-items: start;
+}
+.home-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.home-plan--featured {
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-md);
+}
+.home-plan-badge {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.home-plan-name {
+  font-size: 22px;
+  text-align: center;
+}
+.home-plan-blurb {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.home-plan-price {
+  text-align: center;
+  font-size: 36px;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-bottom: var(--space-4);
+}
+.home-plan-price span {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+}
+.home-plan-features {
+  display: grid;
+  gap: 10px;
+  margin-bottom: var(--space-4);
+}
+.home-plan-features li {
+  font-size: 14px;
+  color: var(--color-text);
+}
+.home-plan-features li.is-off {
+  color: var(--gray-400);
+}
+.home-plan-mark {
+  color: var(--color-success);
+  font-weight: 700;
+}
+.home-plan-features li.is-off .home-plan-mark {
+  color: var(--gray-400);
+}
+.home-plan .btn {
+  margin-top: auto;
+}
+.home-plans-note {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-top: var(--space-4);
+}
+
+/* =====================================================================
+   Final CTA band — navy base with a restrained accent glow (not a
+   full-bleed colour block, which read as too loud in both accents).
+   ===================================================================== */
+.home-final {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--brand-gradient);
+  color: #fff;
+  padding: var(--space-7) 0;
+  text-align: center;
+}
+.home-final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(55% 130% at 50% 0%, rgba(47, 122, 229, 0.28) 0%, transparent 62%);
+  background: radial-gradient(55% 130% at 50% 0%, color-mix(in srgb, var(--accent) 34%, transparent) 0%, transparent 62%);
+}
+.home-final-title {
+  color: #fff;
+  font-size: 40px;
+  letter-spacing: -0.5px;
+}
+.home-final-sub {
+  color: rgba(234, 242, 253, 0.85);
+  max-width: 600px;
+  margin: 14px auto var(--space-4);
+  font-size: 17px;
+}
+.home-final-btn {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 12px 28px -10px rgba(15, 44, 92, 0.5);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.home-final-btn:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  transform: translateY(-2px);
+}
+.home-final-note {
+  color: rgba(234, 242, 253, 0.7);
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+/* =====================================================================
+   Preview-only accent switcher (delete after the decision)
+   ===================================================================== */
+.home-accent-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-pill);
+  padding: 6px 8px 6px 14px;
+  box-shadow: var(--shadow-md);
+}
+.home-accent-toggle-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.home-accent-toggle button {
+  border: none;
+  background: var(--gray-100);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.home-accent-toggle button.is-active {
+  background: var(--accent);
   color: #fff;
 }
 
-.home-hero-stat span {
-  font-size: 14px;
-  color: rgba(234, 242, 253, 0.7);
-}
-
+/* =====================================================================
+   Responsive
+   ===================================================================== */
 /* ---- Programs preview ---- */
 /* ---- Courses teaser ---- */
-.home-courses {
+/* .home-courses {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: var(--space-6);
@@ -113,27 +597,70 @@
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
-}
+} */
 
 /* ---- Why ---- */
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
-  .home-hero-inner,
-  .home-courses {
+  .home-hero-inner {
     grid-template-columns: 1fr;
   }
   .home-hero-text h1 {
-    font-size: 40px;
+    font-size: 42px;
+  }
+  .home-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-4);
+  }
+  .home-step:not(:last-child)::after {
+    display: none;
+  }
+  .home-plans {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-plan--featured {
+    order: -1;
   }
 }
 
 @media (max-width: 600px) {
+  .home-hero {
+    padding: var(--space-6) 0 var(--space-7);
+  }
   .home-hero-text h1 {
-    font-size: 32px;
+    font-size: 33px;
+    letter-spacing: -0.6px;
+  }
+  .home-hero-sub {
+    font-size: 16px;
+  }
+  .home-steps {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .home-final-title {
+    font-size: 30px;
   }
 }
 
-/* ---- Nirmaan product highlight (uses the Nirmaan green/brown/cream palette) ---- */
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .home-program-card::before,
+  .home-why-card,
+  .home-accent-toggle button {
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   Nirmaan product highlight (uses the Nirmaan green/brown/cream palette).
+   Intentionally NOT recoloured by the accent toggle — it's a second brand.
+   ===================================================================== */
 .home-nirmaan-card {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -208,7 +735,7 @@
   gap: 12px;
   flex-wrap: wrap;
 }
-/* Nirmaan-green buttons within this card (Home uses the Svastrino theme). */
+/* Nirmaan-green buttons within this card (overrides the Home accent). */
 .home-nirmaan .btn-primary {
   background: var(--nirmaan-green);
   border-color: var(--nirmaan-green);
@@ -227,8 +754,6 @@
   align-items: center;
   gap: 16px;
 }
-/* Branded circular badge: the tree-in-hands emblem on a soft cream-to-green
-   backdrop with a dashed inner ring — a bigger, richer graphic than a bare logo. */
 .home-nirmaan-emblem {
   position: relative;
   width: min(320px, 92%);

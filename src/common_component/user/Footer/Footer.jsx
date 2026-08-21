@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
-import './Footer.css'
 
+/**
+ * Site footer (content per src/content/footer.md). Styled with Tailwind to
+ * match the approved prototype. Routes are kept as implemented in the router.
+ */
 const COLUMNS = [
   {
     title: 'Services',
@@ -71,45 +74,50 @@ export default function Footer() {
   const columns = COLUMNS.map((c) => c || registerColumn(user))
 
   return (
-    <footer className="footer">
-      <div className="container footer-inner">
-        {/* Brand is always Svastrino — same lockup as the Navbar, even on the Nirmaan
-            page. Users always know they're inside the Svastrino ecosystem. */}
-        <div className="footer-brand">
-          <Link to="/" className="footer-logo">
-            {/* Same trademark as the Navbar, on a white plate so it reads on the
-                dark footer (the logo's own background is white by design). */}
-            <img src="/logo.png" alt="Svastrino Consultancy Services" />
-          </Link>
-          <p className="footer-tagline">
-            Futuristic career guidance — personalised mentoring &amp; courses to shape your path.
-          </p>
-          <p className="footer-offices">Thane · Dharamshala, India</p>
-        </div>
+    <footer className="mt-auto bg-brand-navy-dark text-white/70">
+      <div className="container py-14">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          {/* Brand */}
+          <div>
+            <Link to="/" className="inline-flex rounded-2xl bg-white p-3">
+              <img src="/logo.png" alt="Svastrino Consultancy Services" className="h-10 w-auto" />
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed">
+              Futuristic career guidance — personalised mentoring &amp; courses to shape your path.
+            </p>
+            <p className="mt-3 text-sm text-white/55">Thane · Dharamshala, India</p>
+          </div>
 
-        <div className="footer-cols">
           {columns.map((col) => (
-            <div key={col.title} className="footer-col">
-              <h4>{col.title}</h4>
-              <ul>
+            <div key={col.title}>
+              <h4 className="text-sm font-semibold uppercase tracking-wide text-white">
+                {col.title}
+              </h4>
+              <ul className="mt-4 space-y-2.5 text-sm">
                 {col.links.map((l) => (
                   <li key={l.to + l.label}>
-                    <Link to={l.to}>{l.label}</Link>
+                    <Link to={l.to} className="transition-colors hover:text-white">
+                      {l.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-      </div>
 
-      <div className="footer-bottom">
-        <div className="container footer-bottom-inner">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs sm:flex-row">
           <span>© {year} Svastrino. All rights reserved.</span>
-          <span className="footer-legal">
-            <Link to="/legal/terms-of-use">Terms of Use</Link>
-            <Link to="/legal/privacy-policy">Privacy Policy</Link>
-            <Link to="/legal/cancellations-and-refunds">Cancellations &amp; Refunds</Link>
+          <span className="flex gap-5">
+            <Link to="/legal/terms-of-use" className="hover:text-white">
+              Terms of Use
+            </Link>
+            <Link to="/legal/privacy-policy" className="hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link to="/legal/cancellations-and-refunds" className="hover:text-white">
+              Cancellations &amp; Refunds
+            </Link>
           </span>
         </div>
       </div>
