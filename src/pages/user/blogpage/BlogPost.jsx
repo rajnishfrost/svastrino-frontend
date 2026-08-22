@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchBlog } from '../../../api/blogs.js'
-import './Blog.css'
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -46,19 +46,24 @@ export default function BlogPost() {
 
   if (loading) {
     return (
-      <section className="section">
-        <div className="container"><p className="blog-state">Loading article…</p></div>
+      <section className="py-20">
+        <div className="container"><p className="text-center text-brand-slate">Loading article…</p></div>
       </section>
     )
   }
 
   if (notFound) {
     return (
-      <section className="section">
-        <div className="container blog-article-missing">
-          <h1>Post not found</h1>
-          <p>That article may have been moved or removed.</p>
-          <Link to="/blog" className="btn btn-primary">Back to all posts</Link>
+      <section className="py-24">
+        <div className="container mx-auto max-w-xl text-center">
+          <h1 className="font-display text-3xl font-extrabold text-brand-navy">Post not found</h1>
+          <p className="mt-3 text-brand-slate">That article may have been moved or removed.</p>
+          <Link
+            to="/blog"
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-brand-crimson px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+          >
+            Back to all posts
+          </Link>
         </div>
       </section>
     )
@@ -66,79 +71,119 @@ export default function BlogPost() {
 
   if (error) {
     return (
-      <section className="section">
+      <section className="py-20">
         <div className="container">
           <ConnectionState error={error} onRetry={retry} label="this article" />
-          <p style={{ textAlign: 'center' }}>
-            <Link to="/blog" className="btn btn-secondary">Back to all posts</Link>
+          <p className="mt-6 text-center">
+            <Link
+              to="/blog"
+              className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
+            >
+              Back to all posts
+            </Link>
           </p>
         </div>
       </section>
     )
   }
 
-  return (
-    <article className="blog-article">
-      <header className="blog-article-head">
-        <div className="container">
-          <Link to="/blog" className="blog-back">← All posts</Link>
+  const nirmaan = post.owner === 'nirmaan'
 
-          <div className="blog-article-cats">
-            <span className={`badge badge--${post.owner}`}>
-              {post.owner === 'nirmaan' ? 'Nirmaan' : 'Svastrino'}
+  return (
+    <article>
+      <header className="bg-white pt-12 md:pt-16">
+        <div className="container mx-auto max-w-3xl">
+          <Link to="/blog" className="text-sm font-semibold text-brand-slate hover:text-brand-crimson">
+            ← All posts
+          </Link>
+
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                nirmaan ? 'bg-nirmaan-green/10 text-nirmaan-green' : 'bg-brand-navy/10 text-brand-navy'
+              }`}
+            >
+              {nirmaan ? 'Nirmaan' : 'Svastrino'}
             </span>
             {post.categories.map((c) => (
-              <Link key={c} to={`/blog?category=${encodeURIComponent(c)}`} className="blog-cat-chip">
+              <Link
+                key={c}
+                to={`/blog?category=${encodeURIComponent(c)}`}
+                className="rounded-full border border-brand-navy/15 px-3 py-0.5 text-xs font-semibold text-brand-slate transition-colors hover:border-brand-crimson hover:text-brand-crimson"
+              >
                 {c}
               </Link>
             ))}
           </div>
 
-          <h1>{post.title}</h1>
+          <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-brand-navy md:text-[2.5rem]">
+            {post.title}
+          </h1>
 
-          <p className="blog-article-meta">
+          <p className="mt-3 text-sm text-brand-slate">
             By {post.author} · {formatDate(post.publishedAt)} · {post.readingMins} min read
           </p>
         </div>
       </header>
 
       {post.coverImage && (
-        <div className="container">
-          <img className="blog-article-cover" src={post.coverImage} alt="" />
+        <div className="container mx-auto mt-8 max-w-3xl">
+          <img className="w-full rounded-2xl" src={post.coverImage} alt="" />
         </div>
       )}
 
-      <div className="container blog-article-body">
+      <div className="container mx-auto max-w-3xl py-10">
         <Markdown>{post.body}</Markdown>
 
-        <div className="blog-article-cta card">
-          <h3>Want guidance on your own path?</h3>
-          <p>
+        <div className="mt-10 rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
+          <h3 className="font-display text-2xl font-extrabold text-brand-navy">
+            Want guidance on your own path?
+          </h3>
+          <p className="mx-auto mt-2 max-w-xl text-brand-slate">
             Start with a 15-minute Model Session — we’ll help you identify what you need and which
             program fits you.
           </p>
-          <Link to="/book-online" className="btn btn-accent">Book a session</Link>
+          <Link
+            to="/book-online"
+            className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+          >
+            Book a session <ArrowRight className="size-4" />
+          </Link>
         </div>
       </div>
 
       {related.length > 0 && (
-        <section className="section section--alt">
+        <section className="bg-soft py-16 md:py-20">
           <div className="container">
-            <h2 className="section-title" style={{ fontSize: 28 }}>Related reading</h2>
-            <div className="grid grid-3">
+            <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy">
+              Related reading
+            </h2>
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
               {related.map((r) => (
-                <article key={r.slug} className="card blog-card">
+                <article
+                  key={r.slug}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                >
                   {r.coverImage && (
-                    <Link to={`/blog/${r.slug}`} className="blog-card-media">
-                      <img src={r.coverImage} alt="" loading="lazy" />
+                    <Link to={`/blog/${r.slug}`} className="block aspect-[16/9] overflow-hidden">
+                      <img
+                        src={r.coverImage}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
                     </Link>
                   )}
-                  <h3><Link to={`/blog/${r.slug}`}>{r.title}</Link></h3>
-                  <p>{r.excerpt}</p>
-                  <div className="blog-card-meta">
-                    <span>{formatDate(r.publishedAt)}</span>
-                    <span>·</span>
-                    <span>{r.readingMins} min read</span>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
+                      <Link to={`/blog/${r.slug}`} className="hover:text-brand-crimson">{r.title}</Link>
+                    </h3>
+                    <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{r.excerpt}</p>
+                    <div className="mt-4 flex items-center gap-2 text-xs text-brand-slate">
+                      <span>{formatDate(r.publishedAt)}</span>
+                      <span>·</span>
+                      <span>{r.readingMins} min read</span>
+                    </div>
                   </div>
                 </article>
               ))}

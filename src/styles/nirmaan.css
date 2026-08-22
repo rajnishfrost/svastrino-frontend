@@ -65,6 +65,10 @@
 .theme-nirmaan .footer { background: var(--nirmaan-brown); }
 .theme-nirmaan .footer-bottom { background: #2d2019; }
 
+/* The rebuilt Tailwind footer (uses the fixed `bg-brand-navy-dark` utility)
+   also shifts to warm Nirmaan brown while a Skill-Build page is open. */
+.theme-nirmaan footer.bg-brand-navy-dark { background-color: var(--nirmaan-brown); }
+
 /* The nav brand is ALWAYS Svastrino (even on the Nirmaan page), so its wordmark
    stays the original Svastrino navy — the green remap must not touch it. */
 .theme-nirmaan .nav-brand-title,

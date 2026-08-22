@@ -1,5 +1,6 @@
-// Reusable inline-SVG icon set — 24x24 grid, 2px stroke, uses currentColor
-// so a single CSS rule (.nirmaan-benefit-icon { color: … }) themes them all.
+import { Check } from 'lucide-react'
+
+// Reusable inline-SVG icon set — 24x24 grid, 2px stroke, uses currentColor.
 const iconProps = {
   viewBox: '0 0 24 24',
   fill: 'none',
@@ -8,10 +9,10 @@ const iconProps = {
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
   'aria-hidden': true,
+  className: 'size-7',
 }
 
 function CompassIcon() {
-  // Psychometric assessment — compass (direction/measurement)
   return (
     <svg {...iconProps}>
       <circle cx="12" cy="12" r="9" />
@@ -19,9 +20,7 @@ function CompassIcon() {
     </svg>
   )
 }
-
 function ReportIcon() {
-  // Personalised report — document with lines + play badge (video explanation)
   return (
     <svg {...iconProps}>
       <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
@@ -31,9 +30,7 @@ function ReportIcon() {
     </svg>
   )
 }
-
 function RoadmapIcon() {
-  // Career roadmap — a route with two waypoint pins
   return (
     <svg {...iconProps}>
       <path d="M6 5v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v2" />
@@ -42,9 +39,7 @@ function RoadmapIcon() {
     </svg>
   )
 }
-
 function MentorIcon() {
-  // Mentoring & community — two people
   return (
     <svg {...iconProps}>
       <path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20" />
@@ -55,23 +50,15 @@ function MentorIcon() {
   )
 }
 
-// Benefits = "what you get" — every point maps to an SRS feature.
 const BENEFITS = [
-  { Icon: CompassIcon, title: 'Self-Awareness',
-    text: 'Understand your strengths, interests, emotions & overall life.' },
-  { Icon: ReportIcon, title: 'Confidence',
-    text: 'Develop confidence through small actions rather than motivation.' },
-  { Icon: RoadmapIcon, title: 'Mindset',
-    text: 'Learn to handle & evolve from failure, fear, criticism & uncertainty.' },
-  { Icon: MentorIcon, title: 'Personal Growth',
-    text: 'Build awareness, discipline, focus, and habits.' },
-  { Icon: CompassIcon, title: 'Academic Development',
-    text: 'Ask questions, handle setbacks & improve performance.' },
-  { Icon: RoadmapIcon, title: 'Career Readiness',
-    text: 'Explore options & pick the one you dream & desire.' },
+  { Icon: CompassIcon, title: 'Self-Awareness', text: 'Understand your strengths, interests, emotions & overall life.' },
+  { Icon: ReportIcon, title: 'Confidence', text: 'Develop confidence through small actions rather than motivation.' },
+  { Icon: RoadmapIcon, title: 'Mindset', text: 'Learn to handle & evolve from failure, fear, criticism & uncertainty.' },
+  { Icon: MentorIcon, title: 'Personal Growth', text: 'Build awareness, discipline, focus, and habits.' },
+  { Icon: CompassIcon, title: 'Academic Development', text: 'Ask questions, handle setbacks & improve performance.' },
+  { Icon: RoadmapIcon, title: 'Career Readiness', text: 'Explore options & pick the one you dream & desire.' },
 ]
 
-/** The specific changes the programme sets out to produce. */
 const DEVELOPMENTS = [
   'Understand your strengths, potential, and the person you want to become',
   'Develop the confidence to take on challenges and trust your ability to grow',
@@ -87,31 +74,47 @@ const DEVELOPMENTS = [
 
 export default function Benefits() {
   return (
-    <section className="section section--alt">
-      <div className="container text-center">
-        <p className="section-eyebrow">What you get</p>
-        <h2 className="section-title">Why Choose the Nirmaan Course</h2>
-        <p className="section-sub">Overall benefits of the process.</p>
-        <div className="grid grid-3 nirmaan-benefits">
+    <section className="bg-nirmaan-cream/50 py-16 md:py-20">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">What you get</p>
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+            Why Choose the Nirmaan Course
+          </h2>
+          <p className="mt-4 text-lg text-nirmaan-brown-soft">Overall benefits of the process.</p>
+        </div>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map(({ Icon, title, text }) => (
-            <div key={title} className="card nirmaan-benefit">
-              <span className="nirmaan-benefit-icon" aria-hidden>
+            <div key={title} className="rounded-xl border border-nirmaan-sand bg-white p-7 shadow-sm">
+              <span className="flex size-12 items-center justify-center rounded-xl bg-nirmaan-green/10 text-nirmaan-green">
                 <Icon />
               </span>
-              <h3>{title}</h3>
-              <p>{text}</p>
+              <h3 className="mt-5 font-display text-lg font-bold text-nirmaan-brown">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-nirmaan-brown-soft">{text}</p>
             </div>
           ))}
         </div>
 
-        <div className="nirmaan-devs">
-          <h3>Specific developments of the programme</h3>
-          <ul>{DEVELOPMENTS.map((d) => <li key={d}>{d}</li>)}</ul>
+        <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
+          <h3 className="font-display text-xl font-bold text-nirmaan-brown">
+            Specific developments of the programme
+          </h3>
+          <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+            {DEVELOPMENTS.map((d) => (
+              <li key={d} className="flex items-start gap-2.5 text-sm text-nirmaan-brown">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-nirmaan-green">
+                  <Check className="size-3 text-white" />
+                </span>
+                {d}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <p className="nirmaan-transformation">
-          From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I
-          know what I can do next.”
+        <p className="mx-auto mt-10 max-w-3xl text-center font-display text-lg font-semibold italic text-nirmaan-green">
+          From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I know what I
+          can do next.”
         </p>
       </div>
     </section>

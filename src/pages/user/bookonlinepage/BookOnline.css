@@ -94,6 +94,11 @@
   padding: 10px 12px; border-radius: 8px; border: 1px solid var(--color-border, #ddd);
   font: inherit; font-size: 0.95rem;
 }
+.bo-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.14);
+}
 .bo-input:disabled { background: var(--color-surface, #f5f2ec); color: var(--color-text-muted); }
 .bo-exists {
   margin-top: var(--space-3); padding: var(--space-3);

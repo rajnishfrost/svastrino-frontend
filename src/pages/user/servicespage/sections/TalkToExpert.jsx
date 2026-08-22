@@ -11,6 +11,9 @@ import { api } from '../../../../api/client.js'
  * Posts to the same /user/enquiry endpoint the contact and home forms use, with
  * `source: 'expert-call'` and the programme slug attached.
  */
+const inputClass =
+  'mt-1 block h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+
 export default function TalkToExpert({ program }) {
   const { user } = useAuth()
   const [sent, setSent] = useState(false)
@@ -49,66 +52,66 @@ export default function TalkToExpert({ program }) {
     }
   }
 
+  const Label = ({ children }) => (
+    <span className="text-xs font-semibold text-brand-navy">{children}</span>
+  )
+
   return (
-    <div className="card svc-panel svc-expert" id="talk-to-an-expert">
-      <h2 className="svc-h2">Talk to an expert first</h2>
-      <p className="svc-expert-lead">
-        {program.name} runs for {program.duration || 'a long time'}, so we do not
-        ask anyone to pay for it from a checkout page. Leave your number, talk to
-        one of our mentors about where you are and what you want, and only then
-        decide. If you go ahead, we send you a payment link after the call.
+    <div id="talk-to-an-expert" className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+      <h2 className="font-display text-xl font-bold text-brand-navy">Talk to an expert first</h2>
+      <p className="mt-2 text-sm leading-relaxed text-brand-slate">
+        {program.name} runs for {program.duration || 'a long time'}, so we do not ask anyone to pay
+        for it from a checkout page. Leave your number, talk to one of our mentors about where you
+        are and what you want, and only then decide. If you go ahead, we send you a payment link
+        after the call.
       </p>
 
       {sent ? (
-        <div className="svc-expert-done">
-          <strong>Thank you — we have your request.</strong>
-          <p>
-            One of our mentors will call you within one working day. If you would
-            rather reach us first, write to us from the Contact page.
+        <div className="mt-6 rounded-xl border border-brand-navy/10 bg-brand-cream p-5">
+          <strong className="font-semibold text-brand-navy">Thank you — we have your request.</strong>
+          <p className="mt-1 text-sm text-brand-slate">
+            One of our mentors will call you within one working day. If you would rather reach us
+            first, write to us from the Contact page.
           </p>
         </div>
       ) : (
-        <form className="svc-expert-form" onSubmit={submit}>
+        <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={submit}>
           <label>
-            <span>Your name</span>
-            <input value={form.name} onChange={set('name')} required maxLength={80}
-                   autoComplete="name" placeholder="Full name" />
+            <Label>Your name</Label>
+            <input className={inputClass} value={form.name} onChange={set('name')} required maxLength={80} autoComplete="name" placeholder="Full name" />
           </label>
           <label>
-            <span>Phone number</span>
-            <input value={form.phone} onChange={set('phone')} required maxLength={20}
-                   autoComplete="tel" inputMode="tel" placeholder="10-digit mobile" />
+            <Label>Phone number</Label>
+            <input className={inputClass} value={form.phone} onChange={set('phone')} required maxLength={20} autoComplete="tel" inputMode="tel" placeholder="10-digit mobile" />
           </label>
           <label>
-            <span>Email <em>(optional)</em></span>
-            <input type="email" value={form.email} onChange={set('email')} maxLength={160}
-                   autoComplete="email" placeholder="you@example.com" />
+            <Label>Email <em className="font-normal not-italic text-brand-slate">(optional)</em></Label>
+            <input className={inputClass} type="email" value={form.email} onChange={set('email')} maxLength={160} autoComplete="email" placeholder="you@example.com" />
           </label>
           <label>
-            <span>City <em>(optional)</em></span>
-            <input value={form.city} onChange={set('city')} maxLength={80}
-                   autoComplete="address-level2" placeholder="Where you are based" />
+            <Label>City <em className="font-normal not-italic text-brand-slate">(optional)</em></Label>
+            <input className={inputClass} value={form.city} onChange={set('city')} maxLength={80} autoComplete="address-level2" placeholder="Where you are based" />
           </label>
-          <label>
-            <span>Best time to call <em>(optional)</em></span>
-            <input value={form.preferredTime} onChange={set('preferredTime')} maxLength={80}
-                   placeholder="e.g. weekdays after 6 pm" />
+          <label className="sm:col-span-2">
+            <Label>Best time to call <em className="font-normal not-italic text-brand-slate">(optional)</em></Label>
+            <input className={inputClass} value={form.preferredTime} onChange={set('preferredTime')} maxLength={80} placeholder="e.g. weekdays after 6 pm" />
           </label>
-          <label className="svc-expert-wide">
-            <span>What would you like to discuss? <em>(optional)</em></span>
-            <textarea value={form.message} onChange={set('message')} rows={3} maxLength={2000}
-                      placeholder="Anything that would help us prepare for the call" />
+          <label className="sm:col-span-2">
+            <Label>What would you like to discuss? <em className="font-normal not-italic text-brand-slate">(optional)</em></Label>
+            <textarea className={`${inputClass} h-auto py-2.5`} value={form.message} onChange={set('message')} rows={3} maxLength={2000} placeholder="Anything that would help us prepare for the call" />
           </label>
 
-          {err && <p className="svc-expert-err" role="alert">{err}</p>}
+          {err && <p className="text-sm text-red-600 sm:col-span-2" role="alert">{err}</p>}
 
-          <div className="svc-expert-actions">
-            <button type="submit" className="btn btn-accent btn-large" disabled={busy}>
+          <div className="flex flex-col items-start gap-2 sm:col-span-2 sm:flex-row sm:items-center">
+            <button
+              type="submit"
+              disabled={busy}
+              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark disabled:opacity-60"
+            >
               {busy ? 'Sending…' : 'Request a call back'}
             </button>
-            <span className="svc-expert-note">
-              No payment now. We call you within one working day.
-            </span>
+            <span className="text-xs text-brand-slate">No payment now. We call you within one working day.</span>
           </div>
         </form>
       )}

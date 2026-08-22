@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Quote } from 'lucide-react'
 import { fetchTestimonials } from '../../../../api/content.js'
 
 /**
@@ -26,17 +27,20 @@ export default function ProgramTestimonials({ slug, programName }) {
   if (!stories.length) return null
 
   return (
-    <div className="svc-panel-plain">
-      <h2 className="svc-h2 text-center">What {programName} clients say</h2>
-      <div className="grid grid-3">
+    <div>
+      <h2 className="text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy">
+        What {programName} clients say
+      </h2>
+      <div className="mt-8 grid gap-6 md:grid-cols-3">
         {stories.map((t) => (
-          <figure key={t.id} className="card svc-quote">
-            <blockquote>“{t.quote}”</blockquote>
-            <figcaption>
-              {t.photo && <img src={t.photo} alt="" loading="lazy" />}
-              <div>
-                <strong>{t.name}</strong>
-                {t.role && <span>{t.role}</span>}
+          <figure key={t.id} className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+            <Quote className="size-8 fill-brand-crimson/15 text-brand-crimson" />
+            <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-brand-navy/80">“{t.quote}”</blockquote>
+            <figcaption className="mt-4 flex items-center gap-3 border-t border-brand-navy/10 pt-4">
+              {t.photo && <img src={t.photo} alt="" loading="lazy" className="size-11 rounded-full object-cover" />}
+              <div className="leading-tight">
+                <strong className="block text-sm font-bold text-brand-navy">{t.name}</strong>
+                {t.role && <span className="text-xs font-semibold text-brand-slate">{t.role}</span>}
               </div>
             </figcaption>
           </figure>

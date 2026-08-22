@@ -9,22 +9,24 @@ export default function FreeTrial() {
   const { user } = useAuth()
 
   return (
-    <section id="free-trial" className="section">
+    <section id="free-trial" className="bg-nirmaan-cream/50 py-16 md:py-20">
       <div className="container">
-        <div className="card nirmaan-trial">
-          <h2 className="nirmaan-trial-title">Liked the Glimpse but Still Unsure?</h2>
-          <p className="nirmaan-trial-sub">
-            Start your 1-week free trial and experience the journey for yourself — the
-            real videos, the real daily tasks, and the actual feel of the course.
+        <div className="mx-auto max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8 text-center shadow-sm md:p-10">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown">
+            Liked the Glimpse but Still Unsure?
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-nirmaan-brown-soft">
+            Start your 1-week free trial and experience the journey for yourself — the real videos,
+            the real daily tasks, and the actual feel of the course.
           </p>
           <Link
             to={user ? '/checkout?pkg=nirmaan-payu&trial=1' : '/login?mode=signup'}
-            className="btn btn-primary btn-large"
+            className="mt-6 inline-flex h-12 items-center justify-center rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
           >
             Register for 1 week Free Trial
           </Link>
           {!user && (
-            <p className="nirmaan-trial-note">
+            <p className="mt-3 text-sm text-nirmaan-brown-soft">
               You’ll create your account first — the trial starts straight after.
             </p>
           )}
