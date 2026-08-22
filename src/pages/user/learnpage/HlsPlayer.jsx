@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import Hls from 'hls.js'
 import {
   IconPlay, IconPause, IconVolHigh, IconVolLow, IconVolMute,
@@ -14,6 +15,8 @@ import './HlsPlayer.css'
  *    (`lockSeek`); after that, seeking is free. Notes-jumps use `videoRef`.
  *  - Best-effort protection: a moving e-mail watermark, and a pause+cover when
  *    the tab/window loses focus. (True screenshot/record blocking needs OS/DRM.)
+ *  - If the video cannot be loaded the player says so in plain English and
+ *    offers Try again, instead of sitting silently at 0:00 / 0:00.
  *
  * `videoRef` is owned by the parent (90%-complete tracking + notes seek).
  */
@@ -30,6 +33,10 @@ export default function HlsPlayer({
   // Anti-piracy: the parent counts plays on the server. `onFirstPlay` is called
   // once per mount, the moment playback actually starts; if it resolves false
   // the video is stopped again and `playBlockedMessage` is shown over it.
+  // "Actually starts" means the `playing` event, not `play`. `play` fires the
+  // instant the button is pressed, before a single byte has arrived, so a video
+  // whose file is missing would otherwise spend a student's paid play without
+  // ever showing them a frame.
   onFirstPlay = null, playBlockedMessage = '',
 }) {
   const wrapRef = useRef(null)
@@ -54,6 +61,9 @@ export default function HlsPlayer({
   const [menu, setMenu] = useState(false) // gear popover open
   const [showBar, setShowBar] = useState(true)
   const [waiting, setWaiting] = useState(false)
+  const [loading, setLoading] = useState(true) // fetching the file, nothing to show yet
+  const [failed, setFailed] = useState(false) // the file could not be loaded at all
+  const [attempt, setAttempt] = useState(0) // bumped by Try again to re-run the load
   const [full, setFull] = useState(false)
   const [covered, setCovered] = useState(false) // focus-loss cover
   const [subtitle, setSubtitle] = useState('') // '' = off, else caption lang
@@ -92,9 +102,12 @@ export default function HlsPlayer({
     const video = videoRef.current
     if (!video || !src) return
     setLevels([]); setLevel(-1)
+    setFailed(false); setLoading(true)
     maxWatched.current = 0
 
-    if (!isHls) { video.src = src; return }
+    // load() matters on a retry: without it the browser happily replays the
+    // cached failure instead of asking for the file again.
+    if (!isHls) { video.src = src; video.load(); return }
 
     if (Hls.isSupported()) {
       const hls = new Hls({ capLevelToPlayerSize: true, startLevel: -1 })
@@ -106,10 +119,17 @@ export default function HlsPlayer({
         setLevel(hls.autoLevelEnabled ? -1 : d.level)
         setCurHeight(hls.levels[d.level]?.height || 0)
       })
+      // hls.js handles its own retries and only reports `fatal` once it has run
+      // out of them, so this does not fire on a merely slow connection. The
+      // <video> element stays silent in this mode, which is why we listen here.
+      hls.on(Hls.Events.ERROR, (_e, d) => {
+        if (d?.fatal) { setFailed(true); setLoading(false); setWaiting(false) }
+      })
       return () => { hls.destroy(); hlsRef.current = null }
     }
     video.src = src // Safari native HLS
-  }, [src]) // eslint-disable-line react-hooks/exhaustive-deps
+    video.load()
+  }, [src, attempt]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- pause + cover when the tab/window loses focus (deterrent) ----
   useEffect(() => {
@@ -154,7 +174,18 @@ export default function HlsPlayer({
   const onSeeking = (e) => {
     if (lockSeek && e.target.currentTime > maxWatched.current + 0.5) e.target.currentTime = maxWatched.current
   }
-  const onMeta = (e) => { setDuration(e.target.duration || 0); e.target.playbackRate = speed }
+  const onMeta = (e) => { setDuration(e.target.duration || 0); e.target.playbackRate = speed; setLoading(false) }
+
+  // The <video> element fires `error` when the file is missing, blocked or in a
+  // format it cannot read. There is no timeout here on purpose: a slow
+  // connection is still a working connection, and guessing would accuse a
+  // student's internet of a problem that is ours.
+  const onError = () => { setFailed(true); setLoading(false); setWaiting(false); setPlaying(false) }
+
+  // Try again. Bumping `attempt` re-runs the attach effect, which re-fetches the
+  // file from scratch. Nothing about the student's progress or their remaining
+  // plays is touched, because a failed load never counted as a play.
+  const retry = () => { setFailed(false); setLoading(true); setAttempt((n) => n + 1) }
 
   const togglePlay = () => {
     const v = videoRef.current
@@ -220,9 +251,22 @@ export default function HlsPlayer({
         // Needed so cross-origin (CDN) caption files can load; harmless same-origin.
         crossOrigin={captions.length ? 'anonymous' : undefined}
         onClick={togglePlay}
-        onPlay={async () => {
-          setPlaying(true); wake()
-          // Count this play once per mount, before letting it run on.
+        onPlay={() => { setPlaying(true); wake() }}
+        onPause={() => { setPlaying(false); setShowBar(true) }}
+        onTimeUpdate={onTime}
+        onSeeking={onSeeking}
+        onLoadStart={() => setLoading(true)}
+        onLoadedMetadata={onMeta}
+        onCanPlay={() => setLoading(false)}
+        onDurationChange={(e) => setDuration(e.target.duration || 0)}
+        onVolumeChange={(e) => { setMuted(e.target.muted); setVolume(e.target.volume) }}
+        onWaiting={() => setWaiting(true)}
+        onError={onError}
+        onPlaying={async () => {
+          setWaiting(false); setLoading(false); setFailed(false)
+          // `playing` means frames are on screen, so this is the first moment a
+          // play has genuinely happened. Counted once per mount, and the guard
+          // is set before the await so a stall-and-resume cannot double-count.
           if (onFirstPlay && !countedRef.current) {
             countedRef.current = true
             const allowed = await onFirstPlay()
@@ -234,14 +278,6 @@ export default function HlsPlayer({
             }
           }
         }}
-        onPause={() => { setPlaying(false); setShowBar(true) }}
-        onTimeUpdate={onTime}
-        onSeeking={onSeeking}
-        onLoadedMetadata={onMeta}
-        onDurationChange={(e) => setDuration(e.target.duration || 0)}
-        onVolumeChange={(e) => { setMuted(e.target.muted); setVolume(e.target.volume) }}
-        onWaiting={() => setWaiting(true)}
-        onPlaying={() => setWaiting(false)}
       >
         {captions.map((c) => (
           <track key={c.lang} kind="subtitles" src={c.url} srcLang={c.lang} label={c.label} />
@@ -257,11 +293,33 @@ export default function HlsPlayer({
       {watermark && <div className="vp-watermark" aria-hidden>{watermark}</div>}
 
       {/* buffering spinner */}
-      {waiting && !covered && <div className="vp-spinner" aria-hidden />}
+      {(waiting || loading) && !covered && !failed && <div className="vp-spinner" aria-hidden />}
+
+      {/* Still fetching the file. Says so, so that a wait never looks like a
+          breakage and a breakage never looks like a wait. */}
+      {loading && !failed && !covered && <p className="vp-loading">Loading the video…</p>}
 
       {/* big center play when paused */}
-      {!playing && !covered && (
+      {!playing && !covered && !failed && !loading && (
         <button type="button" className="vp-bigplay" onClick={togglePlay} aria-label="Play"><IconPlay /></button>
+      )}
+
+      {/* The video could not be loaded. Tell the student plainly whose problem
+          this is, reassure them about what they have paid for, and give them
+          something to press. */}
+      {failed && (
+        <div className="vp-failed" role="alert">
+          <p className="vp-failed-head">We could not load this video</p>
+          <p className="vp-failed-body">
+            This is a problem at our end, not with your device or your internet.
+            Your progress is saved and none of your plays for this video have
+            been used.
+          </p>
+          <div className="vp-failed-acts">
+            <button type="button" className="vp-failed-btn" onClick={retry}>Try again</button>
+            <Link className="vp-failed-link" to="/support/new">Tell us about it</Link>
+          </div>
+        </div>
       )}
 
       {/* focus-loss cover */}
