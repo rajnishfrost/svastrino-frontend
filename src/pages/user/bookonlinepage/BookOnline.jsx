@@ -174,7 +174,6 @@ export default function BookOnline() {
     setParams(next, { replace: true })
   }
 
-  const pickProgram = (sku) => { syncParams({ program: sku }); setStep('schedule') }
   const pickDate = (d) => { setDate(d); setSlot(''); syncParams({ date: d, start: '' }) }
   const pickSlot = (s) => { setSlot(s); syncParams({ start: s }) }
 
@@ -397,17 +396,12 @@ export default function BookOnline() {
                   {Array.isArray(p.features) && p.features.length > 0 && (
                     <ul className="bo-features">{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
                   )}
-                  {/* Two ways out of a card. Someone who already knows what they
-                      want books straight away; someone still deciding should not
-                      have to commit to a programme to read about it first. */}
-                  <div className="bo-program-actions">
-                    <Link to={`/services/${p.slug}`} className="btn btn-secondary">
-                      View details
-                    </Link>
-                    <button className="btn btn-primary" onClick={() => pickProgram(p.sku)}>
-                      {p.buyMode === 'expert-call' ? 'Talk to an expert' : `Choose ${p.name}`}
-                    </button>
-                  </div>
+                  {/* One way out of a card: read the programme first. Booking
+                      starts from the programme's own page, so nobody commits to
+                      a date and a payment before knowing what they bought. */}
+                  <Link to={`/services/${p.slug}`} className="btn btn-primary bo-program-btn">
+                    View details
+                  </Link>
                 </div>
               ))}
             </div>
