@@ -44,6 +44,9 @@ export default function Checkout() {
   const [couponErr, setCouponErr] = useState('')
   const [busy, setBusy] = useState(false)
   const [order, setOrder] = useState(null) // created order (paying step)
+  // Set when the gateway refuses a payment, so the screen can explain instead
+  // of showing a red line the customer has to hunt for.
+  const [payFailed, setPayFailed] = useState('')
   const [receipt, setReceipt] = useState(null) // paid order (success step)
 
   // Load the price quote (optionally with a coupon).
@@ -145,7 +148,9 @@ export default function Checkout() {
       },
       modal: { ondismiss: () => setBusy(false) },
     })
-    rzp.on('payment.failed', (r) => setLoadErr(r?.error?.description || 'Payment failed. Please try again.'))
+    // A refused payment replaces the screen; closing the widget only stops the
+    // spinner, because the customer chose to step away and may come straight back.
+    rzp.on('payment.failed', (r) => { setBusy(false); setPayFailed(r?.error?.description || '') })
     rzp.open()
   }
 
@@ -184,8 +189,20 @@ export default function Checkout() {
         )}
         <h1 className="checkout-title">Checkout</h1>
 
+        {/* ---- Payment refused ---- */}
+        {payFailed !== '' && step !== 'success' ? (
+          <PaymentFailed
+            reason={payFailed}
+            item={order?.packageLabel || quote?.packageLabel}
+            amount={quote?.rupees?.amount != null ? `₹${Number(quote.rupees.amount).toLocaleString('en-IN')}` : ''}
+            onRetry={() => { setPayFailed(''); if (order) openRazorpay(order) }}
+            backTo="/skill-build/nirmaan#packages"
+            backLabel="Back to packages"
+          />
+        ) : null}
+
         {/* ---- Success ---- */}
-        {step === 'success' ? (
+        {payFailed !== '' && step !== 'success' ? null : step === 'success' ? (
           <div className="card checkout-card checkout-success">
             <div className="checkout-tick" aria-hidden>✓</div>
             <h2>Payment successful</h2>

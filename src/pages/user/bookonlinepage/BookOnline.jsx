@@ -11,6 +11,7 @@ import {
 } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './BookOnline.css'
 
 /**
@@ -93,6 +94,9 @@ export default function BookOnline() {
   const [couponErr, setCouponErr] = useState('')
   const [quote, setQuote] = useState(null)
   const [order, setOrder] = useState(null)
+  // Set when the gateway refuses a payment, so the whole step can be replaced
+  // by an explanation instead of a red line the customer has to hunt for.
+  const [payFailed, setPayFailed] = useState('')
   const [booking, setBooking] = useState(null) // success payload
   const [receipt, setReceipt] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -281,13 +285,17 @@ export default function BookOnline() {
   }
 
   // ---- verify the payment on our server, then create the booking ----
-  const finalize = async (paymentFields = {}) => {
+  // The order is passed in rather than read off state. Razorpay's widget is
+  // opened in the same tick as setOrder(), so its handler closes over the
+  // order state as it was BEFORE that update — i.e. null — and the customer
+  // would be charged and then see "Cannot read properties of null".
+  const finalize = async (paymentFields = {}, placed = order) => {
     setErr(''); setBusy(true)
     try {
       const { order: paid } = await api('/user/payments/verify', {
         method: 'POST',
         auth: 'user',
-        body: { orderId: order.orderId, ...paymentFields },
+        body: { orderId: placed.orderId, ...paymentFields },
       })
       setReceipt(paid)
       try {
@@ -328,13 +336,19 @@ export default function BookOnline() {
       description: res.packageLabel || program?.name,
       prefill: { name: details.name || user?.name || '', email: details.email || user?.email || '', contact: details.phone || user?.phone || '' },
       theme: { color: '#2f7ae5' },
+      modal: { ondismiss: () => setBusy(false) },
       handler: (resp) => finalize({
         razorpay_payment_id: resp.razorpay_payment_id,
         razorpay_order_id: resp.razorpay_order_id,
         razorpay_signature: resp.razorpay_signature,
-      }),
+      }, res),
     })
-    rzp.on('payment.failed', (resp) => setErr(resp?.error?.description || 'Payment failed — please try again.'))
+    // A refused payment replaces the step; closing the widget only stops the
+    // spinner, because the customer chose to step away and may come straight back.
+    rzp.on('payment.failed', (resp) => {
+      setBusy(false)
+      setPayFailed(resp?.error?.description || '')
+    })
     rzp.open()
   }
 
@@ -598,7 +612,20 @@ export default function BookOnline() {
           )}
 
           {/* ---- Step 4 · payment ---- */}
-          {step === 'pay' && program && (
+          {/* A refused payment takes over the step: nothing else on this screen
+              matters until they have decided to try again or step away. */}
+          {step === 'pay' && program && payFailed !== '' && (
+            <PaymentFailed
+              reason={payFailed}
+              item={order?.packageLabel || program.name}
+              amount={inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}
+              onRetry={() => { setPayFailed(''); openRazorpay(order) }}
+              backTo={`/services/${program.slug}`}
+              backLabel="Back to the program"
+            />
+          )}
+
+          {step === 'pay' && program && payFailed === '' && (
             <div className="card bo-card bo-verify">
               {order?.mock ? (
                 <>
