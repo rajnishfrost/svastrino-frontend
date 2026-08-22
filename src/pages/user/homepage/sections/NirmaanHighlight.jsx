@@ -30,7 +30,7 @@ export default function NirmaanHighlight() {
                 New · Skill Build
               </span>
               <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
-                Nirmaan — <span className="text-nirmaan-green">Soch Se Vikas Tak</span>
+                Nirmaan — <span className="text-nirmaan-green">Soch Se Vikas</span>
               </h2>
               <p className="mt-4 max-w-xl text-nirmaan-brown-soft">
                 Nirmaan is a structured journey to build self-awareness, self-control, discipline,
@@ -82,7 +82,7 @@ export default function NirmaanHighlight() {
                 <img src="/nirmaan-tree.png" alt="" aria-hidden className="h-full w-full object-contain" />
               </div>
               <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
-                <GraduationCap className="size-4" /> Soch Se Vikas Tak
+                <GraduationCap className="size-4" /> Soch Se Vikas
               </span>
             </div>
           </div>
