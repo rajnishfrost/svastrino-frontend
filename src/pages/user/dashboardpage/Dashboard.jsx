@@ -54,6 +54,11 @@ const accessState = (e) => e.access?.state || 'active'
 export default function Dashboard() {
   const { user } = useAuth()
   const [enrollments, setEnrollments] = useState(null)
+
+  // Buying a mentoring programme creates an enrollment too, and it would
+  // otherwise appear under Skill Build alongside the courses. Mentoring has its
+  // own section above, fed by the bookings API, so it is filtered out here.
+  const courses = enrollments == null ? null : enrollments.filter((e) => e.kind !== 'mentoring')
   const [mentoring, setMentoring] = useState(null)
 
   useEffect(() => {
@@ -156,9 +161,9 @@ export default function Dashboard() {
         <section className="dash-section">
           <h2 className="dash-section-title">Skill Build</h2>
 
-          {enrollments == null ? (
+          {courses == null ? (
             <div className="card dash-card"><p className="dash-empty">Loading…</p></div>
-          ) : enrollments.length === 0 ? (
+          ) : courses.length === 0 ? (
             <div className="card dash-card">
               <p className="dash-empty">You haven't enrolled in a Skill Build course yet.</p>
               <div className="dash-card-foot">
@@ -166,14 +171,16 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            enrollments.map((e) => {
+            courses.map((e) => {
               const state = accessState(e)
               const open = state === 'active'
               return (
               <div key={e.id} className={`card dash-card ${THEME_CLASS[e.courseSlug] || ''}`}>
                 <div className="dash-item">
                   <div className="dash-item-main">
-                    <h3 className="dash-item-title">Nirmaan — {e.packageName}</h3>
+                    <h3 className="dash-item-title">
+                      {e.courseName ? `${e.courseName} — ${e.packageName}` : e.packageName}
+                    </h3>
                     <p className="dash-item-meta">
                       {e.progress && e.progress.total > 0
                         ? `${e.progress.completed} of ${e.progress.total} sessions complete`
