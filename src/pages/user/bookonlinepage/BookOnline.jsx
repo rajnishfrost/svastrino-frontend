@@ -397,9 +397,17 @@ export default function BookOnline() {
                   {Array.isArray(p.features) && p.features.length > 0 && (
                     <ul className="bo-features">{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
                   )}
-                  <button className="btn btn-primary" onClick={() => pickProgram(p.sku)}>
-                    Choose {p.name}
-                  </button>
+                  {/* Two ways out of a card. Someone who already knows what they
+                      want books straight away; someone still deciding should not
+                      have to commit to a programme to read about it first. */}
+                  <div className="bo-program-actions">
+                    <Link to={`/services/${p.slug}`} className="btn btn-secondary">
+                      View details
+                    </Link>
+                    <button className="btn btn-primary" onClick={() => pickProgram(p.sku)}>
+                      {p.buyMode === 'expert-call' ? 'Talk to an expert' : `Choose ${p.name}`}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
