@@ -35,7 +35,9 @@
 /* Program picker */
 .bo-programs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
 .bo-program { position: relative; display: flex; flex-direction: column; gap: var(--space-2); }
-.bo-program .btn { margin-top: auto; }
+/* Pinned to the foot of the card whatever its height, so a row of cards lines
+   up even when their feature lists differ in length. */
+.bo-program-btn { margin-top: auto; text-align: center; }
 .bo-program.is-featured { border: 2px solid var(--color-primary, #2e5d3f); }
 .bo-badge {
   position: absolute; top: -10px; right: 14px;

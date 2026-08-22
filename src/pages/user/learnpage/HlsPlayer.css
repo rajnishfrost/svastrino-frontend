@@ -218,3 +218,71 @@
   z-index: 6;
 }
 .vp-blocked p { font-size: 15px; max-width: 320px; }
+
+/* "Loading the video…" — sits under the spinner so the two read as one message. */
+.vp-loading {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, 34px);
+  z-index: 3;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* The video could not be loaded. Covers the whole player, including the control
+   bar, because none of those controls can do anything until the file arrives. */
+.vp-failed {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: rgba(10, 18, 32, 0.94);
+  color: #fff;
+  text-align: center;
+}
+.vp-failed-head { font-size: 17px; font-weight: 700; }
+.vp-failed-body {
+  font-size: 13.5px;
+  line-height: 1.55;
+  max-width: 380px;
+  color: rgba(255, 255, 255, 0.78);
+}
+.vp-failed-acts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+}
+.vp-failed-btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 20px;
+  cursor: pointer;
+}
+.vp-failed-btn:hover { background: var(--color-accent-hover); }
+.vp-failed-link {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  text-decoration: underline;
+}
+.vp-failed-link:hover { color: #fff; }
+
+/* Short players (small screens) have no room for the paragraph. */
+@media (max-width: 480px) {
+  .vp-failed-body { font-size: 12.5px; }
+  .vp-failed-head { font-size: 15px; }
+}
