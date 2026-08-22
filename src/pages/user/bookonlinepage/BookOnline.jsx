@@ -348,6 +348,10 @@ export default function BookOnline() {
     rzp.on('payment.failed', (resp) => {
       setBusy(false)
       setPayFailed(resp?.error?.description || '')
+      // Razorpay keeps its own retry screen open on top of ours, so the customer
+      // sees two different offers to try again and never reads what we wrote.
+      // Close it and let our screen be the one that answers them.
+      try { rzp.close() } catch { /* already closed */ }
     })
     rzp.open()
   }

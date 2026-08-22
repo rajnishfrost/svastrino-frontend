@@ -150,7 +150,13 @@ export default function Checkout() {
     })
     // A refused payment replaces the screen; closing the widget only stops the
     // spinner, because the customer chose to step away and may come straight back.
-    rzp.on('payment.failed', (r) => { setBusy(false); setPayFailed(r?.error?.description || '') })
+    rzp.on('payment.failed', (r) => {
+      setBusy(false)
+      setPayFailed(r?.error?.description || '')
+      // Razorpay keeps its own retry screen open on top of ours, so the customer
+      // sees two different offers to try again and never reads what we wrote.
+      try { rzp.close() } catch { /* already closed */ }
+    })
     rzp.open()
   }
 
