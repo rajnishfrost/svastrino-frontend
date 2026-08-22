@@ -13,7 +13,7 @@ export const PROGRAMS = [
 /** The headline facts — shown as words, not ticks. */
 export const DETAILS = [
   { label: "Duration", values: ["10 Days", "2 Months", "2 Years"] },
-  { label: "No of Sessions", values: ["2 sessions", "3 sessions", "20 sessions x 1 hour or 10 sessions x 2 hours (As per students speed)"] },
+  { label: "No of Sessions", values: ["3 sessions x 2 hours", "5 sessions x 2 hours", "22 sessions x 2 hours (at your own pace)"] },
   { label: "Total Time Inclusion", values: ["~5 hours through the process", "~10 hours through the process", "~45 hours through the process"] },
   { label: "Purpose", values: ["Immediate Career Counselling", "Career Decision through Deep Self Reflection", "Personalised Mentoring for Overall Transformation (Life & Career)"] },
   { label: "Follow ups", values: ["Once", "Weekly till Program Ends", "Weekly till Program Ends"] },
