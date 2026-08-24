@@ -6,7 +6,7 @@ import './Navbar.css'
 
 /**
  * Top navigation (order per src/content/header.md):
- *   Skill Build ▾ · Mentoring ▾ · Book Online · Resources ▾ · Blog · Contact · Login
+ *   Skill Build ▾ · Mentoring ▾ · Book Online · Resources ▾ · Contact · Login
  * Skill Build, Mentoring and Resources open dropdowns; Mentoring is two levels
  * deep (category → its programs). On a Skill-Build page the green Skill Build
  * pill is replaced by a plain "Home" link back to the main site.
@@ -31,10 +31,12 @@ const MENTORING_LINKS = [
   },
 ]
 
-// Blog is now a top-level menu item (per header.md), so it is no longer listed
-// inside the Resources dropdown. "Quick News" from the spec is omitted until it
-// has a destination.
+// Blog sits inside the Resources dropdown, because a reader looks for reading
+// material under Resources rather than in the top row (per header.md). The Blog
+// page itself still lives at /blog — only the menu placement changed.
+// "Quick News" from the spec is omitted until it has a destination.
 const RESOURCES_LINKS = [
+  { label: 'Blog', to: '/blog' },
   { label: 'Career Library', to: '/resources/career-library' },
   { label: "FAQ's", to: '/resources/faqs' },
   { label: 'Success Stories', to: '/resources/success-stories' },
@@ -86,10 +88,6 @@ export default function Navbar() {
           </NavLink>
 
           <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} />
-
-          <NavLink to="/blog" onClick={close} className={navClass}>
-            Blog
-          </NavLink>
 
           <NavLink to="/contact" onClick={close} className={navClass}>
             Contact
