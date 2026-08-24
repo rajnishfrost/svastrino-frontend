@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { api, apiUpload } from '../../../api/client.js'
+import { api } from '../../../api/client.js'
+import { fetchUploadMode, uploadDirectToS3, uploadThroughServer, awaitTranscode } from '../../../api/videoUpload.js'
 import '../adminShared.css'
 
 const TIER_LABEL = { 1: 'Discover+', 2: 'Clarity+', 3: 'Launch' }
@@ -192,46 +193,43 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
     setPhase('upload'); setPct(0); setEta('')
     autofillDuration(file) // detect from the local file immediately
 
-    // The server keys live transcode progress by this id (see upload.controller).
-    const uploadId = Math.random().toString(36).slice(2) + Date.now().toString(36)
-    let poll = null
-
     try {
-      const fd = new FormData()
-      fd.append('video', file)
+      // Which path this deployment uses. On AWS the browser sends the file
+      // straight to S3, because CloudFront allows an origin only 60 seconds to
+      // respond and a large video cannot travel through it at all. On a dev box
+      // it still goes through the API, exactly as before.
+      const { mode, partSize } = await fetchUploadMode().catch(() => ({ mode: 'server' }))
 
-      // Phase 1: bytes going up (real % from XHR). Phase 2: ffmpeg building the
-      // quality ladder on the server — polled from /upload/progress.
-      const req = apiUpload(`/admin/upload/video?uploadId=${uploadId}`, fd, {
-        auth: 'admin',
-        onProgress: (p) => {
-          setPct(p)
-          if (p >= 100) setPhase('process') // bytes done → server is transcoding
+      let jobId
+      if (mode === 's3') {
+        const done = await uploadDirectToS3(file, {
+          partSize,
+          onProgress: (p) => { setPct(p); if (p >= 100) setPhase('process') },
+        })
+        jobId = done.jobId
+      } else {
+        // The server keys the job by an id we choose, so polling can start
+        // before the upload request has returned.
+        jobId = Math.random().toString(36).slice(2) + Date.now().toString(36)
+        await uploadThroughServer(file, {
+          uploadId: jobId,
+          onProgress: (p) => { setPct(p); if (p >= 100) setPhase('process') },
+        })
+      }
+
+      // Bytes are stored either way; building the adaptive ladder is the longer
+      // job, and it runs behind the request that started it.
+      setPhase('process')
+      const { url, type, durationMins, warning } = await awaitTranscode(jobId, {
+        onProgress: (s) => {
+          setPct(s.pct || 0)
+          if (s.pct > 3 && s.elapsedMs) {
+            const remaining = (s.elapsedMs / s.pct) * (100 - s.pct)
+            setEta(remaining > 1000 ? `~${fmtLeft(remaining)} left` : 'almost done')
+          }
         },
       })
 
-      // The upload request now answers as soon as the bytes have landed, and
-      // ffmpeg runs on behind it — so the finished video arrives through this
-      // poller rather than as the upload's own response.
-      const finished = new Promise((resolve, reject) => {
-        poll = setInterval(async () => {
-          try {
-            const s = await api(`/admin/upload/progress/${uploadId}`, { auth: 'admin' })
-            if (!s?.found) return
-            if (s.status === 'ready') return resolve(s)
-            if (s.status === 'failed') return reject(new Error(s.error || 'Video processing failed'))
-            setPhase('process')
-            setPct(s.pct || 0)
-            if (s.pct > 3 && s.elapsedMs) {
-              const remaining = (s.elapsedMs / s.pct) * (100 - s.pct)
-              setEta(remaining > 1000 ? `~${fmtLeft(remaining)} left` : 'almost done')
-            }
-          } catch { /* transient — keep polling */ }
-        }, 1000)
-      })
-
-      await req // bytes delivered; the server has taken it from here
-      const { url, type, durationMins, warning } = await finished
       set('videoUrl', url)
       if (durationMins) setF((p) => (p.durationMins ? p : { ...p, durationMins }))
       setUploadMsg(
@@ -242,7 +240,6 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
     } catch (e) {
       setErr(e.message)
     } finally {
-      if (poll) clearInterval(poll)
       setUploading(false)
       setPct(0); setEta(''); setPhase('')
     }
