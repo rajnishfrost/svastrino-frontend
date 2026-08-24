@@ -6,7 +6,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 // rarely, so it lives here rather than in the DB. Programs, FAQs and success
 // stories remain dynamic (from /api/user/content).
 
-const FOUNDER_IMG = '/uploads/content/2023/04/meet-rohit.jpg' // served by the API, proxied in dev
+const FOUNDER_IMG = '/assets/images/founder-rohit-gala.jpg'
 
 const MILESTONES = [
   { year: '2009', title: 'Where It All Began', text: 'Founded by Rohit M. Gala, Svastrino began with 20 students in Mumbai.' },
@@ -26,11 +26,11 @@ const MEET_ROHIT = [
 ]
 
 const TEAM = [
-  { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: null, linkedin: null },
-  { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: null, linkedin: null },
-  { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: null, linkedin: null },
-  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: null, linkedin: null },
-  { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: null, linkedin: null },
+  { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: '/assets/images/team/rohit-gala.png', linkedin: null },
+  { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: '/assets/images/team/miloni-gala.png', linkedin: null },
+  { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
+  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
+  { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
   { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: null, linkedin: null },
 ]
 
@@ -41,9 +41,6 @@ const SERVICES = [
   { need: 'To Build Skills and Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
   { need: 'To verify your potential & career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
-
-// Newspaper/magazine scans — add { src, title } to switch the media band on.
-const MEDIA_CUTTINGS = []
 
 const initials = (n) => n.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 
@@ -73,19 +70,13 @@ export default function About() {
             </p>
           </div>
 
-          {/* Founder card */}
-          <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5">
-            <img
-              src={FOUNDER_IMG}
-              alt="Rohit M. Gala, founder of Svastrino"
-              loading="lazy"
-              className="aspect-[4/3] w-full rounded-xl object-cover"
-            />
-            <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>
-            <p className="mt-0.5 text-sm font-semibold text-brand-crimson">
-              Founder &amp; Chief Career Mentor · 17+ years
-            </p>
-          </div>
+          {/* Origin image */}
+          <img
+            src="/assets/images/our-story.png"
+            alt="The Svastrino story — from 20 students in 2009 to today"
+            loading="lazy"
+            className="w-full rounded-2xl object-cover shadow-xl shadow-brand-navy/10"
+          />
         </div>
       </section>
 
@@ -150,28 +141,25 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---- Media recognition (hidden until scans are added) ---- */}
-      {MEDIA_CUTTINGS.length > 0 && (
-        <section className="bg-white py-16 md:py-20">
-          <div className="container text-center">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
-              Media recognition
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-              Reflections of our impact through National Newspapers
-            </h2>
+      {/* ---- Media recognition ---- */}
+      <section className="bg-white py-16 md:py-20">
+        <div className="container text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
+            Media recognition
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
+            Reflections of our impact through National Newspapers
+          </h2>
+          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-brand-navy/10 shadow-sm">
+            <img
+              src="/assets/images/newspaper-recognition.jpg"
+              alt="Svastrino featured in national newspapers"
+              loading="lazy"
+              className="w-full"
+            />
           </div>
-          <div className="group relative mt-10 overflow-hidden">
-            <ul className="flex w-max animate-marquee items-center gap-4 group-hover:[animation-play-state:paused]">
-              {[...MEDIA_CUTTINGS, ...MEDIA_CUTTINGS].map((c, i) => (
-                <li key={`${c.src}-${i}`}>
-                  <img src={c.src} alt={c.title} loading="lazy" className="h-48 w-auto rounded-lg border border-brand-navy/10" />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ---- Meet Rohit Gala ---- */}
       <section className="bg-soft py-16 md:py-20">
@@ -213,7 +201,7 @@ export default function About() {
                 key={m.name}
                 className="flex flex-col items-center rounded-xl border border-brand-navy/5 bg-white p-6 text-center shadow-sm"
               >
-                <div className="flex size-24 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
+                <div className="flex size-60 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
                   {m.photo ? (
                     <img src={m.photo} alt={m.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : (

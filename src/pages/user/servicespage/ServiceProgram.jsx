@@ -13,6 +13,13 @@ import ProgramFaqs from './sections/ProgramFaqs.jsx'
 import TalkToExpert from './sections/TalkToExpert.jsx'
 import './Services.css' // keeps .svc-hero-trust (hero) styled; body sections use Tailwind
 
+// Themed hero background per program (optimised from the brand imagery).
+const HERO_IMG = {
+  'bulls-eye': '/assets/images/programs/bulls-eye.jpg',
+  bloom: '/assets/images/programs/bloom.jpg',
+  breakthrough: '/assets/images/programs/breakthrough.jpg',
+}
+
 /**
  * A single program's own page (Bull's Eye / Bloom / Breakthrough). Pulls the
  * marketing detail from the content module and offers a "Book now" CTA that
@@ -85,6 +92,7 @@ export default function ServiceProgram() {
         eyebrow={program.category?.name || 'Services'}
         title={program.name}
         subtitle={program.tagline}
+        bgImage={HERO_IMG[slug]}
       >
         <Cta className="btn btn-accent btn-large" />
         <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
