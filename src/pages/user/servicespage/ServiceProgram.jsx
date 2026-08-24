@@ -11,7 +11,14 @@ import BookNowStrip from './sections/BookNowStrip.jsx'
 import ProgramTestimonials from './sections/ProgramTestimonials.jsx'
 import ProgramFaqs from './sections/ProgramFaqs.jsx'
 import TalkToExpert from './sections/TalkToExpert.jsx'
-import './Services.css'
+import './Services.css' // keeps .svc-hero-trust (hero) styled; body sections use Tailwind
+
+// Themed hero background per program (optimised from the brand imagery).
+const HERO_IMG = {
+  'bulls-eye': '/assets/images/programs/bulls-eye.jpg',
+  bloom: '/assets/images/programs/bloom.jpg',
+  breakthrough: '/assets/images/programs/breakthrough.jpg',
+}
 
 /**
  * A single program's own page (Bull's Eye / Bloom / Breakthrough). Pulls the
@@ -44,11 +51,6 @@ export default function ServiceProgram() {
   const expertCall = program?.buyMode === 'expert-call'
   const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
 
-  // Each programme is trusted for a different reason and by a different number
-  // of people, so the proof line belongs to the programme record rather than to
-  // this page. Until every programme carries its own `trustLine` we fall back to
-  // a claim that is true of all of them: no head-count, because the counts
-  // differ per programme (and the home page already publishes the real figures).
   const trustLine = program?.trustLine || (expertCall
     ? 'Guided one to one by Svastrino mentors · no payment before you speak to us'
     : 'Guided one to one by Svastrino mentors')
@@ -68,7 +70,7 @@ export default function ServiceProgram() {
     return (
       <>
         <PageHero eyebrow="Services" title="Program" />
-        <section className="section"><div className="container">
+        <section className="py-16"><div className="container">
           <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="this program" />
         </div></section>
       </>
@@ -79,7 +81,7 @@ export default function ServiceProgram() {
     return (
       <>
         <PageHero eyebrow="Services" title="Loading…" />
-        <section className="section"><div className="container"><p className="svc-state">Loading…</p></div></section>
+        <section className="py-16"><div className="container"><p className="text-center text-brand-slate">Loading…</p></div></section>
       </>
     )
   }
@@ -90,6 +92,7 @@ export default function ServiceProgram() {
         eyebrow={program.category?.name || 'Services'}
         title={program.name}
         subtitle={program.tagline}
+        bgImage={HERO_IMG[slug]}
       >
         <Cta className="btn btn-accent btn-large" />
         <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
@@ -97,8 +100,8 @@ export default function ServiceProgram() {
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>
 
-      <section className="section">
-        <div className="container svc-detail-wrap">
+      <section className="bg-white py-16 md:py-20">
+        <div className="container mx-auto max-w-4xl space-y-6">
           <ProgramOverview program={program} />
           <ChooseIf items={program.chooseIf} />
           <ProgramJourney program={program} />
@@ -110,18 +113,13 @@ export default function ServiceProgram() {
           <ProgramFaqs faqs={program.faqs} />
 
           {/* Closing CTA — for anyone who read all the way down. */}
-          <div className="card svc-panel svc-cta">
-            <h2 className="svc-h2">Ready to begin {program.name}?</h2>
-            <div className="svc-actions">
+          <div className="rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
+            <h2 className="font-display text-2xl font-extrabold text-brand-navy">Ready to begin {program.name}?</h2>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Cta className="btn btn-primary btn-large" />
               <Link to="/services/compare" className="btn btn-secondary btn-large">
                 Compare programs
               </Link>
-              {program.brochureUrl && (
-                <a className="btn btn-secondary btn-large" href={program.brochureUrl} target="_blank" rel="noopener noreferrer">
-                  Download brochure (PDF)
-                </a>
-              )}
             </div>
           </div>
         </div>

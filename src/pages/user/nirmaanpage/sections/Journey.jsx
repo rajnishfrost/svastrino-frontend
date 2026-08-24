@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Minus, Plus } from 'lucide-react'
 
 /**
  * Nirmaan · "Your Transformative Journey" — the whole 24-week course laid out
@@ -68,40 +69,54 @@ export default function Journey() {
   const [open, setOpen] = useState(1) // first phase open, so the shape is obvious
 
   return (
-    <section id="journey" className="section">
+    <section id="journey" className="bg-white py-16 md:py-20">
       <div className="container">
-        <div className="text-center">
-          <p className="section-eyebrow">Your journey</p>
-          <h2 className="section-title">Your Transformative Journey through the course</h2>
-          <p className="section-sub">
-            A commitment of at most 15 minutes a day for the next 24 weeks — one weekly
-            video, then one short task on each of the next six days.
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Your journey</p>
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+            Your Transformative Journey through the course
+          </h2>
+          <p className="mt-4 text-lg text-nirmaan-brown-soft">
+            A commitment of at most 15 minutes a day for the next 24 weeks — one weekly video,
+            then one short task on each of the next six days.
           </p>
         </div>
 
-        <div className="nirmaan-phases">
+        <div className="mx-auto mt-12 max-w-3xl space-y-3">
           {PHASES.map((p) => {
             const isOpen = open === p.n
             const firstWeek = (p.n - 1) * 4 + 1
             return (
-              <div key={p.n} className={`nirmaan-phase${isOpen ? ' open' : ''}`}>
+              <div
+                key={p.n}
+                className={`overflow-hidden rounded-xl border bg-white shadow-sm transition-colors ${
+                  isOpen ? 'border-nirmaan-green/40' : 'border-nirmaan-sand'
+                }`}
+              >
                 <button
                   type="button"
-                  className="nirmaan-phase-head"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : p.n)}
+                  className="flex w-full cursor-pointer items-center gap-3 p-4 text-left sm:gap-4 sm:p-5"
                 >
-                  <span className="nirmaan-phase-n">Phase {p.n}</span>
-                  <span className="nirmaan-phase-name">{p.name}</span>
-                  <span className="nirmaan-phase-weeks">
+                  <span className="shrink-0 rounded-full bg-nirmaan-green/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-nirmaan-green">
+                    Phase {p.n}
+                  </span>
+                  <span className="flex-1 font-display font-bold text-nirmaan-brown">{p.name}</span>
+                  <span className="hidden shrink-0 text-xs font-semibold text-nirmaan-brown-soft sm:block">
                     Weeks {firstWeek}–{firstWeek + 3}
                   </span>
-                  <span className="nirmaan-phase-icon" aria-hidden>{isOpen ? '−' : '+'}</span>
+                  <span className="shrink-0 text-nirmaan-green">
+                    {isOpen ? <Minus className="size-5" /> : <Plus className="size-5" />}
+                  </span>
                 </button>
 
                 {isOpen && (
-                  <ol className="nirmaan-phase-list" start={firstWeek}>
-                    {p.weeks.map((w) => <li key={w}>{w}</li>)}
+                  <ol
+                    start={firstWeek}
+                    className="list-decimal space-y-1.5 border-t border-nirmaan-sand px-6 py-4 pl-10 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
+                  >
+                    {p.weeks.map((w) => <li key={w} className="pl-1">{w}</li>)}
                   </ol>
                 )}
               </div>

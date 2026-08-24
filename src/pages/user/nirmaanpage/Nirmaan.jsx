@@ -6,18 +6,16 @@ import TryConcepts from './sections/TryConcepts.jsx'
 import FreeTrial from './sections/FreeTrial.jsx'
 import Packages from './sections/Packages.jsx'
 import PsychometricStrip from './sections/PsychometricStrip.jsx'
-import Testimonials from './sections/Testimonials.jsx'
-import Faqs from './sections/Faqs.jsx'
-// Scholarship section hidden for now — re-add <Scholarship /> below to restore.
-// import Scholarship from './sections/Scholarship.jsx'
-import './Nirmaan.css'
 
 /**
- * Nirmaan — Skill Build detail page, in the order the sheet lays it out:
- * what it is → the 24-week journey → what you get → try it → try it for a week
- * → what it costs → the other Skill-Build product → proof → questions.
+ * Nirmaan — Skill Build detail page, in the order the content sheet lays it out
+ * (src/content/skill-build.md): what it is → the 24-week journey → what you get
+ * → try it → try it for a week → what it costs → the other Skill-Build product.
  * On mount it adds `.theme-nirmaan` to <body> so the whole chrome flips to the
  * green/brown/cream palette; removed on unmount.
+ *
+ * NOTE: the Testimonials and FAQ sections are not in the approved content spec,
+ * so they are not rendered (the components remain on disk for easy re-add).
  */
 export default function Nirmaan() {
   useEffect(() => {
@@ -26,7 +24,7 @@ export default function Nirmaan() {
   }, [])
 
   return (
-    <div className="nirmaan-page">
+    <div>
       <Hero />
       <Journey />
       <Benefits />
@@ -34,8 +32,6 @@ export default function Nirmaan() {
       <FreeTrial />
       <Packages />
       <PsychometricStrip />
-      <Testimonials />
-      <Faqs />
     </div>
   )
 }

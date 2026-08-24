@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
-import './Services.css'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
@@ -57,30 +56,39 @@ export default function Services() {
         <Link to="/services/compare" className="btn btn-secondary btn-large">Compare programs</Link>
       </PageHero>
 
-      <section className="section">
+      <section className="bg-white py-16 md:py-20">
         <div className="container">
-          {loading && <p className="svc-state">Loading services…</p>}
+          {loading && <p className="text-center text-brand-slate">Loading services…</p>}
           {error && !loading && <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="the services" />}
 
           {!loading && !error && groups.map((g) => (
-            <div key={g.slug} id={g.slug} className="svc-group">
-              <div className="svc-group-head">
-                <h2 className="section-title">{g.name}</h2>
-                {CATEGORY_BLURB[g.slug] && <p className="section-sub">{CATEGORY_BLURB[g.slug]}</p>}
+            <div key={g.slug} id={g.slug} className="mb-14 last:mb-0">
+              <div className="max-w-2xl">
+                <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy sm:text-3xl">{g.name}</h2>
+                {CATEGORY_BLURB[g.slug] && <p className="mt-2 text-brand-slate">{CATEGORY_BLURB[g.slug]}</p>}
               </div>
-              <div className="svc-grid">
+
+              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {g.programs.map((p) => (
-                  <article key={p.slug} className="card svc-card">
-                    {p.duration && <span className="svc-duration">{p.duration}</span>}
-                    <h3>{p.name}</h3>
-                    {p.tagline && <p className="svc-tagline">{p.tagline}</p>}
-                    <p className="svc-summary">{p.summary}</p>
-                    <ul className="svc-facts">
-                      {p.sessions && <li><strong>Sessions:</strong> {p.sessions}</li>}
-                      {p.mode && <li><strong>Mode:</strong> {p.mode}</li>}
+                  <article
+                    key={p.slug}
+                    className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                  >
+                    <h3 className="font-display text-lg font-bold text-brand-navy">{p.name}</h3>
+                    {p.tagline && <p className="mt-1 text-sm font-semibold text-brand-crimson">{p.tagline}</p>}
+                    <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.summary}</p>
+                    <ul className="mt-4 space-y-1 text-sm text-brand-slate">
+                      {p.duration && <li><strong className="font-semibold text-brand-navy">Duration:</strong> {p.duration}</li>}
+                      {p.sessions && <li><strong className="font-semibold text-brand-navy">Sessions:</strong> {p.sessions}</li>}
+                      {p.mode && <li><strong className="font-semibold text-brand-navy">Mode:</strong> {p.mode}</li>}
                     </ul>
-                    <div className="svc-actions">
-                      <Link to={`/services/${p.slug}`} className="btn btn-primary">View details</Link>
+                    <div className="mt-6 flex flex-1 flex-col justify-end gap-2.5 sm:flex-row">
+                      <Link
+                        to={`/services/${p.slug}`}
+                        className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-brand-crimson px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+                      >
+                        View details
+                      </Link>
                       {/* Programmes sold after a call (Breakthrough) send you to
                           their own page's call-back form, not to the checkout. */}
                       <Link
@@ -89,7 +97,7 @@ export default function Services() {
                             ? `/services/${p.slug}#talk-to-an-expert`
                             : p.bookingSku ? `/book-online?program=${p.bookingSku}` : '/book-online'
                         }
-                        className="btn btn-secondary"
+                        className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
                       >
                         {p.buyMode === 'expert-call' ? 'Talk to an expert' : 'Book now'}
                       </Link>
@@ -103,28 +111,33 @@ export default function Services() {
       </section>
 
       {testimonials.length > 0 && (
-        <section className="section section--alt">
+        <section className="bg-soft py-16 md:py-20">
           <div className="container">
             <div className="text-center">
-              <p className="section-eyebrow">Success stories</p>
-              <h2 className="section-title">What clients say</h2>
+              <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">Success stories</p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">What clients say</h2>
             </div>
-            <div className="grid grid-3">
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
               {testimonials.map((t) => (
-                <figure key={t.id} className="card svc-quote">
-                  <blockquote>“{t.quote}”</blockquote>
-                  <figcaption>
-                    {t.photo && <img src={t.photo} alt="" loading="lazy" />}
-                    <div>
-                      <strong>{t.name}</strong>
-                      {t.role && <span>{t.role}</span>}
+                <figure key={t.id} className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+                  <blockquote className="flex-1 leading-relaxed text-brand-navy/80">“{t.quote}”</blockquote>
+                  <figcaption className="mt-4 flex items-center gap-3 border-t border-brand-navy/10 pt-4">
+                    {t.photo && <img src={t.photo} alt="" loading="lazy" className="size-11 rounded-full object-cover" />}
+                    <div className="leading-tight">
+                      <strong className="block text-sm font-bold text-brand-navy">{t.name}</strong>
+                      {t.role && <span className="text-xs font-semibold text-brand-slate">{t.role}</span>}
                     </div>
                   </figcaption>
                 </figure>
               ))}
             </div>
-            <div className="text-center" style={{ marginTop: 'var(--space-5)' }}>
-              <Link to="/resources/success-stories" className="btn btn-secondary">Read all success stories</Link>
+            <div className="mt-10 text-center">
+              <Link
+                to="/resources/success-stories"
+                className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
+              >
+                Read all success stories
+              </Link>
             </div>
           </div>
         </section>
