@@ -134,7 +134,9 @@ function BookingsTab() {
                   <tr key={b.id} className="adm-edit-row">
                     <td colSpan={7}>
                       <div className="adm-ment-edit">
-                        <strong>{b.user?.name}</strong> · {b.programName} · session #{b.sessionNumber} · {fmtWhen(b.startAt)}
+                        <strong>{b.user?.name}</strong>
+                        {b.user?.email ? <> · {b.user.email}</> : null}
+                        {' · '}{b.programName} · session #{b.sessionNumber} · {fmtWhen(b.startAt)}
                         <label className="adm-label">Session update (visible to the student)
                           <textarea className="adm-input" rows={3} value={form.update}
                                     onChange={(e) => setForm({ ...form, update: e.target.value })}
@@ -164,7 +166,18 @@ function BookingsTab() {
                   </tr>
                 ) : (
                   <tr key={b.id}>
-                    <td>{b.user ? <span title={b.user.email}>{b.user.name || b.user.email}</span> : '—'}</td>
+                    <td>
+                      {b.user ? (
+                        <>
+                          <strong>{b.user.name || '—'}</strong>
+                          {b.user.email && (
+                            <a className="adm-link adm-ment-email" href={`mailto:${b.user.email}`}>
+                              {b.user.email}
+                            </a>
+                          )}
+                        </>
+                      ) : '—'}
+                    </td>
                     <td>{b.programName}</td>
                     <td className="adm-num">#{b.sessionNumber}</td>
                     <td>{fmtWhen(b.startAt)}</td>

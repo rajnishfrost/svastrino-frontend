@@ -3,7 +3,7 @@ export default function Hero() {
     <section className="nirmaan-hero">
       <div className="container nirmaan-hero-inner">
         <div className="nirmaan-hero-text">
-          <span className="nirmaan-eyebrow">Soch Se Vikas Tak</span>
+          <span className="nirmaan-eyebrow">Soch Se Vikas</span>
           <h1>
             Nirmaan — A Mindset &amp; Skill-Building Journey for{' '}
             <span className="accent">India’s Teens and Youth</span>
@@ -19,7 +19,7 @@ export default function Hero() {
         </div>
 
         <div className="nirmaan-hero-img">
-          <img src="/nirmaan-logo.png" alt="Nirmaan — Soch Se Vikas Tak" />
+          <img src="/nirmaan-logo.png" alt="Nirmaan — Soch Se Vikas" />
         </div>
       </div>
     </section>

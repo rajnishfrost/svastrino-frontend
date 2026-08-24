@@ -16,7 +16,7 @@
 // one company — so if the registered details change, change them in both files.
 const COMPANY = {
   name: 'Svastrino Consultancy Services',
-  tagline: 'Soch Se Vikas Tak',
+  tagline: 'Soch Se Vikas',
   address: 'Thane · Dharamshala, India',
   email: 'support@svastrino.com',
   website: 'svastrino.com',
