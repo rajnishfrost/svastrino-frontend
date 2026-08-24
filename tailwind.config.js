@@ -27,6 +27,8 @@ export default {
     './src/pages/user/psychometricpage/**/*.jsx',
     './src/pages/user/nirmaanpage/**/*.jsx',
     './src/pages/user/bookonlinepage/**/*.jsx',
+    './src/pages/user/dashboardpage/**/*.jsx',
+    './src/pages/user/downloadspage/**/*.jsx',
     './src/common_component/user/Footer/Footer.jsx',
   ],
   theme: {
