@@ -210,20 +210,28 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
         },
       })
 
-      poll = setInterval(async () => {
-        try {
-          const s = await api(`/admin/upload/progress/${uploadId}`, { auth: 'admin' })
-          if (!s?.found) return
-          setPhase('process')
-          setPct(s.pct || 0)
-          if (s.pct > 3 && s.elapsedMs) {
-            const remaining = (s.elapsedMs / s.pct) * (100 - s.pct)
-            setEta(remaining > 1000 ? `~${fmtLeft(remaining)} left` : 'almost done')
-          }
-        } catch { /* transient */ }
-      }, 1000)
+      // The upload request now answers as soon as the bytes have landed, and
+      // ffmpeg runs on behind it — so the finished video arrives through this
+      // poller rather than as the upload's own response.
+      const finished = new Promise((resolve, reject) => {
+        poll = setInterval(async () => {
+          try {
+            const s = await api(`/admin/upload/progress/${uploadId}`, { auth: 'admin' })
+            if (!s?.found) return
+            if (s.status === 'ready') return resolve(s)
+            if (s.status === 'failed') return reject(new Error(s.error || 'Video processing failed'))
+            setPhase('process')
+            setPct(s.pct || 0)
+            if (s.pct > 3 && s.elapsedMs) {
+              const remaining = (s.elapsedMs / s.pct) * (100 - s.pct)
+              setEta(remaining > 1000 ? `~${fmtLeft(remaining)} left` : 'almost done')
+            }
+          } catch { /* transient — keep polling */ }
+        }, 1000)
+      })
 
-      const { url, type, durationMins, warning } = await req
+      await req // bytes delivered; the server has taken it from here
+      const { url, type, durationMins, warning } = await finished
       set('videoUrl', url)
       if (durationMins) setF((p) => (p.durationMins ? p : { ...p, durationMins }))
       setUploadMsg(
