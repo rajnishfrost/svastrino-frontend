@@ -60,15 +60,20 @@ export function usePageSeo({ title, description, image, type, ready } = {}) {
  * The captured title is used verbatim — no site name appended — because that
  * is the string already sitting in the search results.
  */
-export function useRootSeo({ slug, title, description, image, type, ready }) {
+export function useRootSeo({ slug, seoTitle, seoDescription, title, description, image, type, ready }) {
   const legacy = legacyRootSeo(slug)
+  // An admin who types a title means it, so it wins outright. Otherwise the old
+  // site's wording, and only then anything derived from the article body.
+  const chosen = seoTitle || legacy?.title || title
   useSeo({
-    title: legacy?.title || title,
-    description: legacy?.description || description,
+    title: chosen,
+    description: seoDescription || legacy?.description || description,
     path: slug ? `/${slug}` : undefined,
     image,
     type,
     ready: ready !== false,
-    exact: !!legacy?.title,
+    // Verbatim only when the wording was written for this page rather than
+    // assembled from its name.
+    exact: !!(seoTitle || legacy?.title),
   })
 }

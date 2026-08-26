@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
+import { legacyRootSeo } from '../../../seo/legacyRootSeo.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import '../adminShared.css'
@@ -30,6 +31,7 @@ const blank = {
   title: '', slug: '', owner: 'svastrino', author: 'Svastrino', categories: '',
   excerpt: '', body: '', coverImage: '', sourceUrl: '',
   publishedAt: toDateInput(new Date().toISOString()), readingMins: '', order: '', published: true,
+  seoTitle: '', seoDescription: '',
 }
 
 export default function AdminBlogs() {
@@ -201,6 +203,8 @@ function PostEditor({ post, onCancel, onSaved }) {
   const [pct, setPct] = useState(0)
   const [err, setErr] = useState('')
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
+  // What svastrino.com shows for this address today, offered as the placeholder.
+  const legacy = legacyRootSeo(f.slug)
 
   // The table rows have no `body` (it's stripped from listings), so an edit
   // always refetches the full record.
@@ -213,6 +217,7 @@ function PostEditor({ post, onCancel, onSaved }) {
         excerpt: p.excerpt || '', body: p.body || '', coverImage: p.coverImage || '',
         sourceUrl: p.sourceUrl || '', publishedAt: toDateInput(p.publishedAt),
         readingMins: p.readingMins ?? '', order: p.order ?? '', published: p.published,
+        seoTitle: p.seoTitle || '', seoDescription: p.seoDescription || '',
       }))
       .catch((e) => setErr(e.message))
       .finally(() => setLoading(false))
@@ -246,6 +251,7 @@ function PostEditor({ post, onCancel, onSaved }) {
       published: f.published,
       order: f.order === '' ? 0 : Number(f.order),
       readingMins: f.readingMins === '' ? '' : Number(f.readingMins),
+      seoTitle: f.seoTitle, seoDescription: f.seoDescription,
       ...(f.publishedAt ? { publishedAt: f.publishedAt } : {}),
     }
     try {
@@ -267,8 +273,26 @@ function PostEditor({ post, onCancel, onSaved }) {
         <div className="adm-row2">
           <div className="adm-field"><label>Title</label>
             <input className="adm-input" value={f.title} onChange={(e) => onTitle(e.target.value)} placeholder="How to choose a stream after 10th" /></div>
-          <div className="adm-field"><label>Slug — the URL: /blog/<em>{f.slug || '…'}</em></label>
+          <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
             <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+        </div>
+
+        {/* What search engines show. Left blank, the page keeps the wording
+            svastrino.com published for this address — which is what it has
+            ranked with for years — so these are shown as the placeholder
+            rather than filled in, and only a deliberate entry overrides it. */}
+        <div className="adm-panel-sub">
+          <p className="adm-sub" style={{ margin: '0 0 10px' }}>
+            Search result — leave blank to keep what svastrino.com already shows
+          </p>
+          <div className="adm-field"><label>Search title</label>
+            <input className="adm-input" value={f.seoTitle}
+              onChange={(e) => set('seoTitle', e.target.value)}
+              placeholder={legacy?.title || 'Uses the title above'} /></div>
+          <div className="adm-field"><label>Search description</label>
+            <textarea className="adm-input" rows={2} value={f.seoDescription}
+              onChange={(e) => set('seoDescription', e.target.value)}
+              placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
         </div>
 
         <div className="adm-row2">
