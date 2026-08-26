@@ -10,6 +10,7 @@ import Benefits from './sections/Benefits.jsx'
 import BookNowStrip from './sections/BookNowStrip.jsx'
 import ProgramTestimonials from './sections/ProgramTestimonials.jsx'
 import ProgramFaqs from './sections/ProgramFaqs.jsx'
+import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import TalkToExpert from './sections/TalkToExpert.jsx'
 import './Services.css' // keeps .svc-hero-trust (hero) styled; body sections use Tailwind
 
@@ -18,6 +19,14 @@ const HERO_IMG = {
   'bulls-eye': '/assets/images/programs/bulls-eye.jpg',
   bloom: '/assets/images/programs/bloom.jpg',
   breakthrough: '/assets/images/programs/breakthrough.jpg',
+}
+
+// Flat vector illustration per program. Where a slug has one, the hero switches
+// to the light split illustration layout instead of the photo background.
+const HERO_ILLUS = {
+  'bulls-eye': '/assets/images/programs/bullsEye-t.png',
+  bloom: '/assets/images/programs/bloom-3-t.png',
+  breakthrough: '/assets/images/programs/break-6-t.png',
 }
 
 /**
@@ -93,6 +102,7 @@ export default function ServiceProgram() {
         title={program.name}
         subtitle={program.tagline}
         bgImage={HERO_IMG[slug]}
+        illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
       >
         <Cta className="btn btn-accent btn-large" />
         <Link to="/services" className="btn btn-secondary btn-large">All services</Link>

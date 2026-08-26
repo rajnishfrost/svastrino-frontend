@@ -56,3 +56,105 @@
     font-size: 16px;
   }
 }
+
+/* ---- Split variant: a LIGHT hero (same wash as the home page) with copy on
+       the left, a themed illustration on the right, and a curved wave into the
+       white section below. ---- */
+.page-hero--split {
+  position: relative;
+  text-align: left;
+  /* Mirrors the home hero's .bg-hero wash: white fading to soft blue + rose glow. */
+  background:
+    radial-gradient(1200px 600px at 80% -10%, #fdeef1 0%, transparent 55%),
+    radial-gradient(1000px 500px at 10% 0%, #eef4ff 0%, transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+  color: var(--color-text);
+  padding-top: var(--space-6);
+  padding-bottom: calc(var(--space-7) + 70px); /* clear room for the wave */
+}
+/* Dark-on-light text (the base band is white text / blue eyebrow for the navy band). */
+.page-hero--split .page-hero-title {
+  color: var(--navy);
+}
+.page-hero--split .page-hero-eyebrow {
+  color: var(--crimson);
+}
+.page-hero--split .page-hero-sub {
+  color: var(--color-text-muted);
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 46ch;
+}
+.page-hero--split .container {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+.page-hero--split .page-hero-actions {
+  justify-content: flex-start;
+}
+/* Secondary CTA: undo the dark-band white outline, back to navy-on-light. */
+.page-hero--split .page-hero-actions .btn-secondary {
+  color: var(--navy);
+  border-color: rgba(15, 44, 92, 0.22);
+  background: transparent;
+}
+.page-hero--split .page-hero-actions .btn-secondary:hover {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.page-hero-figure {
+  display: flex;
+  justify-content: center;
+}
+.page-hero-figure > * {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+}
+
+/* Curved divider into the white section that follows. */
+.page-hero-wave {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  line-height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.page-hero-wave svg {
+  display: block;
+  width: 100%;
+  height: 70px;
+}
+
+@media (min-width: 861px) {
+  .page-hero--split .container {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+  .page-hero-wave svg {
+    height: 110px;
+  }
+}
+/* On narrow screens the split stacks and re-centres (illustration below copy). */
+@media (max-width: 860px) {
+  .page-hero--split {
+    text-align: center;
+  }
+  .page-hero--split .page-hero-sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .page-hero--split .page-hero-actions {
+    justify-content: center;
+  }
+  .page-hero-figure {
+    margin-top: var(--space-3);
+  }
+  .page-hero-figure > * {
+    max-width: 360px;
+  }
+}

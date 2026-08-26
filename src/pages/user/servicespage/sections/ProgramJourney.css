@@ -1,0 +1,119 @@
+/* Program journey — the home page's "Your Journey" visual language (white cards,
+   a gradient road, icon-badge nodes) rendered as a vertical serpentine so it
+   scales to any number of stages, each with longer copy than the home page. */
+
+.pj-road {
+  position: relative;
+  margin-top: 40px;
+}
+
+/* The gradient "road" down the centre — stretches to the content height. */
+.pj-road::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: linear-gradient(#c8102e, #2f7ae5, #0f2c5c);
+  border-radius: 4px;
+}
+
+.pj-step {
+  position: relative;
+  padding-bottom: 36px;
+}
+.pj-step:last-child {
+  padding-bottom: 0;
+}
+
+/* Icon node that sits on the road. */
+.pj-badge {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* A short connector from the card to the road (behind the card + badge). */
+.pj-step--left::after,
+.pj-step--right::before {
+  content: '';
+  position: absolute;
+  top: 21px;
+  height: 2px;
+  width: 26px;
+  background: rgba(15, 44, 92, 0.15);
+  z-index: 0;
+}
+.pj-step--left::after {
+  left: calc(50% - 42px);
+}
+.pj-step--right::before {
+  left: calc(50% + 16px);
+}
+
+/* Cards take one half, alternating sides; text hugs the road. */
+.pj-card {
+  position: relative;
+  z-index: 1;
+  width: calc(50% - 46px);
+  background: #fff;
+  border: 1px solid rgba(15, 44, 92, 0.06);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 20px 40px -14px rgba(15, 44, 92, 0.14);
+}
+.pj-step--left .pj-card {
+  margin-right: auto;
+  text-align: right;
+}
+.pj-step--right .pj-card {
+  margin-left: auto;
+  text-align: left;
+}
+
+.pj-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--crimson);
+  margin-bottom: 4px;
+}
+.pj-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 16px;
+  line-height: 1.3;
+}
+.pj-desc {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* Mobile: the road moves to the left and every card sits to the right of it. */
+@media (max-width: 760px) {
+  .pj-road::before,
+  .pj-badge {
+    left: 20px;
+  }
+  .pj-card,
+  .pj-step--left .pj-card,
+  .pj-step--right .pj-card {
+    width: auto;
+    margin-left: 58px;
+    margin-right: 0;
+    text-align: left;
+  }
+  .pj-step--left::after,
+  .pj-step--right::before {
+    left: 30px;
+    width: 20px;
+  }
+}

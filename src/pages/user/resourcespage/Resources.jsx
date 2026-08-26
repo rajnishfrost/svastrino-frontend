@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Minus, Plus, Search } from 'lucide-react'
+import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
 
@@ -25,7 +26,6 @@ export default function Resources({ view = 'all' }) {
   const [faqs, setFaqs] = useState([])
   const [stories, setStories] = useState([])
   const [latest, setLatest] = useState([])
-  const [openFaq, setOpenFaq] = useState(null)
   const [q, setQ] = useState('') // Career Library search box
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -175,30 +175,11 @@ export default function Resources({ view = 'all' }) {
 
           {/* ---- FAQs ---- */}
           {!loading && !error && view === 'faqs' && (
-            <div id="faqs" className="mx-auto max-w-3xl space-y-8">
+            <div id="faqs" className="mx-auto max-w-3xl space-y-10">
               {faqs.map((group) => (
                 <div key={group.section}>
-                  <h3 className="font-display text-lg font-bold text-brand-navy">{group.section}</h3>
-                  <div className="mt-3 divide-y divide-brand-navy/10 border-y border-brand-navy/10">
-                    {group.items.map((item) => {
-                      const open = openFaq === item.id
-                      return (
-                        <div key={item.id}>
-                          <button
-                            className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left"
-                            onClick={() => setOpenFaq(open ? null : item.id)}
-                            aria-expanded={open}
-                          >
-                            <span className="font-medium text-brand-navy">{item.question}</span>
-                            <span className="text-brand-crimson">
-                              {open ? <Minus className="size-4" /> : <Plus className="size-4" />}
-                            </span>
-                          </button>
-                          {open && <p className="pb-4 text-sm leading-relaxed text-brand-slate">{item.answer}</p>}
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <h3 className="mb-4 font-display text-lg font-bold text-brand-navy">{group.section}</h3>
+                  <FaqAccordion items={group.items} />
                 </div>
               ))}
             </div>
