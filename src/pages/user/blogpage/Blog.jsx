@@ -25,7 +25,6 @@ function OwnerBadge({ owner }) {
 }
 
 export default function Blog() {
-  usePageSeo()
   // URL is the source of truth so filters/pages are shareable and survive a refresh.
   const [params, setParams] = useSearchParams()
   const category = params.get('category') || ''
@@ -39,6 +38,11 @@ export default function Blog() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
+
+  // Held until the posts land: the prerenderer captures the page the moment its
+  // title is set, and a listing captured at "Loading posts…" gives a crawler no
+  // links to follow into the 219 articles below it.
+  usePageSeo({ ready: !loading })
 
   useEffect(() => {
     fetchBlogCategories()
