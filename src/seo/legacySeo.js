@@ -19,7 +19,10 @@ export const LEGACY_SEO = {
     description: "Svastrino is best career counseling service provider who provide service to choose right career path for students.",
   },
   '/blog': {
-    title: "Blogs - Svastrino",
+    // The old site had both /blog/ and /blogs/ as separate listings; this one
+    // address answers for both, so it keeps the title of the address it
+    // inherits — /blogs/ is redirected into it. Neither carried a description.
+    title: "Blog - Svastrino",
     description: "",
   },
   '/book-online': {

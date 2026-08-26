@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useSeo, excerptFor } from '../../../seo/useSeo.js'
+import { excerptFor } from '../../../seo/useSeo.js'
+import { useRootSeo } from '../../../seo/PageSeo.jsx'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
@@ -20,11 +21,11 @@ export default function BlogPost() {
 
   // The article keeps the address the old site ranked for, so that is the
   // canonical one — see RootSlug.
-  useSeo({
+  useRootSeo({
+    slug,
     ready: !!post,
     title: post?.title,
     description: post?.excerpt || excerptFor(post?.body),
-    path: post ? `/${post.slug}` : undefined,
     image: post?.coverImage || undefined,
     type: 'article',
   })

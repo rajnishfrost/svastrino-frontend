@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { useSeo } from './useSeo.js'
 import { seoFor } from './legacySeo.js'
+import { legacyRootSeo } from './legacyRootSeo.js'
 
 /**
  * Metadata for a page whose wording is fixed rather than loaded.
@@ -44,5 +45,30 @@ export function usePageSeo({ title, description, image, type, ready } = {}) {
     type,
     ready: ready !== false,
     exact: !title && !!legacy.title,
+  })
+}
+
+/**
+ * Metadata for an article or career page — the pages served at the root.
+ *
+ * These addresses were the old site's, and so was their wording: hand-written
+ * titles and descriptions that search engines have matched to them for years.
+ * Deriving a title from the article body instead would rewrite all 270-odd of
+ * them at once, so what the old site published wins, and what this app derives
+ * is the fallback for anything published since.
+ *
+ * The captured title is used verbatim — no site name appended — because that
+ * is the string already sitting in the search results.
+ */
+export function useRootSeo({ slug, title, description, image, type, ready }) {
+  const legacy = legacyRootSeo(slug)
+  useSeo({
+    title: legacy?.title || title,
+    description: legacy?.description || description,
+    path: slug ? `/${slug}` : undefined,
+    image,
+    type,
+    ready: ready !== false,
+    exact: !!legacy?.title,
   })
 }
