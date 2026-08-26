@@ -13,7 +13,7 @@ import './PageHero.css'
 export default function PageHero({ eyebrow, title, subtitle, children, bgImage }) {
   const style = bgImage
     ? {
-        backgroundImage: `linear-gradient(115deg, rgba(10,31,67,0.94) 0%, rgba(15,44,92,0.78) 60%, rgba(15,44,92,0.62) 100%), url(${bgImage})`,
+        backgroundImage: `linear-gradient(115deg, rgba(10,31,67,0.94) 0%, rgba(15,44,92,0.80) 55%, rgba(15,44,92,0.60) 100%), url(${bgImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }

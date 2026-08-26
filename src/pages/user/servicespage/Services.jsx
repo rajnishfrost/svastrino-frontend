@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
+import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
@@ -74,6 +75,9 @@ export default function Services() {
                     key={p.slug}
                     className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                   >
+                    <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-crimson/10 p-2.5 text-brand-crimson">
+                      <ProgramEmblem variant={p.slug} />
+                    </span>
                     <h3 className="font-display text-lg font-bold text-brand-navy">{p.name}</h3>
                     {p.tagline && <p className="mt-1 text-sm font-semibold text-brand-crimson">{p.tagline}</p>}
                     <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.summary}</p>
