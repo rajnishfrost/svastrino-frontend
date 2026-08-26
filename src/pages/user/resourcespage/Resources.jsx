@@ -158,7 +158,7 @@ export default function Resources({ view = 'all' }) {
                       <ul className="mt-3 space-y-1.5 text-sm">
                         {f.courses.map((c) => (
                           <li key={c.slug}>
-                            <Link to={`/career-library/${c.slug}`} className="text-brand-slate hover:text-brand-crimson hover:underline">
+                            <Link to={`/${c.slug}`} className="text-brand-slate hover:text-brand-crimson hover:underline">
                               {c.name}
                             </Link>
                           </li>
@@ -237,7 +237,7 @@ export default function Resources({ view = 'all' }) {
               {latest.map((p) => (
                 <article key={p.slug} className={cardClass}>
                   <h3 className="font-display text-lg font-bold text-brand-navy">
-                    <Link to={`/blog/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
+                    <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
                 </article>

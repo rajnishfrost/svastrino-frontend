@@ -165,7 +165,7 @@ export default function BlogPost() {
                   className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                 >
                   {r.coverImage && (
-                    <Link to={`/blog/${r.slug}`} className="block aspect-[16/9] overflow-hidden">
+                    <Link to={`/${r.slug}`} className="block aspect-[16/9] overflow-hidden">
                       <img
                         src={r.coverImage}
                         alt=""
@@ -176,7 +176,7 @@ export default function BlogPost() {
                   )}
                   <div className="flex flex-1 flex-col p-6">
                     <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
-                      <Link to={`/blog/${r.slug}`} className="hover:text-brand-crimson">{r.title}</Link>
+                      <Link to={`/${r.slug}`} className="hover:text-brand-crimson">{r.title}</Link>
                     </h3>
                     <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{r.excerpt}</p>
                     <div className="mt-4 flex items-center gap-2 text-xs text-brand-slate">

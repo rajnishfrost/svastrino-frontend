@@ -52,6 +52,7 @@ import Support from './pages/user/supportpage/Support.jsx'
 import NewTicket from './pages/user/supportpage/NewTicket.jsx'
 import TicketThread from './pages/user/supportpage/TicketThread.jsx'
 import NotFound from './pages/user/notfoundpage/NotFound.jsx'
+import RootSlug, { ToRootSlug } from './pages/user/RootSlug.jsx'
 
 // ---- Admin pages ----
 import AdminDashboard from './pages/admin/dashboardpage/AdminDashboard.jsx'
@@ -102,10 +103,10 @@ function PublicSite() {
           <Route path="/resources/career-library" element={<Resources view="career-library" />} />
           <Route path="/resources/faqs" element={<Resources view="faqs" />} />
           <Route path="/resources/success-stories" element={<Resources view="success-stories" />} />
-          <Route path="/career-library/:slug" element={<CourseDetail />} />
+          <Route path="/career-library/:slug" element={<ToRootSlug />} />
           <Route path="/legal/:slug" element={<LegalPage />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/blog/:slug" element={<ToRootSlug />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/offers" element={<Offers />} />
 
@@ -179,6 +180,13 @@ function PublicSite() {
               </ProtectedRoute>
             }
           />
+
+          {/* The legacy WordPress site served every article and career page from
+              the root — svastrino.com/law/ — and those addresses carry the
+              site's search ranking, so they still answer here. Declared last so
+              every real route above wins first; an unknown slug falls through
+              to Not Found exactly as before. */}
+          <Route path="/:slug" element={<RootSlug />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -165,7 +165,7 @@ export default function Blog() {
                   className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                 >
                   {p.coverImage && (
-                    <Link to={`/blog/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
+                    <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
                       <img
                         src={p.coverImage}
                         alt=""
@@ -177,7 +177,7 @@ export default function Blog() {
                   <div className="flex flex-1 flex-col p-6">
                     <OwnerBadge owner={p.owner} />
                     <h3 className="mt-3 font-display text-lg font-bold leading-snug text-brand-navy">
-                      <Link to={`/blog/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
+                      <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
                     </h3>
                     <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
                     <div className="mt-4 flex items-center gap-2 text-xs text-brand-slate">

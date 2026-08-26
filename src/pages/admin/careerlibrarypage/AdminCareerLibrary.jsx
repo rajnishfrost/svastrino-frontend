@@ -290,7 +290,7 @@ function CoursesTab({ fields, onCourseSaved }) {
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="adm-link" onClick={() => setEditing(c)}>Edit</button>
                       {c.active && (
-                        <a className="adm-link" href={`/career-library/${c.slug}`} target="_blank" rel="noreferrer"
+                        <a className="adm-link" href={`/${c.slug}`} target="_blank" rel="noreferrer"
                            style={{ textDecoration: 'none' }}>View ↗</a>
                       )}
                       <button className="adm-link" style={{ color: 'var(--color-danger)' }} onClick={() => setDel(c)}>Delete</button>
