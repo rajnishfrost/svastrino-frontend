@@ -60,6 +60,23 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         run: npm run build
 
+      # Write real HTML for every page in the sitemap. Google runs JavaScript
+      # eventually; the crawlers behind WhatsApp, LinkedIn and X never do, so
+      # without this every shared link previews as the same site name. Chrome
+      # ships on the GitHub runner — this only points Puppeteer at it.
+      #
+      # Skipped rather than failed if it cannot run: a deploy that ships the
+      # plain SPA is a worse site, not a broken one, and blocking a release on
+      # a headless browser is the wrong trade.
+      - name: Prerender pages
+        continue-on-error: true
+        env:
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome
+          # The pages need real content while they render, and CI has no local
+          # API — so it reads from the deployed one.
+          PRERENDER_API: ${{ vars.PRERENDER_API || 'https://d1d66ne3xrrmwd.cloudfront.net' }}
+        run: npm run prerender
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:

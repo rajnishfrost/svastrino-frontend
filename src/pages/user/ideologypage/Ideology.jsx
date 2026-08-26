@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Our Ideology — the five stages of how the mentoring is actually run here.
@@ -41,6 +42,7 @@ const SERVICES = [
 export default function Ideology() {
   return (
     <>
+      <PageSeo />
       <PageHero eyebrow="Our Ideology" title="Our Approach" />
 
       {/* ---- Five numbered pillars ---- */}

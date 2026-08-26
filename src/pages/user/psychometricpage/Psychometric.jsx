@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check } from 'lucide-react'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 /**
  * Psychometric Testing — the second Skill-Build product, sold alongside Nirmaan.
@@ -59,6 +60,10 @@ const TESTS = [
 ]
 
 export default function Psychometric() {
+  usePageSeo({
+    title: 'Psychometric testing — know your strengths before you choose',
+    description: 'A RIASEC-based psychometric assessment with a report of up to 40 pages covering your strengths, personality, interests and top five suitable careers.',
+  })
   useEffect(() => {
     document.body.classList.add('theme-nirmaan')
     return () => document.body.classList.remove('theme-nirmaan')

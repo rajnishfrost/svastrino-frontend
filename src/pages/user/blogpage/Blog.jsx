@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchBlogs, fetchBlogCategories } from '../../../api/blogs.js'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 const PER_PAGE = 12
 
@@ -24,6 +25,7 @@ function OwnerBadge({ owner }) {
 }
 
 export default function Blog() {
+  usePageSeo()
   // URL is the source of truth so filters/pages are shareable and survive a refresh.
   const [params, setParams] = useSearchParams()
   const category = params.get('category') || ''

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Compass } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 // Static About copy (content per src/content/about-svastrino.md). It changes
 // rarely, so it lives here rather than in the DB. Programs, FAQs and success
@@ -47,6 +48,7 @@ const initials = (n) => n.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpp
 export default function About() {
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="About"
         title="About Svastrino"

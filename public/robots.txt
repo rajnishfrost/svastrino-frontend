@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /downloads
+Disallow: /support
+Disallow: /checkout
+Disallow: /learn
+Disallow: /admin
+Disallow: /organisation
+
+Sitemap: https://svastrino.com/sitemap.xml

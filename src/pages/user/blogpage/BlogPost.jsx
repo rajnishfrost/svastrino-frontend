@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSeo, excerptFor } from '../../../seo/useSeo.js'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
@@ -16,6 +17,17 @@ export default function BlogPost() {
   const [error, setError] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
+
+  // The article keeps the address the old site ranked for, so that is the
+  // canonical one — see RootSlug.
+  useSeo({
+    ready: !!post,
+    title: post?.title,
+    description: post?.excerpt || excerptFor(post?.body),
+    path: post ? `/${post.slug}` : undefined,
+    image: post?.coverImage || undefined,
+    type: 'article',
+  })
 
   useEffect(() => {
     let cancelled = false

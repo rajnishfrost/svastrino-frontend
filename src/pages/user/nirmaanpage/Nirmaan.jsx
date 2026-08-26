@@ -6,6 +6,7 @@ import TryConcepts from './sections/TryConcepts.jsx'
 import FreeTrial from './sections/FreeTrial.jsx'
 import Packages from './sections/Packages.jsx'
 import PsychometricStrip from './sections/PsychometricStrip.jsx'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 /**
  * Nirmaan — Skill Build detail page, in the order the content sheet lays it out
@@ -18,6 +19,10 @@ import PsychometricStrip from './sections/PsychometricStrip.jsx'
  * so they are not rendered (the components remain on disk for easy re-add).
  */
 export default function Nirmaan() {
+  usePageSeo({
+    title: 'Nirmaan — a 24-week skill-build course for Indian teens',
+    description: 'A structured 24-week course building mindset, self-awareness, confidence and action — weekly videos with daily tasks, for students in classes 7 to 12.',
+  })
   useEffect(() => {
     document.body.classList.add('theme-nirmaan')
     return () => document.body.classList.remove('theme-nirmaan')

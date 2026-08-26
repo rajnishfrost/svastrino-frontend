@@ -12,8 +12,10 @@ import Testimonies from './sections/Testimonies.jsx'
 import IndustryPresence from './sections/IndustryPresence.jsx'
 import AboutUs from './sections/AboutUs.jsx'
 import NirmaanHighlight from './sections/NirmaanHighlight.jsx'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 export default function Home() {
+  usePageSeo()
   return (
     <div>
       <Hero />

@@ -5,6 +5,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Resources hub. Each sub-category is now its OWN page:
@@ -19,6 +20,31 @@ const SUBPAGES = [
   { key: 'faqs', to: '/resources/faqs', label: "FAQ's", blurb: 'Answers to common questions about mentoring & counselling.' },
   { key: 'success-stories', to: '/resources/success-stories', label: 'Success Stories', blurb: 'Real results from students and parents we’ve guided.' },
 ]
+
+// One component answers four addresses, so each needs its own title and
+// description — otherwise all four compete in search results as the same page.
+const VIEW_SEO = {
+  all: {
+    title: 'Resources — career library, blogs, FAQs and success stories',
+    description:
+      'Explore careers and courses at your own pace: a library of 52 career fields, articles on mentoring and studying abroad, answers to common questions, and stories from students we have guided.',
+  },
+  'career-library': {
+    title: 'Career Library — explore 52 careers and the courses that lead to them',
+    description:
+      'Browse careers by stream — science, commerce, arts, engineering and more — with what each field involves, the roles it leads to, where to study, and how salaries progress.',
+  },
+  faqs: {
+    title: "FAQ's — how Svastrino's mentoring and courses work",
+    description:
+      'Answers to what people ask before starting: how sessions are booked, what each programme covers, how the course is paced, and how payments and refunds work.',
+  },
+  'success-stories': {
+    title: 'Success stories — students we have guided, in their words',
+    description:
+      'Read what students and parents say after working with Svastrino: the confusion they arrived with, what changed, and where they went next.',
+  },
+}
 
 export default function Resources({ view = 'all' }) {
   const [fields, setFields] = useState([])
@@ -74,6 +100,7 @@ export default function Resources({ view = 'all' }) {
 
   return (
     <>
+      <PageSeo {...VIEW_SEO[view] || VIEW_SEO.all} />
       <PageHero
         eyebrow="Resources"
         title={meta ? meta.label : 'Resources'}

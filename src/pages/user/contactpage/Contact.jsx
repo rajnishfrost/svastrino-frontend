@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { api } from '../../../api/client.js'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 // Real contact details from the Svastrino site. Static on purpose — offices and
 // handles change rarely, so there's no value in a DB round-trip for them.
@@ -71,6 +72,7 @@ export default function Contact() {
 
   return (
     <>
+      <PageSeo />
       <PageHero eyebrow="Contact us" title="Get in Touch" />
 
       <section className="bg-white py-16 md:py-20">

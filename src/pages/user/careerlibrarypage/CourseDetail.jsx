@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSeo, excerptFor } from '../../../seo/useSeo.js'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
@@ -12,6 +13,14 @@ export default function CourseDetail() {
   const [error, setError] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
+
+  // Career pages also keep their legacy root address — see RootSlug.
+  useSeo({
+    ready: !!course,
+    title: course?.name,
+    description: excerptFor(course?.overview),
+    path: course ? `/${course.slug}` : undefined,
+  })
 
   useEffect(() => {
     let cancelled = false

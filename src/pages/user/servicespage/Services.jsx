@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
@@ -47,6 +48,7 @@ export default function Services() {
 
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="Services"
         title="Career Counselling & Mentoring"

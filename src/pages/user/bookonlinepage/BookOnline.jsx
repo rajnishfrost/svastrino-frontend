@@ -13,6 +13,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './BookOnline.css'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Counselling & mentoring booking wizard. Four steps (as per spec):
@@ -361,6 +362,7 @@ export default function BookOnline() {
   if (loadErr) {
     return (
       <>
+        <PageSeo />
         <PageHero eyebrow="Book Online" title="Book a session" />
         <section className="section"><div className="container bo-wrap">
           <div className="card bo-card"><p className="bo-error">{loadErr}</p></div>
@@ -376,6 +378,7 @@ export default function BookOnline() {
 
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="Book Online"
         title={rescheduleId ? 'Reschedule your session' : 'Book a mentoring session'}

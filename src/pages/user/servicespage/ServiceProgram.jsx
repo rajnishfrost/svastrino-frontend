@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import { useSeo, excerptFor } from '../../../seo/useSeo.js'
+import { seoFor } from '../../../seo/legacySeo.js'
 import { fetchProgram } from '../../../api/content.js'
 import ProgramOverview from './sections/ProgramOverview.jsx'
 import ChooseIf from './sections/ChooseIf.jsx'
@@ -44,6 +46,17 @@ export default function ServiceProgram() {
   }, [slug, reloadKey])
 
   const bookHref = program?.bookingSku ? `/book-online?program=${program.bookingSku}` : '/book-online'
+
+  // Each programme page keeps the title and description its old address ranked
+  // with; a programme added since then falls back to its own summary.
+  const legacy = seoFor(`/services/${slug}`)
+  useSeo({
+    ready: !!program,
+    title: legacy?.title || program?.name,
+    description: legacy?.description || excerptFor(program?.summary),
+    path: `/services/${slug}`,
+    exact: !!legacy?.title,
+  })
 
   // Breakthrough is not sold from a checkout page — the visitor asks for a call
   // and the team sends a payment link afterwards. Every CTA on the page points

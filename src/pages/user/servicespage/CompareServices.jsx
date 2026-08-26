@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import { PROGRAMS, DETAILS, CAPABILITIES } from './compareData.js'
 import './Compare.css'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Compare the three counselling and mentoring programs side by side — for the
@@ -13,6 +14,7 @@ import './Compare.css'
 export default function CompareServices() {
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="Services"
         title="Compare our programs"
