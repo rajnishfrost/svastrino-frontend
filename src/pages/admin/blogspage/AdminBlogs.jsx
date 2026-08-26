@@ -274,7 +274,14 @@ function PostEditor({ post, onCancel, onSaved }) {
           <div className="adm-field"><label>Title</label>
             <input className="adm-input" value={f.title} onChange={(e) => onTitle(e.target.value)} placeholder="How to choose a stream after 10th" /></div>
           <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
-            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} />
+          {post?.slug && f.slug !== post?.slug && (
+            <p className="adm-sub" style={{ margin: '4px 0 0', color: 'var(--color-warning, #a15c00)' }}>
+              svastrino.com/{post?.slug} will redirect here once the redirects are
+              rebuilt (server: npm run build:redirects) and the CloudFront function redeployed.
+            </p>
+          )}
+          </div>
         </div>
 
         {/* What search engines show. Left blank, the page keeps the wording

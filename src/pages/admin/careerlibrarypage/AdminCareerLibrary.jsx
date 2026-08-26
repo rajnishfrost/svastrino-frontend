@@ -402,7 +402,14 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           <div className="adm-field"><label>Name</label>
             <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Chartered Accountancy" /></div>
           <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
-            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} />
+          {course?.slug && f.slug !== course?.slug && (
+            <p className="adm-sub" style={{ margin: '4px 0 0', color: 'var(--color-warning, #a15c00)' }}>
+              svastrino.com/{course?.slug} will redirect here once the redirects are
+              rebuilt (server: npm run build:redirects) and the CloudFront function redeployed.
+            </p>
+          )}
+          </div>
         </div>
 
         {/* What search engines show. Left blank, the page keeps the wording

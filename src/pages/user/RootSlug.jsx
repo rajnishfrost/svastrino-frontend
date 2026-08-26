@@ -25,23 +25,28 @@ import NotFound from './notfoundpage/NotFound.jsx'
  */
 export default function RootSlug() {
   const { slug } = useParams()
-  const [type, setType] = useState(undefined) // undefined = still asking
+  const [found, setFound] = useState(undefined) // undefined = still asking
 
   useEffect(() => {
     let cancelled = false
-    setType(undefined)
+    setFound(undefined)
     api(`/user/content/resolve/${encodeURIComponent(slug)}`)
-      .then((d) => { if (!cancelled) setType(d?.type || null) })
-      .catch(() => { if (!cancelled) setType(null) })
+      .then((d) => { if (!cancelled) setFound(d?.type ? d : null) })
+      .catch(() => { if (!cancelled) setFound(null) })
     return () => { cancelled = true }
   }, [slug])
 
   // Nothing is drawn while the question is out. Showing a Not Found first and
   // then replacing it would flash the wrong page at every visitor.
-  if (type === undefined) return null
+  if (found === undefined) return null
 
-  if (type === 'course') return <CourseDetail />
-  if (type === 'blog') return <BlogPost />
+  // The page still exists, under a name it was given later. Send the visitor
+  // on rather than render the same article at two addresses — which is how a
+  // site ends up competing with itself in search results.
+  if (found?.movedTo) return <Navigate to={`/${found.movedTo}`} replace />
+
+  if (found?.type === 'course') return <CourseDetail />
+  if (found?.type === 'blog') return <BlogPost />
   return <NotFound />
 }
 

@@ -1,14 +1,13 @@
-// CloudFront Function — viewer request.
+// CloudFront Function — viewer request. GENERATED, do not edit by hand.
+//   cd server && npm run build:redirects
 //
-// The WordPress site's page addresses do not survive the move: /bulls-eye/
-// became /services/bulls-eye, /our-approach/ became /our-ideology, and so on.
-// Those pages carry the brand's search results, so each one answers with a 301
-// to where it now lives — a permanent redirect is what tells a search engine to
-// move the ranking across rather than treat the new page as a stranger.
+// Every address here answers with a 301, which is what tells a search engine to
+// move a page's ranking across rather than treat the new address as a stranger.
 //
-// Articles and career pages are NOT here. All 322 of them kept the addresses
-// they already had, which is why this list is 25 lines instead of 350 — and why
-// it fits inside a CloudFront Function's 10 KB limit at all.
+// Articles and career pages that kept their original address are NOT here —
+// all 274 of them still answer where they always did. This list is the pages
+// that moved when the site left WordPress, plus anything renamed in the admin
+// panel since, which is why it stays short enough to fit a CloudFront Function.
 //
 // Deploy:
 //   aws cloudfront create-function --name svastrino-legacy-redirects \
@@ -16,37 +15,34 @@
 //     --function-code fileb://legacy-redirects.js
 //   aws cloudfront publish-function --name svastrino-legacy-redirects --if-match <ETag>
 // then attach it to the default cache behaviour as a viewer-request function.
+// Updating an existing one is `update-function` with the same arguments.
 
 var MOVED = {
-  '/bulls-eye': '/services/bulls-eye',
-  '/bloom': '/services/bloom',
-  '/breakthrough': '/services/breakthrough',
-  '/our-programs': '/services',
-  '/compare-programs': '/services/compare',
-  '/svastrino': '/about',
-  '/our-approach': '/our-ideology',
-  '/contact-us': '/contact',
-  '/faqs': '/resources/faqs',
-  '/success-stories': '/resources/success-stories',
-  '/courselist': '/resources/career-library',
-  '/blogs': '/blog',
-  '/sign-up': '/login?mode=signup',
-  '/customer-portal': '/dashboard',
-  '/newsletter': '/contact',
-  '/tc-terms-of-use': '/legal/terms-of-use',
-  '/privacy-policy': '/legal/privacy-policy',
-  '/cancellations-and-refunds': '/legal/cancellations-and-refunds',
-
-  // Retired. Model Session is no longer sold, and the career tests were one-off
-  // landing pages; both are sent somewhere that answers the same need rather
-  // than to a 404, which would throw away whatever ranking they hold.
-  '/model-session': '/services/bulls-eye',
-  '/test': '/skill-build/psychometric-testing',
-  '/careertest1': '/skill-build/psychometric-testing',
-  '/careertest2': '/skill-build/psychometric-testing',
-  '/careertest3': '/skill-build/psychometric-testing',
-  '/careertest4': '/skill-build/psychometric-testing',
-  '/course2': '/resources/career-library',
+  "/blogs": "/blog",
+  "/bloom": "/services/bloom",
+  "/breakthrough": "/services/breakthrough",
+  "/bulls-eye": "/services/bulls-eye",
+  "/cancellations-and-refunds": "/legal/cancellations-and-refunds",
+  "/careertest1": "/skill-build/psychometric-testing",
+  "/careertest2": "/skill-build/psychometric-testing",
+  "/careertest3": "/skill-build/psychometric-testing",
+  "/careertest4": "/skill-build/psychometric-testing",
+  "/compare-programs": "/services/compare",
+  "/contact-us": "/contact",
+  "/course2": "/resources/career-library",
+  "/courselist": "/resources/career-library",
+  "/customer-portal": "/dashboard",
+  "/faqs": "/resources/faqs",
+  "/model-session": "/services/bulls-eye",
+  "/newsletter": "/contact",
+  "/our-approach": "/our-ideology",
+  "/our-programs": "/services",
+  "/privacy-policy": "/legal/privacy-policy",
+  "/sign-up": "/login?mode=signup",
+  "/success-stories": "/resources/success-stories",
+  "/svastrino": "/about",
+  "/tc-terms-of-use": "/legal/terms-of-use",
+  "/test": "/skill-build/psychometric-testing",
 }
 
 function handler(event) {
