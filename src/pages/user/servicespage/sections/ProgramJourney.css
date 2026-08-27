@@ -1,65 +1,51 @@
 /* Program journey — the home page's "Your Journey" visual language (white cards,
-   a gradient road, icon-badge nodes) rendered as a vertical serpentine so it
-   scales to any number of stages, each with longer copy than the home page. */
+   a winding gradient road, icon-badge nodes) as a DYNAMIC vertical serpentine.
+   The road itself is an SVG drawn by the component through the measured badge
+   centres, so it zig-zags for any number of stages and any length of copy. */
 
 .pj-road {
   position: relative;
   margin-top: 40px;
 }
 
-/* The gradient "road" down the centre — stretches to the content height. */
-.pj-road::before {
-  content: '';
+/* The winding road sits behind the cards + badges. */
+.pj-road-svg {
   position: absolute;
-  top: 8px;
-  bottom: 8px;
-  left: 50%;
-  width: 4px;
-  transform: translateX(-50%);
-  background: linear-gradient(#c8102e, #2f7ae5, #0f2c5c);
-  border-radius: 4px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .pj-step {
   position: relative;
-  padding-bottom: 36px;
+  padding-bottom: 40px;
 }
 .pj-step:last-child {
   padding-bottom: 0;
 }
 
-/* Icon node that sits on the road. */
+/* Icon node — its centre alternates just off the middle so the road zig-zags. */
 .pj-badge {
   position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
+  top: 16px;
   z-index: 2;
 }
-
-/* A short connector from the card to the road (behind the card + badge). */
-.pj-step--left::after,
-.pj-step--right::before {
-  content: '';
-  position: absolute;
-  top: 21px;
-  height: 2px;
-  width: 26px;
-  background: rgba(15, 44, 92, 0.15);
-  z-index: 0;
+.pj-step--left .pj-badge {
+  left: calc(50% - 46px);
+  transform: translateX(-50%);
 }
-.pj-step--left::after {
-  left: calc(50% - 42px);
-}
-.pj-step--right::before {
-  left: calc(50% + 16px);
+.pj-step--right .pj-badge {
+  left: calc(50% + 46px);
+  transform: translateX(-50%);
 }
 
-/* Cards take one half, alternating sides; text hugs the road. */
+/* Cards take one half, alternating sides, leaving the middle for the road. */
 .pj-card {
   position: relative;
   z-index: 1;
-  width: calc(50% - 46px);
+  width: calc(50% - 92px);
   background: #fff;
   border: 1px solid rgba(15, 44, 92, 0.06);
   border-radius: 16px;
@@ -97,11 +83,13 @@
   color: var(--color-text-muted);
 }
 
-/* Mobile: the road moves to the left and every card sits to the right of it. */
+/* Mobile: badges align to a left rail — so the measured road becomes a straight
+   vertical line — and every card sits to the right of it. */
 @media (max-width: 760px) {
-  .pj-road::before,
-  .pj-badge {
-    left: 20px;
+  .pj-step--left .pj-badge,
+  .pj-step--right .pj-badge {
+    left: 22px;
+    transform: translateX(-50%);
   }
   .pj-card,
   .pj-step--left .pj-card,
@@ -110,10 +98,5 @@
     margin-left: 58px;
     margin-right: 0;
     text-align: left;
-  }
-  .pj-step--left::after,
-  .pj-step--right::before {
-    left: 30px;
-    width: 20px;
   }
 }

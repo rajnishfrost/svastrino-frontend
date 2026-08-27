@@ -126,7 +126,7 @@ export default function ServiceProgram() {
           <div className="rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
             <h2 className="font-display text-2xl font-extrabold text-brand-navy">Ready to begin {program.name}?</h2>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Cta className="btn btn-primary btn-large" />
+              <Cta className="btn btn-accent btn-large" />
               <Link to="/services/compare" className="btn btn-secondary btn-large">
                 Compare programs
               </Link>

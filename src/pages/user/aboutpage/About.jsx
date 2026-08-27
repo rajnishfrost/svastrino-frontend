@@ -31,7 +31,8 @@ const TEAM = [
   { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
   { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
   { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
-  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravi.png', linkedin: null },
+  // { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravi.png', linkedin: null },
+  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/raviSir3.jpeg', linkedin: null },
 ]
 
 const SERVICES = [

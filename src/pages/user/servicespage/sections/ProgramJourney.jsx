@@ -1,15 +1,16 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Compass, MessageSquare, ClipboardCheck, Rocket, Trophy, Flag } from 'lucide-react'
 import './ProgramJourney.css'
 
 /**
- * Programme page · the journey, stage by stage — styled to match the home page's
- * "Your Journey" (white cards on a gradient road with icon-badge nodes), but as
- * a vertical serpentine that scales to any number of stages. The inclusions box
- * sits at the foot so the commitment is clear once the journey is understood.
+ * Programme page · the journey, stage by stage — the home page's "Your Journey"
+ * look (white cards, a winding gradient road, icon-badge nodes), but DYNAMIC:
+ * the road is drawn through the real badge positions (measured after layout and
+ * re-measured on resize), so it zig-zags correctly for any number of stages and
+ * any length of copy. The inclusions box sits at the foot.
  */
 
-// Milestone icons + node gradients cycle across however many stages a programme
-// has (stages carry no icon of their own — these are decorative markers).
+// Milestone icons + node gradients cycle across however many stages there are.
 const STAGE_ICONS = [Compass, MessageSquare, ClipboardCheck, Rocket, Trophy, Flag]
 const STAGE_GRADS = [
   ['#c8102e', '#a30c25'],
@@ -17,8 +18,46 @@ const STAGE_GRADS = [
   ['#0f2c5c', '#0a1f43'],
 ]
 
+// Build one smooth path that weaves vertically through the measured node points.
+function roadPath(points) {
+  if (points.length < 2) return ''
+  let d = `M ${points[0].x} ${points[0].y}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i]
+    const b = points[i + 1]
+    const my = (a.y + b.y) / 2
+    d += ` C ${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}`
+  }
+  return d
+}
+
 export default function ProgramJourney({ program }) {
   const stages = program.journey || []
+  const wrapRef = useRef(null)
+  const badgeRefs = useRef([])
+  const [road, setRoad] = useState({ d: '', w: 0, h: 0 })
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const measure = () => {
+      const wrapRect = wrap.getBoundingClientRect()
+      const points = badgeRefs.current.filter(Boolean).map((el) => {
+        const r = el.getBoundingClientRect()
+        return {
+          x: r.left - wrapRect.left + r.width / 2,
+          y: r.top - wrapRect.top + r.height / 2,
+        }
+      })
+      setRoad({ d: roadPath(points), w: wrapRect.width, h: wrapRect.height })
+    }
+    measure()
+    // Re-measure whenever the layout reflows (resize, font swap, image load…).
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [stages.length])
+
   if (!stages.length) return null
 
   return (
@@ -31,7 +70,28 @@ export default function ProgramJourney({ program }) {
         </p>
       </div>
 
-      <div className="pj-road">
+      <div className="pj-road" ref={wrapRef}>
+        {/* The winding road, drawn through the measured badge centres. */}
+        {road.d && road.w > 0 && (
+          <svg
+            className="pj-road-svg"
+            width={road.w}
+            height={road.h}
+            viewBox={`0 0 ${road.w} ${road.h}`}
+            aria-hidden
+          >
+            <defs>
+              <linearGradient id="pj-road-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#c8102e" />
+                <stop offset="50%" stopColor="#2f7ae5" />
+                <stop offset="100%" stopColor="#0f2c5c" />
+              </linearGradient>
+            </defs>
+            <path d={road.d} fill="none" stroke="#0f2c5c" strokeOpacity="0.06" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+            <path d={road.d} fill="none" stroke="url(#pj-road-grad)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+
         {stages.map((s, i) => {
           const Icon = STAGE_ICONS[i % STAGE_ICONS.length]
           const grad = STAGE_GRADS[i % STAGE_GRADS.length]
@@ -40,6 +100,7 @@ export default function ProgramJourney({ program }) {
             <div key={i} className={`pj-step ${side}`}>
               <span
                 className="pj-badge"
+                ref={(el) => { badgeRefs.current[i] = el }}
                 style={{
                   display: 'grid',
                   placeItems: 'center',
