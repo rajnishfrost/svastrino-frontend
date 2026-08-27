@@ -18,6 +18,7 @@ export default function CourseDetail() {
   // Career pages also keep their legacy root address — see RootSlug.
   useRootSeo({
     slug,
+    canonicalSlug: course?.canonicalSlug,
     seoTitle: course?.seoTitle,
     seoDescription: course?.seoDescription,
     ready: !!course,

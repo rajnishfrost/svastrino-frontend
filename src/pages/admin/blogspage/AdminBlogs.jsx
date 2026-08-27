@@ -31,7 +31,7 @@ const blank = {
   title: '', slug: '', owner: 'svastrino', author: 'Svastrino', categories: '',
   excerpt: '', body: '', coverImage: '', sourceUrl: '',
   publishedAt: toDateInput(new Date().toISOString()), readingMins: '', order: '', published: true,
-  seoTitle: '', seoDescription: '',
+  seoTitle: '', seoDescription: '', canonicalSlug: '',
 }
 
 export default function AdminBlogs() {
@@ -218,6 +218,7 @@ function PostEditor({ post, onCancel, onSaved }) {
         sourceUrl: p.sourceUrl || '', publishedAt: toDateInput(p.publishedAt),
         readingMins: p.readingMins ?? '', order: p.order ?? '', published: p.published,
         seoTitle: p.seoTitle || '', seoDescription: p.seoDescription || '',
+        canonicalSlug: p.canonicalSlug || '',
       }))
       .catch((e) => setErr(e.message))
       .finally(() => setLoading(false))
@@ -251,7 +252,7 @@ function PostEditor({ post, onCancel, onSaved }) {
       published: f.published,
       order: f.order === '' ? 0 : Number(f.order),
       readingMins: f.readingMins === '' ? '' : Number(f.readingMins),
-      seoTitle: f.seoTitle, seoDescription: f.seoDescription,
+      seoTitle: f.seoTitle, seoDescription: f.seoDescription, canonicalSlug: f.canonicalSlug,
       ...(f.publishedAt ? { publishedAt: f.publishedAt } : {}),
     }
     try {
@@ -300,6 +301,15 @@ function PostEditor({ post, onCancel, onSaved }) {
             <textarea className="adm-input" rows={2} value={f.seoDescription}
               onChange={(e) => set('seoDescription', e.target.value)}
               placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
+          <div className="adm-field"><label>Same as another page (optional)</label>
+            <input className="adm-input" value={f.canonicalSlug}
+              onChange={(e) => set('canonicalSlug', slugify(e.target.value))}
+              placeholder="another-page-slug" />
+            <p className="adm-sub" style={{ margin: '4px 0 0' }}>
+              For two pages that say close to the same thing. Both keep working;
+              search engines pool the ranking onto the one named here instead of
+              splitting it between them.
+            </p></div>
         </div>
 
         <div className="adm-row2">

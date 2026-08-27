@@ -23,6 +23,7 @@ export default function BlogPost() {
   // canonical one — see RootSlug.
   useRootSeo({
     slug,
+    canonicalSlug: post?.canonicalSlug,
     seoTitle: post?.seoTitle,
     seoDescription: post?.seoDescription,
     ready: !!post,

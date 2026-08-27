@@ -324,7 +324,7 @@ function CoursesTab({ fields, onCourseSaved }) {
 const blankCourse = {
   name: '', slug: '', overview: '', topQualities: '', institutesIndia: '',
   institutesInternational: '', careerLadder: '', sourceUrl: '', active: true,
-  seoTitle: '', seoDescription: '',
+  seoTitle: '', seoDescription: '', canonicalSlug: '',
 }
 
 function CourseEditor({ course, fields, onCancel, onSaved }) {
@@ -352,6 +352,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           careerLadder: (c.careerLadder || []).join('\n'),
           sourceUrl: c.sourceUrl || '', active: c.active,
           seoTitle: c.seoTitle || '', seoDescription: c.seoDescription || '',
+          canonicalSlug: c.canonicalSlug || '',
         })
         setJobs(c.topJobs || [])
         setPicked((c.fields || []).map((x) => x.slug))
@@ -380,7 +381,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
       topQualities: f.topQualities, institutesIndia: f.institutesIndia,
       institutesInternational: f.institutesInternational, careerLadder: f.careerLadder,
       topJobs: jobs, fields: picked,
-      seoTitle: f.seoTitle, seoDescription: f.seoDescription,
+      seoTitle: f.seoTitle, seoDescription: f.seoDescription, canonicalSlug: f.canonicalSlug,
     }
     try {
       if (course) await api(`/admin/career-library/courses/${course.id}`, { method: 'PATCH', auth: 'admin', body })
@@ -428,6 +429,15 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
             <textarea className="adm-input" rows={2} value={f.seoDescription}
               onChange={(e) => set('seoDescription', e.target.value)}
               placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
+          <div className="adm-field"><label>Same as another page (optional)</label>
+            <input className="adm-input" value={f.canonicalSlug}
+              onChange={(e) => set('canonicalSlug', slugify(e.target.value))}
+              placeholder="another-page-slug" />
+            <p className="adm-sub" style={{ margin: '4px 0 0' }}>
+              For two pages that say close to the same thing. Both keep working;
+              search engines pool the ranking onto the one named here instead of
+              splitting it between them.
+            </p></div>
         </div>
 
         <div className="adm-field">

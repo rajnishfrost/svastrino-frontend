@@ -60,15 +60,21 @@ export function usePageSeo({ title, description, image, type, ready } = {}) {
  * The captured title is used verbatim — no site name appended — because that
  * is the string already sitting in the search results.
  */
-export function useRootSeo({ slug, seoTitle, seoDescription, title, description, image, type, ready }) {
+export function useRootSeo({
+  slug, canonicalSlug, seoTitle, seoDescription, title, description, image, type, ready,
+}) {
   const legacy = legacyRootSeo(slug)
   // An admin who types a title means it, so it wins outright. Otherwise the old
   // site's wording, and only then anything derived from the article body.
   const chosen = seoTitle || legacy?.title || title
+  // Pointing at another page names that one as the version worth indexing. The
+  // page still renders and its own address still answers — only the ranking is
+  // pooled, instead of two near-identical pages splitting it.
+  const canonical = canonicalSlug || slug
   useSeo({
     title: chosen,
     description: seoDescription || legacy?.description || description,
-    path: slug ? `/${slug}` : undefined,
+    path: canonical ? `/${canonical}` : undefined,
     image,
     type,
     ready: ready !== false,
