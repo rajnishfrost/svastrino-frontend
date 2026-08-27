@@ -10,7 +10,7 @@ export default function Hero() {
       <div className="container relative grid items-center gap-10 py-16 md:grid-cols-[1.2fr_1fr] md:py-24">
         <div className="text-center md:text-left">
           <span className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
-            Soch Se Vikas Tak
+            Soch Se Vikas
           </span>
           <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl">
             Nirmaan — A Mindset &amp; Skill-Building Journey for{' '}

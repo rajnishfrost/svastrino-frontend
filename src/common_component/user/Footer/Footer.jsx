@@ -76,7 +76,7 @@ export default function Footer() {
   return (
     <footer className="mt-auto bg-brand-navy-dark text-white/70">
       <div className="container py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
             <Link to="/" className="inline-flex rounded-2xl bg-white p-3">
