@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 460" role="img" aria-label="An arrow striking the centre of a target">
+  <!-- PLACEHOLDER flat-vector illustration (brand palette) for the /services prototype.
+       Swap for the sourced set later; keep the same file path per slug. -->
+
+  <!-- soft backdrop + floating accents -->
+  <circle cx="272" cy="220" r="200" fill="#fdeef1"/>
+  <circle cx="120" cy="118" r="54" fill="#eaf2fd"/>
+  <circle cx="440" cy="120" r="24" fill="none" stroke="#c8102e" stroke-width="7" opacity="0.4"/>
+  <circle cx="432" cy="312" r="7" fill="#2f7ae5"/>
+  <circle cx="108" cy="352" r="10" fill="#c8102e" opacity="0.35"/>
+
+  <!-- flat ground shadow under the target -->
+  <ellipse cx="290" cy="320" rx="122" ry="16" fill="#0f2c5c" opacity="0.07"/>
+
+  <!-- arrow flight path -->
+  <path d="M120 380 Q150 250 268 208" fill="none" stroke="#c8102e" stroke-width="4"
+        stroke-linecap="round" stroke-dasharray="1 13" opacity="0.4"/>
+
+  <!-- target: concentric rings -->
+  <circle cx="290" cy="196" r="110" fill="#c8102e"/>
+  <circle cx="290" cy="196" r="84" fill="#ffffff"/>
+  <circle cx="290" cy="196" r="60" fill="#c8102e"/>
+  <circle cx="290" cy="196" r="36" fill="#ffffff"/>
+  <circle cx="290" cy="196" r="13" fill="#0f2c5c"/>
+  <!-- flat highlight crescent for a touch of depth -->
+  <path d="M290 86 a110 110 0 0 1 0 220 a92 110 0 0 0 0 -220 z" fill="#ffffff" opacity="0.12"/>
+
+  <!-- arrow -->
+  <line x1="150" y1="338" x2="272" y2="206" stroke="#0f2c5c" stroke-width="9" stroke-linecap="round"/>
+  <path d="M150 338 l-17 -4" stroke="#c8102e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M150 338 l-4 17" stroke="#c8102e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M150 338 l-13 -13" stroke="#c8102e" stroke-width="6" stroke-linecap="round"/>
+  <path d="M285.6 191.3 L280.1 213.5 L263.9 198.5 Z" fill="#c8102e"/>
+
+  <!-- sparkles -->
+  <g fill="#c8102e"><path transform="translate(304,168) scale(0.85)"
+      d="M0 -10 C0 -3 3 0 10 0 C3 0 0 3 0 10 C0 3 -3 0 -10 0 C-3 0 0 -3 0 -10 Z"/></g>
+  <g fill="#c8102e" opacity="0.7"><path transform="translate(372,92) scale(0.7)"
+      d="M0 -10 C0 -3 3 0 10 0 C3 0 0 3 0 10 C0 3 -3 0 -10 0 C-3 0 0 -3 0 -10 Z"/></g>
+  <g fill="#2f7ae5"><path transform="translate(96,256) scale(0.6)"
+      d="M0 -10 C0 -3 3 0 10 0 C3 0 0 3 0 10 C0 3 -3 0 -10 0 C-3 0 0 -3 0 -10 Z"/></g>
+</svg>

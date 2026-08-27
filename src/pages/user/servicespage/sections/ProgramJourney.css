@@ -1,0 +1,102 @@
+/* Program journey — the home page's "Your Journey" visual language (white cards,
+   a winding gradient road, icon-badge nodes) as a DYNAMIC vertical serpentine.
+   The road itself is an SVG drawn by the component through the measured badge
+   centres, so it zig-zags for any number of stages and any length of copy. */
+
+.pj-road {
+  position: relative;
+  margin-top: 40px;
+}
+
+/* The winding road sits behind the cards + badges. */
+.pj-road-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pj-step {
+  position: relative;
+  padding-bottom: 40px;
+}
+.pj-step:last-child {
+  padding-bottom: 0;
+}
+
+/* Icon node — its centre alternates just off the middle so the road zig-zags. */
+.pj-badge {
+  position: absolute;
+  top: 16px;
+  z-index: 2;
+}
+.pj-step--left .pj-badge {
+  left: calc(50% - 46px);
+  transform: translateX(-50%);
+}
+.pj-step--right .pj-badge {
+  left: calc(50% + 46px);
+  transform: translateX(-50%);
+}
+
+/* Cards take one half, alternating sides, leaving the middle for the road. */
+.pj-card {
+  position: relative;
+  z-index: 1;
+  width: calc(50% - 92px);
+  background: #fff;
+  border: 1px solid rgba(15, 44, 92, 0.06);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 20px 40px -14px rgba(15, 44, 92, 0.14);
+}
+.pj-step--left .pj-card {
+  margin-right: auto;
+  text-align: right;
+}
+.pj-step--right .pj-card {
+  margin-left: auto;
+  text-align: left;
+}
+
+.pj-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--crimson);
+  margin-bottom: 4px;
+}
+.pj-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 16px;
+  line-height: 1.3;
+}
+.pj-desc {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* Mobile: badges align to a left rail — so the measured road becomes a straight
+   vertical line — and every card sits to the right of it. */
+@media (max-width: 760px) {
+  .pj-step--left .pj-badge,
+  .pj-step--right .pj-badge {
+    left: 22px;
+    transform: translateX(-50%);
+  }
+  .pj-card,
+  .pj-step--left .pj-card,
+  .pj-step--right .pj-card {
+    width: auto;
+    margin-left: 58px;
+    margin-right: 0;
+    text-align: left;
+  }
+}

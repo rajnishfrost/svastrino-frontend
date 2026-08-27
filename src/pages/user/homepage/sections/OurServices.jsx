@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check } from 'lucide-react'
 import SectionHeading from './SectionHeading.jsx'
+import ProgramEmblem from '../../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
 
 /**
  * Home · section 3 — "Our Services".
@@ -79,7 +80,53 @@ const SERVICES = [
   },
 ]
 
+function ServiceCard({ s }) {
+  const accentText = s.skillBuild ? 'text-nirmaan-green' : 'text-brand-crimson'
+  const chipBg = s.skillBuild ? 'bg-nirmaan-green/10' : 'bg-brand-crimson/10'
+  const bulletBg = s.skillBuild ? 'bg-nirmaan-green/15' : 'bg-brand-rose'
+  const btn = s.skillBuild
+    ? 'bg-nirmaan-green text-white hover:bg-nirmaan-green-dark'
+    : 'bg-brand-crimson text-white hover:bg-brand-crimson-dark'
+  return (
+    <div className="relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
+      <span className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-xs font-semibold ${chipBg} ${accentText}`}>
+        {s.duration}
+      </span>
+
+      <span className={`flex size-11 items-center justify-center rounded-xl p-2 ${chipBg} ${accentText}`}>
+        <ProgramEmblem variant={s.to.split('/').pop()} />
+      </span>
+
+      <h3 className="mt-4 pr-16 font-display text-base font-bold leading-snug text-brand-navy">{s.need}</h3>
+      <p className="mt-2 text-sm text-brand-slate">{s.who}</p>
+
+      <ul className="mt-5 flex-1 space-y-2.5">
+        {s.points.map((pt) => (
+          <li key={pt} className="flex items-start gap-2 text-sm text-brand-navy">
+            <span className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${bulletBg}`}>
+              <Check className={`size-3 ${accentText}`} />
+            </span>
+            <span>{pt}</span>
+          </li>
+        ))}
+      </ul>
+
+      <Link
+        to={s.to}
+        className={`mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${btn}`}
+      >
+        {s.cta} <ArrowRight className="size-4" />
+      </Link>
+    </div>
+  )
+}
+
 export default function OurServices() {
+  // Row 1 = the crimson career/mentoring programs; row 2 = the green Skill-Build
+  // products. Split so each colour group fills its own full-width row.
+  const mentoring = SERVICES.filter((s) => !s.skillBuild)
+  const skillBuild = SERVICES.filter((s) => s.skillBuild)
+
   return (
     <section className="bg-soft py-20 md:py-24">
       <div className="container">
@@ -88,52 +135,15 @@ export default function OurServices() {
           subtitle="We know that not every student needs the same kind of career guidance. Whatever stage you're at, we have a solution for it."
         />
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((s) => {
-            const accentText = s.skillBuild ? 'text-nirmaan-green' : 'text-brand-crimson'
-            const chipBg = s.skillBuild ? 'bg-nirmaan-green/10' : 'bg-brand-crimson/10'
-            const bulletBg = s.skillBuild ? 'bg-nirmaan-green/15' : 'bg-brand-rose'
-            const btn = s.skillBuild
-              ? 'bg-nirmaan-green text-white hover:bg-nirmaan-green-dark'
-              : 'bg-brand-crimson text-white hover:bg-brand-crimson-dark'
-            return (
-              <div
-                key={s.to}
-                className="relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
-              >
-                <span
-                  className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-xs font-semibold ${chipBg} ${accentText}`}
-                >
-                  {s.duration}
-                </span>
-
-                <h3 className="mt-6 pr-16 font-display text-base font-bold leading-snug text-brand-navy">
-                  {s.need}
-                </h3>
-                <p className="mt-2 text-sm text-brand-slate">{s.who}</p>
-
-                <ul className="mt-5 flex-1 space-y-2.5">
-                  {s.points.map((pt) => (
-                    <li key={pt} className="flex items-start gap-2 text-sm text-brand-navy">
-                      <span
-                        className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${bulletBg}`}
-                      >
-                        <Check className={`size-3 ${accentText}`} />
-                      </span>
-                      <span>{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  to={s.to}
-                  className={`mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${btn}`}
-                >
-                  {s.cta} <ArrowRight className="size-4" />
-                </Link>
-              </div>
-            )
-          })}
+        <div className="mt-14 space-y-6">
+          {/* Row 1 — mentoring programs (crimson), 3 across */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {mentoring.map((s) => <ServiceCard key={s.to} s={s} />)}
+          </div>
+          {/* Row 2 — Skill-Build products (green), 2 across */}
+          <div className="grid gap-6 sm:grid-cols-2">
+            {skillBuild.map((s) => <ServiceCard key={s.to} s={s} />)}
+          </div>
         </div>
       </div>
     </section>
