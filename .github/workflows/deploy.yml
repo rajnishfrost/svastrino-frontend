@@ -91,11 +91,16 @@ jobs:
         run: |
           aws s3 sync dist/ "s3://${{ vars.S3_BUCKET }}/" \
             --delete \
-            --exclude "index.html" \
+            --exclude "*index.html" \
             --exclude "sw.js" \
             --exclude "*.webmanifest" \
             --cache-control "public,max-age=31536000,immutable"
 
+      # "*index.html", not "index.html": prerendering writes one per page, at
+      # law/index.html and 290 others. Matching only the root left every other
+      # page marked immutable for a year — an edit to any of them would never
+      # reach anyone, because the name it is cached under never changes.
+      #
       # Pass 2: the entry point and the service worker keep their NAMES across
       # builds, so caching them would pin users to the old app. This is a PWA
       # (vite-plugin-pwa, registerType autoUpdate) - a stale sw.js is especially
@@ -104,7 +109,7 @@ jobs:
         run: |
           aws s3 sync dist/ "s3://${{ vars.S3_BUCKET }}/" \
             --exclude "*" \
-            --include "index.html" \
+            --include "*index.html" \
             --include "sw.js" \
             --include "*.webmanifest" \
             --cache-control "no-cache,must-revalidate"
