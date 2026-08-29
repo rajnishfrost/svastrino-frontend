@@ -150,20 +150,65 @@ export default function Psychometric() {
         </div>
       </section>
 
-      {/* ---- Section 4 · Student Journey ---- */}
+      {/* ---- Section 4 · Student Journey (vertical zig-zag timeline) ---- */}
       <section className="bg-white py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             Student Journey
           </h2>
-          <ol className="mx-auto mt-12 grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
+
+          {/* Desktop: cards alternate left/right around a central spine. */}
+          <div className="relative mx-auto mt-14 hidden max-w-4xl lg:block">
+            <div
+              className="absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full"
+              style={{ background: 'linear-gradient(#3f7932, #90743c, #3b2822)' }}
+              aria-hidden
+            />
+            <ol className="space-y-8">
+              {JOURNEY.map((s, i) => {
+                const left = i % 2 === 0
+                const card = (
+                  <div className={`rounded-xl border border-nirmaan-sand bg-white p-6 shadow-sm ${left ? 'text-right' : 'text-left'}`}>
+                    <h3 className="font-display text-lg font-bold text-nirmaan-brown">{s.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-nirmaan-brown-soft">{s.text}</p>
+                  </div>
+                )
+                return (
+                  <li key={s.title} className="relative grid grid-cols-2 items-center gap-16">
+                    <span className="absolute left-1/2 top-1/2 z-10 flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-nirmaan-green font-display text-lg font-bold text-white shadow-md">
+                      {i + 1}
+                    </span>
+                    {left ? (
+                      <>
+                        {card}
+                        <div />
+                      </>
+                    ) : (
+                      <>
+                        <div />
+                        {card}
+                      </>
+                    )}
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+
+          {/* Mobile / tablet: a single left-rail timeline. */}
+          <ol className="mx-auto mt-12 max-w-md lg:hidden">
             {JOURNEY.map((s, i) => (
-              <li key={s.title} className="text-center">
-                <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-nirmaan-green font-display text-lg font-bold text-white">
-                  {i + 1}
-                </span>
-                <h3 className="mt-4 font-display text-lg font-bold text-nirmaan-brown">{s.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-nirmaan-brown-soft">{s.text}</p>
+              <li key={s.title} className="relative flex gap-4">
+                <div className="flex flex-col items-center">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-nirmaan-green font-display text-sm font-bold text-white">
+                    {i + 1}
+                  </span>
+                  {i < JOURNEY.length - 1 && <span className="my-1 w-0.5 flex-1 rounded-full bg-nirmaan-green/20" />}
+                </div>
+                <div className="mb-6 flex-1 rounded-xl border border-nirmaan-sand bg-white p-5 shadow-sm">
+                  <h3 className="font-display text-base font-bold text-nirmaan-brown">{s.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-nirmaan-brown-soft">{s.text}</p>
+                </div>
               </li>
             ))}
           </ol>
@@ -205,7 +250,6 @@ export default function Psychometric() {
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             Find Which Test Is Right for You
           </h2>
-          <p className="mt-3 text-center text-nirmaan-brown-soft">INR 900 for each test</p>
 
           <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
             {TESTS.map((t) => (

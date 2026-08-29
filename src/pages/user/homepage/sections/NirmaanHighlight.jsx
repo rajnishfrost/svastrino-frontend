@@ -26,7 +26,7 @@ export default function NirmaanHighlight() {
           <div className="relative grid items-center gap-8 p-8 md:grid-cols-[1.6fr_0.9fr] md:p-12">
             {/* Body */}
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-nirmaan-green px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
+              <span className="inline-flex items-center gap-2 rounded-full bg-nirmaan-brown px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
                 New · Skill Build
               </span>
               <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
@@ -42,7 +42,7 @@ export default function NirmaanHighlight() {
               <ul className="mt-6 space-y-3">
                 {POINTS.map((p) => (
                   <li key={p} className="flex items-start gap-3 text-sm text-nirmaan-brown">
-                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-nirmaan-green">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-nirmaan-brown">
                       <Check className="size-3 text-white" />
                     </span>
                     {p}
@@ -81,7 +81,7 @@ export default function NirmaanHighlight() {
               <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52">
                 <img src="/nirmaan-tree.png" alt="" aria-hidden className="h-full w-full object-contain" />
               </div>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-nirmaan-brown">
                 <GraduationCap className="size-4" /> Soch Se Vikas
               </span>
             </div>

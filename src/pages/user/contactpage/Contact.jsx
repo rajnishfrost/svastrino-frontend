@@ -33,7 +33,7 @@ const SOCIALS = [
 ]
 
 const inputClass =
-  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
 
 export default function Contact() {
   const { user } = useAuth()
@@ -92,7 +92,7 @@ export default function Contact() {
                       className={inputClass}
                       type="text"
                       required
-                      placeholder="Your name"
+                      placeholder="Full name"
                       autoComplete="name"
                       value={form.name}
                       onChange={set('name')}
@@ -114,7 +114,7 @@ export default function Contact() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-brand-navy">
-                      Contact number <span className="font-normal text-brand-slate">(optional)</span>
+                      Phone number <span className="font-normal text-brand-slate">(optional)</span>
                     </label>
                     <input
                       className={inputClass}

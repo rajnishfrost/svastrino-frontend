@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 
@@ -12,7 +12,7 @@ import { api } from '../../../../api/client.js'
 const CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduate', 'Other']
 
 const inputClass =
-  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
 
 export default function EnquireForm() {
   const { user } = useAuth()
@@ -62,8 +62,8 @@ export default function EnquireForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-brand-navy">Your name</label>
-        <input className={inputClass} name="name" autoComplete="name" placeholder="Your name"
+        <label className="text-xs font-semibold text-brand-navy">Name</label>
+        <input className={inputClass} name="name" autoComplete="name" placeholder="Full name"
                defaultValue={user?.name || ''} required />
       </div>
 
@@ -89,7 +89,7 @@ export default function EnquireForm() {
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-brand-navy">Your class</label>
+          <label className="text-xs font-semibold text-brand-navy">Class</label>
           <select className={inputClass} name="studentClass" defaultValue="" required>
             <option value="" disabled>
               Select
@@ -103,7 +103,7 @@ export default function EnquireForm() {
         </div>
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-brand-navy">City</label>
-          <input className={inputClass} name="city" placeholder="Your city" required />
+          <input className={inputClass} name="city" placeholder="City" required />
         </div>
       </div>
 
@@ -128,7 +128,7 @@ export default function EnquireForm() {
         disabled={busy}
         className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-6 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {busy ? 'Sending…' : 'Enquire Now →'}
+        {busy ? 'Sending…' : <>Enquire Now <ArrowRight className="size-4" /></>}
       </button>
     </form>
   )

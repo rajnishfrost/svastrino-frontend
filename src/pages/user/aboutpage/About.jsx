@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Compass } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import PageSeo from '../../../seo/PageSeo.jsx'
+import MediaRecognition from './sections/MediaRecognition.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 
 // Static About copy (content per src/content/about-svastrino.md). It changes
 // rarely, so it lives here rather than in the DB. Programs, FAQs and success
@@ -51,9 +53,10 @@ export default function About() {
     <>
       <PageSeo />
       <PageHero
-        eyebrow="About"
-        title="About Svastrino"
+        eyebrow="About Svastrino"
+        title="We Build People, Not Just Careers"
         subtitle="At Svastrino, we believe you cannot build a successful career without first building yourself. We help individuals understand themselves, build the right skills and mindset, and make confident career decisions."
+        illustration={<ProgramHeroArt src="/assets/images/about-tr.png" alt="" />}
       />
 
       {/* ---- Our story ---- */}
@@ -75,7 +78,8 @@ export default function About() {
 
           {/* Origin image */}
           <img
-            src="/assets/images/our-story.png"
+            // src="/assets/images/our-story.png"
+            src="/assets/images/story.jpg"
             alt="The Svastrino story — from 20 students in 2009 to today"
             loading="lazy"
             className="w-full rounded-2xl object-cover shadow-xl shadow-brand-navy/10"
@@ -144,25 +148,8 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---- Media recognition ---- */}
-      <section className="bg-white py-16 md:py-20">
-        <div className="container text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
-            Media recognition
-          </p>
-          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-            Reflections of our impact through National Newspapers
-          </h2>
-          <div className="mx-auto mt-10 max-w-4xl overflow-hidden rounded-2xl border border-brand-navy/10 shadow-sm">
-            <img
-              src="/assets/images/newspaper-recognition.jpg"
-              alt="Svastrino featured in national newspapers"
-              loading="lazy"
-              className="w-full"
-            />
-          </div>
-        </div>
-      </section>
+      {/* ---- Media recognition (newspaper cards + zoomable lightbox) ---- */}
+      <MediaRecognition />
 
       {/* ---- Meet Rohit Gala ---- */}
       <section className="bg-soft py-16 md:py-20">
@@ -235,17 +222,22 @@ export default function About() {
             Now that you know us, let us assist in exploring our services
           </h2>
           <ul className="mx-auto mt-10 max-w-2xl divide-y divide-brand-navy/10">
-            {SERVICES.map((r) => (
-              <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
-                <span className="text-brand-navy">{r.need}</span>
-                <Link
-                  to={r.to}
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-brand-crimson hover:underline"
-                >
-                  {r.label} <ArrowRight className="size-4" />
-                </Link>
-              </li>
-            ))}
+            {SERVICES.map((r) => {
+              // Skill-Build (Nirmaan) programmes carry the Nirmaan green so they
+              // read as a distinct sub-brand from the crimson Svastrino services.
+              const isNirmaan = r.to.startsWith('/skill-build')
+              return (
+                <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
+                  <span className={isNirmaan ? 'text-nirmaan-brown' : 'text-brand-navy'}>{r.need}</span>
+                  <Link
+                    to={r.to}
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold hover:underline ${isNirmaan ? 'text-nirmaan-green' : 'text-brand-crimson'}`}
+                  >
+                    {r.label} <ArrowRight className="size-4" />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </section>

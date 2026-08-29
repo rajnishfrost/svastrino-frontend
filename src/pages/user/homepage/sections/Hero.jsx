@@ -22,22 +22,21 @@ export default function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
           {/* Left — message */}
           <div className="text-center lg:text-left">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
-              Build Yourself to Build Your Career
-            </p>
-
-            <h1 className="mt-4 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-navy sm:text-5xl md:text-[3.25rem]">
-              Helping you make informed career choices while developing your{' '}
-              <span className="text-brand-crimson">Mindset, Skills and then Actions</span> to build
-              your successful future
+            <h1 className="font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-navy sm:text-5xl md:text-[3.25rem]">
+              Build Yourself to <span className="text-brand-crimson">Build Your Career</span>
             </h1>
 
-            {/* Stats — proof figures as chips */}
-            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-brand-slate sm:text-lg lg:mx-0">
+              Helping you make informed career choices while developing your Mindset, Skills and
+              then Actions to build your successful future.
+            </p>
+
+            {/* Stats — proof figures as chips, kept in a tidy 2×2 grid */}
+            <div className="mx-auto mt-8 grid max-w-md grid-cols-2 gap-3 lg:mx-0">
               {STATS.map((s) => (
                 <div
                   key={s.caption}
-                  className="inline-flex items-center gap-2.5 rounded-2xl border border-brand-navy/10 bg-white/70 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+                  className="flex items-center gap-2.5 rounded-2xl border border-brand-navy/10 bg-white/70 px-4 py-2.5 shadow-sm backdrop-blur-sm"
                 >
                   <span className="flex size-9 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
                     <s.icon className="size-[18px]" />

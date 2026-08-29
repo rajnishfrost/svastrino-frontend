@@ -4,8 +4,15 @@
  *
  * Add the three clips to PREVIEWS to switch this section on; until then it
  * stays out of the page rather than showing empty frames.
+ *
+ * PLACEHOLDER clips for now — public sample MP4s so the section is visible and
+ * playable. Swap the `url`s for the real Nirmaan preview lessons when they land.
  */
-const PREVIEWS = [] // { title, url } — course clips chosen for the free preview
+const PREVIEWS = [
+  { title: 'Welcome & Your Career Report', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+  { title: 'Discovering Your Interests (RIASEC)', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+  { title: 'Strengths & Skills Audit', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+]
 
 export default function TryConcepts() {
   if (!PREVIEWS.length) return null

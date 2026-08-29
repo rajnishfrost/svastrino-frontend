@@ -11,6 +11,7 @@ import {
 } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './BookOnline.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -383,6 +384,7 @@ export default function BookOnline() {
         eyebrow="Book Online"
         title={rescheduleId ? 'Reschedule your session' : 'Book a mentoring session'}
         subtitle="2-hour one-on-one sessions · book from 3 days ahead, up to 2 months in advance."
+        illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section">
         <div className="container bo-wrap">

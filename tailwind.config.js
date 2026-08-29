@@ -31,6 +31,7 @@ export default {
     './src/pages/user/downloadspage/**/*.jsx',
     './src/common_component/user/Footer/Footer.jsx',
     './src/common_component/user/FaqAccordion/FaqAccordion.jsx',
+    './src/common_component/user/Testimonials/Testimonials.jsx',
   ],
   theme: {
     extend: {

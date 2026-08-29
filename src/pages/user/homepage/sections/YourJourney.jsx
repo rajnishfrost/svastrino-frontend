@@ -1,11 +1,14 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Compass, Lightbulb, Blocks, Rocket, TrendingUp } from 'lucide-react'
 import SectionHeading from './SectionHeading.jsx'
 
 /**
  * Home · section 4 — "Your Journey in 5 Simple Steps".
- * A stylised serpentine "roadmap": each step keeps its own card, and a single
- * gradient road weaves down through bold icon badges (the nodes), so the
- * sequence reads as one connected journey rather than five loose items.
+ * On desktop the five steps lay out as a HORIZONTAL timeline: bold icon badges
+ * (the nodes) alternate up/down while their cards zig-zag above and below, and a
+ * single gradient road is drawn through the *measured* badge centres (re-measured
+ * on resize) so it weaves smoothly for any copy length. On mobile the same road
+ * straightens into a vertical left-rail timeline.
  *
  * The badges are styled inline (not via Tailwind): global.css ships a hard `*`
  * reset and this project pins an old lucide build, so inline geometry + explicit
@@ -19,20 +22,20 @@ const STEPS = [
   { label: 'Progress', text: 'Make confident decisions and progress towards success', Icon: TrendingUp, grad: ['#2f7ae5', '#1c5fc4'] },
 ]
 
-// Node positions (percent of the desktop diagram box). The road weaves between
-// x=42 and x=58; badges sit on those points and the SVG uses the same percentage
-// space, so they stay aligned at any width. `side` picks the card side.
-const NODES = [
-  { x: 42, y: 10, side: 'left' },
-  { x: 58, y: 30, side: 'right' },
-  { x: 42, y: 50, side: 'left' },
-  { x: 58, y: 70, side: 'right' },
-  { x: 42, y: 90, side: 'left' },
-]
-
-// One continuous serpentine through the five nodes (smooth S-curves).
-const ROAD =
-  'M42,10 C42,20 58,20 58,30 C58,40 42,40 42,50 C42,60 58,60 58,70 C58,80 42,80 42,90'
+// One smooth path weaving HORIZONTALLY through the measured node centres: the
+// control points share the midpoint x, so the road eases left→right in gentle
+// S-curves between the alternating up/down badges.
+function roadPath(points) {
+  if (points.length < 2) return ''
+  let d = `M ${points[0].x} ${points[0].y}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i]
+    const b = points[i + 1]
+    const mx = (a.x + b.x) / 2
+    d += ` C ${mx} ${a.y} ${mx} ${b.y} ${b.x} ${b.y}`
+  }
+  return d
+}
 
 function StepCard({ step, i, className = '' }) {
   return (
@@ -67,52 +70,81 @@ function Badge({ step, size = 66 }) {
 }
 
 export default function YourJourney() {
+  const wrapRef = useRef(null)
+  const badgeRefs = useRef([])
+  const [road, setRoad] = useState({ d: '', w: 0, h: 0 })
+
+  useLayoutEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const measure = () => {
+      const wrapRect = wrap.getBoundingClientRect()
+      // On mobile the desktop rail is display:none → zero-size; skip it.
+      if (wrapRect.width === 0) return setRoad({ d: '', w: 0, h: 0 })
+      const points = badgeRefs.current.filter(Boolean).map((el) => {
+        const r = el.getBoundingClientRect()
+        return { x: r.left - wrapRect.left + r.width / 2, y: r.top - wrapRect.top + r.height / 2 }
+      })
+      setRoad({ d: roadPath(points), w: wrapRect.width, h: wrapRect.height })
+    }
+    measure()
+    // Re-measure whenever the layout reflows (resize, font swap, image load…).
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [])
+
   return (
     <section className="overflow-hidden bg-white py-20 md:py-24">
       <div className="container">
         <SectionHeading title="Your Journey in 5 Simple Steps" />
 
-        {/* Desktop: the serpentine road with alternating cards. */}
-        <div className="relative mx-auto mt-12 hidden h-[760px] max-w-5xl lg:block">
-          <svg
-            className="absolute inset-0 h-full w-full"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            fill="none"
-            aria-hidden
-          >
-            <defs>
-              <linearGradient id="journey-road" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#c8102e" />
-                <stop offset="50%" stopColor="#2f7ae5" />
-                <stop offset="100%" stopColor="#0f2c5c" />
-              </linearGradient>
-            </defs>
-            {/* soft under-shadow gives the road some body */}
-            <path d={ROAD} stroke="#0f2c5c" strokeOpacity="0.06" strokeWidth="18" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            <path d={ROAD} stroke="url(#journey-road)" strokeWidth="8" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          </svg>
+        {/* Desktop: a horizontal timeline — nodes alternate up/down, cards
+            zig-zag above/below, and the road is drawn through the badge centres. */}
+        <div ref={wrapRef} className="relative mx-auto mt-10 hidden h-[460px] max-w-5xl lg:block">
+          {road.d && road.w > 0 && (
+            <svg
+              className="pointer-events-none absolute inset-0"
+              width={road.w}
+              height={road.h}
+              viewBox={`0 0 ${road.w} ${road.h}`}
+              aria-hidden
+            >
+              <defs>
+                <linearGradient id="journey-road" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#c8102e" />
+                  <stop offset="50%" stopColor="#2f7ae5" />
+                  <stop offset="100%" stopColor="#0f2c5c" />
+                </linearGradient>
+              </defs>
+              {/* soft under-shadow gives the road some body */}
+              <path d={road.d} fill="none" stroke="#0f2c5c" strokeOpacity="0.06" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+              <path d={road.d} fill="none" stroke="url(#journey-road)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
 
-          {STEPS.map((s, i) => {
-            const n = NODES[i]
-            const cardStyle =
-              n.side === 'left'
-                ? { top: `${n.y}%`, left: '3%', right: '62%', transform: 'translateY(-50%)' }
-                : { top: `${n.y}%`, left: '62%', right: '3%', transform: 'translateY(-50%)' }
-            return (
-              <div key={s.label}>
-                <div className="absolute" style={cardStyle}>
-                  <StepCard step={s} i={i+1} className={n.side === 'left' ? 'text-right' : 'text-left'} />
-                </div>
-                <div
-                  className="absolute z-10"
-                  style={{ top: `${n.y}%`, left: `${n.x}%`, transform: 'translate(-50%, -50%)' }}
+          <ol className="relative grid h-full grid-cols-5 gap-x-6">
+            {STEPS.map((s, i) => {
+              // Even steps: card on top, badge below it (upper band of the road).
+              // Odd steps: badge above the card (lower band). → a clean zig-zag.
+              const top = i % 2 === 0
+              return (
+                <li
+                  key={s.label}
+                  className={`flex h-full flex-col items-center ${top ? 'justify-start' : 'justify-end'}`}
                 >
-                  <Badge step={s} />
-                </div>
-              </div>
-            )
-          })}
+                  {top && <StepCard step={s} i={i + 1} className="w-full text-center" />}
+                  <span
+                    ref={(el) => { badgeRefs.current[i] = el }}
+                    className="relative z-10 my-4 shrink-0"
+                  >
+                    <Badge step={s} size={56} />
+                  </span>
+                  {!top && <StepCard step={s} i={i + 1} className="w-full text-center" />}
+                </li>
+              )
+            })}
+          </ol>
         </div>
 
         {/* Mobile / tablet: the road straightens into a left-rail timeline. */}

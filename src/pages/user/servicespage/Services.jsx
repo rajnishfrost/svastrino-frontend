@@ -5,6 +5,7 @@ import ConnectionState from '../../../common_component/user/ConnectionState/Conn
 import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
 import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
+import Testimonials from '../../../common_component/user/Testimonials/Testimonials.jsx'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
@@ -12,12 +13,9 @@ import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramE
  *   Personalised Mentoring → Bloom Program, Breakthrough Program
  * Each program links to its own detail page (/services/:slug).
  */
-// Sub-category display order (matches the catalog).
+// Sub-category display order (matches the catalog). Programmes are shown in a
+// single row, ordered by this sequence, with each card labelled by its category.
 const CATEGORY_ORDER = ['career-counselling', 'personalised-mentoring']
-const CATEGORY_BLURB = {
-  'career-counselling': 'Focused guidance to get unstuck and choose your path with clarity.',
-  'personalised-mentoring': 'Ongoing one-on-one mentoring that grows you over the long journey.',
-}
 
 export default function Services() {
   const [programs, setPrograms] = useState([])
@@ -64,23 +62,31 @@ export default function Services() {
           {loading && <p className="text-center text-brand-slate">Loading services…</p>}
           {error && !loading && <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="the services" />}
 
-          {!loading && !error && groups.map((g) => (
-            <div key={g.slug} id={g.slug} className="mb-14 last:mb-0">
-              <div className="max-w-2xl">
-                <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy sm:text-3xl">{g.name}</h2>
-                {CATEGORY_BLURB[g.slug] && <p className="mt-2 text-brand-slate">{CATEGORY_BLURB[g.slug]}</p>}
-              </div>
-
-              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {g.programs.map((p) => (
+          {!loading && !error && (
+            <div className="grid gap-6 md:grid-cols-3">
+              {groups.flatMap((g) => g.programs).map((p) => {
+                // Breakthrough is the flagship long-term programme — give it a
+                // "Most popular" ribbon and a crimson frame so it stands out.
+                const featured = p.slug === 'breakthrough'
+                return (
                   <article
                     key={p.slug}
-                    className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                    className={`relative flex flex-col rounded-xl bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5 ${
+                      featured ? 'border-2 border-brand-crimson shadow-lg' : 'border border-brand-navy/5'
+                    }`}
                   >
+                    {featured && (
+                      <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-brand-crimson px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
+                        Most popular
+                      </span>
+                    )}
                     <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-crimson/10 p-2.5 text-brand-crimson">
                       <ProgramEmblem variant={p.slug} />
                     </span>
-                    <h3 className="font-display text-lg font-bold text-brand-navy">{p.name}</h3>
+                    {p.category?.name && (
+                      <p className="text-xs font-semibold uppercase tracking-wide text-brand-slate">{p.category.name}</p>
+                    )}
+                    <h3 className="mt-1 font-display text-lg font-bold text-brand-navy">{p.name}</h3>
                     {p.tagline && <p className="mt-1 text-sm font-semibold text-brand-crimson">{p.tagline}</p>}
                     <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.summary}</p>
                     <ul className="mt-4 space-y-1 text-sm text-brand-slate">
@@ -109,45 +115,27 @@ export default function Services() {
                       </Link>
                     </div>
                   </article>
-                ))}
-              </div>
+                )
+              })}
             </div>
-          ))}
+          )}
         </div>
       </section>
 
-      {testimonials.length > 0 && (
-        <section className="bg-soft py-16 md:py-20">
-          <div className="container">
-            <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">Success stories</p>
-              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">What clients say</h2>
-            </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {testimonials.map((t) => (
-                <figure key={t.id} className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
-                  <blockquote className="flex-1 leading-relaxed text-brand-navy/80">“{t.quote}”</blockquote>
-                  <figcaption className="mt-4 flex items-center gap-3 border-t border-brand-navy/10 pt-4">
-                    {t.photo && <img src={t.photo} alt="" loading="lazy" className="size-11 rounded-full object-cover" />}
-                    <div className="leading-tight">
-                      <strong className="block text-sm font-bold text-brand-navy">{t.name}</strong>
-                      {t.role && <span className="text-xs font-semibold text-brand-slate">{t.role}</span>}
-                    </div>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-            <div className="mt-10 text-center">
-              <Link
-                to="/resources/success-stories"
-                className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
-              >
-                Read all success stories
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      <Testimonials
+        items={testimonials}
+        eyebrow="Success stories"
+        title="What clients say"
+        className="bg-soft py-16 md:py-20"
+        footer={
+          <Link
+            to="/resources/success-stories"
+            className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
+          >
+            Read all success stories
+          </Link>
+        }
+      />
     </>
   )
 }

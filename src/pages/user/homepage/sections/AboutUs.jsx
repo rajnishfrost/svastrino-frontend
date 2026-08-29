@@ -23,19 +23,23 @@ export default function AboutUs() {
           </p>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-col items-center gap-5">
           <Link
             to="/about"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark"
           >
             Learn More About Svastrino <ArrowRight className="size-4" />
           </Link>
-          <Link
-            to="/our-ideology"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-brand-navy/15 bg-white px-8 text-base font-semibold text-brand-navy shadow-sm transition-colors hover:text-brand-crimson"
-          >
-            Check Our Ideology <ArrowRight className="size-4" />
-          </Link>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 text-brand-slate">
+            <span>If you want to know our pillars, check</span>
+            <Link
+              to="/our-ideology"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-brand-navy/15 bg-white px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:border-brand-crimson hover:text-brand-crimson"
+            >
+              Our Ideology <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

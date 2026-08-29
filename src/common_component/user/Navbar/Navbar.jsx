@@ -72,13 +72,13 @@ export default function Navbar() {
         <div className={`nav-links${open ? ' is-open' : ''}`}>
           {/* On Svastrino: "Skill Build" green pill with hover dropdown (Nirmaan inside).
               On the Nirmaan page: plain "Home" link back to the Svastrino homepage. */}
-          {isNirmaan ? (
+          {/* {isNirmaan ? (
             <Link to="/" onClick={close} className="nav-item">
               Home
             </Link>
-          ) : (
+          ) : ( */}
             <SkillBuildDropdown onNavigate={close} />
-          )}
+          {/* )} */}
 
           {/* <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} /> */}
           <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} />
@@ -119,13 +119,37 @@ export default function Navbar() {
 const canHover = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(hover: hover)').matches === true
 
-/** Hover props for a dropdown, or nothing at all on a touch device. */
-function hoverProps(setOpen) {
-  if (!canHover()) return {}
-  return {
-    onMouseEnter: () => setOpen(true),
-    onMouseLeave: () => setOpen(false),
+/**
+ * Dropdown open-state with a hover "grace period": the menu opens instantly on
+ * enter, but closing waits a beat (~180ms). That stops a tiny mouse wobble — or
+ * the diagonal trip across to a submenu — from snapping the menu shut, which is
+ * what made the Services dropdown feel over-sensitive. Touch devices get no
+ * hover handlers at all (see canHover); their click handler drives the menu.
+ */
+function useHoverMenu(delay = 180) {
+  const [open, setOpen] = useState(false)
+  const closeTimer = useRef(null)
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
   }
+  // Clear any pending close timer if the component unmounts mid-countdown.
+  useEffect(() => cancelClose, [])
+  const hoverProps = canHover()
+    ? {
+        onMouseEnter: () => {
+          cancelClose()
+          setOpen(true)
+        },
+        onMouseLeave: () => {
+          cancelClose()
+          closeTimer.current = setTimeout(() => setOpen(false), delay)
+        },
+      }
+    : {}
+  return { open, setOpen, hoverProps }
 }
 
 const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
@@ -133,7 +157,7 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
 /** Green pill with a hover dropdown. Currently exposes only "Nirmaan" inside;
  *  add more items to the array as new skill-build courses launch. */
 function SkillBuildDropdown({ onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
   const items = [
     { label: 'Nirmaan', to: '/skill-build/nirmaan' },
     { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
@@ -142,7 +166,7 @@ function SkillBuildDropdown({ onNavigate }) {
   return (
     <div
       className={`nav-dropdown nav-skill-build${open ? ' is-open' : ''}`}
-      {...hoverProps(setOpen)}
+      {...hoverProps}
     >
       <button
         type="button"
@@ -167,12 +191,12 @@ function SkillBuildDropdown({ onNavigate }) {
 
 /** A hover/click dropdown that is still tappable on mobile (renders inline). */
 function Dropdown({ label, to, items, onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
 
   return (
     <div
       className={`nav-dropdown${open ? ' is-open' : ''}`}
-      {...hoverProps(setOpen)}
+      {...hoverProps}
     >
       <button
         type="button"
@@ -207,12 +231,11 @@ function Dropdown({ label, to, items, onNavigate }) {
 /** A category row that reveals its programs — flyout on hover (desktop),
  *  expands inline on tap (mobile drawer). */
 function SubMenu({ item, onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
   return (
     <div
       className={`nav-sub${open ? ' is-open' : ''}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      {...hoverProps}
     >
       <button type="button" className="nav-sub-trigger" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         {item.label}
