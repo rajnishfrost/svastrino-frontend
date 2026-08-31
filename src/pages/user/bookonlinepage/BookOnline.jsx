@@ -382,8 +382,8 @@ export default function BookOnline() {
       <PageSeo />
       <PageHero
         eyebrow="Book Online"
-        title={rescheduleId ? 'Reschedule your session' : 'Book a mentoring session'}
-        subtitle="2-hour one-on-one sessions · book from 3 days ahead, up to 2 months in advance."
+        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
+        subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section">
