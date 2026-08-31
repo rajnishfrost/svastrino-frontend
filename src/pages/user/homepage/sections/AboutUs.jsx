@@ -8,11 +8,17 @@ import SectionHeading from './SectionHeading.jsx'
  */
 export default function AboutUs() {
   return (
-    <section className="bg-white py-20 md:py-24">
-      <div className="container">
-        <SectionHeading title="Get To Know Us And Our Roots" />
+    // Dark "trust close" band — same navy as the footer, so this section stands
+    // out clearly from the white sections around it.
+    <section className="relative overflow-hidden bg-brand-navy-dark py-20 md:py-24">
+      {/* faint brand glows for a bit of depth on the dark band */}
+      <div className="pointer-events-none absolute -left-24 -top-24 size-72 rounded-full bg-brand-blue/10 blur-3xl" aria-hidden />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 size-72 rounded-full bg-brand-crimson/10 blur-3xl" aria-hidden />
 
-        <div className="mx-auto mt-8 max-w-3xl space-y-4 text-center text-brand-slate">
+      <div className="container relative">
+        <SectionHeading title="Get To Know Us And Our Roots" invert />
+
+        <div className="mx-auto mt-8 max-w-3xl space-y-4 text-center text-white/70">
           <p className="text-balance leading-relaxed">
             With 17+ years of experience, we&rsquo;ve helped thousands of students discover who they
             are, choose the right path, and build the confidence to lead their future.
@@ -31,11 +37,11 @@ export default function AboutUs() {
             Learn More About Svastrino <ArrowRight className="size-4" />
           </Link>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 text-brand-slate">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-white/70">
             <span>If you want to know our pillars, check</span>
             <Link
               to="/our-ideology"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-brand-navy/15 bg-white px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:border-brand-crimson hover:text-brand-crimson"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-transparent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-brand-navy"
             >
               Our Ideology <ArrowRight className="size-4" />
             </Link>

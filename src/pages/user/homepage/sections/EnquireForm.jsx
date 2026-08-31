@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 
@@ -19,17 +21,29 @@ export default function EnquireForm() {
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  // Phone is the one controlled field — the country-code dropdown needs it.
+  const [phone, setPhone] = useState('')
 
-  // The fields are uncontrolled, so the values are read off the form itself
-  // when it is submitted. That keeps the markup exactly as designed.
+  // Prefill the phone from the signed-in account once it loads, only if the
+  // visitor hasn't started typing their own.
+  useEffect(() => {
+    if (user?.phone) setPhone((p) => p || user.phone)
+  }, [user])
+
+  // The other fields are uncontrolled (read off the form on submit); the phone
+  // (controlled, from the dropdown) is merged in and lightly validated.
   const submit = async (e) => {
     e.preventDefault()
     const data = Object.fromEntries(new FormData(e.currentTarget))
+    if (phone.replace(/\D/g, '').length < 8) {
+      setErr('Please enter a valid phone number.')
+      return
+    }
     setErr(''); setBusy(true)
     try {
       await api('/user/enquiry', {
         method: 'POST',
-        body: { ...data, email: user?.email || '', source: 'home' },
+        body: { ...data, phone, email: user?.email || '', source: 'home' },
       })
       setSent(true)
     } catch (ex) {
@@ -69,22 +83,23 @@ export default function EnquireForm() {
 
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-brand-navy">Phone number</label>
-        <div className="flex gap-2">
-          <span className="inline-flex h-11 items-center rounded-lg border border-brand-navy/15 bg-brand-cream px-3 text-sm font-medium text-brand-navy">
-            +91
-          </span>
-          <input
-            className={inputClass}
-            type="tel"
-            name="phone"
-            inputMode="numeric"
-            pattern="[0-9]{10}"
-            maxLength={10}
-            placeholder="10-digit number"
-            defaultValue={user?.phone || ''}
-            required
-          />
-        </div>
+        <PhoneInput
+          defaultCountry="in"
+          value={phone}
+          onChange={(value) => setPhone(value)}
+          placeholder="Phone number"
+          inputStyle={{ fontFamily: 'inherit' }}
+          style={{
+            width: '100%',
+            '--react-international-phone-height': '44px',
+            '--react-international-phone-border-radius': '8px',
+            '--react-international-phone-border-color': 'rgba(15, 44, 92, 0.15)',
+            '--react-international-phone-font-size': '14px',
+            '--react-international-phone-text-color': '#0f2c5c',
+            '--react-international-phone-country-selector-background-color-hover': '#f6f9fc',
+            '--react-international-phone-dropdown-item-font-size': '14px',
+          }}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -103,7 +118,7 @@ export default function EnquireForm() {
         </div>
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-brand-navy">City</label>
-          <input className={inputClass} name="city" placeholder="City" required />
+          <input className={inputClass} name="city" placeholder="City / Town / Village" required />
         </div>
       </div>
 
