@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { api } from '../../../api/client.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -73,7 +74,12 @@ export default function Contact() {
   return (
     <>
       <PageSeo />
-      <PageHero eyebrow="Contact us" title="Get in Touch" />
+      <PageHero
+        eyebrow="Contact us"
+        title="Get in Touch"
+        subtitle="Questions about a programme, the psychometric test, or booking a session? Reach out — we're happy to help."
+        illustration={<ProgramHeroArt src="/assets/images/contact-us-t.png" alt="" />}
+      />
 
       <section className="bg-white py-16 md:py-20">
         <div className="container">

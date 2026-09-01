@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -52,6 +53,7 @@ export default function Services() {
         eyebrow="Services"
         title="Career Counselling & Mentoring"
         subtitle="One-on-one guidance for every stage — from a focused counselling session to long-term personalised mentoring."
+        illustration={<ProgramHeroArt src="/assets/images/all-services-t.png" alt="" />}
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
         <Link to="/services/compare" className="btn btn-secondary btn-large">Compare programs</Link>

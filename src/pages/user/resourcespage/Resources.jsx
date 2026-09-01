@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
@@ -79,6 +80,13 @@ export default function Resources({ view = 'all' }) {
 
   const retry = () => setReloadKey((k) => k + 1)
   const meta = SUBPAGES.find((s) => s.key === view)
+  // Themed hero illustration per resources sub-view.
+  const heroArt = {
+    all: '/assets/images/all-resources-t.png',
+    'career-library': '/assets/images/library.png',
+    faqs: '/assets/images/faqs-t.png',
+    'success-stories': '/assets/images/success-t.png',
+  }[view] || '/assets/images/all-resources-t.png'
 
   // Career Library search. Matching a STREAM keeps all of its courses; matching
   // only a course narrows that stream down to the courses that matched, so the
@@ -105,6 +113,7 @@ export default function Resources({ view = 'all' }) {
         eyebrow="Resources"
         title={meta ? meta.label : 'Resources'}
         subtitle={meta ? meta.blurb : "Career library, FAQs and success stories — everything we've learned, in one place."}
+        illustration={<ProgramHeroArt src={heroArt} alt="" />}
       />
 
       <section className="bg-white py-16 md:py-20">

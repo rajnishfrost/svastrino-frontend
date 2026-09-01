@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
+import { ArrowRight } from 'lucide-react'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './BookOnline.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -695,6 +696,24 @@ export default function BookOnline() {
             </div>
           )}
 
+        </div>
+      </section>
+
+      {/* Cross-sell to the Nirmaan skill-build course — kept in its own green
+          Nirmaan theme so it reads as a distinct, related offering. */}
+      <section className="bg-nirmaan-cream/50 py-14 md:py-16">
+        <div className="container">
+          <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-5 rounded-2xl border border-nirmaan-sand bg-white p-8 text-center sm:flex-row sm:text-left">
+            <p className="text-lg font-medium text-nirmaan-brown">
+              Want to build your mindset, confidence, and skills to succeed in life and career?
+            </p>
+            <Link
+              to="/skill-build/nirmaan"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+            >
+              Explore Nirmaan <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </section>
     </>

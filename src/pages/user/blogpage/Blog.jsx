@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchBlogs, fetchBlogCategories } from '../../../api/blogs.js'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
@@ -107,6 +108,7 @@ export default function Blog() {
         eyebrow="Blog"
         title="From the Svastrino blog"
         subtitle="Insights on careers, mentoring, study abroad and building the skills that matter."
+        illustration={<ProgramHeroArt src="/assets/images/blog-t.png" alt="" />}
       />
 
       <section className="bg-white py-16 md:py-20">
