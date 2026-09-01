@@ -68,20 +68,18 @@ export default function Services() {
             <div className="grid gap-6 md:grid-cols-3">
               {groups.flatMap((g) => g.programs).map((p) => {
                 // Breakthrough is the flagship long-term programme — give it a
-                // "Most popular" ribbon and a crimson frame so it stands out.
+                // crimson frame + elevated, scaled-up card so it stands out
+                // (matches the featured treatment on the Book Online page).
                 const featured = p.slug === 'breakthrough'
                 return (
                   <article
                     key={p.slug}
-                    className={`relative flex flex-col rounded-xl bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5 ${
-                      featured ? 'border-2 border-brand-crimson shadow-lg' : 'border border-brand-navy/5'
-                    }`}
+                    className={
+                      featured
+                        ? 'relative z-10 flex flex-col rounded-xl border-2 border-brand-crimson bg-white p-6 shadow-2xl shadow-brand-crimson/20 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/25'
+                        : 'relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5'
+                    }
                   >
-                    {featured && (
-                      <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-brand-crimson px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
-                        Most popular
-                      </span>
-                    )}
                     <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-crimson/10 p-2.5 text-brand-crimson">
                       <ProgramEmblem variant={p.slug} />
                     </span>
