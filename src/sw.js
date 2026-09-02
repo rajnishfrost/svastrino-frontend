@@ -95,6 +95,31 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // 1b) Media on a DIFFERENT origin. In production uploaded media is not served
+  //     from this site at all — it comes from its own CloudFront distribution
+  //     (CDN_URL), so a video URL is https://<media>.cloudfront.net/hls/… and
+  //     rule 1 above, which needs BOTH the same origin and an /uploads/ path,
+  //     never sees it. Without this the Download button still fills the cache
+  //     and the video still refuses to play offline, which is the one thing the
+  //     download was for.
+  //
+  //     Only a request we actually hold a downloaded copy of is taken over. For
+  //     anything else cross-origin (fonts, the Google sign-in script, the
+  //     payment gateway) the original failure is re-thrown, so those behave
+  //     exactly as they did before this worker existed.
+  if (!sameOrigin) {
+    event.respondWith((async () => {
+      try {
+        return await fetch(req)
+      } catch (err) {
+        const hit = await serveMedia(req)
+        if (hit) return hit
+        throw err
+      }
+    })())
+    return
+  }
+
   // 2) Course data + profile — keep the last good payload for offline rendering.
   //    (The profile matters: without it the app can't show who's signed in offline.)
   if (sameOrigin && (url.pathname.startsWith('/api/user/learn') || url.pathname.startsWith('/api/user/profile'))) {

@@ -419,6 +419,18 @@ export default function Learn() {
   return (
     <section className="section">
       <div className="container learn-wrap">
+        {/* The server was started with LEARN_TEST_MODE on: the daily wait between
+            tasks is gone and the video can be skipped through. Said out loud on
+            the page so a test server is never mistaken for a real one. */}
+        {course.testMode && (
+          <div className="learn-testmode" role="note">
+            <strong>Test mode is on.</strong> Tasks open the moment the one before
+            them is finished — no waiting for the next day — the play limit is off,
+            and you can skip forward in the video. This is not how a student sees
+            the course. Turn it off by removing <code>LEARN_TEST_MODE</code> from
+            the server env and restarting.
+          </div>
+        )}
         {upgrade?.canUpgrade && (
           <div className="learn-upgrade" role="note">
             <div className="learn-upgrade-info">
@@ -573,19 +585,20 @@ export default function Learn() {
             </ol>
           </aside>
 
-          {/* Player + questions + worksheet */}
+          {/* Player + questions */}
           <main className="learn-main">
             {active && (
               <>
                 <HlsPlayer key={active.id} src={active.videoUrl} videoRef={videoRef}
-                           onTimeUpdate={onTimeUpdate} lockSeek={!active.videoDone}
+                           onTimeUpdate={onTimeUpdate}
+                           lockSeek={!active.videoDone && !course.testMode}
                            watermark={user?.email || ''} captions={active.captions || []}
                            onFirstPlay={() => countPlay(active.id)}
                            playBlockedMessage={`You have watched this video the maximum of ${course?.playLimit ?? 5} times.`} />
-                {!active.videoDone && (
+                {!active.videoDone && !course.testMode && (
                   <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
                 )}
-                {active.playsLeft != null && (
+                {active.playsLeft != null && !course.testMode && (
                   <p className="learn-plays-note">
                     {active.playsLeft > 0
                       ? `${active.playsLeft} of ${course?.playLimit ?? 5} plays left for this video.`
@@ -658,13 +671,6 @@ export default function Learn() {
                   submitting={submitting}
                   onSubmit={submitAnswer}
                 />
-
-                {active.worksheet?.tasks?.length > 0 && (
-                  <div className="learn-worksheet">
-                    <h3>{active.worksheet.title || 'Worksheet'}</h3>
-                    <ul>{active.worksheet.tasks.map((t, i) => <li key={i}>{t}</li>)}</ul>
-                  </div>
-                )}
               </>
             )}
           </main>
@@ -690,8 +696,16 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
       <div className="learn-q-card">
         <p className="learn-q-num">Question {q.current.order} of {total}</p>
         <p className="learn-q-prompt">{q.current.prompt}</p>
+        {/* The course sheet writes a worked answer for every task. It goes in
+            the placeholder rather than above the box: the tasks are open-ended
+            ("write three things you are grateful for"), and showing the shape
+            of an answer where the answer goes says what is being asked while
+            still leaving the box empty. */}
         <textarea
-          className="learn-q-input" rows={4} placeholder="Type your answer…"
+          className="learn-q-input" rows={4}
+          placeholder={q.current.placeholder
+            ? `For example — ${q.current.placeholder}`
+            : 'Type your answer…'}
           value={answerText} onChange={(e) => setAnswerText(e.target.value)}
         />
         <button type="button" className="btn btn-primary learn-q-submit"
