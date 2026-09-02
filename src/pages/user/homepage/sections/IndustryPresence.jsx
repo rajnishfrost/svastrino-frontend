@@ -1,21 +1,29 @@
 /**
  * Home · "Institutions That Trust Us" — a logo wall that scrolls on its own.
  *
- * STATIC PLACEHOLDERS for now. These eight logos live in /public/partners and
- * are stand-ins so the band reads as a real logo wall while the partner list is
- * still being built. To switch to real partners later, fetch
- * GET /user/organisations and map its `logo` + `name` onto the same shape —
- * nothing else in this component needs to change.
+ * Real partner logos live in /public/assets/images/partners. To manage these
+ * from the backend later, fetch GET /user/organisations and map its `logo` +
+ * `name` onto the same shape — nothing else in this component needs to change.
  */
 const PARTNERS = [
-  { name: 'Greenwood High', logo: '/partners/greenwood.svg' },
-  { name: "St. Mary's Academy", logo: '/partners/stmarys.svg' },
-  { name: 'Nova International', logo: '/partners/nova.svg' },
-  { name: 'Cambridge Public', logo: '/partners/cambridge.svg' },
-  { name: 'Horizon Academy', logo: '/partners/horizon.svg' },
-  { name: 'Sunrise Vidyalaya', logo: '/partners/sunrise.svg' },
-  { name: 'Pinnacle Institute', logo: '/partners/pinnacle.svg' },
-  { name: 'Everest Global School', logo: '/partners/everest.svg' },
+  { name: 'AIESEC', logo: '/assets/images/partners/AIESEC.png' },
+  { name: 'CES', logo: '/assets/images/partners/CES.png' },
+  { name: 'Chisel Coaching', logo: '/assets/images/partners/CHISEL-COACHING.jpg' },
+  { name: 'DPS', logo: '/assets/images/partners/DPS.jpg' },
+  { name: 'Euro School', logo: '/assets/images/partners/Euro-School.jpg' },
+  { name: 'Finplan', logo: '/assets/images/partners/Finplan.png' },
+  { name: 'Gurukul', logo: '/assets/images/partners/gurukul.png' },
+  { name: 'Hiren Gangar', logo: '/assets/images/partners/Hiren-Gangar.jpg' },
+  { name: 'Iyer Commerce Classes', logo: '/assets/images/partners/Iyer-Commerce-Classes.jpg' },
+  { name: 'KES', logo: '/assets/images/partners/KES.png' },
+  { name: 'MT Educare', logo: '/assets/images/partners/MT-Educare.png' },
+  { name: 'NES', logo: '/assets/images/partners/NES.png' },
+  { name: 'NK College', logo: '/assets/images/partners/NK-College.jpg' },
+  { name: 'Perpetual Classes, Vasai', logo: '/assets/images/partners/Perpectual-Classes-Vasai.png' },
+  { name: 'R. A. Podar', logo: '/assets/images/partners/R-A-Podar.jpg' },
+  { name: 'SGI', logo: '/assets/images/partners/SGI.png' },
+  { name: "Shobha's Group Tuitions", logo: '/assets/images/partners/Shobhas-Group-Tuts.jpg' },
+  { name: 'Sundaram', logo: '/assets/images/partners/Sundaram.png' },
 ]
 
 export default function IndustryPresence() {
