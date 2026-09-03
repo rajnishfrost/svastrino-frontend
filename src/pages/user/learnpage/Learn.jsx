@@ -574,9 +574,16 @@ export default function Learn() {
                     <span className="learn-item-main">
                       <span className="learn-item-title">{s.title}</span>
                       <span className="learn-item-meta">
-                        {s.videoLocked
-                          ? `Opens ${fmtIst(s.videoUnlockAt)}`
-                          : `${s.durationMins} min · ${s.questions.answeredCount}/${s.questions.total} Q`}
+                        {/* Two different locks, and saying the wrong one is worse
+                            than saying nothing. The drip clock has a date to
+                            show; a week that has not been paid for has none —
+                            the server sends videoUnlockAt as null there — and
+                            "Opens " with nothing after it reads as a bug. */}
+                        {s.phaseLocked
+                          ? 'In the full course'
+                          : s.videoLocked
+                            ? `Opens ${fmtIst(s.videoUnlockAt)}`
+                            : `${s.durationMins} min · ${s.questions.answeredCount}/${s.questions.total} Q`}
                       </span>
                     </span>
                   </button>
