@@ -41,6 +41,7 @@ export default defineConfig({
     }),
   ],
   server: {
+    host: true,
     port: 5174,
     proxy: {
       // Forward API calls to the Svastrino Express backend during development

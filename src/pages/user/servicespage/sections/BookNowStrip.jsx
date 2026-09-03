@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
 /**
- * Programme page · a conversion band placed mid-page, once the visitor has
+ * Program page · a conversion band placed mid-page, once the visitor has
  * read the journey and the benefits but before the questions. Someone who is
  * already convinced should not have to scroll to the bottom to act.
  */

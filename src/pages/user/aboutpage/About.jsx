@@ -60,11 +60,11 @@ export default function About() {
       />
 
       {/* ---- Our story ---- */}
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16">
         <div className="container grid items-start gap-10 lg:grid-cols-[1.5fr_1fr]">
           <div>
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-              Our story
+            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
+              Our Story
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-brand-slate">
               In 2009, Svastrino began with 20 students and a simple belief that choosing a career
@@ -114,10 +114,10 @@ export default function About() {
       <section className="bg-white py-16 md:py-20">
         <div className="container">
           <div className="mx-auto max-w-3xl">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">
+            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
               How we got here!
             </h2>
-            <ol className="mt-8 space-y-6 border-l-2 border-brand-crimson/20 pl-6">
+            <ul className="mt-8 space-y-6 border-l-2 border-brand-crimson/20">
               {MILESTONES.map((m) => (
                 <li key={m.year} className="relative">
                   <span className="absolute -left-[1.95rem] top-1 flex size-4 items-center justify-center rounded-full border-2 border-brand-crimson bg-white" />
@@ -128,7 +128,7 @@ export default function About() {
                   <p className="mt-1 text-sm leading-relaxed text-brand-slate">{m.text}</p>
                 </li>
               ))}
-            </ol>
+            </ul>
           </div>
         </div>
       </section>
@@ -163,7 +163,7 @@ export default function About() {
             />
             <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>
             <p className="mt-0.5 text-sm font-semibold text-brand-crimson">
-              Founder &amp; Chief Career Mentor · 17+ years
+              Founder &amp; Chief Career Mentor<br />17+ years
             </p>
           </div>
           <div>
@@ -219,11 +219,11 @@ export default function About() {
       <section className="bg-soft py-16 md:py-20">
         <div className="container">
           <h2 className="mx-auto max-w-2xl text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy sm:text-3xl">
-            Now that you know us, let us assist in exploring our services
+            Now that you know us, let us assist you in exploring our services
           </h2>
           <ul className="mx-auto mt-10 max-w-2xl divide-y divide-brand-navy/10">
             {SERVICES.map((r) => {
-              // Skill-Build (Nirmaan) programmes carry the Nirmaan green so they
+              // Skill-Build (Nirmaan) programs carry the Nirmaan green so they
               // read as a distinct sub-brand from the crimson Svastrino services.
               const isNirmaan = r.to.startsWith('/skill-build')
               return (

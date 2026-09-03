@@ -11,7 +11,7 @@ import { api } from '../../../../api/client.js'
  * Posts to /user/enquiry, the same endpoint the Contact page uses; `source`
  * tells the team which form it came from.
  */
-const CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduate', 'Other']
+const CLASSES = ['1st Year Undergraduate', '1st Year Undergraduate', '1st Year Undergraduate', '1st Year Undergraduate', '1st Year Undergraduate', 'Other']
 
 const inputClass =
   'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
@@ -117,8 +117,8 @@ export default function EnquireForm() {
           </select>
         </div>
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-brand-navy">City</label>
-          <input className={inputClass} name="city" placeholder="City / Town / Village" required />
+          <label className="text-xs font-semibold text-brand-navy">Location</label>
+          <input className={inputClass} name="city" placeholder="City / Town / Village Name" required />
         </div>
       </div>
 

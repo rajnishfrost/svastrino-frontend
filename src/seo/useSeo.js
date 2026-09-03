@@ -4,7 +4,7 @@ import { useEffect } from 'react'
  * Per-page metadata for a single-page app.
  *
  * Every route in this app is served the same index.html, so without this every
- * page — 219 articles, 52 career pages, every programme — would share one title
+ * page — 219 articles, 52 career pages, every program — would share one title
  * and one description. Search engines would see a site with no per-page
  * metadata, and anything shared on WhatsApp or LinkedIn would preview as the
  * generic site name, because those crawlers do not run JavaScript at all.

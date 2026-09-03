@@ -1,5 +1,5 @@
 /**
- * Program journeys, clubbed by STAGE. Sourced from each programme's content
+ * Program journeys, clubbed by STAGE. Sourced from each program's content
  * sheet (src/content/<slug>.md → the "Program Journey" sections). Kept in the
  * frontend for now because the backend journey is a flatter, thinner version;
  * this is the richer, stage-grouped content the pages should show.

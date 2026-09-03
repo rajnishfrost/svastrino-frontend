@@ -1,15 +1,15 @@
 import { PROGRAM_JOURNEYS } from '../journeyStages.js'
 
 /**
- * Programme page · the journey, CLUBBED BY STAGE. Each programme's stages come
+ * Program page · the journey, CLUBBED BY STAGE. Each program's stages come
  * from its content sheet (src/content/<slug>.md → "Program Journey"): a stage
  * carries a time range and a set of steps, and each step lists what happens in
- * it. Programmes without a stage breakdown fall back to the flat backend
+ * it. Programs without a stage breakdown fall back to the flat backend
  * journey, rendered as a single unlabelled group. The inclusions box sits at
  * the foot, as before.
  */
 
-// Backend flat journey → the stage shape, so an unknown programme still renders.
+// Backend flat journey → the stage shape, so an unknown program still renders.
 function fromBackend(journey) {
   if (!journey?.length) return null
   return {
@@ -117,9 +117,9 @@ export default function ProgramJourney({ program }) {
         </p>
       )}
 
-      {/* What the programme includes */}
+      {/* What the program includes */}
       <div className="mt-8 rounded-2xl border border-brand-navy/10 bg-brand-cream p-5">
-        <h3 className="font-display text-base font-bold text-brand-navy">What the programme includes</h3>
+        <h3 className="font-display text-base font-bold text-brand-navy">What the program includes</h3>
         <ul className="mt-3 space-y-2 text-sm">
           {program.duration && (
             <li className="flex justify-between gap-3"><strong className="font-semibold text-brand-navy">Total duration</strong><span className="text-brand-slate">{program.duration}</span></li>

@@ -77,7 +77,7 @@ export default function Contact() {
       <PageHero
         eyebrow="Contact us"
         title="Get in Touch"
-        subtitle="Questions about a programme, the psychometric test, or booking a session? Reach out — we're happy to help."
+        subtitle="Questions about a program, the psychometric test, or booking a session? Reach out — we're happy to help."
         illustration={<ProgramHeroArt src="/assets/images/contact-us-t.png" alt="" />}
       />
 

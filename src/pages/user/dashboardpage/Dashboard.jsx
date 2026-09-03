@@ -42,7 +42,7 @@ export default function Dashboard() {
   const { user } = useAuth()
   const [enrollments, setEnrollments] = useState(null)
 
-  // Buying a mentoring programme creates an enrollment too; mentoring has its
+  // Buying a mentoring program creates an enrollment too; mentoring has its
   // own section above (fed by the bookings API), so it is filtered out here.
   const courses = enrollments == null ? null : enrollments.filter((e) => e.kind !== 'mentoring')
   const [mentoring, setMentoring] = useState(null)

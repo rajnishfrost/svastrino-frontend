@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 
 /**
- * Styled FAQ accordion shared by the programme pages (/services/:slug) and the
+ * Styled FAQ accordion shared by the program pages (/services/:slug) and the
  * Resources hub (/resources/faqs), so both read the same. One answer opens at a
  * time; the crimson "+" chip rotates into an "×" and the answer reveals with a
  * smooth height animation (the grid-rows 0fr→1fr trick).

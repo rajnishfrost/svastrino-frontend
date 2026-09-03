@@ -56,8 +56,8 @@ export default function ServiceProgram() {
 
   const bookHref = program?.bookingSku ? `/book-online?program=${program.bookingSku}` : '/book-online'
 
-  // Each programme page keeps the title and description its old address ranked
-  // with; a programme added since then falls back to its own summary.
+  // Each program page keeps the title and description its old address ranked
+  // with; a program added since then falls back to its own summary.
   const legacy = seoFor(`/services/${slug}`)
   useSeo({
     ready: !!program,
@@ -78,8 +78,8 @@ export default function ServiceProgram() {
     : 'Guided one to one by Svastrino mentors')
 
   /**
-   * The main call to action. For a self-serve programme it navigates to the
-   * booking wizard; for an expert-call programme it only scrolls down the page,
+   * The main call to action. For a self-serve program it navigates to the
+   * booking wizard; for an expert-call program it only scrolls down the page,
    * which is a plain anchor rather than a route change.
    */
   function Cta({ className }) {
@@ -123,7 +123,7 @@ export default function ServiceProgram() {
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16">
         <div className="container mx-auto max-w-4xl space-y-6">
           <ProgramOverview program={program} />
           <ChooseIf items={program.chooseIf} />

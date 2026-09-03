@@ -1,9 +1,9 @@
 # Mentoring purchase — Bull's Eye, Bloom, Breakthrough
 
-One payment buys a whole programme. Every session after the first is booked free
+One payment buys a whole program. Every session after the first is booked free
 against it. Breakthrough is not sold from a checkout at all.
 
-| Programme    | SKU                        | Sessions | Sold how                      |
+| Program    | SKU                        | Sessions | Sold how                      |
 | ------------ | -------------------------- | -------- | ----------------------------- |
 | Bull's Eye   | `mentoring-bullseye`     | 3        | Checkout                      |
 | Bloom        | `mentoring-bloom`        | 5        | Checkout                      |
@@ -27,8 +27,8 @@ against it. Breakthrough is not sold from a checkout at all.
                                               Mentoring section
 ```
 
-A person may also enter at `/book-online` and pick a programme there — that
-route only offers *View details*, so it goes through the programme page either
+A person may also enter at `/book-online` and pick a program there — that
+route only offers *View details*, so it goes through the program page either
 way. Signing in first is optional; step 2 makes an account for a guest.
 
 ---
@@ -126,9 +126,9 @@ The account is created here from what is typed. Rules from
 
 | id      | Do this                                                          | Expect                                                                                                                        |      |
 | ------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- |
-| MENT-E1 | Read the Verify screen                                           | Programme, session number, full date, time with duration, name, email, phone, and the fee breakdown                           | PASS |
+| MENT-E1 | Read the Verify screen                                           | Program, session number, full date, time with duration, name, email, phone, and the fee breakdown                           | PASS |
 | MENT-E2 | Read the closing line                                            | `You can reschedule any session until 2 days before it starts.`                                                             | PASS |
-| MENT-E3 | Pay with`4111 1111 1111 1111`                                  | Confirmation with programme, session, when, amount and receipt number                                                         | PASS |
+| MENT-E3 | Pay with`4111 1111 1111 1111`                                  | Confirmation with program, session, when, amount and receipt number                                                         | PASS |
 | MENT-E4 | Watch the moment payment succeeds                                | **No** `Cannot read properties of null (reading 'orderId')`. That bug took the money and made no booking; it is fixed | PASS |
 | MENT-E5 | Pay with Razorpay's failure card                                 | Razorpay's window closes and one screen answers:`Your payment did not go through` · `Nothing has been charged.`          | PASS |
 | MENT-E6 | On that screen press*Try the payment again*, then pay properly | Goes through. A failed attempt does not kill the order                                                                        | PASS |
@@ -148,16 +148,16 @@ purchase really happened rather than just looking like it did.
 | `orders`                    | One row,`status: 'paid'`, with a receipt number and the amount                                              |
 | `enrollments`               | **One** row, `product: 'mentoring-bullseye'`, `status: 'active'`. Two rows for one payment is a bug |
 | `mentoringbookings`         | One row,`sessionNumber: 1`, with `startAt` and `endAt` two hours apart                                  |
-| `/dashboard` → Mentoring   | The programme, with a row per session. Session 1 shows the appointment; the rest say*Not booked yet*        |
-| `/dashboard` → Skill Build | The mentoring programme must**not** appear here                                                         |
-| Admin → Services → Bookings | The booking, with the student's name**and** email, programme, session number, time in IST               |
+| `/dashboard` → Mentoring   | The program, with a row per session. Session 1 shows the appointment; the rest say*Not booked yet*        |
+| `/dashboard` → Skill Build | The mentoring program must**not** appear here                                                         |
+| Admin → Services → Bookings | The booking, with the student's name**and** email, program, session number, time in IST               |
 | Settings → Orders            | The order, and*Download invoice* produces a branded PDF                                                     |
 
 | id      | Do this                                              | Expect                                                                                        |        |
 | ------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------ |
-| MENT-F1 | Open the dashboard                                   | Programme under Mentoring, not Skill Build                                                    | PASS   |
+| MENT-F1 | Open the dashboard                                   | Program under Mentoring, not Skill Build                                                    | PASS   |
 | MENT-F2 | Count the session rows                               | Bull's Eye 3, Bloom 5, Breakthrough 22                                                        | PASS   |
-| MENT-F3 | Book every session, then try one more                | `All <n> sessions of this program are already booked` — n is the programme's session count | REFUSE |
+| MENT-F3 | Book every session, then try one more                | `All <n> sessions of this program are already booked` — n is the program's session count | REFUSE |
 | MENT-F4 | Reschedule a session more than 2 days away           | Calendar reopens; new slot taken; no payment                                                  | PASS   |
 | MENT-F5 | Reschedule one less than 2 days away                 | `Rescheduling closes 2 days before the session — please contact us`                        | REFUSE |
 | MENT-F6 | Reschedule a session already marked completed        | `Only upcoming bookings can be rescheduled`                                                 | REFUSE |
@@ -185,8 +185,8 @@ admin has approved that person's call request.
 | MENT-G1 | Look for a way to pay on`/services/breakthrough`                    | There is none. Every button says*Talk to an expert*                           | PASS   |
 | MENT-G2 | Send the call-back form with name and phone                           | Thank-you saying a mentor will call within one working day                      | PASS   |
 | MENT-G3 | Send it with no phone                                                 | `Please leave a phone number so we can reach you`                             | REFUSE |
-| MENT-G4 | Admin → Enquiries, filter*Expert call requests*                    | The request, with programme and best time to call                               | PASS   |
-| MENT-G5 | Before approving, open`/book-online?program=mentoring-breakthrough` | The wizard steps aside and explains the programme starts with a call            | REFUSE |
+| MENT-G4 | Admin → Enquiries, filter*Expert call requests*                    | The request, with program and best time to call                               | PASS   |
+| MENT-G5 | Before approving, open`/book-online?program=mentoring-breakthrough` | The wizard steps aside and explains the program starts with a call            | REFUSE |
 | MENT-G6 | Before approving, call`POST /api/user/payments/order` with that SKU | Refused on the server too:`This program starts with a call from our team…`   | REFUSE |
 | MENT-G7 | As admin press*Approve to pay*                                      | Status becomes*Approved*; if the enquiry had an email, a booking link is sent | PASS   |
 | MENT-G8 | Now buy Breakthrough on that account                                  | Checkout opens and payment completes                                            | PASS   |

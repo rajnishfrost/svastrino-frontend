@@ -2,7 +2,7 @@ import { ClipboardCheck, MessageSquare, Compass, Rocket } from 'lucide-react'
 
 /**
  * Psychometric · "Student Journey" — the four steps a student takes, laid out
- * as a winding serpentine "road" (the look the mentoring programme pages used):
+ * as a winding serpentine "road" (the look the mentoring program pages used):
  * a single gradient road weaves down through green icon badges, with the step
  * cards alternating left/right. On mobile it straightens into a left-rail
  * timeline. Green/brown palette to match the rest of the page.

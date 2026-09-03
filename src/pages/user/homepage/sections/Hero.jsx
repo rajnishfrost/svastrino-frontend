@@ -18,17 +18,17 @@ const STATS = [
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-hero">
-      <div className="container relative pb-28 pt-14 md:pb-36 md:pt-20">
+      <div className="container relative pb-28 pt-14 md:pb-36 md:pt-16">
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr]">
           {/* Left — message */}
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-left lg:[transform:translateY(-2.5rem)]">
             <h1 className="font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-brand-navy sm:text-5xl md:text-[3.25rem]">
-              Build Yourself to <span className="text-brand-crimson">Build Your Career</span>
+              Build Yourself to <br /><span className="text-brand-crimson">Build Your Career</span>
             </h1>
 
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-brand-slate sm:text-lg lg:mx-0">
-              Helping you make informed career choices while developing your Mindset, Skills and
-              then Actions to build your successful future.
+              Helping you make informed career choices while developing your <span className={`underline`}>Mindset</span>, <span className={`underline`}>Skills</span> and
+              then <span className={`underline`}>Actions</span> to build your successful future.
             </p>
 
             {/* Stats — proof figures as chips, kept in a tidy 2×2 grid */}
@@ -54,9 +54,9 @@ export default function Hero() {
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
               <Link
                 to="/services"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark capitalize"
               >
-                Explore our Programs <ArrowRight className="size-4" />
+                Explore Our Programs <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

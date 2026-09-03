@@ -4,7 +4,7 @@ import './Testimonials.css'
 
 /**
  * Shared testimonials block — ONE look reused across the site (home, the
- * Services landing and each programme page). A continuously scrolling row that
+ * Services landing and each program page). A continuously scrolling row that
  * moves left and shows ~2 cards at a time, pauses on hover, and loops
  * seamlessly. Each card carries the home-page treatment: quote mark, the quote,
  * a five-star rating and the person's name/role.
@@ -20,7 +20,7 @@ import './Testimonials.css'
  *   footer     – node shown centred below the row, e.g. a "read all" link
  *   className  – <section> background/padding (ignored when `bare`)
  *   bare       – render just the inner block (no <section>/container), for
- *                embedding inside an existing section (the programme page)
+ *                embedding inside an existing section (the program page)
  *   compact    – smaller heading + tighter spacing, for the embedded case
  */
 function TestimonialCard({ t }) {

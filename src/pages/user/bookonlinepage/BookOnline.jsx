@@ -5,7 +5,7 @@ import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
- * Book Online — the mentoring programmes as a static pricing component.
+ * Book Online — the mentoring programs as a static pricing component.
  *
  * NOTE: this page previously ran a live booking/payment wizard driven by the
  * backend. It has been switched to STATIC pricing for now (content below);
@@ -52,7 +52,7 @@ const PROGRAMS = [
       'Spread over 2 years',
       'Regular follow-ups and support in between sessions',
     ],
-    buttonText: "Talk to an expert"
+    buttonText: "Book Now"
   },
 ]
 
@@ -61,13 +61,13 @@ export default function BookOnline() {
     <>
       <PageSeo />
       <PageHero
-        eyebrow="Book Online"
-        title="Choose Your Mentoring Program"
-        subtitle="One-on-one career counselling and mentoring — compare the programs and pick the depth of support that fits."
+        eyebrow=""
+        title="Book a Preferred Program, Now!"
+        subtitle="Select a program that you would want to get personalised session in"
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16">
         <div className="container">
           {/* items-stretch keeps all cards equal height; the featured card uses a
               relative z-10 + md:scale so it visually lifts above its neighbours. */}
@@ -82,7 +82,7 @@ export default function BookOnline() {
                 }
               >
                 <h2 className="font-display text-xl font-bold text-brand-navy">{p.name}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.tagline}</p>
+                <p className="mt-2 text-sm leading-relaxed text-brand-crimson font-semibold">{p.tagline}</p>
 
                 <div className="mt-5 border-y border-brand-navy/10 py-4">
                   <span className="font-display text-3xl font-extrabold text-brand-navy">{p.price}</span>

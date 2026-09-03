@@ -5,7 +5,7 @@ import ScholarshipCycleEditor from '../../../common_component/scholarship/Schola
 import '../adminShared.css'
 
 /**
- * Nirmaan Scholarship admin — the whole programme, across every partner.
+ * Nirmaan Scholarship admin — the whole program, across every partner.
  *
  * Organisations run their own cycles now, so admin's job is oversight: review
  * applications, decide what each partner may reach, and be able to open ANY

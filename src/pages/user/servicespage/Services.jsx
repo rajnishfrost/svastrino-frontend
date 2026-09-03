@@ -7,6 +7,7 @@ import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
 import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
 import Testimonials from '../../../common_component/user/Testimonials/Testimonials.jsx'
+import { ArrowRight } from 'lucide-react'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
@@ -14,7 +15,7 @@ import Testimonials from '../../../common_component/user/Testimonials/Testimonia
  *   Personalised Mentoring → Bloom Program, Breakthrough Program
  * Each program links to its own detail page (/services/:slug).
  */
-// Sub-category display order (matches the catalog). Programmes are shown in a
+// Sub-category display order (matches the catalog). Programs are shown in a
 // single row, ordered by this sequence, with each card labelled by its category.
 const CATEGORY_ORDER = ['career-counselling', 'personalised-mentoring']
 
@@ -59,7 +60,7 @@ export default function Services() {
         <Link to="/services/compare" className="btn btn-secondary btn-large">Compare programs</Link>
       </PageHero>
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16">
         <div className="container">
           {loading && <p className="text-center text-brand-slate">Loading services…</p>}
           {error && !loading && <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="the services" />}
@@ -67,7 +68,7 @@ export default function Services() {
           {!loading && !error && (
             <div className="grid gap-6 md:grid-cols-3">
               {groups.flatMap((g) => g.programs).map((p) => {
-                // Breakthrough is the flagship long-term programme — give it a
+                // Breakthrough is the flagship long-term program — give it a
                 // crimson frame + elevated, scaled-up card so it stands out
                 // (matches the featured treatment on the Book Online page).
                 const featured = p.slug === 'breakthrough'
@@ -101,7 +102,7 @@ export default function Services() {
                       >
                         View details
                       </Link>
-                      {/* Programmes sold after a call (Breakthrough) send you to
+                      {/* Programs sold after a call (Breakthrough) send you to
                           their own page's call-back form, not to the checkout. */}
                       <Link
                         to={
@@ -132,7 +133,7 @@ export default function Services() {
             to="/resources/success-stories"
             className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
           >
-            Read all success stories
+            Read all success stories&nbsp;&nbsp;<ArrowRight className="size-4" />
           </Link>
         }
       />

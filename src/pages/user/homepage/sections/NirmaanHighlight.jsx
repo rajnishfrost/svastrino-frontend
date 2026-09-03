@@ -11,11 +11,11 @@ import { ArrowRight, Check, GraduationCap } from 'lucide-react'
  * the scholarship copy is confirmed — see the commented block below.
  */
 const POINTS = [
-  'Youth-Focused Life & Career Development Course',
-  '24 videos with real-life concepts & examples',
-  'Daily 10 min tasks to build habits, mindsets & skills',
-  'Learn at your own pace',
-  "Find a 'New You' through the course",
+  "Youth-Focused Life & Career Development Course",
+  "24 Videos With Real-Life Concepts & Examples",
+  "Daily 10-Minute Tasks to Build Habits, Mindsets & Skills",
+  "Learn at Your Own Pace ",
+  "Find a ‘New You’ Through the Course",
 ]
 
 export default function NirmaanHighlight() {
@@ -32,11 +32,8 @@ export default function NirmaanHighlight() {
               <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
                 Nirmaan — <span className="text-nirmaan-green">Soch Se Vikas</span>
               </h2>
-              <p className="mt-4 max-w-xl text-nirmaan-brown-soft">
-                Nirmaan is a structured journey to build self-awareness, self-control, discipline,
-                communication, confidence, and other essential skills for life and growth. For
-                students from Grade 7 onwards who want to understand themselves better and handle
-                life and its choices with total self-belief &amp; confidence.
+              <p className="mt-4 max-w-2xl text-nirmaan-brown-soft">
+                ​Nirmaan is a structured journey to build self-awareness, self-control, discipline, communication, confidence, and other essential skills for life and growth. For students from Grade 7 onwards who want to understand themselves better and handle life and its choices with total self-belief & confidence.
               </p>
 
               <ul className="mt-6 space-y-3">
@@ -81,8 +78,11 @@ export default function NirmaanHighlight() {
               <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52">
                 <img src="/nirmaan-tree.png" alt="" aria-hidden className="h-full w-full object-contain" />
               </div>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-nirmaan-brown">
-                <GraduationCap className="size-4" /> Soch Se Vikas
+              <span className="mt-4 inline-flex items-center gap-2 text-4xl font-semibold uppercase tracking-wide text-nirmaan-brown p-1 leading-none px-4">
+                Nirmaan
+              </span>
+              <span className="mt-4 inline-flex items-center gap-2 text-xs font-thin uppercase tracking-wide bg-nirmaan-brown text-white p-1 leading-none px-4">
+                Soch Se Vikas
               </span>
             </div>
           </div>

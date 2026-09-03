@@ -45,14 +45,14 @@ export default function Ideology() {
     <>
       <PageSeo />
       <PageHero
-        eyebrow="Our Ideology"
-        title="Our Approach"
+        eyebrow=""
+        title="Our Ideology"
         subtitle="The beliefs that guide how we understand, develop and prepare every student for life and career."
         illustration={<ProgramHeroArt src="/assets/images/approach.webp" alt="" />}
       />
 
       {/* ---- The five pillars — a zig-zag timeline ---- */}
-      <section className="bg-soft py-16 md:py-20">
+      <section className="bg-soft py-16">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
@@ -111,7 +111,7 @@ export default function Ideology() {
           </h2>
           <ul className="mx-auto mt-10 max-w-2xl divide-y divide-brand-navy/10">
             {SERVICES.map((r) => {
-              // Skill-Build (Nirmaan) programmes carry the Nirmaan green so they
+              // Skill-Build (Nirmaan) programs carry the Nirmaan green so they
               // read as a distinct sub-brand from the crimson Svastrino services.
               const isNirmaan = r.to.startsWith('/skill-build')
               return (

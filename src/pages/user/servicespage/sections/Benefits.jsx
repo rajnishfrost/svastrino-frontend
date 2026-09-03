@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 
 /**
- * Programme page · "Why choose this programme" — what the client walks away
+ * Program page · "Why choose this program" — what the client walks away
  * with, as opposed to what happens during it. Hidden when empty.
  */
 export default function Benefits({ items = [], programName }) {

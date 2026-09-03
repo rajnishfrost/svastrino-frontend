@@ -20,7 +20,7 @@ const fmtDate = (iso) =>
 export default function Offers() {
   usePageSeo({
     title: 'Offers — what is running right now',
-    description: 'Current offers on Svastrino mentoring programmes and the Nirmaan course.',
+    description: 'Current offers on Svastrino mentoring programs and the Nirmaan course.',
   })
   const [offers, setOffers] = useState(null)
   const [error, setError] = useState(null)

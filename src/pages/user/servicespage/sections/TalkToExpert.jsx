@@ -3,13 +3,13 @@ import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 
 /**
- * Programme page · the buying step for programmes sold after a conversation
+ * Program page · the buying step for programs sold after a conversation
  * rather than from a checkout page (Breakthrough). A two-year commitment needs
  * reassurance before money changes hands, so the visitor asks for a call; the
  * team calls back and sends a payment link afterwards.
  *
  * Posts to the same /user/enquiry endpoint the contact and home forms use, with
- * `source: 'expert-call'` and the programme slug attached.
+ * `source: 'expert-call'` and the program slug attached.
  */
 const inputClass =
   'mt-1 block h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'

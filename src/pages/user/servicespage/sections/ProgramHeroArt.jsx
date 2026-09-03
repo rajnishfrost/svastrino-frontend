@@ -2,7 +2,7 @@ import { GraduationCap, Rocket, Briefcase, Lightbulb, TrendingUp } from 'lucide-
 import './ProgramHeroArt.css'
 
 /**
- * Programme-hero visual: the flat illustration for a programme, framed by a few
+ * Program-hero visual: the flat illustration for a program, framed by a few
  * gently-floating "career" icon bubbles so the hero reads as a designed scene
  * rather than a plain image on the right. Bubbles are styled inline (geometry)
  * + lucide size/color props — reliable against the global reset and old lucide.
@@ -23,7 +23,7 @@ export default function ProgramHeroArt({ src, alt = '' }) {
   return (
     <div className="hero-art">
       <img
-        className="hero-art-img"
+        className="hero-art-img max-h-[425px] w-auto"
         src={src}
         alt={alt}
         loading="eager"

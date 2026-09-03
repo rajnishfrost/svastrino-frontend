@@ -39,7 +39,7 @@ const VIEW_SEO = {
   faqs: {
     title: "FAQ's — how Svastrino's mentoring and courses work",
     description:
-      'Answers to what people ask before starting: how sessions are booked, what each programme covers, how the course is paced, and how payments and refunds work.',
+      'Answers to what people ask before starting: how sessions are booked, what each program covers, how the course is paced, and how payments and refunds work.',
   },
   'success-stories': {
     title: 'Success stories — students we have guided, in their words',

@@ -11,13 +11,13 @@ import ProgramEmblem from '../../../../common_component/user/ProgramEmblem/Progr
  */
 const SERVICES = [
   {
-    need: 'I need Immediate Career Counselling and clarity',
+    need: 'I need Immediate Career Counselling and Clarity',
     who: 'For individuals who want to make a confident stream & career choice',
     points: [
-      'Resolve Last-Minute Career Confusion',
-      'Verify Your Career Choice Before Committing',
-      'Explore Relevant Career Paths & Opportunities',
-      'Make a Confident & Informed Career Decision',
+      "Resolve Last-Minute Career Confusion",
+      "Verify Your Career Choice Before Committing",
+      "Explore Relevant Career Paths & Opportunities",
+      "Make a Confident & Informed Career Decision",
     ],
     duration: '10 Days',
     cta: "Explore Bull's Eye",
@@ -28,11 +28,11 @@ const SERVICES = [
     need: 'I want to choose my career through Deep Self-Reflection',
     who: 'For individuals who want career clarity through self-reflection',
     points: [
-      'Explore your Potentials & Talents',
-      'Create & Better your Vision',
-      'Experiment Unique yet Futuristic Careers',
-      'Decide what suits your personality & needs',
-      'Build a clear 5-year Career Plan',
+      "Explore Your Potential & Talents",
+      "Create & Better Your Vision",
+      "Explore Unique & Futuristic Careers",
+      "Decide What Suits Your Personality & Needs",
+      "Build a Clear 5-year Career Plan",
     ],
     duration: '2 Months',
     cta: 'Explore Bloom',
@@ -41,12 +41,12 @@ const SERVICES = [
   },
   {
     need: 'I want Long-Term Mentoring and Complete Transformation',
-    who: 'For individuals who want to grow into Visionary Leaders',
+    who: 'For individuals who want to grow into visionary leaders',
     points: [
-      'Discover Natural & Hidden Talents',
-      'Build Stronger Personality, Mindsets & Charisma',
-      'Tailored Personalised Mentoring & Support',
-      'Overall Life & Career Mentoring',
+      "Discover Natural & Hidden Talents",
+      "Build Stronger Personality, Mindsets & Charisma",
+      "Tailored Personalised Mentoring & Support",
+      "Overall Life & Career Mentoring",
     ],
     duration: '2 Years',
     cta: 'Explore Breakthrough',
@@ -57,35 +57,35 @@ const SERVICES = [
     need: 'I want to build my Skills and Myself',
     who: 'For teens, freshers & young professionals who want to become future-ready',
     points: [
-      'Build Deep Self-Awareness & Self-Control',
-      'Strengthen Discipline, Confidence & Communication',
-      'Develop Mindsets & Skills for Life and Career',
-      'Turn Learning Into Real-World Experience',
+      "Build Deep Self-Awareness & Self-Control",
+      "Strengthen Discipline, Confidence & Communication",
+      "Develop Mindsets & Skills for Life & Career",
+      "Turn Learning Into Real-World Experience",
     ],
-    duration: '6 months',
-    cta: 'Nirmaan',
+    duration: '6 Months',
+    cta: 'Explore Nirmaan',
     to: '/skill-build/nirmaan',
     skillBuild: true,
     accent: 'green',
   },
   {
-    need: 'I want a Scientific Analysis to decide my Career',
-    who: 'For individuals who want to verify their Potential & Career options Scientifically',
+    need: 'I want a Scientifically Analysis to decide my Career',
+    who: 'For individuals who want to to verify their potential & career options scientifically',
     points: [
-      'Know yourself like never before',
-      'Discover Suitable Streams, Careers & Directions',
-      'Reduce confusion, pressure & assumption',
-      'Decide your personal journey confidently',
+      "Know Yourself Like Never Before",
+      "Discover Suitable, Streams, Careers & Directions",
+      "Reduce Confusion, Pressure & Assumption",
+      "Decide Your Personal Journey Confidently",
     ],
-    duration: '1 day',
-    cta: 'Psychometric Testing',
+    duration: '1 Day',
+    cta: 'Explore Psychometric Testing',
     to: '/skill-build/psychometric-testing',
     skillBuild: true,
     accent: 'green',
   },
 ]
 
-// Each mentoring programme gets its own on-brand accent so the row reads as
+// Each mentoring program gets its own on-brand accent so the row reads as
 // three distinct paths rather than one repeated colour; the two Skill-Build
 // products keep the Nirmaan green.
 const ACCENTS = {

@@ -19,7 +19,7 @@ export const DETAILS = [
   { label: "Follow ups", values: ["Once", "Weekly till Program Ends", "Weekly till Program Ends"] },
 ]
 
-/** What each programme includes. true = included, false = not part of it. */
+/** What each program includes. true = included, false = not part of it. */
 export const CAPABILITIES = [
   { label: "For Students", has: [true, true, true] },
   { label: "Career Guidance & Planning", has: [true, true, true] },

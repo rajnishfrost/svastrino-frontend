@@ -3,6 +3,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import { PROGRAMS, DETAILS, CAPABILITIES } from './compareData.js'
 import './Compare.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
+import { ArrowRight } from 'lucide-react'
 
 /**
  * Compare the three counselling and mentoring programs side by side — for the
@@ -17,10 +18,10 @@ export default function CompareServices() {
       <PageSeo />
       <PageHero
         eyebrow="Services"
-        title="Compare our programs"
-        subtitle="What each programme covers, side by side — so you can see exactly where they differ."
+        title="Compare Our Programs"
+        subtitle="What each program covers, side by side, so you can see exactly where they differ."
       >
-        <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
+        {/* <Link to="/services" className="btn btn-secondary btn-large">All services</Link> */}
       </PageHero>
 
       <section className="section">
@@ -28,11 +29,11 @@ export default function CompareServices() {
           <div className="cmp-wrap">
             <table className="cmp-table">
               <caption className="cmp-caption">
-                Programme comparison — ✓ means the programme includes it
+                <span className={`text-green-600 font-semibold`}>✓</span> means the program includes it
               </caption>
               <thead>
                 <tr>
-                  <th scope="col" className="cmp-corner">Programme</th>
+                  <th scope="col" className="cmp-corner">Program</th>
                   {PROGRAMS.map((p) => (
                     <th scope="col" key={p.slug}>
                       <span className="cmp-cat">{p.category}</span>
@@ -58,8 +59,8 @@ export default function CompareServices() {
                   <tr key={c.label}>
                     <th scope="row">{c.label}</th>
                     {c.has.map((yes, i) => (
-                      <td key={i} className={yes ? 'cmp-yes' : 'cmp-no'}>
-                        <span aria-hidden>{yes ? '✓' : '—'}</span>
+                      <td key={i} className={`!text-center ${yes ? 'cmp-yes' : 'cmp-no'}`}>
+                        <span aria-hidden className={`${yes ? "text-green-600" : ""} font-semibold`}>{yes ? '✓' : '—'}</span>
                         <span className="sr-only">{yes ? 'Included' : 'Not included'}</span>
                       </td>
                     ))}
@@ -82,7 +83,8 @@ export default function CompareServices() {
                         }
                         className="btn btn-primary"
                       >
-                        {p.expertCall ? 'Talk to an expert' : `Book ${p.name.replace(' Program', '')}`}
+                        {/* {p.expertCall ? 'Talk to an expert' : `Book ${p.name.replace(' Program', '')}`} */}
+                        {p.expertCall ? 'Talk to an expert' : `Book Now`}&nbsp;&nbsp;<ArrowRight className="size-4" />
                       </Link>
                     </td>
                   ))}
@@ -92,7 +94,7 @@ export default function CompareServices() {
           </div>
 
           <p className="cmp-note">
-            Still not sure? A short <Link to="/services/bulls-eye">counselling session</Link> will
+            Still not sure? A short <Link to="/services/bulls-eye" className={`text-brand-navy font-semibold`}>counselling session</Link> will
             help you pick the right one.
           </p>
         </div>

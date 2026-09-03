@@ -175,7 +175,7 @@ function SkillBuildDropdown({ onNavigate }) {
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       >
-        Skill Build
+        Skill-Build
       </button>
 
       <div className="nav-dropdown-menu nav-dropdown-menu--skill-build" role="menu">

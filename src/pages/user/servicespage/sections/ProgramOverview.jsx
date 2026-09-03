@@ -1,5 +1,5 @@
 /**
- * Programme page · the facts panel — a short description and the three things
+ * Program page · the facts panel — a short description and the three things
  * every visitor asks first: how long, how many sessions, and how it is run.
  */
 export default function ProgramOverview({ program }) {
