@@ -1,17 +1,52 @@
+import PreviewPlayer from './PreviewPlayer.jsx'
+
 /**
- * Nirmaan · "Try our concepts" — three real lessons from the course, watchable
+ * Nirmaan · "Try our concepts" — four real lessons from the course, watchable
  * without registering. The lowest-commitment way to judge the teaching.
  *
- * Add the three clips to PREVIEWS to switch this section on; until then it
- * stays out of the page rather than showing empty frames.
+ * These are the SAME CloudFront/HLS streams enrolled students watch (Session
+ * .videoUrl in the database), not re-cut teaser files — so nothing has to be
+ * re-uploaded when a lesson is re-recorded. What makes them previews is the
+ * window: `start`/`end` are the only seconds that play, while the seek bar
+ * still shows the whole lesson, so a visitor can see exactly how much they are
+ * being kept out of. PreviewPlayer enforces it and puts the trial CTA on screen
+ * the moment the window runs out.
  *
- * PLACEHOLDER clips for now — public sample MP4s so the section is visible and
- * playable. Swap the `url`s for the real Nirmaan preview lessons when they land.
+ * `fullSeconds` is the real length of each master playlist. It is only used
+ * before metadata arrives (the un-played card and the first frame of the bar);
+ * the element's own duration takes over as soon as it loads.
+ *
+ * Add or swap a lesson by editing PREVIEWS; an empty list hides the section
+ * rather than showing empty frames.
  */
+const CDN = 'https://d16oouzhglk9tq.cloudfront.net/hls'
+const mmss = (m, s) => m * 60 + s
+
 const PREVIEWS = [
-  { title: 'Welcome & Your Career Report', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
-  { title: 'Discovering Your Interests (RIASEC)', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
-  { title: 'Strengths & Skills Audit', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+  {
+    week: 5,
+    title: 'Practising to Build Confidence',
+    url: `${CDN}/nirmaan-w05/master.m3u8`,
+    start: mmss(4, 57), end: mmss(6, 13), fullSeconds: 458,
+  },
+  {
+    week: 4,
+    title: 'Success Visualisation',
+    url: `${CDN}/nirmaan-w04/master.m3u8`,
+    start: mmss(7, 5), end: mmss(8, 12), fullSeconds: 651,
+  },
+  {
+    week: 21,
+    title: 'Design Your Career Roadmap',
+    url: `${CDN}/nirmaan-w21/master.m3u8`,
+    start: mmss(4, 57), end: mmss(6, 2), fullSeconds: 574,
+  },
+  {
+    week: 23,
+    title: 'Become the Eagle',
+    url: `${CDN}/nirmaan-w23/master.m3u8`,
+    start: mmss(3, 35), end: mmss(5, 15), fullSeconds: 421,
+  },
 ]
 
 export default function TryConcepts() {
@@ -26,14 +61,17 @@ export default function TryConcepts() {
             Get a Glimpse of the Course Videos
           </h2>
           <p className="mt-4 text-lg text-nirmaan-brown-soft">
-            Three lessons from the course, free to watch — no registration needed.
+            Four lessons from the course, free to watch — no registration needed.
           </p>
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {PREVIEWS.map((v) => (
             <figure key={v.url} className="overflow-hidden rounded-xl border border-nirmaan-sand bg-white shadow-sm">
-              <video src={v.url} controls preload="metadata" playsInline className="aspect-video w-full" />
-              <figcaption className="p-4 text-sm font-semibold text-nirmaan-brown">{v.title}</figcaption>
+              <PreviewPlayer src={v.url} start={v.start} end={v.end} fullSeconds={v.fullSeconds} />
+              <figcaption className="p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-nirmaan-green">Week {v.week}</p>
+                <p className="mt-1 text-sm font-semibold text-nirmaan-brown">{v.title}</p>
+              </figcaption>
             </figure>
           ))}
         </div>
