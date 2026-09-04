@@ -67,8 +67,10 @@ function Carousel({ items, compact }) {
   const [index, setIndex] = useState(() => (n > 2 ? n : 0))
   const [animate, setAnimate] = useState(true)
   const [paused, setPaused] = useState(false)
+  const [active, setActive] = useState(true)  // false while off-screen or the tab is hidden
   const [resetKey, setResetKey] = useState(0) // bump = restart the autoplay timer
   const sliding = useRef(false)               // ignore clicks mid-transition
+  const viewportRef = useRef(null)
 
   // 1 card at a time on phones, 2 on wider screens.
   useEffect(() => {
@@ -93,12 +95,37 @@ function Carousel({ items, compact }) {
     return () => cancelAnimationFrame(r)
   }, [animate])
 
-  // Autoplay: hold, then advance one card. Re-armed on hover / manual nav / resize.
+  // Only let the autoplay run while the row is genuinely on screen and the tab is
+  // in the foreground. Off-screen (or in a background tab) a CSS transition never
+  // paints, so `transitionend` never fires — yet the timer below would keep
+  // advancing `index`, marching the track past its three buffered copies until
+  // the whole row sits off-screen. That's the "blank testimonials until you move
+  // the mouse" bug. Gating the timer on visibility keeps `index` in range, so the
+  // recenter can always do its job. (It also stops needless work off-screen.)
   useEffect(() => {
-    if (!canSlide || paused) return
+    const el = viewportRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    let inView = true
+    const sync = () => setActive(inView && !document.hidden)
+    const io = new IntersectionObserver(
+      ([entry]) => { inView = entry.isIntersecting; sync() },
+      { threshold: 0.01 },
+    )
+    io.observe(el)
+    document.addEventListener('visibilitychange', sync)
+    return () => {
+      io.disconnect()
+      document.removeEventListener('visibilitychange', sync)
+    }
+  }, [canSlide]) // re-bind if the sliding viewport mounts/unmounts (breakpoint flip)
+
+  // Autoplay: hold, then advance one card. Re-armed on hover / manual nav / resize
+  // and paused whenever the row isn't visible (see the effect above).
+  useEffect(() => {
+    if (!canSlide || paused || !active) return
     const id = setInterval(() => setIndex((i) => i + 1), 5000)
     return () => clearInterval(id)
-  }, [canSlide, paused, resetKey, n, visible])
+  }, [canSlide, paused, active, resetKey, n, visible])
 
   const go = (dir) => {
     if (!canSlide || sliding.current) return
@@ -136,6 +163,7 @@ function Carousel({ items, compact }) {
   return (
     <div className={marginTop}>
       <div
+        ref={viewportRef}
         className="testi-viewport"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}

@@ -1,7 +1,12 @@
-/* The table is wider than a phone, so it scrolls inside this box — the page
-   itself never scrolls sideways. */
+/* On desktop the table fits the container, so the wrap is deliberately NOT a
+   scroll container (overflow: visible). That's what lets the header row pin to
+   the PAGE — just under the sticky navbar — the way the client wants, like the
+   nav itself. (A scroll container here would trap the header's sticky offset
+   inside this box instead.) On narrow screens the table is wider than the
+   viewport, so the media query at the foot of this file turns the wrap back into
+   a sideways-scrolling box — the page still never scrolls sideways. */
 .cmp-wrap {
-  overflow-x: auto;
+  overflow: visible;
   border: 1px solid var(--color-surface-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -44,9 +49,15 @@
   z-index: 1;
 }
 
+/* Header row pins to the page, sitting just below the sticky navbar (+ the
+   offline bar when it's showing), so it reads like a second, table-specific
+   header as you scroll the comparison. */
+.cmp-table thead {
+  border-bottom: 2px solid var(--color-accent);
+}
 .cmp-table thead th {
   position: sticky;
-  top: 0;
+  top: calc(var(--nav-height) + var(--offline-h, 0px));
   background: var(--color-surface);
   z-index: 2;
   border-bottom: 2px solid var(--color-accent);
@@ -88,6 +99,21 @@
   text-align: center;
   margin-top: var(--space-4);
   color: var(--color-text-muted);
+}
+
+/* Narrow screens: the table (min-width 720px) is wider than the viewport, so it
+   has to scroll sideways inside its own box again — the page must never scroll
+   sideways. A scroll container can't also pin its header to the page, so on
+   phones the header returns to sticking at the top of the box while you scroll
+   the comparison. (Desktop keeps the page-level pin above.) */
+@media (max-width: 767px) {
+  .cmp-wrap {
+    overflow: auto;
+    max-height: 80vh;
+  }
+  .cmp-table thead th {
+    top: 0;
+  }
 }
 
 /* Visually hidden but read out — the tick/dash columns need a real word. */

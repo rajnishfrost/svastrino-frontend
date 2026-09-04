@@ -13,7 +13,7 @@ export default function Testimonies() {
 
   useEffect(() => {
     let cancelled = false
-    fetchTestimonials(true)
+    fetchTestimonials()
       .then((d) => { if (!cancelled) setStories(d.testimonials || []) })
       .catch(() => {}) // proof is a nice-to-have; never break the home page for it
     return () => { cancelled = true }

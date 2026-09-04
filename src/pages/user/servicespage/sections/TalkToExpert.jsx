@@ -57,7 +57,15 @@ export default function TalkToExpert({ program }) {
   )
 
   return (
-    <div id="talk-to-an-expert" className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+    <div
+      id="talk-to-an-expert"
+      // Jumping to this anchor (from the All Services card or the hero CTA) aligns
+      // the section top to y=0 — but the sticky navbar would then cover the
+      // heading. Offset the scroll by the nav height (+ the offline bar when shown)
+      // and a little breathing room, so the heading lands just below the navbar.
+      style={{ scrollMarginTop: 'calc(var(--nav-height, 68px) + var(--offline-h, 0px) + 1.25rem)' }}
+      className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm"
+    >
       <h2 className="font-display text-xl font-bold text-brand-navy">Talk to an expert first</h2>
       <p className="mt-2 text-sm leading-relaxed text-brand-slate">
         {program.name} runs for {program.duration || 'a long time'}, so we do not ask anyone to pay

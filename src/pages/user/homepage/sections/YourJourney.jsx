@@ -95,9 +95,9 @@ export default function YourJourney() {
   }, [])
 
   return (
-    <section className="overflow-hidden bg-white py-20 md:py-24">
+    <section className="overflow-hidden bg-brand-navy py-20 md:py-24">
       <div className="container">
-        <SectionHeading title="Your Journey in 5 Simple Steps" />
+        <SectionHeading title="Your Journey in 5 Simple Steps" invert />
 
         {/* Desktop: a horizontal timeline — nodes alternate up/down, cards
             zig-zag above/below, and the road is drawn through the badge centres. */}

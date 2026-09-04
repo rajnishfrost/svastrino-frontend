@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import { PROGRAMS, DETAILS, CAPABILITIES } from './compareData.js'
 import './Compare.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -20,6 +21,7 @@ export default function CompareServices() {
         eyebrow="Services"
         title="Compare Our Programs"
         subtitle="What each program covers, side by side, so you can see exactly where they differ."
+        illustration={<ProgramHeroArt src="/assets/images/compare-t.png" alt="" />}
       >
         {/* <Link to="/services" className="btn btn-secondary btn-large">All services</Link> */}
       </PageHero>
@@ -52,7 +54,10 @@ export default function CompareServices() {
                 ))}
 
                 <tr className="cmp-divider">
-                  <th scope="row" colSpan={PROGRAMS.length + 1}>What’s included</th>
+                  {/* Colours go on the <th>, not the <tr>: the cell's own
+                      background/color (from `.cmp-divider th`) paints over the
+                      row's, so styling the row has no visible effect. */}
+                  <th scope="row" colSpan={PROGRAMS.length + 1} className="!bg-brand-navy !text-white">What’s included</th>
                 </tr>
 
                 {CAPABILITIES.map((c) => (
@@ -60,7 +65,7 @@ export default function CompareServices() {
                     <th scope="row">{c.label}</th>
                     {c.has.map((yes, i) => (
                       <td key={i} className={`!text-center ${yes ? 'cmp-yes' : 'cmp-no'}`}>
-                        <span aria-hidden className={`${yes ? "text-green-600" : ""} font-semibold`}>{yes ? '✓' : '—'}</span>
+                        <span aria-hidden className={`${yes ? "text-green-600" : "text-brand-crimson"} font-semibold`}>{yes ? '✓' : 'X'}</span>
                         <span className="sr-only">{yes ? 'Included' : 'Not included'}</span>
                       </td>
                     ))}

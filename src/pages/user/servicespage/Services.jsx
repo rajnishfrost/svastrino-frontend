@@ -29,7 +29,7 @@ export default function Services() {
   useEffect(() => {
     let cancelled = false
     setLoading(true); setError(null)
-    Promise.all([fetchPrograms(), fetchTestimonials(true)])
+    Promise.all([fetchPrograms(), fetchTestimonials()])
       .then(([p, t]) => { if (!cancelled) { setPrograms(p.programs); setTestimonials(t.testimonials) } })
       .catch((err) => { if (!cancelled) setError(err) })
       .finally(() => { if (!cancelled) setLoading(false) })

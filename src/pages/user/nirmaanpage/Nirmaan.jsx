@@ -33,10 +33,16 @@ export default function Nirmaan() {
       <Hero />
       <Journey />
       <Benefits />
+      <div className={`w-full bg-nirmaan-brown py-8 -translate-y-10`}>
+        <p className="mx-auto mt-10 max-w-3xl text-center font-display text-lg font-semibold italic text-white ">
+          From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I know what I
+          can do next.”
+        </p>
+      </div>
       <TryConcepts />
       <FreeTrial />
       <Packages />
-      <PsychometricStrip />
+      {/* <PsychometricStrip /> */}
     </div>
   )
 }

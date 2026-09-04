@@ -40,10 +40,10 @@ const TEAM = [
 
 const SERVICES = [
   { need: 'For Immediate Career Counselling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
-  { need: 'Choosing career through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
-  { need: 'To Transform Completely through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
-  { need: 'To Build Skills and Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
-  { need: 'To verify your potential & career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
+  { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
+  { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
 
 const initials = (n) => n.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
@@ -79,9 +79,12 @@ export default function About() {
           {/* Origin image */}
           <img
             // src="/assets/images/our-story.png"
-            src="/assets/images/story.jpg"
+            src="/assets/images/real-story.jpg"
             alt="The Svastrino story — from 20 students in 2009 to today"
             loading="lazy"
+            decoding="async"
+            width={1400}
+            height={933}
             className="w-full rounded-2xl object-cover shadow-xl shadow-brand-navy/10"
           />
         </div>
@@ -159,6 +162,9 @@ export default function About() {
               src={FOUNDER_IMG}
               alt="Rohit M. Gala, founder of Svastrino"
               loading="lazy"
+              decoding="async"
+              width={675}
+              height={900}
               className="w-full rounded-2xl object-cover"
             />
             <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>

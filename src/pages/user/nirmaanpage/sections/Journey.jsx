@@ -72,24 +72,25 @@ export default function Journey() {
     <section id="journey" className="bg-white py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Your journey</p>
-          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Course Journey</p>
+          <h2 className="capitalize mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             Your Transformative Journey through the course
           </h2>
           <p className="mt-4 text-lg text-nirmaan-brown-soft">
-            A commitment of at most 15 minutes a day for the next 24 weeks — one weekly video,
-            then one short task on each of the next six days.
+            {/* A commitment of at most 15 minutes a day for the next 24 weeks — one weekly video, then one short task on each of the next six days. */}
+            A commitment of at most 15 minutes a day for the next 24 weeks
+            <br />(Combination of 1 weekly video + 1 daily task for the next 6 days of the week)
           </p>
         </div>
 
         <div className="mx-auto mt-12 max-w-3xl space-y-3">
-          {PHASES.map((p) => {
+          {PHASES.map((p, i) => {
             const isOpen = open === p.n
             const firstWeek = (p.n - 1) * 4 + 1
             return (
               <div
                 key={p.n}
-                className={`overflow-hidden rounded-xl border bg-white shadow-sm transition-colors ${
+                className={`rounded-xl border bg-white shadow-sm transition-colors ${
                   isOpen ? 'border-nirmaan-green/40' : 'border-nirmaan-sand'
                 }`}
               >
@@ -112,12 +113,12 @@ export default function Journey() {
                 </button>
 
                 {isOpen && (
-                  <ol
-                    start={firstWeek}
-                    className="list-decimal space-y-1.5 border-t border-nirmaan-sand px-6 py-4 pl-10 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
+                  <ul
+                    // start={firstWeek}
+                    className="space-y-1.5 border-t border-nirmaan-sand px-6 py-4 pl-10 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
                   >
-                    {p.weeks.map((w) => <li key={w} className="pl-1">{w}</li>)}
-                  </ol>
+                    {p.weeks.map((w, j) => <li key={w} className="pl-0"><span className={`text-nirmaan-green font-semibold`}>Week {p.n*4-4+j+1}</span>: {w}</li>)}
+                  </ul>
                 )}
               </div>
             )

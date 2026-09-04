@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, GraduationCap } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -112,16 +112,37 @@ export default function BookOnline() {
       </section>
 
       {/* Cross-sell to the Nirmaan skill-build course — kept in its own green
-          Nirmaan theme so it reads as a distinct, related offering. */}
-      <section className="bg-nirmaan-cream/50 py-14 md:py-16">
+          Nirmaan theme so it reads as a distinct, related offering. Mirrors the
+          look of the homepage NirmaanHighlight (cream card · brown "Skill Build"
+          pill · tree mark · green CTA) so the sub-brand feels consistent. */}
+      <section className="bg-white py-14 md:py-16">
         <div className="container">
-          <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-5 rounded-2xl border border-nirmaan-sand bg-white p-8 text-center sm:flex-row sm:text-left">
-            <p className="text-lg font-medium text-nirmaan-brown">
-              Want to build your mindset, confidence, and skills to succeed in life and career?
-            </p>
+          <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-nirmaan-cream p-8 text-center sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
+            {/* Soft brand glow in the corner for a touch of depth. */}
+            <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-nirmaan-green/10 blur-2xl" />
+
+            {/* Nirmaan mark */}
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-full bg-white shadow-inner ring-1 ring-nirmaan-sand md:size-24">
+              <img src="/nirmaan-tree.png" alt="" aria-hidden className="h-full w-full object-contain p-2" />
+            </div>
+
+            {/* Copy */}
+            <div className="relative flex-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-nirmaan-brown px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                <GraduationCap className="size-3.5" /> Skill Build
+              </span>
+              <p className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
+                Want to build your mindset, confidence, and skills to succeed in life and career?
+              </p>
+              <p className="mt-2 text-sm text-nirmaan-brown-soft">
+                Explore <span className="font-semibold text-nirmaan-green">Nirmaan — Soch Se Vikas</span>, our youth-focused life &amp; career development course.
+              </p>
+            </div>
+
+            {/* CTA */}
             <Link
               to="/skill-build/nirmaan"
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+              className="relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
             >
               Explore Nirmaan <ArrowRight className="size-4" />
             </Link>

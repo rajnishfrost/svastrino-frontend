@@ -117,6 +117,7 @@ function Lightbox({ images, index, onClose, onIndex }) {
         <img
           src={current.src}
           alt={current.alt}
+          decoding="async"
           draggable={false}
           onClick={(e) => e.stopPropagation()}
           onDoubleClick={() => (scale > 1 ? reset() : setScale(2))}
@@ -166,6 +167,7 @@ export default function MediaRecognition() {
                 src={paper.src}
                 alt={paper.alt}
                 loading="lazy"
+                decoding="async"
                 className="aspect-[4/5] w-full object-cover object-top"
               />
               {/* Hover veil + zoom hint */}

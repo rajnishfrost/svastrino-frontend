@@ -34,10 +34,10 @@ const PILLARS = [
 
 const SERVICES = [
   { need: 'For Immediate Career Counselling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
-  { need: 'Choosing career through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
-  { need: 'To Transform Completely through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
-  { need: 'To Build Skills and Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
-  { need: 'To verify your potential & career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
+  { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
+  { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
 
 export default function Ideology() {
