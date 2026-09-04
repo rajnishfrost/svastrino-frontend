@@ -426,6 +426,9 @@ function AnswersViewer({ session, onClose }) {
 
 // ---- Captions: upload SRT/VTT per language, delete ---------------------------
 const LANGS = [
+  // The course is spoken in Hinglish, so its own track is tagged hi-latn -
+  // romanized Hindi. That leaves plain 'hi' free for a real Devanagari track.
+  { v: 'hi-latn', label: 'Hinglish' },
   { v: 'hi', label: 'Hindi' }, { v: 'en', label: 'English' },
   { v: 'mr', label: 'Marathi' }, { v: 'gu', label: 'Gujarati' },
   { v: 'ta', label: 'Tamil' }, { v: 'te', label: 'Telugu' },
@@ -436,7 +439,7 @@ const langLabel = (v) => LANGS.find((l) => l.v === v)?.label || v.toUpperCase()
 function CaptionsEditor({ session, onClose, onChanged }) {
   const sid = sidOf(session)
   const [tracks, setTracks] = useState(session.captions || [])
-  const [lang, setLang] = useState('hi')
+  const [lang, setLang] = useState('hi-latn')
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')

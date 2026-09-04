@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Mail, MapPin, Phone } from 'lucide-react'
+import { CheckCircle2, Mail, MapPin, Phone } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
@@ -87,9 +87,49 @@ export default function Contact() {
             {/* Enquiry form (wider, left) */}
             <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5 md:p-8">
               {sent ? (
-                <p className="py-6 text-base font-semibold text-nirmaan-green">
-                  Thanks! We&rsquo;ll get back to you soon.
-                </p>
+                /* The same shape the other forms use when they are done: a mark,
+                   a heading, and what happens next — not one green line in an
+                   otherwise empty card. It names the address the confirmation
+                   went to, because that is the question someone asks next. */
+                <div className="flex flex-col items-center gap-4 px-4 py-12 text-center">
+                  <span className="flex size-16 items-center justify-center rounded-full bg-brand-rose">
+                    <CheckCircle2 className="size-8 text-brand-crimson" />
+                  </span>
+                  <div>
+                    <h2 className="font-display text-2xl font-extrabold text-brand-navy">
+                      Thank you &mdash; your message is with us
+                    </h2>
+                    <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-brand-slate">
+                      Someone from our team will get back to you shortly. We have sent a
+                      confirmation to{' '}
+                      <strong className="font-semibold text-brand-navy">{form.email}</strong>{' '}
+                      so you have it on record.
+                    </p>
+                  </div>
+                  <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row">
+                    <a
+                      href={`tel:${PHONE_HREF}`}
+                      className="inline-flex h-11 items-center justify-center rounded-lg bg-brand-crimson px-6 text-sm font-semibold text-white no-underline transition-colors hover:bg-brand-crimson-dark"
+                    >
+                      Call us instead
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // A fresh sheet, minus what the account already tells us.
+                        setForm({
+                          name: user?.name || '', email: user?.email || '',
+                          phone: user?.phone || '', message: '',
+                        })
+                        setErr('')
+                        setSent(false)
+                      }}
+                      className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-brand-crimson underline-offset-4 hover:underline"
+                    >
+                      Send another message
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <form onSubmit={onSubmit} className="space-y-5">
                   <div className="space-y-1.5">
