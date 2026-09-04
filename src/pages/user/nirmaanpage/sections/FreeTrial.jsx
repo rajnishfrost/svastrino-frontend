@@ -1,13 +1,93 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Check, Rocket } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
+import { TRIAL_INTENT, LEARN_PATH } from '../trialIntent.js'
+import { useEffect, useState } from 'react'
+import { api } from '../../../../api/client.js'
 
 /**
  * Nirmaan · the 1-week free trial — the step between watching a preview and
- * paying. A signed-out visitor registers first; a signed-in one starts it.
+ * paying. What a visitor gets is the real course for a week: the introduction
+ * and Week 1, the real videos, the real daily tasks, on the real schedule.
+ *
+ * The section answers differently to three different people, because "Register
+ * for 1 week Free Trial" is only true for one of them:
+ *
+ *   signed out          → register; the trial starts once they are in.
+ *   signed in, no trial → start it here and land straight in the course.
+ *   already learning    → nothing to sell; take them back to where they were.
+ *
+ * The signed-out path cannot simply pass a redirect along, because sign-up does
+ * not log anyone in — see trialIntent.js for how the wish survives that gap.
  */
+
 export default function FreeTrial() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+
+  // null = not asked yet (signed out, or still loading). Everything renders the
+  // signed-out wording until we know better, so the section never flickers
+  // through a state that is wrong for the person reading it.
+  const [standing, setStanding] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!user) { setStanding(null); return undefined }
+    let live = true
+    api('/user/learn/trial', { auth: 'user' })
+      .then((d) => { if (live) setStanding(d.state) })
+      .catch(() => { if (live) setStanding('none') }) // offer it; the server decides
+    return () => { live = false }
+  }, [user])
+
+  const startTrial = async () => {
+    setError(''); setBusy(true)
+    try {
+      await api('/user/learn/trial', { method: 'POST', auth: 'user' })
+      navigate(LEARN_PATH)
+    } catch (err) {
+      setError(err.message)
+      setBusy(false)
+    }
+  }
+
+  const goRegister = () => {
+    // Remembered rather than passed: see trialIntent.js.
+    try { localStorage.setItem(TRIAL_INTENT, '1') } catch { /* private mode — they can still start it from here */ }
+    navigate('/login?mode=signup', { state: { from: LEARN_PATH } })
+  }
+
+  const learning = standing === 'trial' || standing === 'owned'
+  const spent = standing === 'used' || standing === 'expired'
+
+  const copy = learning
+    ? {
+        head: 'Your course is waiting',
+        body: 'Pick up where you left off — the next video and today’s tasks are ready for you.',
+        cta: 'Continue your course →',
+        onClick: () => navigate(LEARN_PATH),
+      }
+    : spent
+      ? {
+          head: 'Your free week is over',
+          body: 'Everything you wrote is saved. Pick a package and you carry on from Week 2, with the other 23 weeks and all their tasks.',
+          cta: 'See the packages →',
+          onClick: () => navigate('/skill-build/nirmaan#packages'),
+        }
+      : user
+        ? {
+            head: 'Liked the Glimpse but Still Unsure?',
+            body: 'Start your 1-week free trial and experience the journey for yourself — the real videos, the real daily tasks, and the actual feel of the course.',
+            cta: busy ? 'Starting…' : 'Start your 1 week Free Trial',
+            onClick: startTrial,
+          }
+        : {
+            head: 'Liked the Glimpse but Still Unsure?',
+            body: 'Start your 1-week free trial and experience the journey for yourself — the real videos, the real daily tasks, and the actual feel of the course.',
+            cta: 'Register for 1 week Free Trial',
+            onClick: goRegister,
+          }
 
   return (
     <section id="free-trial" className="bg-nirmaan-cream/50 py-16 md:py-20">

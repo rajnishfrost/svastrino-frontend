@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { api } from '../../../api/client.js'
+import { api, apiUpload } from '../../../api/client.js'
 import { fetchUploadMode, uploadDirectToS3, uploadThroughServer, awaitTranscode } from '../../../api/videoUpload.js'
 import '../adminShared.css'
 
@@ -424,7 +424,7 @@ function AnswersViewer({ session, onClose }) {
   )
 }
 
-// ---- Captions: upload SRT/VTT per language, delete, AI-translate ------------
+// ---- Captions: upload SRT/VTT per language, delete ---------------------------
 const LANGS = [
   { v: 'hi', label: 'Hindi' }, { v: 'en', label: 'English' },
   { v: 'mr', label: 'Marathi' }, { v: 'gu', label: 'Gujarati' },
@@ -440,7 +440,6 @@ function CaptionsEditor({ session, onClose, onChanged }) {
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [tgt, setTgt] = useState('en') // translate target
 
   const upload = async () => {
     if (!file) { setError('Pick a .srt or .vtt file'); return }
@@ -464,17 +463,6 @@ function CaptionsEditor({ session, onClose, onChanged }) {
     } catch (e) { setError(e.message) } finally { setBusy(false) }
   }
 
-  const translate = async (fromLang) => {
-    if (tgt === fromLang) { setError('Pick a different target language'); return }
-    setBusy(true); setError('')
-    try {
-      const d = await api(`/admin/sessions/${sid}/captions/${fromLang}/translate`, {
-        method: 'POST', auth: 'admin', body: { targetLang: tgt, targetLabel: langLabel(tgt) },
-      })
-      setTracks(d.captions); onChanged?.()
-    } catch (e) { setError(e.message) } finally { setBusy(false) }
-  }
-
   return (
     <div>
       <h3 style={{ fontSize: 15, marginBottom: 8 }}>Captions — {session.title}</h3>
@@ -488,19 +476,12 @@ function CaptionsEditor({ session, onClose, onChanged }) {
       ) : (
         <div className="adm-table-wrap" style={{ marginBottom: 12 }}>
           <table className="adm-table">
-            <thead><tr><th>Language</th><th>File</th><th>Translate to →</th><th></th></tr></thead>
+            <thead><tr><th>Language</th><th>File</th><th></th></tr></thead>
             <tbody>
               {tracks.map((t) => (
                 <tr key={t.lang}>
                   <td>{t.label} <span className="adm-sub">({t.lang})</span></td>
                   <td><a className="adm-link" href={t.url} target="_blank" rel="noreferrer">view ↗</a></td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    <select className="adm-select" style={{ width: 120 }} value={tgt} onChange={(e) => setTgt(e.target.value)}>
-                      {LANGS.filter((l) => l.v !== t.lang).map((l) => <option key={l.v} value={l.v}>{l.label}</option>)}
-                    </select>
-                    <button className="adm-btn adm-btn--ghost adm-btn--sm" style={{ marginLeft: 6 }}
-                            disabled={busy} onClick={() => translate(t.lang)}>AI translate</button>
-                  </td>
                   <td><button className="adm-link" style={{ color: 'var(--color-danger)' }} disabled={busy} onClick={() => remove(t.lang)}>Remove</button></td>
                 </tr>
               ))}
