@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, GraduationCap } from 'lucide-react'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 import StudentJourney from './sections/StudentJourney.jsx'
 
@@ -13,8 +13,8 @@ import StudentJourney from './sections/StudentJourney.jsx'
 const UNCOVERS = ['Interests', 'Preferences', 'Strengths', 'Weaknesses', 'Personality', 'Abilities', 'Natural Potential']
 
 const HOW_IT_WORKS = [
-  { title: 'Take the test', text: 'Answer simple questions about your abilities, aptitude, personality, and behaviours.' },
-  { title: 'Verification', text: "Your responses get analysed across different parameters & style. There's no right or wrong here, so just be yourself." },
+  { title: 'Take the Test', text: 'Answer simple questions about your abilities, aptitude, personality, and behaviors.' },
+  { title: 'Verification', text: "Your responses get analysed across different parameters & style (There's no right or wrong here, so just be yourself)." },
   { title: 'Integrating', text: 'The algorithm identifies industries, jobs, and careers that match you & your needs.' },
   { title: 'Scientific Report', text: "You'll receive a clear report with insights and career recommendations, tailored just for you." },
 ]
@@ -37,7 +37,7 @@ const PARENTS = [
 const TESTS = [
   {
     name: 'Stream Selector',
-    who: 'Class 7th, 8th, or 9th (any board)',
+    who: '7th, 8th, or 9th Class (any board)',
     points: [
       'You want to understand your interests, strengths, and personality better',
       "You're trying to choose between Science, Commerce, or Humanities/Arts",
@@ -45,7 +45,7 @@ const TESTS = [
   },
   {
     name: 'Career Selector',
-    who: 'Class 10th, 11th, or 12th (any board or stream)',
+    who: '10th, 11th, or 12th Class (any board or stream)',
     points: [
       'You want to understand your interests, strengths, and personality better',
       "You're trying to find careers that truly match your interests, personality, and future plans",
@@ -67,12 +67,12 @@ export default function Psychometric() {
     <div>
       {/* ---- Section 1 · Intro banner ---- */}
       <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-16 md:py-24">
-        <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/10 blur-3xl" />
+        {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/10 blur-3xl" /> */}
         <div className="container relative text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
             Skill Build · Psychometric Testing
           </p>
-          <h1 className="mx-auto mt-4 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl">
+          <h1 className="capitalize mx-auto mt-4 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl">
             Not sure which stream or career actually fits you?
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-nirmaan-brown-soft">
@@ -85,13 +85,13 @@ export default function Psychometric() {
               href="#which-test"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
             >
-              Stream Selector <span className="text-sm font-normal text-white/80">(Class 7th–9th)</span>
+              Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
             </a>
             <a
               href="#which-test"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
             >
-              Career Selector <span className="text-sm font-normal opacity-80">(Class 10th–12th)</span>
+              Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
             </a>
           </div>
         </div>
@@ -197,12 +197,12 @@ export default function Psychometric() {
                   ))}
                 </ul>
                 <div className="mt-6 flex items-center justify-between border-t border-nirmaan-sand pt-4">
-                  <span className="font-display text-lg font-bold text-nirmaan-brown">₹900</span>
+                  <span className="font-display text-lg font-bold text-nirmaan-brown">₹900 Only</span>
                   <Link
                     to="/contact"
                     className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
                   >
-                    Select {t.name} <ArrowRight className="size-4" />
+                    {t.name} <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </div>
@@ -214,15 +214,34 @@ export default function Psychometric() {
       {/* ---- Section 7 · Package Plans (bundle with Nirmaan) ---- */}
       <section className="bg-nirmaan-cream/50 py-16 md:py-20">
         <div className="container">
-          <div className="mx-auto flex max-w-3xl flex-col items-center justify-between gap-4 rounded-2xl border border-nirmaan-sand bg-white p-8 text-center sm:flex-row sm:text-left">
-            <p className="text-lg font-medium text-nirmaan-brown">
-              Club it with <strong className="font-bold">Nirmaan</strong> &amp; get a{' '}
-              <strong className="font-bold text-nirmaan-green">flat 25% discount</strong> as our
-              investment in your development.
-            </p>
+          <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
+            {/* Branded accent ribbon + soft glow, matching the Nirmaan cards elsewhere. */}
+            <span aria-hidden className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-nirmaan-green via-nirmaan-green-light to-nirmaan-olive" />
+            <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-nirmaan-green/10 blur-2xl" />
+
+            {/* The 25% discount is the hook — give it a medallion. */}
+            <div className="relative flex size-24 shrink-0 flex-col items-center justify-center rounded-full bg-nirmaan-green text-white shadow-sm ring-4 ring-nirmaan-green/15">
+              <span className="font-display text-2xl font-extrabold leading-none">25%</span>
+              <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/90">off</span>
+            </div>
+
+            {/* Copy */}
+            <div className="relative flex-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-nirmaan-brown px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                <GraduationCap className="size-3.5" /> Bundle offer
+              </span>
+              <p className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
+                Club it with <span className="text-nirmaan-green">Nirmaan</span> &amp; get a flat 25% discount
+              </p>
+              {/* <p className="mt-2 text-sm text-nirmaan-brown-soft">
+                Our investment in your development — pair the test with the full Nirmaan course and save.
+              </p> */}
+            </div>
+
+            {/* CTA */}
             <Link
               to="/skill-build/nirmaan#packages"
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+              className="relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
             >
               View Nirmaan plans <ArrowRight className="size-4" />
             </Link>

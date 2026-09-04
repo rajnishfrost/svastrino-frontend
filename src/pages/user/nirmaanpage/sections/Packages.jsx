@@ -1,39 +1,47 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { api } from '../../../../api/client.js'
+import { ArrowRight, Check } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 
 /**
- * Pricing — fetched from the backend Skill-Build catalog
- * (GET /user/skill-build/nirmaan → { skillBuild, packages }). Prices, features
- * and copy all live in the DB (packages collection), not the client.
+ * Pricing — rendered from the hard-coded NIRMAAN_PACKAGE_CONTENT sheet below
+ * (no longer fetched from the backend catalog). Prices, inclusions, benefits
+ * and copy all live in this file.
  *
- * The catalog ships four packages that are really TWO axes:
+ * The sheet holds four entries that are really TWO axes:
  *   • plan            — Nirmaan  vs  Nirmaan + Psychometric Testing  (includesPsychometric)
- *   • payment struct. — Pay once vs  Pay as you go                    (paymentMode)
+ *   • payment struct. — Pay once vs  Pay as you use                  (paymentMode)
  * So instead of four cards we show a payment-mode TOGGLE and, under it, the two
- * plan cards for the selected mode. Everything is derived from the package
- * fields, so adding/removing a package or a mode in the DB just works.
+ * plan cards for the selected mode. Everything is derived from the entry fields.
  *
  * Two of the plans bundle the psychometric test, which is written for classes
  * 7 to 12 and sold to nobody outside that band. The card says the rule out loud
  * first, so nobody meets it for the first time with their card details typed in.
  */
-const inr = (paise) => '₹' + (Math.round(Number(paise) || 0) / 100).toLocaleString('en-IN')
 
 // The band the test is written and scored for (2026 plans sheet).
 const PSY_MIN_CLASS = 7
 const PSY_MAX_CLASS = 12
 
-// Human labels + display order for the payment-mode toggle. Any mode the DB
-// returns that isn't listed here still shows, appended after these.
-const MODE_LABELS = { 'one-time': 'Pay once', 'per-phase': 'Pay as you go' }
+// Display order for the payment-mode toggle; the visible labels come from each
+// entry's `modeLabel`. Any mode not listed here still shows, appended after.
 const MODE_ORDER = ['one-time', 'per-phase']
 
-// A steady card title per plan, regardless of the package's mode-specific name
-// (e.g. "Nirmaan (Pay as you Use)").
-const planName = (pkg) => (pkg.includesPsychometric ? 'Nirmaan + Psychometric Testing' : 'Nirmaan')
+// Pull a rupee amount out of a sheet cost string: "6,000" → 6000. A compound
+// like "1,000 x 6 = 6,000" resolves to the total (the number after the "=").
+const costValue = (s) => {
+  const str = String(s || '')
+  const tail = str.includes('=') ? str.slice(str.lastIndexOf('=') + 1) : str
+  return Number(tail.replace(/[^\d]/g, '')) || 0
+}
+
+// The discount a card advertises — how much less its support cost is than its
+// actual cost. null when they match (e.g. the pay-as-you-use total).
+const savingPercentOf = (pkg) => {
+  const actual = costValue(pkg.pricing.actualCost)
+  const support = costValue(pkg.pricing.supportCost)
+  return actual > 0 && support < actual ? Math.round(((actual - support) / actual) * 100) : null
+}
 
 /**
  * The class number hiding in a profile's free-text class, or null when there is
@@ -54,95 +62,208 @@ const BTN_PRIMARY =
   'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border-0 bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark'
 const BTN_OUTLINE =
   'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-5 text-sm font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white'
-const BTN_DISABLED =
-  'mt-6 inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-lg border border-nirmaan-sand bg-white px-5 text-sm font-semibold text-nirmaan-brown-soft'
+
+/**
+ * ⏳ PENDING REVIEW — hard-coded card content, transcribed from the 2026 plans
+ * comparison sheet (the 4-column screenshot: Nirmaan Course / Nirmaan +
+ * Psychometric Testing, each in Pay Once / Pay as you use).
+ *
+ * NOTHING BELOW IS WIRED INTO THE UI YET. Once the wording is approved, the
+ * cards will render from this constant instead of the API response.
+ *
+ * Shape mirrors the API's flat 4-package list, so it can drop straight into the
+ * existing two-axis toggle (paymentMode) with no other changes:
+ *   • includesPsychometric → which of the two plan cards
+ *   • paymentMode ('one-time' | 'per-phase') → which toggle position
+ *   • sku → the /checkout?pkg=… link, unchanged
+ *
+ * Notes for review:
+ *   – Costs are kept EXACTLY as written on the sheet (bare numbers, no ₹ symbol
+ *     or thousands re-formatting) so you can eyeball the transcription.
+ *   – The sheet splits content into "Inclusions" and "Benefits"; both lists are
+ *     kept separate here in case you want to render them as two groups.
+ *   – `cta` is NOT on the sheet — it's carried over from the current buttons.
+ *   – Toggle labels on the sheet read "Pay Once" / "Pay as you use" (the current
+ *     UI's per-phase label is "Pay as you go" — flag if you want it changed).
+ */
+const NIRMAAN_PACKAGE_CONTENT = [
+  // ── Nirmaan Course · Pay Once ─────────────────────────────────────────────
+  {
+    sku: 'nirmaan-full',
+    title: 'Nirmaan Course',
+    includesPsychometric: false,
+    paymentMode: 'one-time',
+    modeLabel: 'Pay Once',
+    inclusions: [
+      '24 life changing concepts',
+      'Structured personal skill development',
+      'Structured professional skill development',
+      'Tasks for daily development',
+      'Daily progress tracking',
+      'Daily reminders',
+      '6 months course content',
+      '1 year validity to complete the course',
+      'Flat 25% support for students paying the whole fees at once',
+    ],
+    benefits: [
+      'Concepts planned for students specifically',
+      'Mindset + Self-Development + Confidence + Action = Impact',
+      'Strong self awareness & self belief',
+      'Pay at once and get a 25% discount immediately',
+    ],
+    pricing: {
+      actualCost: '6,000',
+      investment: 'Flat 25% Discount',
+      supportCost: '4,500',
+    },
+    cta: 'Get Nirmaan', // not on the sheet — carried over from current UI
+  },
+
+  // ── Nirmaan Course · Pay as you use ───────────────────────────────────────
+  {
+    sku: 'nirmaan-payu',
+    title: 'Nirmaan Course',
+    includesPsychometric: false,
+    paymentMode: 'per-phase',
+    modeLabel: 'Pay As You Use',
+    inclusions: [
+      '24 life changing aspects of future life',
+      'Structured personal skill development',
+      'Structured professional skill development',
+      'Tasks for daily development',
+      'Daily progress tracking',
+      'Daily tasks reminders',
+      '6 months course content',
+      'Total course completion validity is 1 year',
+      'Video and tasks validity is 1 year from 1st enrollment',
+      'Each video can be played 5 times',
+      'After the 1-year course period ends, tasks can be viewed for 3 years',
+      'Spread the cost across 6 equal installments (Without Interest)',
+    ],
+    benefits: [
+      'Concepts planned for students specifically',
+      'Mindset + Self-Development + Confidence + Action = Impact',
+      'Strong self awareness & self belief',
+      'Resume where you left off by paying for the next phase of the course',
+    ],
+    pricing: {
+      actualCost: '6,000',
+      investment: 'Phase wise payment offer, No Interest at all',
+      supportCost: '1,000 x 6 = 6,000',
+    },
+    cta: 'Start with 1 phase', // not on the sheet — carried over from current UI
+  },
+
+  // ── Nirmaan + Psychometric Testing · Pay Once ─────────────────────────────
+  {
+    sku: 'nirmaan-psy-full',
+    title: 'Nirmaan + Psychometric Testing',
+    includesPsychometric: true,
+    paymentMode: 'one-time',
+    modeLabel: 'Pay Once',
+    inclusions: [
+      '24 life changing concepts',
+      'Structured personal skill development',
+      'Structured professional skill development',
+      'Tasks for daily development',
+      'Daily progress tracking',
+      'Daily reminders',
+      '6 months course content',
+      '1 year validity to complete the course',
+      "India's best psychometric testing",
+      'Guidance based on the RIASEC scale',
+      'Up to 40-page test report covering strengths, weakness, personality, interest, preferences and your top 5 suitable career options',
+      'Psychometric testing is available only for students in Classes 7 to 12',
+      'Flat 25% support for students paying the whole fees at once',
+    ],
+    benefits: [
+      'Concepts planned for students specifically',
+      'Mindset + Self-Development + Confidence + Action = Impact',
+      'Strong self awareness & self belief',
+      'Pay at once and get a 25% discount immediately',
+    ],
+    pricing: {
+      actualCost: '6,900',
+      investment: 'Flat 25% Discount',
+      supportCost: '5,175',
+    },
+    cta: 'Get Nirmaan + Test', // not on the sheet — carried over from current UI
+  },
+
+  // ── Nirmaan + Psychometric Testing · Pay as you use ───────────────────────
+  {
+    sku: 'nirmaan-psy-payu',
+    title: 'Nirmaan + Psychometric Testing',
+    includesPsychometric: true,
+    paymentMode: 'per-phase',
+    modeLabel: 'Pay As You Use',
+    inclusions: [
+      '24 life changing aspects of future life',
+      'Structured personal skill development',
+      'Structured professional skill development',
+      'Tasks for daily development',
+      'Daily progress tracking',
+      'Daily tasks reminders',
+      '6 months course content',
+      'Total course completion validity is 1 year',
+      'Video and tasks validity is 1 year from 1st enrollment',
+      'Each video can be played 5 times',
+      'After the 1-year course period ends, tasks can be viewed for 3 years',
+      "India's best psychometric testing",
+      'Guidance based on the RIASEC scale',
+      'Up to 40-page test report covering strengths, weakness, personality, interest, preferences and your top 5 suitable career options',
+      'Psychometric testing is available only for students in Classes 7 to 12',
+      'Spread the cost across 6 equal installments (Without Interest)',
+    ],
+    benefits: [
+      'Concepts planned for students specifically',
+      'Mindset + Self-Development + Confidence + Action = Impact',
+      'Strong self awareness & self belief',
+      'Resume where you left off by paying for the next phase of the course',
+    ],
+    pricing: {
+      actualCost: '6,900',
+      investment: 'Phase wise payment offer, No Interest at all',
+      supportCost: '1,150 x 6 = 6,900',
+    },
+    cta: 'Start with 1 phase', // not on the sheet — carried over from current UI
+  },
+]
 
 export default function Packages() {
   const { user } = useAuth()
-  const [packages, setPackages] = useState(null)
-  const [error, setError] = useState('')
-  const [upg, setUpg] = useState(null) // enrolled user's upgrade status (null = not enrolled / logged out)
   const [mode, setMode] = useState(null) // selected paymentMode (null → first available)
-
-  useEffect(() => {
-    api('/user/skill-build/nirmaan')
-      .then((d) => setPackages(d.packages || []))
-      .catch((e) => setError(e.message))
-    // Best-effort: if signed in and enrolled, tailor each card's CTA.
-    api('/user/payments/upgrade-status?product=nirmaan', { auth: 'user' })
-      .then((u) => setUpg(u?.hasEnrollment ? u : null))
-      .catch(() => setUpg(null))
-  }, [])
 
   // We only judge a visitor we actually know something about. An account with
   // no class on it gets the plain eligibility line and nothing else.
   const myClass = classNumber(user?.studentClass)
   const outOfBand = myClass != null && (myClass < PSY_MIN_CLASS || myClass > PSY_MAX_CLASS)
 
-  // ---- Derive the two axes from the package list ----
-  const all = packages || []
-  const presentModes = [...new Set(all.map((p) => p.paymentMode || 'one-time'))]
+  // ---- Derive the two axes from the sheet ----
+  const presentModes = [...new Set(NIRMAAN_PACKAGE_CONTENT.map((p) => p.paymentMode))]
   const modes = [
     ...MODE_ORDER.filter((m) => presentModes.includes(m)),
     ...presentModes.filter((m) => !MODE_ORDER.includes(m)),
   ]
   const activeMode = mode && modes.includes(mode) ? mode : modes[0] || null
+  const modeLabel = (m) => NIRMAAN_PACKAGE_CONTENT.find((p) => p.paymentMode === m)?.modeLabel || m
   // The saving % a mode advertises (the pay-once discount), for the toggle badge.
-  const savingFor = (m) => all.find((p) => (p.paymentMode || 'one-time') === m && p.savingPercent)?.savingPercent ?? null
+  const savingFor = (m) => {
+    const p = NIRMAAN_PACKAGE_CONTENT.find((x) => x.paymentMode === m)
+    return p ? savingPercentOf(p) : null
+  }
 
   // The plan cards for the selected mode, Nirmaan before Nirmaan + Test.
-  const shown = all
-    .filter((p) => (p.paymentMode || 'one-time') === activeMode)
+  const shown = NIRMAAN_PACKAGE_CONTENT
+    .filter((p) => p.paymentMode === activeMode)
     .sort((a, b) => Number(a.includesPsychometric) - Number(b.includesPsychometric))
 
   // Every plan with the test has a twin without it on the same payment terms.
   const twinWithoutTest = (pkg) =>
-    all.find((p) => !p.includesPsychometric && p.paymentMode === pkg.paymentMode)
+    NIRMAAN_PACKAGE_CONTENT.find((p) => !p.includesPsychometric && p.paymentMode === pkg.paymentMode)
 
-  // What the CTA should do for a given package, given the user's enrollment.
-  const ctaFor = (pkg) => {
-    if (!upg) return { kind: 'buy' }
-    if (upg.currentPackage.packageId === pkg.sku) {
-      const ph = upg.phase
-      if (ph?.paymentMode === 'per-phase') {
-        return ph.nextPhase
-          ? { kind: 'next-phase', phase: ph.nextPhase, total: ph.total, amount: ph.amount }
-          : { kind: 'all-paid' }
-      }
-      return { kind: 'current' }
-    }
-    if (upg.phase?.paymentMode === 'per-phase') return { kind: 'locked-payu' }
-    const opt = upg.options.find((o) => o.packageId === pkg.sku)
-    if (opt) return upg.withinWindow ? { kind: 'upgrade', amount: opt.amount } : { kind: 'closed' }
-    return { kind: 'owned' }
-  }
-
-  const renderCta = (pkg) => {
-    const cta = ctaFor(pkg)
-    if (cta.kind === 'current')
-      return <button className={BTN_DISABLED} disabled>Current plan</button>
-    if (cta.kind === 'next-phase')
-      return (
-        <Link to={`/checkout?pkg=${pkg.sku}`} className={BTN_PRIMARY}>
-          Pay for phase {cta.phase} of {cta.total} · {inr(cta.amount)}
-        </Link>
-      )
-    if (cta.kind === 'all-paid')
-      return <button className={BTN_DISABLED} disabled>All phases paid</button>
-    if (cta.kind === 'locked-payu')
-      return <button className={BTN_DISABLED} disabled>Continue your current plan</button>
-    if (cta.kind === 'upgrade')
-      return <Link to={`/checkout?pkg=${pkg.sku}`} className={BTN_PRIMARY}>Upgrade · pay {inr(cta.amount)}</Link>
-    if (cta.kind === 'closed')
-      return <button className={BTN_DISABLED} disabled>Upgrade window closed</button>
-    if (cta.kind === 'owned')
-      return <button className={BTN_DISABLED} disabled>Included in your plan</button>
-    return (
-      <Link to={`/checkout?pkg=${pkg.sku}`} className={pkg.featured ? BTN_PRIMARY : BTN_OUTLINE}>
-        {pkg.cta} <ArrowRight className="size-4" />
-      </Link>
-    )
-  }
+  // The pay-once, no-test plan is the highlighted "Best value" card.
+  const isFeatured = (pkg) => pkg.paymentMode === 'one-time' && !pkg.includesPsychometric
 
   return (
     <section id="packages" className="bg-nirmaan-cream/50 py-16 md:py-20">
@@ -156,9 +277,6 @@ export default function Packages() {
             Pick your plan, then choose how you’d like to pay.
           </p>
         </div>
-
-        {error && <p className="mt-8 text-center text-nirmaan-brown-soft">Couldn’t load packages. Please try again later.</p>}
-        {packages == null && !error && <p className="mt-8 text-center text-nirmaan-brown-soft">Loading packages…</p>}
 
         {/* Payment-mode toggle */}
         {modes.length > 1 && (
@@ -177,7 +295,7 @@ export default function Packages() {
                       active ? 'bg-nirmaan-green text-white' : 'bg-transparent text-nirmaan-brown-soft hover:text-nirmaan-brown'
                     }`}
                   >
-                    {MODE_LABELS[m] || m}
+                    {modeLabel(m)}
                     {save != null && (
                       <span
                         className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
@@ -196,73 +314,85 @@ export default function Packages() {
 
         {shown.length > 0 && (
           <div className="mx-auto mt-10 grid max-w-4xl items-start gap-6 sm:grid-cols-2">
-            {shown.map((pkg) => (
-              <div
-                key={pkg.id}
-                className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm ${
-                  pkg.featured ? 'border-nirmaan-green/40 ring-2 ring-nirmaan-green/15' : 'border-nirmaan-sand'
-                }`}
-              >
-                {pkg.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-nirmaan-green px-3 py-1 text-xs font-semibold text-white">
-                    {pkg.badge}
-                  </span>
-                )}
-                <div className="font-display text-lg font-bold text-nirmaan-brown">{planName(pkg)}</div>
-                <p className="mt-1 text-sm text-nirmaan-brown-soft">{pkg.tagline}</p>
-
-                <div className="mt-4">
-                  {pkg.earlyBird ? (
-                    <>
-                      <span className="font-display text-3xl font-extrabold text-nirmaan-brown">{pkg.earlyBird}</span>{' '}
-                      <span className="text-sm text-nirmaan-brown-soft">one-time</span>
-                      <div className="mt-1 text-sm text-nirmaan-brown-soft">
-                        <s>{pkg.price}</s>
-                        {pkg.savingPercent ? ` · save ${pkg.savingPercent}%` : ''}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-display text-3xl font-extrabold text-nirmaan-brown">{pkg.price}</span>{' '}
-                      <span className="text-sm text-nirmaan-brown-soft">{pkg.period}</span>
-                      {pkg.totalPrice && (
-                        <div className="mt-1 text-sm text-nirmaan-brown-soft">{pkg.phases} phases · {pkg.totalPrice} in total</div>
-                      )}
-                    </>
+            {shown.map((pkg) => {
+              const featured = isFeatured(pkg)
+              const saving = savingPercentOf(pkg)
+              return (
+                <div
+                  key={pkg.sku}
+                  className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm ${
+                    featured ? 'border-nirmaan-green/40 ring-2 ring-nirmaan-green/15' : 'border-nirmaan-sand'
+                  }`}
+                >
+                  {featured && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-nirmaan-green px-3 py-1 text-xs font-semibold text-white">
+                      Best value
+                    </span>
                   )}
-                </div>
+                  <div className="font-display text-lg font-bold text-nirmaan-brown">{pkg.title}</div>
+                  <p className="mt-1 text-sm text-nirmaan-brown-soft">{pkg.modeLabel}</p>
 
-                <ul className="mt-5 flex-1 space-y-2.5">
-                  {pkg.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-nirmaan-brown">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-nirmaan-green" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {pkg.includesPsychometric && (
-                  <div className="mt-5 rounded-lg border border-nirmaan-sand bg-nirmaan-cream/60 p-3 text-xs leading-relaxed text-nirmaan-brown-soft">
-                    <p>Psychometric testing is for students in classes {PSY_MIN_CLASS} to {PSY_MAX_CLASS}.</p>
-                    {outOfBand && (
-                      <p className="mt-2 font-medium text-nirmaan-brown">
-                        Your profile says class {myClass}. The test is not offered for that class, so
-                        this plan is not the one for you.{' '}
-                        {twinWithoutTest(pkg)
-                          ? `Take ${planName(twinWithoutTest(pkg))} instead — same course, same terms, without the test.`
-                          : 'Please pick the plan without the test.'}
-                      </p>
-                    )}
+                  {/* Pricing — the three cost lines from the sheet */}
+                  <div className="mt-4 rounded-lg border border-nirmaan-sand bg-nirmaan-cream/40 p-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-sm font-semibold text-nirmaan-brown">Support cost</span>
+                      <span className="font-display text-2xl font-extrabold text-nirmaan-brown">₹{pkg.pricing.supportCost}</span>
+                    </div>
+                    <div className="mt-2 flex items-baseline justify-between gap-3 text-sm text-nirmaan-brown-soft">
+                      <span>Actual cost</span>
+                      {saving != null ? <s>₹{pkg.pricing.actualCost}</s> : <span>₹{pkg.pricing.actualCost}</span>}
+                    </div>
+                    <p className="mt-2 text-sm font-semibold text-nirmaan-green">{pkg.pricing.investment}</p>
                   </div>
-                )}
 
-                {renderCta(pkg)}
-              </div>
-            ))}
+                  {/* Inclusions */}
+                  <ul className="mt-5 space-y-2.5">
+                    {pkg.inclusions.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-nirmaan-brown">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-nirmaan-green" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Benefits */}
+                  <div className="mt-5 flex-1 border-t border-nirmaan-sand pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-nirmaan-green">Benefits</p>
+                    <ul className="mt-3 space-y-2.5">
+                      {pkg.benefits.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-nirmaan-brown">
+                          <Check className="mt-0.5 size-4 shrink-0 text-nirmaan-green" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {pkg.includesPsychometric && (
+                    <div className="mt-5 rounded-lg border border-nirmaan-sand bg-nirmaan-cream/60 p-3 text-xs leading-relaxed text-nirmaan-brown-soft">
+                      <p>Psychometric testing is for students in classes {PSY_MIN_CLASS} to {PSY_MAX_CLASS}.</p>
+                      {outOfBand && (
+                        <p className="mt-2 font-medium text-nirmaan-brown">
+                          Your profile says class {myClass}. The test is not offered for that class, so
+                          this plan is not the one for you.{' '}
+                          {twinWithoutTest(pkg)
+                            ? `Take ${twinWithoutTest(pkg).title} instead — same course, same terms, without the test.`
+                            : 'Please pick the plan without the test.'}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <Link to={`/checkout?pkg=${pkg.sku}`} className={featured ? BTN_PRIMARY : BTN_OUTLINE}>
+                    {pkg.cta} <ArrowRight className="size-4" />
+                  </Link>
+                </div>
+              )
+            })}
           </div>
         )}
 
-        {all.some((p) => p.includesPsychometric) && (
+        {NIRMAAN_PACKAGE_CONTENT.some((p) => p.includesPsychometric) && (
           <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
             <h3 className="font-display text-xl font-bold text-nirmaan-brown">About the psychometric test</h3>
             <p className="mt-3 text-sm leading-relaxed text-nirmaan-brown-soft">
