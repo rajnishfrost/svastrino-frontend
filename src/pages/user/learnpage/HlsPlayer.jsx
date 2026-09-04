@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Hls from 'hls.js'
 import {
   IconPlay, IconPause, IconVolHigh, IconVolLow, IconVolMute,
-  IconGear, IconFullscreen, IconExitFullscreen, IconLock,
+  IconGear, IconFullscreen, IconExitFullscreen, IconLock, IconCaptions,
 } from './PlayerIcons.jsx'
 import './HlsPlayer.css'
 
@@ -13,8 +13,10 @@ import './HlsPlayer.css'
  *    speed, mute/volume, seek, time and fullscreen in one custom control bar.
  *  - Forward-seek is locked until the video has been watched to 90% once
  *    (`lockSeek`); after that, seeking is free. Notes-jumps use `videoRef`.
- *  - Best-effort protection: a moving e-mail watermark, and a pause+cover when
- *    the tab/window loses focus. (True screenshot/record blocking needs OS/DRM.)
+ *  - Best-effort protection: a moving e-mail watermark. Playback is NOT paused
+ *    when the tab loses focus - students listen while taking notes in another
+ *    window, and stopping the video there interrupts the lesson, not a copier.
+ *    (True screenshot/record blocking needs OS/DRM anyway.)
  *  - If the video cannot be loaded the player says so in plain English and
  *    offers Try again, instead of sitting silently at 0:00 / 0:00.
  *
@@ -38,12 +40,16 @@ export default function HlsPlayer({
   // whose file is missing would otherwise spend a student's paid play without
   // ever showing them a frame.
   onFirstPlay = null, playBlockedMessage = '',
+  // Seconds into the video the student was last time (0 = start). When it is
+  // worth offering, the overlay asks "Resume from m:ss" or start over.
+  startAt = 0,
 }) {
   const wrapRef = useRef(null)
   const hlsRef = useRef(null)
   const maxWatched = useRef(0) // furthest continuously-watched point (seek-lock)
   const idleTimer = useRef(null)
   const settingsRef = useRef(null) // gear button + popover, for click-outside
+  const capRef = useRef(null)      // subtitles button + popover, same
   const isHls = /\.m3u8($|\?)/i.test(src || '')
 
   const [levels, setLevels] = useState([]) // [{ i, height }]
@@ -51,6 +57,7 @@ export default function HlsPlayer({
   const [curHeight, setCurHeight] = useState(0) // the rung actually playing right now
   const [playing, setPlaying] = useState(false)
   const [blocked, setBlocked] = useState(false)
+  const [resumeOffer, setResumeOffer] = useState(0) // seconds to offer picking up from
   const countedRef = useRef(false)
   const [muted, setMuted] = useState(false)
   const [volume, setVolume] = useState(1)
@@ -59,13 +66,13 @@ export default function HlsPlayer({
   const [buffered, setBuffered] = useState(0)
   const [speed, setSpeed] = useState(1)
   const [menu, setMenu] = useState(false) // gear popover open
+  const [capMenu, setCapMenu] = useState(false) // subtitles popover open
   const [showBar, setShowBar] = useState(true)
   const [waiting, setWaiting] = useState(false)
   const [loading, setLoading] = useState(true) // fetching the file, nothing to show yet
   const [failed, setFailed] = useState(false) // the file could not be loaded at all
   const [attempt, setAttempt] = useState(0) // bumped by Try again to re-run the load
   const [full, setFull] = useState(false)
-  const [covered, setCovered] = useState(false) // focus-loss cover
   const [subtitle, setSubtitle] = useState('') // '' = off, else caption lang
 
   // Toggle native text-track modes so only the chosen language shows.
@@ -87,15 +94,27 @@ export default function HlsPlayer({
     }
   }, [captions, subtitle, videoRef])
 
-  // Close the settings popover on ANY click/tap outside it (not just the gear).
+  // Close either popover on ANY click/tap outside it (not just its own button).
   useEffect(() => {
-    if (!menu) return
+    if (!menu && !capMenu) return
     const onDown = (e) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target)) setMenu(false)
+      if (capRef.current && !capRef.current.contains(e.target)) setCapMenu(false)
     }
     document.addEventListener('pointerdown', onDown)
     return () => document.removeEventListener('pointerdown', onDown)
-  }, [menu])
+  }, [menu, capMenu])
+
+  // Offer to pick up where they left off - but not for the first few seconds
+  // (nothing to resume) nor the last few (they finished it). Re-evaluated
+  // whenever the position or the duration arrives, because the profile that
+  // carries the saved position can land AFTER the video's metadata does; and
+  // never once playback has begun.
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v || !duration || countedRef.current || !v.paused) return
+    setResumeOffer(startAt >= 5 && startAt < duration * 0.95 ? Math.floor(startAt) : 0)
+  }, [startAt, duration]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- hls.js attach ----
   useEffect(() => {
@@ -104,6 +123,7 @@ export default function HlsPlayer({
     setLevels([]); setLevel(-1)
     setFailed(false); setLoading(true)
     maxWatched.current = 0
+    setResumeOffer(0)
 
     // load() matters on a retry: without it the browser happily replays the
     // cached failure instead of asking for the file again.
@@ -130,21 +150,6 @@ export default function HlsPlayer({
     video.src = src // Safari native HLS
     video.load()
   }, [src, attempt]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ---- pause + cover when the tab/window loses focus (deterrent) ----
-  useEffect(() => {
-    const cover = () => { videoRef.current?.pause(); setCovered(true); setMenu(false) }
-    const uncover = () => setCovered(false)
-    const onVis = () => (document.hidden ? cover() : uncover())
-    document.addEventListener('visibilitychange', onVis)
-    window.addEventListener('blur', cover)
-    window.addEventListener('focus', uncover)
-    return () => {
-      document.removeEventListener('visibilitychange', onVis)
-      window.removeEventListener('blur', cover)
-      window.removeEventListener('focus', uncover)
-    }
-  }, [videoRef])
 
   useEffect(() => {
     const onFs = () => setFull(document.fullscreenElement === wrapRef.current)
@@ -190,8 +195,26 @@ export default function HlsPlayer({
   const togglePlay = () => {
     const v = videoRef.current
     if (!v) return
+    if (v.paused && resumeOffer) return resume() // a click anywhere means "go on"
     if (v.paused) v.play?.().catch(() => {})
     else v.pause()
+  }
+
+  // The two choices on the overlay when there is somewhere to resume from.
+  const resume = () => {
+    const v = videoRef.current
+    if (!v) return
+    // The first-watch seek lock clamps any jump past the furthest point
+    // watched. A resume IS that point, so move the marker before the jump.
+    maxWatched.current = Math.max(maxWatched.current, resumeOffer)
+    v.currentTime = resumeOffer
+    setResumeOffer(0)
+    v.play?.().catch(() => {})
+  }
+  const startOver = () => {
+    const v = videoRef.current
+    setResumeOffer(0)
+    if (v) { v.currentTime = 0; v.play?.().catch(() => {}) }
   }
   const toggleMute = () => { const v = videoRef.current; if (v) v.muted = !v.muted }
   const changeVol = (val) => { const v = videoRef.current; if (!v) return; v.volume = val; v.muted = val === 0 }
@@ -293,15 +316,26 @@ export default function HlsPlayer({
       {watermark && <div className="vp-watermark" aria-hidden>{watermark}</div>}
 
       {/* buffering spinner */}
-      {(waiting || loading) && !covered && !failed && <div className="vp-spinner" aria-hidden />}
+      {(waiting || loading) && !failed && <div className="vp-spinner" aria-hidden />}
 
       {/* Still fetching the file. Says so, so that a wait never looks like a
           breakage and a breakage never looks like a wait. */}
-      {loading && !failed && !covered && <p className="vp-loading">Loading the video…</p>}
+      {loading && !failed && <p className="vp-loading">Loading the video…</p>}
 
       {/* big center play when paused */}
-      {!playing && !covered && !failed && !loading && (
+      {!playing && !failed && !loading && !resumeOffer && (
         <button type="button" className="vp-bigplay" onClick={togglePlay} aria-label="Play"><IconPlay /></button>
+      )}
+
+      {/* Somewhere to pick up from. Both buttons: a student who wants to watch
+          it again from the top should not have to drag the bar back. */}
+      {!playing && !failed && !loading && resumeOffer > 0 && (
+        <div className="vp-resume" onClick={(e) => e.stopPropagation()}>
+          <button type="button" className="vp-resume-main" onClick={resume}>
+            <IconPlay /> Resume from {fmt(resumeOffer)}
+          </button>
+          <button type="button" className="vp-resume-alt" onClick={startOver}>Start from the beginning</button>
+        </div>
       )}
 
       {/* The video could not be loaded. Tell the student plainly whose problem
@@ -319,14 +353,6 @@ export default function HlsPlayer({
             <button type="button" className="vp-failed-btn" onClick={retry}>Try again</button>
             <Link className="vp-failed-link" to="/support/new">Tell us about it</Link>
           </div>
-        </div>
-      )}
-
-      {/* focus-loss cover */}
-      {covered && (
-        <div className="vp-cover">
-          <p>Paused</p>
-          <span>Return to this tab to keep watching</span>
         </div>
       )}
 
@@ -354,8 +380,34 @@ export default function HlsPlayer({
 
           <div className="vp-spacer" />
 
+          {/* Subtitles get their own control, left of the gear. Buried in the
+              settings menu they were a setting; out here they are what they
+              actually are - a thing a student turns on and off mid-video. */}
+          {captions.length > 0 && (
+            <div className="vp-settings" ref={capRef}>
+              <button type="button" className={`vp-btn${subtitle ? ' on' : ''}`}
+                      onClick={() => { setCapMenu((m) => !m); setMenu(false) }}
+                      aria-label="Subtitles" title="Subtitles">
+                <IconCaptions />
+              </button>
+              {capMenu && (
+                <div className="vp-menu vp-menu--cap">
+                  <div className="vp-menu-sec">
+                    <p className="vp-menu-title">Subtitles</p>
+                    <button className={`vp-menu-item${subtitle === '' ? ' on' : ''}`} onClick={() => chooseSubtitle('')}>Off</button>
+                    {captions.map((c) => (
+                      <button key={c.lang} className={`vp-menu-item${subtitle === c.lang ? ' on' : ''}`} onClick={() => chooseSubtitle(c.lang)}>
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="vp-settings" ref={settingsRef}>
-            <button type="button" className="vp-btn" onClick={() => setMenu((m) => !m)} aria-label="Settings"><IconGear /></button>
+            <button type="button" className="vp-btn" onClick={() => { setMenu((m) => !m); setCapMenu(false) }} aria-label="Settings"><IconGear /></button>
             {menu && (
               <div className="vp-menu">
                 {levels.length > 1 && (
@@ -379,17 +431,6 @@ export default function HlsPlayer({
                     </button>
                   ))}
                 </div>
-                {captions.length > 0 && (
-                  <div className="vp-menu-sec">
-                    <p className="vp-menu-title">Subtitles</p>
-                    <button className={`vp-menu-item${subtitle === '' ? ' on' : ''}`} onClick={() => chooseSubtitle('')}>Off</button>
-                    {captions.map((c) => (
-                      <button key={c.lang} className={`vp-menu-item${subtitle === c.lang ? ' on' : ''}`} onClick={() => chooseSubtitle(c.lang)}>
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
           </div>

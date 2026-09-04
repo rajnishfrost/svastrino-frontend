@@ -11,7 +11,7 @@ import { listDownloads, removeDownload, storageEstimate, fmtMB } from '../../../
 const fmtDate = (ms) =>
   ms ? new Date(ms).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : ''
 
-export default function Downloads() {
+export default function Downloads({ embedded = false }) {
   const [items, setItems] = useState([])
   const [usage, setUsage] = useState(null)
 
@@ -27,12 +27,15 @@ export default function Downloads() {
     refresh()
   }
 
-  return (
-    <section className="bg-white py-12 md:py-16">
-      <div className="container mx-auto max-w-4xl">
+  // Inside the dashboard the page is a panel: no band of its own, a smaller
+  // heading, and the dashboard's column sets the width.
+  const body = (
+    <>
         <header className="flex flex-col gap-3 border-b border-brand-navy/10 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">My downloads</h1>
+            {embedded
+              ? <h2 className="font-display text-xl font-bold text-brand-navy">My downloads</h2>
+              : <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">My downloads</h1>}
             <p className="mt-2 max-w-xl text-sm text-brand-slate">
               Saved inside this site — they play without internet and are never stored as a file on your device.
             </p>
@@ -51,7 +54,7 @@ export default function Downloads() {
               Open a session and tap <strong className="font-semibold text-brand-navy">“⤓ Save for offline”</strong> under the video to keep it for later.
             </p>
             <Link
-              to="/dashboard"
+              to="/dashboard/skill-build"
               className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-brand-crimson px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
             >
               Go to my courses
@@ -79,7 +82,10 @@ export default function Downloads() {
                 <div className="flex shrink-0 items-center gap-3">
                   {d.slug && (
                     <Link
-                      to={`/learn/${d.slug}`}
+                      // Name the session, or the course page opens whichever
+                      // week the schedule points at - which was how "Play" on
+                      // week 1 started week 2.
+                      to={`/learn/${d.slug}${d.sessionId ? `?session=${d.sessionId}` : ''}`}
                       className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-brand-crimson px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
                     >
                       <Play className="size-4 fill-current" /> Play
@@ -97,7 +103,8 @@ export default function Downloads() {
             ))}
           </ul>
         )}
-      </div>
-    </section>
+    </>
   )
+  if (embedded) return <div>{body}</div>
+  return <section className="bg-white py-12 md:py-16"><div className="container mx-auto max-w-4xl">{body}</div></section>
 }

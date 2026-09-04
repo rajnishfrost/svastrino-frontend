@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
+import { readResume, writeResume, readDraft, writeDraft, clearDraft, readPlays, writePlays } from '../../../utils/resume.js'
 import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } from '../../../utils/offlineVideo.js'
-import { enqueue, flush, pendingCount, onOutboxChange } from '../../../utils/outbox.js'
+import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import './Learn.css'
@@ -17,6 +18,14 @@ import './Learn.css'
  */
 const THEME_CLASS = { nirmaan: 'theme-nirmaan' }
 const inr = (paise) => '₹' + (Math.round(Number(paise) || 0) / 100).toLocaleString('en-IN')
+
+// A higher tier reads as what it ADDS to the one the student is on, so
+// "Nirmaan + Psychometric Testing" on top of "Nirmaan" is just the test. Any
+// plan not named that way is simply offered under its own name.
+const addOnName = (optionName, currentName) => {
+  const prefix = `${currentName} + `
+  return optionName.startsWith(prefix) ? optionName.slice(prefix.length) : optionName
+}
 
 // mm:ss clock for note timestamps.
 const fmtClock = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`
@@ -51,8 +60,6 @@ export default function Learn() {
   const [course, setCourse] = useState(null)
   const [report, setReport] = useState(null)
   const [upgrade, setUpgrade] = useState(null)
-  const [assess, setAssess] = useState(null) // psychometric test status
-  const [assessBusy, setAssessBusy] = useState(false)
   const [err, setErr] = useState(null)
   const [activeId, setActiveId] = useState(null)
   const [consent, setConsent] = useState(false)
@@ -69,6 +76,11 @@ export default function Learn() {
   const [syncNote, setSyncNote] = useState('')
   const videoRef = useRef(null)
   const fired = useRef(null) // session whose 90% mark already fired this mount
+  const [searchParams] = useSearchParams()
+  const wantedSession = searchParams.get('session') // e.g. the Play button on My downloads
+  const qRef = useRef(null)      // the questions panel, so the page can land on it
+  const landed = useRef(false)   // ...but only once per visit
+  const posRef = useRef({ local: -999, server: -999 }) // last saved video positions (s)
 
   const pickDefault = (sessions) => {
     const openIncomplete = sessions.find((s) => !s.videoLocked && !s.completed)
@@ -100,13 +112,32 @@ export default function Learn() {
     }
   }
 
+  /**
+   * Once a video's offline plays have all reached the server (or been rejected
+   * as over the limit), the server's count is the truth again. Without this the
+   * mirror would keep leading forever, and a queued play the outbox eventually
+   * abandons would cost the student one they never got to use.
+   */
+  const reconcilePlays = (c) => {
+    for (const s of c.sessions) {
+      if (!pendingWithPrefix(`play:${s.id}:`)) writePlays(user?.id, s.id, s.plays || 0)
+    }
+  }
+
   const load = async () => {
     try {
       const c = await api(`/user/learn/${slug}`, { auth: 'user' })
       setCourse(c)
-      setActiveId((prev) => prev || pickDefault(c.sessions))
+      setActiveId((prev) => {
+        if (prev) return prev
+        // A link that names a session - the Play button on My downloads - opens
+        // THAT video, not whichever one the schedule would have picked.
+        const wanted = wantedSession && c.sessions.find((x) => x.id === wantedSession && !x.videoLocked)
+        return wanted?.id || pickDefault(c.sessions)
+      })
       if (c.started) setReport(await api(`/user/learn/${slug}/report`, { auth: 'user' }))
       reconcileWatches(c) // fire-and-forget repair of any lost 90%-watch
+      reconcilePlays(c)
     } catch (e) {
       // A network failure has no `.status`. Offline we must NOT replace the page
       // with an error — the student may be here to watch a downloaded video.
@@ -117,7 +148,6 @@ export default function Learn() {
   }
 
   useEffect(() => { load() /* eslint-disable-next-line */ }, [slug])
-  useEffect(() => { setAnswerText('') }, [activeId])
 
   // Whether the student can still upgrade to a higher package. The window is
   // counted from the day they START the course, so this is re-read after Start.
@@ -128,39 +158,60 @@ export default function Learn() {
 
   useEffect(() => { loadUpgrade() /* eslint-disable-next-line */ }, [slug])
 
-  // Psychometric test (Mindler) — ships with every package, so every enrolled
-  // student sees this. Taken on Mindler's white-label site; an admin verifies
-  // and attaches the report, which flips it to 'completed'.
-  const loadAssess = () =>
-    api(`/user/assessment/${slug}`, { auth: 'user' }).then(setAssess).catch(() => {})
-
-  useEffect(() => { loadAssess() /* eslint-disable-next-line */ }, [slug])
-
-  const openTest = async () => {
-    setAssessBusy(true)
-    try {
-      const a = await api(`/user/assessment/${slug}/start`, { method: 'POST', auth: 'user' })
-      setAssess(a)
-      if (a.testUrl) window.open(a.testUrl, '_blank', 'noopener')
-    } catch (e) {
-      setErr({ message: e.message })
-    } finally {
-      setAssessBusy(false)
-    }
-  }
-
-  const markTestDone = async () => {
-    setAssessBusy(true)
-    try {
-      setAssess(await api(`/user/assessment/${slug}/submitted`, { method: 'POST', auth: 'user' }))
-    } catch (e) {
-      setErr({ message: e.message })
-    } finally {
-      setAssessBusy(false)
-    }
-  }
-
   const active = course?.sessions.find((s) => s.id === activeId)
+
+  const playLimit = course?.playLimit ?? 5
+  // What the limit is judged against: the server's count, or this browser's
+  // when it is ahead because plays made offline have not been replayed yet.
+  const playsUsed = (s) => (s ? Math.max(s.plays || 0, readPlays(user?.id, s.id)) : 0)
+  const playsLeftFor = (s) => Math.max(0, playLimit - playsUsed(s))
+  const withPlays = (c, sessionId, plays) => ({
+    ...c,
+    sessions: c.sessions.map((s) => (s.id === sessionId
+      ? { ...s, plays, playsLeft: Math.max(0, playLimit - plays), playLimitReached: plays >= playLimit }
+      : s)),
+  })
+
+  // The answer box keeps what the student typed. Leaving mid-answer - the tab
+  // closed, the phone locked, a refresh - used to lose it; now the draft comes
+  // back with the question, and goes only when the answer is sent.
+  const currentQid = active?.questions?.current?.id || null
+  useEffect(() => {
+    setAnswerText(currentQid ? readDraft(user?.id, currentQid) : '')
+  }, [currentQid, user?.id])
+  useEffect(() => {
+    if (!currentQid) return
+    const t = setTimeout(() => writeDraft(user?.id, currentQid, answerText), 400)
+    return () => clearTimeout(t)
+  }, [answerText, currentQid, user?.id])
+
+  // Land on the open task when there is one. The schedule already picks the
+  // week; this brings the question into view, so a student who left half-way
+  // through a task comes back to the task and not to the top of the page.
+  // Not when they came for a specific video (a ?session link) - then the
+  // video is the point.
+  useEffect(() => {
+    if (landed.current || wantedSession || !active?.videoDone || !active?.questions?.current) return
+    landed.current = true
+    const t = setTimeout(() => qRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200)
+    return () => clearTimeout(t)
+  }, [active, wantedSession])
+
+  // Where to offer resuming from: the later of what this browser remembers and
+  // what the server has (they may have got further on another device).
+  const startAt = useMemo(() => {
+    if (!active) return 0
+    const local = readResume(user?.id, active.id)
+    const serverAt = active.resumeUpdatedAt ? new Date(active.resumeUpdatedAt).getTime() : 0
+    if (local && local.at >= serverAt) return local.s
+    return active.resumeAt || 0
+  }, [active?.id, active?.resumeAt, active?.resumeUpdatedAt, user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { posRef.current = { local: -999, server: -999 } }, [activeId])
+
+  // The step up the banner talks about: the cheapest tier above the one they
+  // own (upgrade-status sorts them by price).
+  const nextUp = upgrade?.options?.[0] || null
 
   // Track connectivity; on reconnect, push any queued writes then refresh so the
   // page reflects the synced progress.
@@ -283,28 +334,88 @@ export default function Learn() {
     }
   }
   /**
-   * Count one play on the server. Returns false when the limit is spent so the
-   * player can stop the video. Offline we let it run — the count is only
-   * enforced where we can actually reach the server.
+   * Count one play. The five plays are five in TOTAL — a video watched from a
+   * download costs the same as one streamed — so a play made offline is burned
+   * here immediately and queued for the server, rather than being free because
+   * nobody could be told about it. Returns false when they are spent, so the
+   * player stops the video.
    */
   const countPlay = async (sessionId) => {
+    const session = course?.sessions.find((s) => s.id === sessionId)
+    if (playsUsed(session) >= playLimit) return false
+
+    // Spend it before the request: offline there is no reply to wait for, and
+    // the student is watching either way.
+    const spent = playsUsed(session) + 1
+    writePlays(user?.id, sessionId, spent)
+    setCourse((c) => c && withPlays(c, sessionId, spent))
+
+    const path = `/user/learn/sessions/${sessionId}/play`
     try {
-      const r = await api(`/user/learn/sessions/${sessionId}/play`, { method: 'POST', auth: 'user' })
-      setCourse((c) => c && ({
-        ...c,
-        sessions: c.sessions.map((s) =>
-          s.id === sessionId ? { ...s, plays: r.plays, playsLeft: r.playsLeft } : s),
-      }))
+      const r = await api(path, { method: 'POST', auth: 'user' })
+      writePlays(user?.id, sessionId, r.plays) // the server holds the real count
+      setCourse((c) => c && withPlays(c, sessionId, r.plays))
       return true
     } catch (e) {
       if (e.code === 'PLAY_LIMIT_REACHED' || e.code === 'PHASE_LOCKED') return false
-      return true // network trouble must not block a paying student
+      // Offline, or the server stumbled. Queue it under a key of its own —
+      // unlike a 90% watch, which only has to land once, EVERY play has to be
+      // counted, so these must not overwrite each other.
+      enqueue({ key: `play:${sessionId}:${Date.now()}`, path })
+      setPending(pendingCount())
+      return true
     }
   }
 
+  // ---- where the student is in the video ----
+  // Written to this browser every ~5s of playback and to the server every
+  // ~15s, and to both the moment the video is paused or the page is left. A
+  // video watched to the end is stored as 0: there is nothing left to resume.
+  const positionOf = (v) => {
+    if (!v?.duration) return null
+    if (v.ended || v.currentTime / v.duration >= 0.97) return 0 // finished → nothing to resume
+    const sec = Math.floor(v.currentTime)
+    // Under a few seconds there is nothing worth remembering - and the tick a
+    // browser fires at 0:00 while the video loads must not wipe a real one.
+    return sec >= 3 ? sec : null
+  }
+  const trackPosition = (v, flush = false) => {
+    const sec = positionOf(v)
+    if (sec == null || !active) return
+    const { local, server } = posRef.current
+    if (flush || sec === 0 || Math.abs(sec - local) >= 5) {
+      writeResume(user?.id, active.id, sec)
+      posRef.current.local = sec
+    }
+    if ((flush || sec === 0 || Math.abs(sec - server) >= 15) && navigator.onLine) {
+      posRef.current.server = sec
+      api(`/user/learn/sessions/${active.id}/position`,
+        { method: 'POST', auth: 'user', body: { seconds: sec }, keepalive: flush })
+        .catch(() => { posRef.current.server = -999 }) // try again on the next tick
+    }
+  }
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    const flush = () => trackPosition(v, true)
+    const onHide = () => { if (document.hidden) flush() }
+    v.addEventListener('pause', flush)
+    v.addEventListener('ended', flush)
+    document.addEventListener('visibilitychange', onHide)
+    window.addEventListener('pagehide', flush)
+    return () => {
+      v.removeEventListener('pause', flush)
+      v.removeEventListener('ended', flush)
+      document.removeEventListener('visibilitychange', onHide)
+      window.removeEventListener('pagehide', flush)
+    }
+  }, [activeId]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const onTimeUpdate = (e) => {
     const v = e.target
-    if (!active || active.videoDone) return
+    if (!active) return
+    trackPosition(v)
+    if (active.videoDone) return
     if (v.duration && v.currentTime / v.duration >= 0.9) onVideoDone()
   }
 
@@ -315,6 +426,7 @@ export default function Learn() {
     const body = { text: answerText.trim() }
     try {
       await api(path, { method: 'POST', auth: 'user', body })
+      clearDraft(user?.id, questionId)
       setAnswerText('')
       await load()
     } catch (e) {
@@ -322,6 +434,7 @@ export default function Learn() {
         // Offline — keep the answer and send it when the connection is back.
         enqueue({ key: `answer:${questionId}`, path, body })
         setPending(pendingCount())
+        clearDraft(user?.id, questionId)
         setAnswerText('')
         setSyncNote('Saved — this will sync when you\'re back online.')
       } else {
@@ -350,7 +463,7 @@ export default function Learn() {
         <div className="card learn-gate">
           <h1>You're offline</h1>
           <p>This course hasn't been saved for offline use. Reconnect to continue, or open a video you already saved.</p>
-          <Link to="/downloads" className="btn btn-primary">My downloads</Link>
+          <Link to="/dashboard/downloads" className="btn btn-primary">My downloads</Link>
         </div>
       </div></section>
     )
@@ -431,110 +544,42 @@ export default function Learn() {
             the server env and restarting.
           </div>
         )}
-        {upgrade?.canUpgrade && (
+        {upgrade?.canUpgrade && nextUp && (
           <div className="learn-upgrade" role="note">
             <div className="learn-upgrade-info">
               <p className="learn-upgrade-title">Upgrade your plan</p>
               <p className="learn-upgrade-sub">
-                You're on <strong>{upgrade.currentPackage.name}</strong>. The {inr(upgrade.totalPaid)} you've
-                already paid is adjusted —{' '}
+                You're on <strong>{upgrade.currentPackage.name}</strong>. Add{' '}
+                <strong>{addOnName(nextUp.name, upgrade.currentPackage.name)}</strong> for{' '}
+                <strong>{inr(nextUp.amount)}</strong>
+                {nextUp.listAmount > nextUp.amount && <> instead of {inr(nextUp.listAmount)}</>} —{' '}
                 {upgrade.courseStarted ? (
                   <>
+                    offer ends in{' '}
                     <strong>
-                      {upgrade.daysLeft} day{upgrade.daysLeft === 1 ? '' : 's'} left
-                    </strong>{' '}
-                    to upgrade (window closes after that).
+                      {upgrade.daysLeft} day{upgrade.daysLeft === 1 ? '' : 's'}
+                    </strong>.
                   </>
                 ) : (
-                  <>
-                    you get <strong>{upgrade.windowDays} days</strong> to upgrade once you start the course.
-                  </>
+                  <>offer runs <strong>{upgrade.windowDays} days</strong> from the day you start the course.</>
                 )}
               </p>
             </div>
             <div className="learn-upgrade-actions">
               {upgrade.options.map((o) => (
                 <Link key={o.packageId} to={`/checkout?pkg=${o.packageId}`} className="btn btn-primary learn-upgrade-btn">
-                  {o.name} · pay {inr(o.amount)}
+                  {upgrade.options.length === 1
+                    ? 'Book Now'
+                    : `Book Now · ${addOnName(o.name, upgrade.currentPackage.name)}`}
                 </Link>
               ))}
             </div>
           </div>
         )}
-        {assess && (
-          <div className={`learn-assess learn-assess--${assess.status}`}>
-            <div className="learn-assess-info">
-              <p className="learn-assess-title">
-                Psychometric test
-                <span className={`learn-assess-badge learn-assess-badge--${assess.status}`}>
-                  {{
-                    not_started: 'Not started',
-                    in_progress: 'In progress',
-                    submitted: 'Awaiting verification',
-                    completed: 'Completed',
-                  }[assess.status]}
-                </span>
-              </p>
-              <p className="learn-assess-sub">
-                {assess.status === 'completed'
-                  ? 'Your 34-page career report is ready — mapping your interest, aptitude, personality, EQ and orientation.'
-                  : assess.status === 'submitted'
-                    ? "Thanks! We're verifying your result with Mindler and will attach your report shortly."
-                    : 'Take your Mindler assessment (interest, aptitude, personality, EQ & orientation). It opens in a new tab — come back and tap “I’ve finished it” when you’re done.'}
-              </p>
-
-              {/* Sign-up steps + access code, until the report is done. */}
-              {assess.status !== 'completed' && assess.steps?.length > 0 && (
-                <ol className="learn-assess-steps">
-                  {assess.steps.map((s, i) => <li key={i}>{s}</li>)}
-                </ol>
-              )}
-              {assess.status !== 'completed' && assess.accessCode && (
-                <p className="learn-assess-access">
-                  Coupon code: <code>{assess.accessCode}</code>
-                  <button type="button" className="learn-assess-copy"
-                          onClick={() => navigator.clipboard?.writeText(assess.accessCode)}>Copy</button>
-                </p>
-              )}
-
-              {assess.status === 'completed' && assess.report?.topCareers?.length > 0 && (
-                <p className="learn-assess-code">
-                  Top careers: <strong>{assess.report.topCareers.join(', ')}</strong>
-                </p>
-              )}
-              {assess.status === 'completed' && assess.report?.summary && (
-                <p className="learn-assess-sub">{assess.report.summary}</p>
-              )}
-            </div>
-
-            <div className="learn-assess-actions">
-              {assess.status === 'completed' ? (
-                assess.report?.url && (
-                  <a href={assess.report.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                    View career report
-                  </a>
-                )
-              ) : (
-                <>
-                  <button type="button" className="btn btn-primary" onClick={openTest} disabled={assessBusy}>
-                    {assess.status === 'not_started' ? 'Take the test' : 'Reopen test'}
-                  </button>
-                  {assess.status !== 'submitted' && (
-                    <button type="button" className="btn btn-secondary" onClick={markTestDone} disabled={assessBusy}>
-                      I've finished it
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
         <header className="learn-head">
           <div>
             <p className="learn-eyebrow">Skill Build</p>
             <h1>{course.skillBuild.name}</h1>
-            <p className="learn-plan">{course.packageName} plan · {progress.total} sessions</p>
           </div>
           <div className="learn-progress">
             <div className="learn-progress-track"><span style={{ width: `${progress.percent}%` }} /></div>
@@ -597,18 +642,18 @@ export default function Learn() {
             {active && (
               <>
                 <HlsPlayer key={active.id} src={active.videoUrl} videoRef={videoRef}
-                           onTimeUpdate={onTimeUpdate}
+                           onTimeUpdate={onTimeUpdate} startAt={startAt}
                            lockSeek={!active.videoDone && !course.testMode}
                            watermark={user?.email || ''} captions={active.captions || []}
                            onFirstPlay={() => countPlay(active.id)}
-                           playBlockedMessage={`You have watched this video the maximum of ${course?.playLimit ?? 5} times.`} />
+                           playBlockedMessage={`You have watched this video the maximum of ${playLimit} times.`} />
                 {!active.videoDone && !course.testMode && (
                   <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
                 )}
                 {active.playsLeft != null && !course.testMode && (
                   <p className="learn-plays-note">
-                    {active.playsLeft > 0
-                      ? `${active.playsLeft} of ${course?.playLimit ?? 5} plays left for this video.`
+                    {playsLeftFor(active) > 0
+                      ? `${playsLeftFor(active)} of ${playLimit} plays left for this video.`
                       : 'You have used all the plays for this video.'}
                   </p>
                 )}
@@ -625,12 +670,21 @@ export default function Learn() {
                       <span className="learn-offline-ok">
                         ✓ Available offline{dlInfo.bytes ? ` · ${fmtMB(dlInfo.bytes)}` : ''}
                       </span>
+                      <Link to="/dashboard/downloads" className="learn-offline-link">My downloads</Link>
                       <button type="button" className="settings-link" onClick={dropOffline}>Remove</button>
                     </>
                   ) : (
                     <>
                       <button type="button" className="learn-offline-btn" onClick={openQualityPicker}>⤓ Save for offline</button>
-                      <span className="learn-offline-txt">Plays without internet, inside this site only — no file is saved to your device.</span>
+                      <span className="learn-offline-txt">
+                        Plays without internet, inside this site only — nothing is saved as a
+                        file on your device. It is kept in this browser's storage for this
+                        site, and you can find it any time under{' '}
+                        <Link to="/dashboard/downloads" className="learn-offline-link">My downloads</Link>
+                        {' '}(also in your profile menu). It stays on this browser only, so
+                        clearing this site's data — or opening the course on another device —
+                        means saving it again.
+                      </span>
                     </>
                   )}
                   {dlErr && <span className="learn-err">{dlErr}</span>}
@@ -671,13 +725,15 @@ export default function Learn() {
 
                 {/* Questions — right below the video */}
                 {syncNote && <p className="learn-syncnote">📥 {syncNote}</p>}
-                <QuestionsPanel
-                  session={active}
-                  answerText={answerText}
-                  setAnswerText={setAnswerText}
-                  submitting={submitting}
-                  onSubmit={submitAnswer}
-                />
+                <div ref={qRef}>
+                  <QuestionsPanel
+                    session={active}
+                    answerText={answerText}
+                    setAnswerText={setAnswerText}
+                    submitting={submitting}
+                    onSubmit={submitAnswer}
+                  />
+                </div>
               </>
             )}
           </main>
@@ -769,7 +825,6 @@ function ReportStrip({ report }) {
         <span>Day</span>
         <strong>{report.daysElapsed} of {report.targetDays}</strong>
       </div>
-      <div className="learn-report-item"><span>Sessions done</span><strong>{report.completedSessions}/{report.totalSessions}</strong></div>
       {done && (
         <div className="learn-report-item"><span>Completed in</span><strong>{report.actualDays} days</strong></div>
       )}

@@ -329,10 +329,10 @@ function ProfileMenu({ user, onNavigate }) {
         <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
           <GridIcon /> Dashboard
         </Link>
-        <Link to="/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+        <Link to="/dashboard/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
           <DownloadIcon /> Downloads
         </Link>
-        <Link to="/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+        <Link to="/dashboard/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
           <GearIcon /> Settings
         </Link>
         <button

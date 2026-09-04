@@ -44,10 +44,9 @@ import Login from './pages/user/loginpage/Login.jsx'
 import ResetPassword from './pages/user/loginpage/ResetPassword.jsx'
 import VerifyEmail from './pages/user/loginpage/VerifyEmail.jsx'
 import Dashboard from './pages/user/dashboardpage/Dashboard.jsx'
-import Settings from './pages/user/settingspage/Settings.jsx'
+import { LegacySettingsRedirect } from './pages/user/settingspage/Settings.jsx'
 import Checkout from './pages/user/checkoutpage/Checkout.jsx'
 import Learn from './pages/user/learnpage/Learn.jsx'
-import Downloads from './pages/user/downloadspage/Downloads.jsx'
 import Support from './pages/user/supportpage/Support.jsx'
 import NewTicket from './pages/user/supportpage/NewTicket.jsx'
 import TicketThread from './pages/user/supportpage/TicketThread.jsx'
@@ -114,22 +113,19 @@ function PublicSite() {
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          {/* The dashboard holds its sidebar tab in the path - services,
+              skill-build, downloads, settings - and Settings keeps its own
+              ?section=orders&order=ID inside that. */}
           <Route
-            path="/dashboard"
+            path="/dashboard/:tab?"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
+          {/* Old addresses, kept so bookmarks and links still land somewhere. */}
+          <Route path="/settings" element={<LegacySettingsRedirect />} />
           <Route
             path="/checkout"
             element={
@@ -146,14 +142,7 @@ function PublicSite() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/downloads"
-            element={
-              <ProtectedRoute>
-                <Downloads />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/downloads" element={<Navigate to="/dashboard/downloads" replace />} />
           {/* Help & support. "/support/new" is declared before "/support/:id"
               so the word "new" is never read as a ticket id. */}
           <Route

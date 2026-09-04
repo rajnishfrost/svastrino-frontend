@@ -286,3 +286,40 @@
   .vp-failed-body { font-size: 12.5px; }
   .vp-failed-head { font-size: 15px; }
 }
+
+/* Subtitles control. Shares the popover styling with the gear, but anchors to
+   its own button, and lights up while a language is showing so a student can
+   see at a glance that subtitles are on. */
+.vp-btn.on {
+  color: var(--nirmaan-green-light, #5a9a4d);
+}
+.vp-menu--cap {
+  min-width: 150px;
+}
+
+/* Resume overlay - shown instead of the big play button when there is
+   somewhere to pick up from. */
+.vp-resume {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  z-index: 3;
+}
+.vp-resume-main {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  border: none; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.66);
+  color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+}
+.vp-resume-main:hover { background: rgba(0, 0, 0, 0.82); }
+.vp-resume-main svg { width: 22px; height: 22px; }
+.vp-resume-alt {
+  background: none; border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px; text-decoration: underline; text-underline-offset: 2px;
+  cursor: pointer;
+}
+.vp-resume-alt:hover { color: #fff; }

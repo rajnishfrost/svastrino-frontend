@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { classOptionsFor } from '../../../utils/studentClass.js'
 import './Checkout.css'
 
 /**
@@ -34,7 +35,7 @@ function loadRazorpay() {
 export default function Checkout() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, refresh } = useAuth()
   const packageId = params.get('pkg') || ''
 
   const [step, setStep] = useState('summary') // 'summary' | 'paying' | 'success'
@@ -48,6 +49,17 @@ export default function Checkout() {
   // of showing a red line the customer has to hunt for.
   const [payFailed, setPayFailed] = useState('')
   const [receipt, setReceipt] = useState(null) // paid order (success step)
+
+  // A plan that bundles the psychometric test cannot be sold until the profile
+  // says which class the student is in, so the class is asked for here instead
+  // of bouncing them to Settings and back. `classBlock` holds the server's own
+  // words when it refuses a checkout over the class (missing, or outside the
+  // 7-12 band the test is scored for).
+  const [studentClass, setStudentClass] = useState('')
+  const [classBlock, setClassBlock] = useState('')
+  const [classBusy, setClassBusy] = useState(false)
+  const [classErr, setClassErr] = useState('')
+  const [classSaved, setClassSaved] = useState('')
 
   // Load the price quote (optionally with a coupon).
   const loadQuote = async (code) => {
@@ -71,6 +83,8 @@ export default function Checkout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageId])
 
+  useEffect(() => { setStudentClass(user?.studentClass || '') }, [user?.studentClass])
+
   const applyCoupon = async () => {
     if (!coupon.trim()) return
     setBusy(true)
@@ -82,6 +96,27 @@ export default function Checkout() {
     setBusy(true)
     await loadQuote()
     setBusy(false)
+  }
+
+  // Write the class to the account, then re-read the profile so the rest of the
+  // page (and the next Proceed) sees it. Saving does NOT start the payment: the
+  // student came here to press Pay themselves, and opening a payment widget off
+  // the back of a save would be a surprise.
+  const saveClass = async () => {
+    if (!studentClass) return
+    setClassBusy(true)
+    setClassErr('')
+    try {
+      await api('/user/profile', { method: 'PATCH', auth: 'user', body: { studentClass } })
+      await refresh()
+      setClassBlock('')
+      setLoadErr('')
+      setClassSaved(`Saved — you're recorded as ${studentClass}.`)
+    } catch (e) {
+      setClassErr(e.message)
+    } finally {
+      setClassBusy(false)
+    }
   }
 
   // Step 1 → create the order, then open Razorpay (or the mock panel in dev).
@@ -101,10 +136,25 @@ export default function Checkout() {
         await openRazorpay(res)
       }
     } catch (e) {
-      setLoadErr(e.message)
+      // These two the student can fix right here, so they belong on the class
+      // row, not in the generic error line under the button.
+      if (e.code === 'CLASS_REQUIRED' || e.code === 'PSYCHOMETRIC_CLASS_RANGE') {
+        setClassBlock(e.message)
+        setClassSaved('')
+      } else {
+        setLoadErr(e.message)
+      }
     } finally {
       setBusy(false)
     }
+  }
+
+  // Closing the checkout abandons the basket, so the order stops reading as a
+  // payment we are still waiting on. Best-effort and silent: nothing is waiting
+  // on the answer, the server only parks an order still sitting at 'created',
+  // and a payment already in flight can still land on it afterwards.
+  const abandon = (orderId) => {
+    api(`/user/payments/orders/${orderId}/cancel`, { method: 'POST', auth: 'user' }).catch(() => {})
   }
 
   // Confirm a paid order on our server, then show the receipt.
@@ -117,6 +167,7 @@ export default function Checkout() {
   // Open the hosted Razorpay checkout. Its handler returns payment id + signature,
   // which we verify server-side before granting access.
   const openRazorpay = async (res) => {
+    let refused = false // set by the gateway's own failure event, read on dismiss
     const ready = await loadRazorpay()
     if (!ready || !window.Razorpay) {
       setLoadErr('Could not load the payment gateway. Check your connection and try again.')
@@ -146,11 +197,14 @@ export default function Checkout() {
           setBusy(false)
         }
       },
-      modal: { ondismiss: () => setBusy(false) },
+      // A refusal closes the widget too, and that is the gateway's outcome to
+      // record, not an abandoned basket — so only a plain dismissal cancels.
+      modal: { ondismiss: () => { setBusy(false); if (!refused) abandon(res.orderId) } },
     })
     // A refused payment replaces the screen; closing the widget only stops the
     // spinner, because the customer chose to step away and may come straight back.
     rzp.on('payment.failed', (r) => {
+      refused = true
       setBusy(false)
       setPayFailed(r?.error?.description || '')
       // Razorpay keeps its own retry screen open on top of ours, so the customer
@@ -187,6 +241,10 @@ export default function Checkout() {
     return <section className="section"><div className="container checkout-wrap"><p>Loading…</p></div></section>
   }
 
+  // Ask before they press Pay when the plan bundles the test and the account
+  // has no class on it — and keep asking while the server is refusing over it.
+  const askClass = (quote.includesPsychometric && !user?.studentClass) || !!classBlock
+
   return (
     <section className="section">
       <div className="container checkout-wrap">
@@ -220,7 +278,7 @@ export default function Checkout() {
             </div>
             <div className="checkout-actions">
               <button className="btn btn-primary" onClick={() => navigate('/dashboard')}>Go to dashboard</button>
-              <Link to="/settings?tab=orders" className="btn btn-secondary">View orders</Link>
+              <Link to="/dashboard/settings?section=orders" className="btn btn-secondary">View orders</Link>
             </div>
             <p className="checkout-muted checkout-note">A receipt has been emailed to you.</p>
           </div>
@@ -235,7 +293,8 @@ export default function Checkout() {
               {quote.upgrade?.isUpgrade && (
                 <p className="checkout-upgrade-note">
                   Upgrading from <strong>{quote.upgrade.fromPackageName}</strong> — the{' '}
-                  {inr(quote.rupees.credit)} you already paid is credited below.
+                  {inr(quote.rupees.credit)} that plan costs is credited below, so you only pay the
+                  difference.
                 </p>
               )}
               <div className="checkout-lines">
@@ -248,7 +307,7 @@ export default function Checkout() {
                   <Line label={`Coupon ${quote.couponCode}`} value={'– ' + inr(quote.rupees.discount)} good />
                 )}
                 {quote.credit > 0 && (
-                  <Line label="Upgrade credit (already paid)" value={'– ' + inr(quote.rupees.credit)} good />
+                  <Line label="Upgrade credit (plan you own)" value={'– ' + inr(quote.rupees.credit)} good />
                 )}
                 <div className="checkout-total">
                   <span>Total</span><span>{inr(quote.rupees.amount)}</span>
@@ -280,7 +339,32 @@ export default function Checkout() {
                   <div className="checkout-payable">
                     <span>Payable now</span><strong>{inr(quote.rupees.amount)}</strong>
                   </div>
-                  <button className="btn btn-primary checkout-full" onClick={proceed} disabled={busy}>
+                  {askClass && (
+                    <div className="checkout-class">
+                      <p className="checkout-class-note">
+                        {classBlock ||
+                          'This plan includes a psychometric test, which is written for a particular school year. Tell us which class you are in and we will save it to your profile.'}
+                      </p>
+                      <div className="checkout-class-row">
+                        <label className="checkout-sr-only" htmlFor="checkout-class">Your class</label>
+                        <select id="checkout-class" className="checkout-input" value={studentClass}
+                                onChange={(e) => setStudentClass(e.target.value)} disabled={classBusy}>
+                          <option value="">Select your class</option>
+                          {classOptionsFor(user?.studentClass).map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                        </select>
+                        <button type="button" className="btn btn-secondary" onClick={saveClass}
+                                disabled={classBusy || !studentClass || studentClass === user?.studentClass}>
+                          {classBusy ? 'Saving…' : 'Save'}
+                        </button>
+                      </div>
+                      {classErr && <p className="checkout-error-sm">{classErr}</p>}
+                    </div>
+                  )}
+                  {classSaved && <p className="checkout-class-ok">{classSaved}</p>}
+                  <button className="btn btn-primary checkout-full" onClick={proceed}
+                          disabled={busy || (askClass && !user?.studentClass)}>
                     {busy ? 'Please wait…' : `Proceed to pay ${inr(quote.rupees.amount)}`}
                   </button>
                 </>
@@ -299,7 +383,9 @@ export default function Checkout() {
                   <button className="btn btn-primary checkout-full" onClick={pay} disabled={busy}>
                     {busy ? 'Processing…' : `Pay ${inr(quote.rupees.amount)}`}
                   </button>
-                  <button type="button" className="checkout-link checkout-back" onClick={() => setStep('summary')} disabled={busy}>
+                  <button type="button" className="checkout-link checkout-back"
+                          onClick={() => { abandon(order.orderId); setOrder(null); setStep('summary') }}
+                          disabled={busy}>
                     Cancel
                   </button>
                 </div>

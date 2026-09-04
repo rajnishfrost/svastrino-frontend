@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useSearchParams, Link, Navigate } from 'react-router-dom'
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
 import { api } from '../../../api/client.js'
@@ -8,15 +8,19 @@ import { validatePassword } from '../../../utils/password.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import AvatarEditor from './AvatarEditor.jsx'
 import { openInvoice } from '../../../utils/invoice.js'
+import { classOptionsFor } from '../../../utils/studentClass.js'
 import './Settings.css'
 
 /**
- * Account settings with URL-driven tabs:
- *   /settings                     → Account (profile + security)
- *   /settings?tab=orders          → Orders list
- *   /settings?tab=orders&order=ID → a single order's detail
- * Keeping the active tab / open order in the query string makes every view
- * deep-linkable, shareable and refresh-safe.
+ * Account settings with URL-driven sections. Lives inside the dashboard now
+ * (`embedded`), where the sidebar tab is the path and this page's own state
+ * stays in the query string:
+ *   /dashboard/settings                          → Account (profile + security)
+ *   /dashboard/settings?section=orders           → Orders list
+ *   /dashboard/settings?section=orders&order=ID  → a single order's detail
+ * Keeping the section / open order in the query string makes every view
+ * deep-linkable, shareable and refresh-safe. The old /settings?tab=… addresses
+ * are redirected here by LegacySettingsRedirect.
  */
 const TABS = [
   { key: 'account', label: 'Account' },
@@ -30,7 +34,6 @@ const TABS = [
  * of it when it decides whether a psychometric plan may be bought, which is why
  * 'Graduate' and 'Other' are allowed to sit in the list unnumbered.
  */
-const CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduate', 'Other']
 
 const inr = (n) => '₹' + Number(n).toLocaleString('en-IN')
 // Money with 2 decimals (paise → rupees), for exact invoice amounts.
@@ -47,25 +50,36 @@ const splitItem = (label = '') => {
 const fmtDate = (iso) =>
   iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
 
-export default function Settings() {
+/** /settings?tab=orders&order=ID (the old address) → its place in the dashboard. */
+export function LegacySettingsRedirect() {
+  const [searchParams] = useSearchParams()
+  const q = new URLSearchParams()
+  if (searchParams.get('tab')) q.set('section', searchParams.get('tab'))
+  if (searchParams.get('order')) q.set('order', searchParams.get('order'))
+  const qs = q.toString()
+  return <Navigate to={`/dashboard/settings${qs ? `?${qs}` : ''}`} replace />
+}
+
+export default function Settings({ embedded = false }) {
   const { user } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const rawTab = searchParams.get('tab') || 'account'
+  const rawTab = searchParams.get('section') || 'account'
   const tab = TABS.some((t) => t.key === rawTab) ? rawTab : 'account'
   const orderId = searchParams.get('order')
 
   if (!user) return null
 
-  const goTab = (key) => setSearchParams(key === 'account' ? {} : { tab: key })
-  const openOrder = (id) => setSearchParams({ tab: 'orders', order: id })
-  const backToOrders = () => setSearchParams({ tab: 'orders' })
+  const goTab = (key) => setSearchParams(key === 'account' ? {} : { section: key })
+  const openOrder = (id) => setSearchParams({ section: 'orders', order: id })
+  const backToOrders = () => setSearchParams({ section: 'orders' })
 
-  return (
-    <section className="section">
-      <div className="container settings-wrap">
+  // Inside the dashboard the page is a panel: no band of its own, and the
+  // dashboard already carries the h1.
+  const body = (
+    <>
         <header className="settings-head">
-          <h1>Settings</h1>
+          {embedded ? <h2>Settings</h2> : <h1>Settings</h1>}
           <p>Manage your account details, security and orders.</p>
         </header>
 
@@ -89,9 +103,10 @@ export default function Settings() {
         {tab === 'orders' && (
           <OrdersPanel orderId={orderId} onOpen={openOrder} onBack={backToOrders} />
         )}
-      </div>
-    </section>
+    </>
   )
+  if (embedded) return <div className="settings-wrap">{body}</div>
+  return <section className="section"><div className="container settings-wrap">{body}</div></section>
 }
 
 /* ---------- Account (profile + security, editable) ---------- */
@@ -203,11 +218,7 @@ function AccountPanel() {
   }
 
   const hasPhoto = user.avatar && avatarOk
-  // An account can arrive carrying wording we never offered — an organisation
-  // import, or an older list — so keep whatever is on it in the dropdown. Opening
-  // this row must never quietly rewrite a class the student did not touch.
-  const classOptions =
-    studentClass && !CLASSES.includes(studentClass) ? [studentClass, ...CLASSES] : CLASSES
+  const classOptions = classOptionsFor(studentClass)
 
   return (
     <div className="card settings-card">
@@ -399,7 +410,7 @@ function OrdersList({ orders, onOpen }) {
             <button type="button" className="order-row" onClick={() => onOpen(o.id)}>
               <span className="order-row-main">
                 <span className="order-row-item">{o.item}</span>
-                <span className="order-row-meta">{o.receiptNo || 'Pending'} · {fmtDate(o.createdAt)}</span>
+                <span className="order-row-meta">{o.receiptNo || 'No receipt'} · {fmtDate(o.createdAt)}</span>
               </span>
               <span className="order-row-side">
                 <span className="order-amount">{money(o.amount)}</span>
@@ -426,6 +437,9 @@ function OrderDetail({ order, onBack }) {
   }
 
   const { product, pkg } = splitItem(order.item)
+  // Money actually changed hands, so there is an invoice to hand over. A
+  // refunded order keeps one — it prints the refund on it.
+  const settled = order.status === 'paid' || order.status === 'refunded'
   const listPrice = order.listPrice ?? order.basePrice ?? order.amount
   const earlyBird = order.earlyBirdApplied && order.basePrice != null ? listPrice - order.basePrice : 0
 
@@ -455,16 +469,18 @@ function OrderDetail({ order, onBack }) {
           <BreakRow label={`Coupon ${order.couponCode || ''}`.trim()} value={'– ' + money(order.discount)} good />
         )}
         {order.isUpgrade && order.creditApplied > 0 && (
-          <BreakRow label="Upgrade credit (already paid)" value={'– ' + money(order.creditApplied)} good />
+          <BreakRow label="Upgrade credit (plan you own)" value={'– ' + money(order.creditApplied)} good />
         )}
-        <BreakRow label="Total paid" value={money(order.amount)} total />
+        <BreakRow label={settled ? 'Total paid' : 'Total'} value={money(order.amount)} total />
       </div>
 
-      <div className="order-detail-actions">
-        <button type="button" className="btn btn-primary" onClick={() => openInvoice(order, user)}>
-          Download invoice
-        </button>
-      </div>
+      {settled && (
+        <div className="order-detail-actions">
+          <button type="button" className="btn btn-primary" onClick={() => openInvoice(order, user)}>
+            Download invoice
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -483,6 +499,7 @@ function OrderStatus({ status }) {
     paid: ['ok', 'Paid'],
     refunded: ['muted', 'Refunded'],
     failed: ['warn', 'Failed'],
+    cancelled: ['muted', 'Cancelled'],
     created: ['warn', 'Pending'],
   }
   const [cls, label] = map[status] || ['muted', status]

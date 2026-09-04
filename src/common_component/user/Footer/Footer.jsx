@@ -53,8 +53,8 @@ function registerColumn(user) {
       ...(user
         ? [
             { label: 'Dashboard', to: '/dashboard' },
-            { label: 'My Downloads', to: '/downloads' },
-            { label: 'Settings', to: '/settings' },
+            { label: 'My Downloads', to: '/dashboard/downloads' },
+            { label: 'Settings', to: '/dashboard/settings' },
             // Signed-in only: support threads belong to an account, so there is
             // nothing for a signed-out visitor to see there. They have Contact
             // Us in the Company column instead.

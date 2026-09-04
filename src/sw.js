@@ -83,13 +83,21 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url)
   const sameOrigin = url.origin === self.location.origin
 
-  // 1) Media — live stream when online, downloaded copy when not.
+  // 1) Media. A DOWNLOADED copy is served first, online or not. It used to be
+  //    network-first, and that is why a saved video stalled part-way when the
+  //    connection dropped: online, hls.js had read the real playlist and was
+  //    on whichever quality it liked; when the network went, the segments it
+  //    wanted next were never the ones that had been saved. Playing the saved
+  //    copy from the start means the rung in use is always the rung on disk.
+  //    Anything not saved streams as before.
   if (sameOrigin && url.pathname.startsWith('/uploads/')) {
     event.respondWith((async () => {
+      const saved = await serveMedia(req)
+      if (saved) return saved
       try {
         return await fetch(req)
       } catch {
-        return (await serveMedia(req)) || Response.error()
+        return Response.error()
       }
     })())
     return
@@ -107,15 +115,12 @@ self.addEventListener('fetch', (event) => {
   //     anything else cross-origin (fonts, the Google sign-in script, the
   //     payment gateway) the original failure is re-thrown, so those behave
   //     exactly as they did before this worker existed.
+  //     Same rule as above: a saved copy comes first, whatever the network.
   if (!sameOrigin) {
     event.respondWith((async () => {
-      try {
-        return await fetch(req)
-      } catch (err) {
-        const hit = await serveMedia(req)
-        if (hit) return hit
-        throw err
-      }
+      const saved = await serveMedia(req)
+      if (saved) return saved
+      return fetch(req) // no copy - the original request, failures and all
     })())
     return
   }
