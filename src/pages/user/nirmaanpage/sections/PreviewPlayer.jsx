@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import {
   IconPlay, IconPause, IconVolHigh, IconVolMute,
-  IconFullscreen, IconExitFullscreen, IconLock,
+  IconFullscreen, IconExitFullscreen, IconLock, IconTheatre, IconTheatreExit,
 } from '../../learnpage/PlayerIcons.jsx'
 
 /**
@@ -24,12 +24,37 @@ import {
  * `startPosition` then makes the first segment fetched land inside the preview
  * window rather than at 0:00.
  */
+// Preflight is off on this page, so a bare <button> keeps the browser's grey
+// background and border. Every control here is an icon on top of video, so they
+// all need the same reset — and the centre play button covers the whole frame,
+// which is why forgetting it turned a paused video into a grey rectangle.
+const BARE = 'cursor-pointer border-0 bg-transparent p-0'
+
+/**
+ * The one clip currently playing, shared by every player on the page.
+ *
+ * Four of these sit side by side, and four soundtracks at once is not a choice
+ * anyone makes on purpose — pressing play on a second one means "play this
+ * instead". Module scope rather than context because there is nothing to
+ * configure and no tree to thread it through: whichever player starts, stops
+ * the last one.
+ */
+let nowPlaying = null
+
 const fmt = (s) => {
   if (!Number.isFinite(s) || s < 0) return '0:00'
   return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 }
 
-export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHref = '#free-trial' }) {
+export default function PreviewPlayer({
+  src, start, end, fullSeconds = 0, ctaHref = '#free-trial',
+  // Theatre mode is the SECTION's to arrange — it is a change of layout, not
+  // of this player. Passing a handler is what puts the button in the bar.
+  theatre = false, onTheatre = null,
+  // Fired the moment this clip actually starts. The section uses it to move
+  // whatever the visitor just pressed into the big slot.
+  onPlayStart = null,
+}) {
   const wrapRef = useRef(null)
   const videoRef = useRef(null)
   const barRef = useRef(null)
@@ -180,8 +205,18 @@ export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHre
         controlsList="nodownload"
         disablePictureInPicture
         onClick={togglePlay}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        onPlay={(e) => {
+          // Starting here means stopping there. Guarded on identity so a
+          // resume after buffering never pauses the video that is resuming.
+          if (nowPlaying && nowPlaying !== e.target) nowPlaying.pause()
+          nowPlaying = e.target
+          setPlaying(true)
+          onPlayStart?.()
+        }}
+        onPause={(e) => {
+          if (nowPlaying === e.target) nowPlaying = null
+          setPlaying(false)
+        }}
         onPlaying={() => { setLoading(false); setFailed(false) }}
         onWaiting={() => setLoading(true)}
         onLoadedMetadata={onLoadedMetadata}
@@ -196,7 +231,7 @@ export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHre
         <button
           type="button"
           onClick={togglePlay}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-nirmaan-brown text-white transition-colors hover:bg-nirmaan-brown-soft"
+          className={`${BARE} absolute inset-0 flex flex-col items-center justify-center gap-3 bg-nirmaan-brown text-white transition-colors hover:bg-nirmaan-brown-soft`}
           aria-label="Play the free preview"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/30">
@@ -216,7 +251,7 @@ export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHre
         <button
           type="button"
           onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center"
+          className={`absolute inset-0 flex items-center justify-center ${BARE}`}
           aria-label="Play"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/45 text-white">
@@ -229,28 +264,44 @@ export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHre
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-nirmaan-brown px-6 text-center">
           <p className="text-sm font-semibold text-white">We could not load this preview</p>
           <p className="text-xs text-white/75">This is a problem at our end, not with your connection.</p>
-          <button type="button" onClick={retry} className="mt-1 rounded-md bg-white/15 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/25">
+          <button type="button" onClick={retry} className={`${BARE} mt-1 rounded-md bg-white/15 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/25`}>
             Try again
           </button>
         </div>
       )}
 
-      {/* The whole point of the section: it stops exactly where they want more. */}
+      {/* The whole point of the section: it stops exactly where they want more.
+          The backdrop is opaque rather than a tint — this sits over an arbitrary
+          video frame, and a wash that reads over a dark rock face disappears
+          over a bright one. Nothing here should depend on what is behind it.
+
+          Laid out to survive the small card, which is barely 170px tall: one
+          line of reason instead of two sentences, tight gaps, and the lock as a
+          small mark rather than a badge. The same block then simply breathes
+          when the card goes wide. */}
       {locked && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-nirmaan-brown/92 px-5 text-center">
-          <span className="text-white/70"><IconLock className="h-6 w-6" /></span>
-          <p className="font-display text-base font-bold text-white">That’s the free preview</p>
-          <p className="text-xs leading-relaxed text-white/80">
-            {fmt(Math.max(0, total - end))} more in this lesson, and 23 more weeks after it.
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-nirmaan-brown/95 px-4 text-center backdrop-blur-sm">
+          <span className="text-white/60"><IconLock className="h-4 w-4" /></span>
+          <p className="font-display text-sm font-bold leading-tight text-white sm:text-base">
+            That’s the free preview
+          </p>
+          <p className="text-[11px] leading-snug text-white/75">
+            {fmt(Math.max(0, total - end))} more here · 23 more weeks
           </p>
           <a
             href={ctaHref}
-            className="mt-2 inline-flex h-9 items-center justify-center rounded-lg bg-nirmaan-green px-4 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+            className="mt-1.5 inline-flex h-9 items-center justify-center rounded-lg bg-nirmaan-green px-4 text-xs font-semibold text-white no-underline shadow-lg transition-colors hover:bg-nirmaan-green-dark sm:text-sm"
           >
             Start the free trial
           </a>
-          <button type="button" onClick={replay} className="mt-1 text-xs font-medium text-white/70 underline-offset-2 hover:underline">
-            Watch the preview again
+          {/* Preflight is off on this page, so a bare <button> keeps the
+              browser's grey box and border unless they are turned off here. */}
+          <button
+            type="button"
+            onClick={replay}
+            className={`${BARE} mt-1 text-[11px] font-medium text-white/60 underline underline-offset-2 hover:text-white`}
+          >
+            Watch again
           </button>
         </div>
       )}
@@ -278,15 +329,27 @@ export default function PreviewPlayer({ src, start, end, fullSeconds = 0, ctaHre
           </div>
 
           <div className="mt-1.5 flex items-center gap-2 text-white">
-            <button type="button" onClick={togglePlay} className="p-1 hover:opacity-80" aria-label={playing ? 'Pause' : 'Play'}>
+            <button type="button" onClick={togglePlay} className={`${BARE} p-1 text-white hover:opacity-80`} aria-label={playing ? 'Pause' : 'Play'}>
               {playing ? <IconPause className="h-4 w-4" /> : <IconPlay className="h-4 w-4" />}
             </button>
-            <button type="button" onClick={toggleMute} className="p-1 hover:opacity-80" aria-label={muted ? 'Unmute' : 'Mute'}>
+            <button type="button" onClick={toggleMute} className={`${BARE} p-1 text-white hover:opacity-80`} aria-label={muted ? 'Unmute' : 'Mute'}>
               <VolIcon className="h-4 w-4" />
             </button>
             <span className="text-xs tabular-nums text-white/85">{fmt(current)} / {fmt(total)}</span>
-            <span className="ml-auto text-[11px] font-semibold uppercase tracking-wide text-white/60">Free preview</span>
-            <button type="button" onClick={toggleFull} className="p-1 hover:opacity-80" aria-label={full ? 'Exit fullscreen' : 'Fullscreen'}>
+            <span className="ml-auto hidden text-[11px] font-semibold uppercase tracking-wide text-white/60 sm:inline">Free preview</span>
+            {onTheatre && (
+              <button
+                type="button"
+                onClick={onTheatre}
+                className={`${BARE} ml-auto p-1 text-white hover:opacity-80 sm:ml-0`}
+                title={theatre ? 'Back to the grid' : 'Watch it big, without leaving the page'}
+                aria-label={theatre ? 'Exit theatre mode' : 'Theatre mode'}
+                aria-pressed={theatre}
+              >
+                {theatre ? <IconTheatreExit className="h-4 w-4" /> : <IconTheatre className="h-4 w-4" />}
+              </button>
+            )}
+            <button type="button" onClick={toggleFull} className={`${BARE} p-1 text-white hover:opacity-80`} aria-label={full ? 'Exit fullscreen' : 'Fullscreen'}>
               {full ? <IconExitFullscreen className="h-4 w-4" /> : <IconFullscreen className="h-4 w-4" />}
             </button>
           </div>
