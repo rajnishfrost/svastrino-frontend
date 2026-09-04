@@ -74,8 +74,8 @@ export default function ServiceProgram() {
   const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
 
   const trustLine = program?.trustLine || (expertCall
-    ? 'Guided one to one by Svastrino mentors · no payment before you speak to us'
-    : 'Guided one to one by Svastrino mentors')
+    ? 'Guided one-to-one by Svastrino mentors · no payment before you speak to us'
+    : 'Guided one-to-one by Svastrino mentors')
 
   /**
    * The main call to action. For a self-serve program it navigates to the

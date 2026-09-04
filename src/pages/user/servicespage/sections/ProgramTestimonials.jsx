@@ -29,7 +29,7 @@ export default function ProgramTestimonials({ slug, programName }) {
   return (
     <Testimonials
       items={stories}
-      title={`What ${programName} clients say`}
+      title={`What clients say ${programName}`}
       bare
       compact
     />

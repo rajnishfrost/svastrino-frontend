@@ -305,3 +305,18 @@ export const PROGRAM_JOURNEYS = {
       'At Svastrino, we don’t just build careers; we build the person behind them. Every session, every task, and every reflection is designed to sharpen a mind that thinks bigger, acts bolder, and lives with unshakeable purpose.',
   },
 }
+
+export const PROGRAM_HERO = {
+  'bulls-eye': {
+    title: "Bull's Eye Program",
+    tagline: "Get a quick yet accurate solution for your Career Confusion. Trusted by 14k students over 17+ years."
+  },
+  'bloom': {
+    title: "Bloom Program",
+    tagline: "Cultivate a Visionary Mindset and Set Goals for a Bright Future. Trusted by 500+ students."
+  },
+  'breakthrough': {
+    title: "Breakthrough Program",
+    tagline: "Ace the art of self-discipline and evolve into an enterprising leader. Trusted by 290+ students."
+  }
+}

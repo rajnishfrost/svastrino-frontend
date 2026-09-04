@@ -11,10 +11,10 @@ export default function BookNowStrip({ program, bookHref }) {
     <section className="flex flex-col items-center justify-between gap-4 rounded-2xl bg-brand-gradient px-6 py-6 text-center sm:flex-row sm:text-left md:px-10">
       <div>
         <h2 className="font-display text-xl font-bold text-white">Ready to begin {program.name}?</h2>
-        <p className="mt-1 text-sm text-white/75">
+        {/* <p className="mt-1 text-sm text-white/75">
           {program.duration && <>{program.duration} · </>}
           {program.mode || 'Online'} · guided one to one
-        </p>
+        </p> */}
       </div>
       <Link
         to={bookHref}
