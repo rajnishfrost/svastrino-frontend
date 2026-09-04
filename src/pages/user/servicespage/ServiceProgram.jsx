@@ -5,6 +5,7 @@ import ConnectionState from '../../../common_component/user/ConnectionState/Conn
 import { useSeo, excerptFor } from '../../../seo/useSeo.js'
 import { seoFor } from '../../../seo/legacySeo.js'
 import { fetchProgram } from '../../../api/content.js'
+import { PROGRAM_HERO, PROGRAM_BENEFITS } from './journeyStages.js'
 import ProgramOverview from './sections/ProgramOverview.jsx'
 import ChooseIf from './sections/ChooseIf.jsx'
 import ProgramJourney from './sections/ProgramJourney.jsx'
@@ -74,7 +75,7 @@ export default function ServiceProgram() {
   const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
 
   const trustLine = program?.trustLine || (expertCall
-    ? 'Guided one-to-one by Svastrino mentors · no payment before you speak to us'
+    ? 'Guided one-to-one by Svastrino mentors · No payment before you speak to us'
     : 'Guided one-to-one by Svastrino mentors')
 
   /**
@@ -110,10 +111,12 @@ export default function ServiceProgram() {
 
   return (
     <>
+      {/* Hero title + tagline use the static PROGRAM_HERO copy (client's latest
+          wording); any program not listed there falls back to the API response. */}
       <PageHero
         eyebrow={program.category?.name || 'Services'}
-        title={program.name}
-        subtitle={program.tagline}
+        title={PROGRAM_HERO[slug]?.title || program.name}
+        subtitle={PROGRAM_HERO[slug]?.tagline || program.tagline}
         bgImage={HERO_IMG[slug]}
         illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
       >
@@ -125,10 +128,12 @@ export default function ServiceProgram() {
 
       <section className="bg-white py-16">
         <div className="container mx-auto max-w-4xl space-y-6">
-          <ProgramOverview program={program} />
-          <ChooseIf items={program.chooseIf} />
+          {/* <ProgramOverview program={program} /> */}
+          {/* <ChooseIf items={program.chooseIf} /> */}
           <ProgramJourney program={program} />
-          <Benefits items={program.benefits} programName={program.name} />
+          {/* Benefits come from the static PROGRAM_BENEFITS copy (client's latest
+              wording); any program not listed there falls back to the API. */}
+          <Benefits items={PROGRAM_BENEFITS[slug] || program.benefits} programName={program.name} />
           {expertCall
             ? <TalkToExpert program={program} />
             : <BookNowStrip program={program} bookHref={bookHref} />}

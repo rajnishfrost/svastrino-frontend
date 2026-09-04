@@ -98,7 +98,7 @@ export default function ProgramJourney({ program }) {
   return (
     <div>
       <div className="text-center">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy">Program journey</h2>
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy capitalize">Program journey</h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-brand-slate">
           What actually happens, stage by stage — from the moment you book to the follow-up after the
           last session.

@@ -320,3 +320,31 @@ export const PROGRAM_HERO = {
     tagline: "Ace the art of self-discipline and evolve into an enterprising leader. Trusted by 290+ students."
   }
 }
+
+export const PROGRAM_BENEFITS = {
+  'bulls-eye': [
+    "Professional career clarity before deadlines",
+    "Expert opinion on Streams, Courses, Colleges & Universities",
+    "A step-by-step personalised global career plans, starting from Grade 8",
+    "Resolve last-minute career confusion with expert advice",
+    "Understand our ideologies and see the impact of long-term mentoring",
+    "Experience full service from the comfort of your home"
+  ],
+  'bloom': [
+    "Discover your mindsets, patterns, routines & habits ",
+    "Explore things that make you, you",
+    "Explore your gifted potentials & talents",
+    "Create & Better your life & career vision ",
+    "Explore exciting & rewarding global careers just for you",
+    "Test options before you finalise your path",
+    "Leave with a 5-year plan that matches you & your needs ",
+  ],
+  'breakthrough': [
+    "Deep reflection & personalised mentoring for life & career growth ",
+    "Build your personality & presence around your vision and purpose ",
+    "Understand your patterns & solve meaningful personal or global problems ",
+    "Explore career & life paths that align with your goals ",
+    "Grow into the leader, entrepreneur, artist, innovator or athlete you aspire to be ",
+    "Create a personalised 5-year plan to turn your dreams into reality",
+  ]
+}
