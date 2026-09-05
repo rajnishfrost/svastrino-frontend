@@ -9,6 +9,7 @@ export default function AdminCoupons() {
   const [f, setF] = useState({ code: '', type: 'percent', value: '', maxRedemptions: '', expiresAt: '' })
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
+  const [toggling, setToggling] = useState(null) // id of the coupon being switched
 
   const load = () =>
     api('/admin/payments/coupons', { auth: 'admin' })
@@ -18,6 +19,31 @@ export default function AdminCoupons() {
   useEffect(() => { load() }, [])
 
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
+
+  /**
+   * Switch a coupon off (or back on). Not a delete: the code may already be on
+   * a flyer or in somebody's inbox, and past orders still refer to it. An
+   * inactive coupon is refused at checkout, and can be switched back any time.
+   */
+  const toggleActive = async (c) => {
+    if (c.active && !confirm(`Deactivate ${c.code}? Nobody will be able to use it at checkout until you switch it back on.`)) return
+    setToggling(c._id); setError(''); setMsg('')
+    try {
+      await api(`/admin/payments/coupons/${c._id}`, { method: 'PATCH', auth: 'admin', body: { active: !c.active } })
+      setMsg(`${c.code} ${c.active ? 'deactivated' : 'reactivated'}`)
+      await load()
+    } catch (e) { setError(e.message) } finally { setToggling(null) }
+  }
+
+  // What the code would actually do at checkout, not just the flag. An expired
+  // coupon or one that has run out is refused there, so saying "Active" here
+  // would be telling the admin something the checkout disagrees with.
+  const standing = (c) => {
+    if (!c.active) return { label: 'Inactive', tone: 'muted' }
+    if (c.expiresAt && new Date(c.expiresAt) < new Date()) return { label: 'Expired', tone: 'warn' }
+    if (c.maxRedemptions != null && c.redemptions >= c.maxRedemptions) return { label: 'Used up', tone: 'warn' }
+    return { label: 'Active', tone: 'ok' }
+  }
 
   const create = async (e) => {
     e.preventDefault()
@@ -70,7 +96,7 @@ export default function AdminCoupons() {
       ) : (
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
-            <thead><tr><th>Code</th><th>Discount</th><th>Used</th><th>Expires</th><th>Status</th></tr></thead>
+            <thead><tr><th>Code</th><th>Discount</th><th>Used</th><th>Expires</th><th>Status</th><th aria-label="Actions" /></tr></thead>
             <tbody>
               {coupons.map((c) => (
                 <tr key={c._id}>
@@ -78,7 +104,19 @@ export default function AdminCoupons() {
                   <td>{c.type === 'percent' ? `${c.value}%` : `₹${(c.value / 100).toLocaleString('en-IN')}`}</td>
                   <td className="adm-num">{c.redemptions}{c.maxRedemptions ? ` / ${c.maxRedemptions}` : ''}</td>
                   <td>{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString('en-IN') : '—'}</td>
-                  <td><span className={`adm-badge adm-badge--${c.active ? 'ok' : 'muted'}`}>{c.active ? 'Active' : 'Inactive'}</span></td>
+                  <td>
+                    {(() => { const st = standing(c); return <span className={`adm-badge adm-badge--${st.tone}`}>{st.label}</span> })()}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className={`adm-btn adm-btn--sm ${c.active ? 'adm-btn--danger' : 'adm-btn--ghost'}`}
+                      disabled={toggling === c._id}
+                      onClick={() => toggleActive(c)}
+                    >
+                      {toggling === c._id ? 'Saving…' : c.active ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
