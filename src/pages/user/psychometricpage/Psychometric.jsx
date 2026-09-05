@@ -65,40 +65,57 @@ export default function Psychometric() {
 
   return (
     <div>
-      {/* ---- Section 1 · Intro banner ---- */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-16 md:py-24">
-        {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/10 blur-3xl" /> */}
-        <div className="container relative text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
-            Skill Build · Psychometric Testing
-          </p>
-          <h1 className="capitalize mx-auto mt-4 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl">
-            Not sure which stream or career actually fits you?
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-nirmaan-brown-soft">
-            Take this simple test to uncover your natural potential in just 4 easy steps. It&rsquo;s
-            simple — find the best suitable streams or career options that match your interests &amp;
-            aspirations.
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#which-test"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
-            >
-              Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
-            </a>
-            <a
-              href="#which-test"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
-            >
-              Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
-            </a>
+      {/* ---- Section 1 · Intro banner ----
+          Two-column split (copy left, flat illustration right) to match the
+          hero treatment on the other public pages. Stacks and re-centres on
+          narrow screens. */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-14">
+        <div className="container relative grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
+          {/* Copy */}
+          <div className="text-center lg:text-left">
+            <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
+              Skill Build · Psychometric Testing
+            </p>
+            <h1 className="capitalize mx-auto mt-4 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl lg:mx-0">
+              Not sure which stream or career actually fits you?
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg text-nirmaan-brown-soft lg:mx-0">
+              Take this simple test to uncover your natural potential in just 4 easy steps. It&rsquo;s
+              simple — find the best suitable streams or career options that match your interests &amp;
+              aspirations.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:items-start">
+              <a
+                href="#which-test"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
+              >
+                Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
+              </a>
+              <a
+                href="#which-test"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
+              >
+                Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Flat illustration — sits on a soft, on-theme glow so it reads as a
+              designed scene rather than a pasted image. */}
+          <div className="relative flex justify-center lg:justify-end">
+            <span aria-hidden className="pointer-events-none absolute inset-0 m-auto size-72 rounded-full bg-nirmaan-green/10 blur-3xl sm:size-96" />
+            <img
+              src="/assets/images/psy-test-1-t.png"
+              alt=""
+              loading="eager"
+              className="relative w-full max-w-md h-auto lg:max-w-lg"
+            />
           </div>
         </div>
       </section>
 
       {/* ---- Section 2 · What is Psychometric Testing? ---- */}
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16 ">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             What is Psychometric Testing?
