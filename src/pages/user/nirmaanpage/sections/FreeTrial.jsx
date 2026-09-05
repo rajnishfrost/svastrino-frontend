@@ -148,8 +148,10 @@ export default function FreeTrial() {
       : spent ? ['Your answers are kept', 'Carry on from Week 2', 'Every package has all 24 weeks']
         : ['1 full week', 'Real videos & tasks', 'No payment now']
 
+  // Dark-green band (a second tonal anchor for the page) — the white trial card
+  // floats on it as a highlighted, "featured" call to action.
   return (
-    <section id="free-trial" className="bg-nirmaan-cream/50 py-16 md:py-20">
+    <section id="free-trial" className="bg-nirmaan-green py-16 md:py-20">
       <div className="container">
         <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm md:p-12">
           {/* Branded accent ribbon along the top edge. */}

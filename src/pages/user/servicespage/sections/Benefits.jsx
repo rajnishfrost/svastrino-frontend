@@ -7,7 +7,9 @@ import { Check } from 'lucide-react'
 export default function Benefits({ items = [], programName }) {
   if (!items.length) return null
   return (
-    <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+    <section className="bg-soft py-14 md:py-16">
+      <div className="container mx-auto max-w-4xl">
+        <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
       <h2 className="font-display text-xl font-bold text-brand-navy">Why choose the {programName}</h2>
       <ul className="mt-4 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
         {items.map((b, i) => (
@@ -55,6 +57,8 @@ export default function Benefits({ items = [], programName }) {
           Experience full service from the comfort of your home          
         </li> */}
       </ul>
-    </div>
+        </div>
+      </div>
+    </section>
   )
 }

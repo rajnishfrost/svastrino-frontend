@@ -117,7 +117,8 @@ export default function ProgramJourney({ program }) {
   const inclusions = data.inclusions || []
 
   return (
-    <div>
+    <section className="bg-white py-14 md:py-16">
+      <div className="container mx-auto max-w-4xl">
       {/* Heading */}
       <div className="text-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">The journey</p>
@@ -187,6 +188,7 @@ export default function ProgramJourney({ program }) {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </section>
   )
 }

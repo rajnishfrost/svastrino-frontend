@@ -26,12 +26,19 @@ export default function ProgramTestimonials({ slug, programName }) {
     return () => { cancelled = true }
   }, [slug])
 
+  // Nothing to show yet → render nothing, so no empty band appears.
+  if (!stories.length) return null
+
   return (
-    <Testimonials
-      items={stories}
-      title={`What clients say ${programName}`}
-      bare
-      compact
-    />
+    <section className="bg-white py-14 md:py-16">
+      <div className="container mx-auto max-w-4xl">
+        <Testimonials
+          items={stories}
+          title={`What clients say ${programName}`}
+          bare
+          compact
+        />
+      </div>
+    </section>
   )
 }

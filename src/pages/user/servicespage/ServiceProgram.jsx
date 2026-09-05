@@ -126,29 +126,32 @@ export default function ServiceProgram() {
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>
 
-      <section className="bg-white py-16">
-        <div className="container mx-auto max-w-4xl space-y-6">
-          {/* <ProgramOverview program={program} /> */}
-          {/* <ChooseIf items={program.chooseIf} /> */}
-          <ProgramJourney program={program} />
-          {/* Benefits come from the static PROGRAM_BENEFITS copy (client's latest
-              wording); any program not listed there falls back to the API. */}
-          <Benefits items={PROGRAM_BENEFITS[slug] || program.benefits} programName={program.name} />
-          {expertCall
-            ? <TalkToExpert program={program} />
-            : <BookNowStrip program={program} bookHref={bookHref} />}
-          <ProgramTestimonials slug={program.slug} programName={program.name} />
-          <ProgramFaqs faqs={program.faqs} />
+      {/* Each section below is its own full-width band with its own background
+          tone, so the page reads with rhythm (like the home page) rather than as
+          one long white column. Sections with no data (benefits / faqs / stories)
+          render nothing, so they never leave an empty coloured band. */}
+      {/* <ProgramOverview program={program} /> */}
+      {/* <ChooseIf items={program.chooseIf} /> */}
+      <ProgramJourney program={program} />
+      {/* Benefits come from the static PROGRAM_BENEFITS copy (client's latest
+          wording); any program not listed there falls back to the API. */}
+      <Benefits items={PROGRAM_BENEFITS[slug] || program.benefits} programName={program.name} />
+      {expertCall
+        ? <TalkToExpert program={program} />
+        : <BookNowStrip program={program} bookHref={bookHref} />}
+      <ProgramTestimonials slug={program.slug} programName={program.name} />
+      <ProgramFaqs faqs={program.faqs} />
 
-          {/* Closing CTA — for anyone who read all the way down. */}
-          <div className="rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
-            <h2 className="font-display text-2xl font-extrabold text-brand-navy">Ready to begin {program.name}?</h2>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Cta className="btn btn-accent btn-large" />
-              <Link to="/services/compare" className="btn btn-secondary btn-large">
-                Compare programs
-              </Link>
-            </div>
+      {/* Closing CTA — a dark navy band to finish on, for anyone who read all the
+          way down. */}
+      <section className="bg-brand-navy py-16 md:py-20">
+        <div className="container mx-auto max-w-3xl text-center">
+          <h2 className="font-display text-2xl font-extrabold text-white sm:text-3xl">Ready to begin {program.name}?</h2>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Cta className="btn btn-accent btn-large" />
+            <Link to="/services/compare" className="btn btn-large border-white/70 text-white hover:bg-white hover:text-brand-navy">
+              Compare programs
+            </Link>
           </div>
         </div>
       </section>
