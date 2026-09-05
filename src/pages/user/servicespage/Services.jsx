@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
-import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
-import { fetchPrograms, fetchTestimonials } from '../../../api/content.js'
+import { fetchTestimonials } from '../../../api/content.js'
+import { ALL_PROGRAMS } from './journeyStages.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
 import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
 import Testimonials from '../../../common_component/user/Testimonials/Testimonials.jsx'
@@ -20,21 +20,19 @@ import { ArrowRight } from 'lucide-react'
 const CATEGORY_ORDER = ['career-counselling', 'personalised-mentoring']
 
 export default function Services() {
-  const [programs, setPrograms] = useState([])
+  // Programs come from the static ALL_PROGRAMS list (the client-owned copy in
+  // journeyStages.js) instead of the backend, so this page no longer waits on —
+  // or can fail from — a programs fetch. Testimonials are still fetched.
+  const programs = ALL_PROGRAMS
   const [testimonials, setTestimonials] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true); setError(null)
-    Promise.all([fetchPrograms(), fetchTestimonials()])
-      .then(([p, t]) => { if (!cancelled) { setPrograms(p.programs); setTestimonials(t.testimonials) } })
-      .catch((err) => { if (!cancelled) setError(err) })
-      .finally(() => { if (!cancelled) setLoading(false) })
+    fetchTestimonials()
+      .then((t) => { if (!cancelled) setTestimonials(t.testimonials) })
+      .catch(() => {}) // optional — the testimonials section hides itself when empty
     return () => { cancelled = true }
-  }, [reloadKey])
+  }, [])
 
   // Group programs by their sub-category, in the defined order.
   const groups = CATEGORY_ORDER
@@ -62,12 +60,8 @@ export default function Services() {
 
       <section className="bg-white py-16">
         <div className="container">
-          {loading && <p className="text-center text-brand-slate">Loading services…</p>}
-          {error && !loading && <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="the services" />}
-
-          {!loading && !error && (
-            <div className="grid gap-6 md:grid-cols-3">
-              {groups.flatMap((g) => g.programs).map((p) => {
+          <div className="grid gap-6 md:grid-cols-3">
+            {groups.flatMap((g) => g.programs).map((p) => {
                 // Breakthrough is the flagship long-term program — give it a
                 // crimson frame + elevated, scaled-up card so it stands out
                 // (matches the featured treatment on the Book Online page).
@@ -90,12 +84,12 @@ export default function Services() {
                     <h3 className="mt-1 font-display text-lg font-bold text-brand-navy">{p.name}</h3>
                     {p.tagline && <p className="mt-1 text-sm font-semibold text-brand-crimson">{p.tagline}</p>}
                     <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.summary}</p>
-                    <ul className="mt-4 space-y-1 text-sm text-brand-slate">
+                    <ul className="mt-4 space-y-1 text-sm text-brand-slate flex-1">
                       {p.duration && <li><strong className="font-semibold text-brand-navy">Duration:</strong> {p.duration}</li>}
                       {p.sessions && <li><strong className="font-semibold text-brand-navy">Sessions:</strong> {p.sessions}</li>}
                       {p.mode && <li><strong className="font-semibold text-brand-navy">Mode:</strong> {p.mode}</li>}
                     </ul>
-                    <div className="mt-6 flex flex-1 flex-col justify-end gap-2.5 sm:flex-row">
+                    <div className="mt-6 flex flex-col justify-end gap-2.5 sm:flex-row">
                       <Link
                         to={`/services/${p.slug}`}
                         className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-brand-crimson px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
@@ -117,9 +111,8 @@ export default function Services() {
                     </div>
                   </article>
                 )
-              })}
-            </div>
-          )}
+            })}
+          </div>
         </div>
       </section>
 

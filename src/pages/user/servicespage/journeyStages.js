@@ -666,3 +666,57 @@ export const PROGRAM_JOURNEYS_2 = {
     ],
   },
 }
+
+export const ALL_PROGRAMS = [
+  {
+    "slug": "bulls-eye",
+    "name": "Bull's Eye Program",
+    "tagline": "Get a quick yet accurate solution for your 'Career Confusion'",
+    "trustLine": "",
+    "summary": "A focused 2-hour session designed to achieve clarity when you are stuck between options or facing a deadline — ending with concrete career recommendations and a plan.",
+    "duration": "10 days",
+    // "sessions": "3 sessions of 2 hours each — about 6 hours in total, plus the pre-work and the follow-up",
+    "sessions": "Pre-session 90 minutes + 2 sessions of ~ 2.5 hours each &, Follow-ups in between sessions",
+    "mode": "Online",
+    "category": {
+      "slug": "career-counselling",
+      "name": "Career Counselling"
+    },
+    "bookingSku": "mentoring-bullseye",
+    "buyMode": "self-serve"
+  },
+  {
+    "slug": "bloom",
+    "name": "Bloom Program",
+    "tagline": "Cultivate a visionary mindset and set goals for a bright future",
+    "trustLine": "",
+    "summary": "Svastrino's personality-based mentoring program. Over 45–60 days it moves from a full personality analysis through self-discovery tasks and vision building, ending in a personalised 5-year career plan.",
+    "duration": "45 - 60 days",
+    // "sessions": "5 sessions of 2 hours each plus weekly follow-ups — about 10 hours in total",
+    "sessions": "Pre-session 90 minutes + 3 sessions of ~2.5 hours each + Weekly follow-ups & support throughout the program",
+    "mode": "Online",
+    "category": {
+      "slug": "personalised-mentoring",
+      "name": "Personalised Mentoring"
+    },
+    "bookingSku": "mentoring-bloom",
+    "buyMode": "self-serve"
+  },
+  {
+    "slug": "breakthrough",
+    "name": "Breakthrough Program",
+    "tagline": "Ace the art of self-discipline and evolve into an 'Enterprising Leader'",
+    "trustLine": "",
+    "summary": "A two-year personalised mentoring program to craft future leaders and entrepreneurs — building mindset first, then attitude, with consistent mentoring and accountability across academics, professional skills, experience, extracurriculars and social work.",
+    // "duration": "2 years",
+    "duration": "2 Years with atleast 2,200 minutes",
+    "sessions": "Pre-session 90 minutes + 10 Sessions of 2 Hours each Or 20 Sessions of 1 Hour each (Depending on students’ speed, availability, and comfort) Spread over 2 years + regular follow-ups and support in between sessions",
+    "mode": "Online",
+    "category": {
+      "slug": "personalised-mentoring",
+      "name": "Personalised Mentoring"
+    },
+    "bookingSku": "mentoring-breakthrough",
+    "buyMode": "expert-call"
+  }
+]

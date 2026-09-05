@@ -266,7 +266,7 @@ export default function Packages() {
   const isFeatured = (pkg) => pkg.paymentMode === 'one-time' && !pkg.includesPsychometric
 
   return (
-    <section id="packages" className="bg-nirmaan-cream/50 py-16 md:py-20">
+    <section id="packages" className="bg-nirmaan-cream py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Packages</p>

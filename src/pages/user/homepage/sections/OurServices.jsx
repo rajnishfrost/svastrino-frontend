@@ -52,6 +52,9 @@ const SERVICES = [
     cta: 'Explore Breakthrough',
     to: '/services/breakthrough',
     accent: 'navy',
+    // Flagship 2-year programme — rendered as a filled navy card with a gold
+    // action so it dominates the row instead of blending into the light section.
+    featured: true,
   },
   {
     need: 'I want to build my Skills and Myself',
@@ -119,16 +122,38 @@ const ACCENTS = {
   },
 }
 
+// The flagship Breakthrough card: a filled navy card with crimson accents + a
+// crimson action, so it stands out from the two white cards beside it (and from
+// the light section) instead of blending in. Crimson (the brand accent) is used
+// as the FILL for the chip, emblem tile, bullet dots and button, with white on
+// top — crimson-on-navy text would be too dim, so the colour goes behind the
+// white foreground for legibility on the dark card.
+const FEATURED = {
+  card: 'border-white/10 bg-brand-gradient shadow-xl shadow-brand-navy/30 ring-1 ring-white/10 hover:shadow-2xl hover:shadow-brand-navy/40',
+  text: 'text-white',
+  chip: 'bg-brand-crimson',
+  bullet: 'bg-brand-crimson',
+  btn: 'bg-brand-crimson text-white hover:bg-brand-crimson-dark',
+  heading: 'text-white',
+  who: 'text-white/70',
+}
+
 function ServiceCard({ s }) {
   const c = ACCENTS[s.accent] || ACCENTS.crimson
-  const accentText = c.text
-  const chipBg = c.chip
-  const bulletBg = c.bullet
-  const btn = c.btn
-  // Heading + bullet-label colour: navy for Svastrino cards, brown for Nirmaan.
-  const bodyText = c.body || 'text-brand-navy'
+  const f = s.featured ? FEATURED : null
+  const accentText = f ? f.text : c.text
+  const chipBg = f ? f.chip : c.chip
+  const bulletBg = f ? f.bullet : c.bullet
+  const btn = f ? f.btn : c.btn
+  // Heading + bullet-label colour: white on the featured navy card; navy for
+  // the other Svastrino cards, brown for Nirmaan.
+  const bodyText = f ? f.heading : (c.body || 'text-brand-navy')
+  const whoText = f ? f.who : 'text-brand-slate'
+  const cardChrome = f
+    ? f.card
+    : 'border-brand-navy/5 bg-white shadow-sm hover:shadow-xl hover:shadow-brand-navy/5'
   return (
-    <div className="relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
+    <div className={`relative flex flex-col rounded-xl border p-6 transition-all hover:-translate-y-1.5 ${cardChrome}`}>
       <span className={`absolute right-4 top-4 rounded-full px-2.5 py-0.5 text-xs font-semibold ${chipBg} ${accentText}`}>
         {s.duration}
       </span>
@@ -138,7 +163,7 @@ function ServiceCard({ s }) {
       </span>
 
       <h3 className={`mt-4 pr-16 font-display text-base font-bold leading-snug ${bodyText}`}>{s.need}</h3>
-      <p className="mt-2 text-sm text-brand-slate">{s.who}</p>
+      <p className={`mt-2 text-sm ${whoText}`}>{s.who}</p>
 
       <ul className="mt-5 flex-1 space-y-2.5">
         {s.points.map((pt) => (
