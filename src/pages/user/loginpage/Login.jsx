@@ -7,6 +7,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { useGoogleAuth } from '../../../hooks/useGoogleAuth.js'
 import { validatePassword } from '../../../utils/password.js'
 import { TRIAL_INTENT, LEARN_PATH } from '../nirmaanpage/trialIntent.js'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import './Login.css'
 
@@ -64,7 +65,18 @@ export default function Login() {
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const { ready: googleReady, configured: googleConfigured, signIn: googleSignIn } = useGoogleAuth()
-  const from = location.state?.from || '/dashboard'
+  // Where to land afterwards. Somewhere specific if they were sent here from
+  // it — /checkout?pkg=…, a course — otherwise the home page rather than the
+  // dashboard: signing in is not the same as asking to see your dashboard, and
+  // /dashboard immediately redirects on to its default tab, so a plain login
+  // used to end on /dashboard/skill-build without anyone having asked for it.
+  const from = location.state?.from || '/'
+
+  // The flag the Nirmaan page leaves behind when a visitor pressed "Start the
+  // free trial" before they had an account.
+  const trialIntent = () => {
+    try { return localStorage.getItem(TRIAL_INTENT) } catch { return null } // private mode
+  }
 
   /**
    * Someone who came here to start the Nirmaan free trial.
@@ -82,9 +94,12 @@ export default function Login() {
   const landAfterLogin = async (user) => {
     if (user?.panel) return navigate('/admin', { replace: true })
 
-    let wanted = null
-    try { wanted = localStorage.getItem(TRIAL_INTENT) } catch { /* private mode */ }
-    if (!wanted) return navigate(from, { replace: true })
+    // A panel-only account cannot open anything inside the portal, so honouring
+    // a `from` that points there — or starting a trial — would only walk them
+    // into "no access with this account". The public site is what they have.
+    if (!hasPortalAccess(user)) return navigate('/', { replace: true })
+
+    if (!trialIntent()) return navigate(from, { replace: true })
 
     try { localStorage.removeItem(TRIAL_INTENT) } catch { /* already gone */ }
     try { await api('/user/learn/trial', { method: 'POST', auth: 'user' }) } catch { /* see note above */ }
@@ -235,6 +250,16 @@ export default function Login() {
         body: { accessToken },
       })
       login(data.token, data.user)
+      // Signing up with Google skips the verification link, and with it the
+      // free week that page offers. So a student who has just finished signing
+      // up is handed to /welcome to be offered it — a page outside GuestRoute,
+      // which would otherwise bounce them to the dashboard the moment the
+      // session landed, before anything shown HERE could be seen. Not for one
+      // who already said yes on the Nirmaan page: landAfterLogin grants it for
+      // them, and asking again would be asking twice.
+      if (data.firstSignIn && !trialIntent() && !data.user?.panel && hasPortalAccess(data.user)) {
+        return navigate('/welcome', { replace: true, state: { offerTrial: true, from } })
+      }
       await landAfterLogin(data.user)
     } catch (err) {
       setError(err.message)

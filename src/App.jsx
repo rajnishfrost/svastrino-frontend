@@ -43,6 +43,7 @@ import Offers from './pages/user/offerspage/Offers.jsx'
 import Login from './pages/user/loginpage/Login.jsx'
 import ResetPassword from './pages/user/loginpage/ResetPassword.jsx'
 import VerifyEmail from './pages/user/loginpage/VerifyEmail.jsx'
+import Welcome from './pages/user/loginpage/Welcome.jsx'
 import Dashboard from './pages/user/dashboardpage/Dashboard.jsx'
 import { LegacySettingsRedirect } from './pages/user/settingspage/Settings.jsx'
 import Checkout from './pages/user/checkoutpage/Checkout.jsx'
@@ -113,6 +114,8 @@ function PublicSite() {
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          {/* Deliberately NOT a GuestRoute: the student arrives already signed in. */}
+          <Route path="/welcome" element={<Welcome />} />
           {/* The dashboard holds its sidebar tab in the path - services,
               skill-build, downloads, settings - and Settings keeps its own
               ?section=orders&order=ID inside that. */}
