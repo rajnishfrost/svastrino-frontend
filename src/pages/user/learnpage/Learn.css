@@ -475,3 +475,60 @@
   white-space: nowrap;
 }
 .learn-offline-link:hover { color: var(--nirmaan-green-dark, #2d5723); }
+
+/* ---------------------------------------------------------------------
+   Psychometric gate — shown only while the test is what is holding the
+   weeks shut. Warm and instructional rather than alarming: nothing has
+   gone wrong, there is simply a step to do first.
+   --------------------------------------------------------------------- */
+.learn-psygate {
+  background: #fff8e7;
+  border: 1px solid #e8c877;
+  border-left: 5px solid var(--color-warning);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: var(--space-4);
+}
+.learn-psygate-title {
+  font-weight: 700;
+  color: #6b4c05;
+  margin-bottom: 4px;
+}
+.learn-psygate-sub {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #6b4c05;
+  max-width: 70ch;
+}
+.learn-psygate-steps {
+  margin: 12px 0 12px 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13.5px;
+  color: #6b4c05;
+}
+.learn-psygate-code {
+  font-size: 13.5px;
+  color: #6b4c05;
+  margin-bottom: 12px;
+}
+.learn-psygate-copy {
+  margin-left: 8px;
+  background: #ffe9b8;
+  border: 1px solid #e8c877;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12.5px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  color: #6b4c05;
+}
+.learn-psygate-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}

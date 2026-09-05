@@ -7,6 +7,7 @@ import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } 
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
+import PsychometricGate from './sections/PsychometricGate.jsx'
 import './Learn.css'
 
 /**
@@ -76,6 +77,12 @@ export default function Learn() {
   const [syncNote, setSyncNote] = useState('')
   const videoRef = useRef(null)
   const fired = useRef(null) // session whose 90% mark already fired this mount
+  // Which session has already been PAID for in the run of video now playing.
+  // Separate from `fired` because the two answer different questions: the 90%
+  // watch only has to land once ever, while a play is spent every time the
+  // video is watched through. Cleared when the student goes back to the start
+  // (see onTimeUpdate), so a second watch costs a second play.
+  const charged = useRef(null)
   const [searchParams] = useSearchParams()
   const wantedSession = searchParams.get('session') // e.g. the Play button on My downloads
   const qRef = useRef(null)      // the questions panel, so the page can land on it
@@ -340,6 +347,27 @@ export default function Learn() {
    * nobody could be told about it. Returns false when they are spent, so the
    * player stops the video.
    */
+  /**
+   * May this video start? Asked the moment playback begins, and it spends
+   * nothing — a student who opens a video by accident, or clicks a link and
+   * changes their mind four seconds in, used to be charged a play for it.
+   * The play is spent at the 90% mark instead (countPlay).
+   *
+   * Offline there is nobody to ask, so the local count decides; the queued
+   * play still reaches the server later.
+   */
+  const allowPlay = async (sessionId) => {
+    const session = course?.sessions.find((s) => s.id === sessionId)
+    if (playsUsed(session) >= playLimit) return false
+    try {
+      await api(`/user/learn/sessions/${sessionId}/play-check`, { method: 'POST', auth: 'user' })
+      return true
+    } catch (e) {
+      if (e.code === 'PLAY_LIMIT_REACHED' || e.code === 'PHASE_LOCKED' || e.code === 'PSYCHOMETRIC_PENDING') return false
+      return true // offline or a server stumble is not the student's fault
+    }
+  }
+
   const countPlay = async (sessionId) => {
     const session = course?.sessions.find((s) => s.id === sessionId)
     if (playsUsed(session) >= playLimit) return false
@@ -415,8 +443,23 @@ export default function Learn() {
     const v = e.target
     if (!active) return
     trackPosition(v)
+    if (!v.duration) return
+    const through = v.currentTime / v.duration
+
+    // Watched through → this is what a "play" means now. Counting it at the
+    // start charged people for videos they never watched: a mis-click, a link
+    // opened and abandoned, a tab left running. Nothing is spent until the
+    // student has actually been through the video.
+    if (through >= 0.9 && charged.current !== active.id) {
+      charged.current = active.id
+      countPlay(active.id)
+    }
+    // Back near the beginning means they are watching it again, and the next
+    // time they reach the end that is a second play.
+    if (through < 0.25) charged.current = null
+
     if (active.videoDone) return
-    if (v.duration && v.currentTime / v.duration >= 0.9) onVideoDone()
+    if (through >= 0.9) onVideoDone()
   }
 
   const submitAnswer = async (questionId) => {
@@ -449,7 +492,7 @@ export default function Learn() {
       <section className="section"><div className="container learn-wrap">
         <div className="card learn-gate">
           <h1>Enrol to start learning</h1>
-          <p>You haven't purchased this course yet. Pick a package to unlock the sessions.</p>
+          <p>You haven't purchased this course yet. Pick a package to unlock the lectures.</p>
           <Link to="/skill-build/nirmaan#packages" className="btn btn-primary">View packages</Link>
         </div>
       </div></section>
@@ -599,6 +642,10 @@ export default function Learn() {
           <p className="learn-offline-banner">🔄 Syncing {pending} saved change{pending > 1 ? 's' : ''}…</p>
         )}
 
+        {course.psychometric?.blocks && (
+          <PsychometricGate slug={slug} status={course.psychometric.status} onDone={load} />
+        )}
+
         {report && <ReportStrip report={report} />}
 
         <div className="learn-grid">
@@ -645,7 +692,7 @@ export default function Learn() {
                            onTimeUpdate={onTimeUpdate} startAt={startAt}
                            lockSeek={!active.videoDone && !course.testMode}
                            watermark={user?.email || ''} captions={active.captions || []}
-                           onFirstPlay={() => countPlay(active.id)}
+                           onFirstPlay={() => allowPlay(active.id)}
                            playBlockedMessage={`You have watched this video the maximum of ${playLimit} times.`} />
                 {!active.videoDone && !course.testMode && (
                   <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
