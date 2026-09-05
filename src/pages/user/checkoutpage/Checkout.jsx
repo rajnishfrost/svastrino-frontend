@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
+import { dashboardTabFor } from '../dashboardpage/dashboardTab.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { classOptionsFor } from '../../../utils/studentClass.js'
 import './Checkout.css'
@@ -277,7 +278,7 @@ export default function Checkout() {
               <Row label="Amount paid" value={inr(receipt.amountInr)} />
             </div>
             <div className="checkout-actions">
-              <button className="btn btn-primary" onClick={() => navigate('/dashboard')}>Go to dashboard</button>
+              <button className="btn btn-primary" onClick={() => navigate(dashboardTabFor(packageId))}>Go to dashboard</button>
               <Link to="/dashboard/settings?section=orders" className="btn btn-secondary">View orders</Link>
             </div>
             <p className="checkout-muted checkout-note">A receipt has been emailed to you.</p>

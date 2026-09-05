@@ -51,7 +51,7 @@ export default function Downloads({ embedded = false }) {
           <div className="mt-8 rounded-2xl border border-brand-navy/5 bg-white p-10 text-center shadow-sm">
             <p className="font-display text-lg font-bold text-brand-navy">Nothing saved yet.</p>
             <p className="mx-auto mt-2 max-w-md text-sm text-brand-slate">
-              Open a session and tap <strong className="font-semibold text-brand-navy">“⤓ Save for offline”</strong> under the video to keep it for later.
+              Open a lecture and tap <strong className="font-semibold text-brand-navy">“⤓ Save for offline”</strong> under the video to keep it for later.
             </p>
             <Link
               to="/dashboard/skill-build"

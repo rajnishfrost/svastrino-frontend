@@ -26,7 +26,11 @@ const TABS = [
   { key: 'downloads', label: 'Downloads', icon: 'downloads' },
   { key: 'settings', label: 'Settings', icon: 'settings' },
 ]
-const DEFAULT_TAB = 'skill-build'
+// Services is what a dashboard opens on: it is the first tab in the sidebar,
+// and mentoring is the thing with dates in it — a session next Monday matters
+// today in a way a course you can open any evening does not. Somewhere that
+// knows what was just bought says so instead (see dashboardTabFor).
+const DEFAULT_TAB = 'services'
 
 // Clean line icons (Feather/Lucide style - 24×24, currentColor stroke).
 const Svg = ({ children }) => (
@@ -72,9 +76,18 @@ const canReschedule = (s) =>
  */
 const accessState = (e) => e.access?.state || 'active'
 
-const CARD = 'rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm'
 const ACTION = 'inline-flex items-center gap-1 text-sm font-semibold text-brand-crimson hover:underline'
 const PANEL_TITLE = 'font-display text-xl font-bold text-brand-navy'
+// Nothing to show yet. Deliberately not inside a card: a card's padding indents
+// its text past the panel heading, so an empty panel read as misaligned rather
+// than empty. With no card there is nothing to line the text up against but the
+// heading itself.
+const EMPTY = 'text-sm text-brand-slate'
+// One row of a dashboard panel — an enrolment, a booked program. A bordered,
+// padded card put its text 24px right of the panel heading, which is the whole
+// reason these panels looked misaligned. A hairline separates rows instead, so
+// every line in the panel starts at the same edge as its title.
+const ROW = 'border-b border-brand-navy/10 pb-5 last:border-0 last:pb-0'
 
 /**
  * The course name in front of the plan reads "Nirmaan — Nirmaan" whenever the
@@ -159,21 +172,20 @@ function ServicesPanel({ mentoring }) {
   return (
     <div>
       <h2 className={PANEL_TITLE}>Services</h2>
-      <p className="mt-1 text-sm text-brand-slate">Your mentoring programs and every session inside them.</p>
 
       <div className="mt-4 space-y-5">
         {mentoring == null ? (
-          <div className={CARD}><p className="text-brand-slate">Loading…</p></div>
+          <p className={EMPTY}>Loading…</p>
         ) : mentoring.length === 0 ? (
-          <div className={CARD}>
-            <p className="text-brand-slate">You haven't booked a mentoring program yet.</p>
-            <div className="mt-4">
+          <div>
+            <p className={EMPTY}>You haven't booked a service yet.</p>
+            <div className="mt-3">
               <Link to="/book-online" className={ACTION}>Book a session →</Link>
             </div>
           </div>
         ) : (
           mentoring.map((p) => (
-            <div key={p.sku} className={CARD}>
+            <div key={p.sku} className={ROW}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="font-display text-lg font-bold text-brand-navy">{p.name}</h3>
@@ -247,15 +259,14 @@ function SkillBuildPanel({ courses }) {
   return (
     <div>
       <h2 className={PANEL_TITLE}>Skill-Build</h2>
-      <p className="mt-1 text-sm text-brand-slate">Your courses, and where you are in each.</p>
 
       <div className="mt-4 space-y-5">
         {courses == null ? (
-          <div className={CARD}><p className="text-brand-slate">Loading…</p></div>
+          <p className={EMPTY}>Loading…</p>
         ) : courses.length === 0 ? (
-          <div className={CARD}>
-            <p className="text-brand-slate">You haven't enrolled in a Skill-Build course yet.</p>
-            <div className="mt-4">
+          <div>
+            <p className={EMPTY}>You haven't enrolled in a Skill-Build course yet.</p>
+            <div className="mt-3">
               <Link to="/skill-build/nirmaan" className={ACTION}>Explore Nirmaan →</Link>
             </div>
           </div>
@@ -267,7 +278,7 @@ function SkillBuildPanel({ courses }) {
             const accent = isNirmaan ? 'text-nirmaan-green' : 'text-brand-crimson'
             const bar = isNirmaan ? 'bg-nirmaan-green' : 'bg-brand-crimson'
             return (
-              <div key={e.id} className={CARD}>
+              <div key={e.id} className={ROW}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <h3 className="font-display text-lg font-bold text-brand-navy">
@@ -275,7 +286,7 @@ function SkillBuildPanel({ courses }) {
                     </h3>
                     <p className="mt-0.5 text-sm text-brand-slate">
                       {e.progress && e.progress.total > 0
-                        ? `${e.progress.completed} of ${e.progress.total} sessions complete`
+                        ? `${e.progress.completed} of ${e.progress.total} lectures complete`
                         : 'Skill-Build subscription'}
                       {e.expiresAt
                         ? open
