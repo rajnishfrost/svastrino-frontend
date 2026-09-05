@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import NotificationBell from '../NotificationBell/NotificationBell.jsx'
 import './Navbar.css'
 
@@ -326,15 +327,23 @@ function ProfileMenu({ user, onNavigate }) {
             <ShieldIcon /> Organisation Portal
           </Link>
         )}
-        <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <GridIcon /> Dashboard
-        </Link>
-        <Link to="/dashboard/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <DownloadIcon /> Downloads
-        </Link>
-        <Link to="/dashboard/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <GearIcon /> Settings
-        </Link>
+        {/* The student side of the menu, and only for an account the student
+            portal is open to. Offering a Dashboard link to a panel-only account
+            would be offering a door that answers "no access" — better not to
+            draw the door. They keep the whole public site either way. */}
+        {hasPortalAccess(user) && (
+          <>
+            <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <GridIcon /> Dashboard
+            </Link>
+            <Link to="/dashboard/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <DownloadIcon /> Downloads
+            </Link>
+            <Link to="/dashboard/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <GearIcon /> Settings
+            </Link>
+          </>
+        )}
         <button
           type="button"
           className="nav-profile-item nav-profile-signout"

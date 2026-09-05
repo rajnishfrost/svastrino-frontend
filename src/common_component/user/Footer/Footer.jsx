@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 
 /**
  * Site footer (content per src/content/footer.md). Styled with Tailwind to
@@ -52,9 +53,16 @@ function registerColumn(user) {
       { label: 'Partner with us', to: '/contact' },
       ...(user
         ? [
-            { label: 'Dashboard', to: '/dashboard' },
-            { label: 'My Downloads', to: '/dashboard/downloads' },
-            { label: 'Settings', to: '/dashboard/settings' },
+            // The student pages, and only for an account the portal is open to.
+            // A panel-only account would meet "no access with this account" at
+            // every one of them, so the links are not drawn for it.
+            ...(hasPortalAccess(user)
+              ? [
+                  { label: 'Dashboard', to: '/dashboard' },
+                  { label: 'My Downloads', to: '/dashboard/downloads' },
+                  { label: 'Settings', to: '/dashboard/settings' },
+                ]
+              : []),
             // Signed-in only: support threads belong to an account, so there is
             // nothing for a signed-out visitor to see there. They have Contact
             // Us in the Company column instead.

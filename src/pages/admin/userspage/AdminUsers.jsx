@@ -77,6 +77,29 @@ function Accounts({ me }) {
   const tone = (key) => (key === 'superadmin' ? 'warn' : roleMap[key]?.panel ? 'ok' : 'muted')
   const label = (key) => roleMap[key]?.name || key
 
+  /**
+   * Open or close the student portal for one account.
+   *
+   * Only offered on non-student roles: one login serves both the site and the
+   * panel, so an admin pressing "View site" has always landed inside the portal
+   * signed in. That suits a mentor who also learns and not a content editor —
+   * this is where that gets decided. A student is not asked, because their
+   * account IS the portal.
+   */
+  const changeSiteAccess = async (id, siteAccess) => {
+    setSavingId(id); setError('')
+    try {
+      const { user } = await api(`/admin/users/${id}/site-access`, {
+        method: 'PATCH', auth: 'admin', body: { siteAccess },
+      })
+      setUsers((list) => list.map((u) => (u.id === id ? { ...u, siteAccess: user.siteAccess } : u)))
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSavingId(null)
+    }
+  }
+
   const changeRole = async (id, role) => {
     setSavingId(id); setError('')
     try {
@@ -127,7 +150,7 @@ function Accounts({ me }) {
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Verified</th><th>Role</th><th>Access</th>{isSuper && <th></th>}</tr>
+              <tr><th>Name</th><th>Email</th><th>Verified</th><th>Role</th><th>Access</th><th>Student portal</th>{isSuper && <th></th>}</tr>
             </thead>
             <tbody>
               {users.map((u) => (
@@ -155,6 +178,28 @@ function Accounts({ me }) {
                         : roleMap[u.role]?.panel
                           ? <span className="adm-badge adm-badge--ok">Panel access</span>
                           : <span className="adm-sub" style={{ margin: 0 }}>Site account</span>}
+                  </td>
+                  <td>
+                    {u.role === 'student' ? (
+                      // Nothing to decide: a student account is the portal.
+                      <span className="adm-sub" style={{ margin: 0 }}>Always</span>
+                    ) : isSuper ? (
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={u.siteAccess !== false}
+                          disabled={savingId === u.id}
+                          onChange={(e) => changeSiteAccess(u.id, e.target.checked)}
+                        />
+                        <span className="adm-sub" style={{ margin: 0 }}>
+                          {u.siteAccess !== false ? 'Allowed' : 'Blocked'}
+                        </span>
+                      </label>
+                    ) : (
+                      <span className={`adm-badge adm-badge--${u.siteAccess !== false ? 'ok' : 'muted'}`}>
+                        {u.siteAccess !== false ? 'Allowed' : 'Blocked'}
+                      </span>
+                    )}
                   </td>
                   {isSuper && (
                     <td>
