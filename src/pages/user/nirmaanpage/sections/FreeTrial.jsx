@@ -106,18 +106,20 @@ export default function FreeTrial() {
   const learning = state === 'trial' || state === 'owned'
   const spent = state === 'used' || state === 'expired'
 
+  // No '→' in any cta: the button renders its own ArrowRight, and two of these
+  // strings used to carry one as well — which read as "Continue your course → →".
   const copy = learning
     ? {
         head: 'Your course is waiting',
         body: 'Pick up where you left off — the next video and today’s tasks are ready for you.',
-        cta: 'Continue your course →',
+        cta: 'Continue your course',
         onClick: () => navigate(LEARN_PATH),
       }
     : spent
       ? {
           head: 'Your free week is over',
           body: 'Everything you wrote is saved. Pick a package and you carry on from Week 2, with the other 23 weeks and all their tasks.',
-          cta: 'See the packages →',
+          cta: 'See the packages',
           onClick: () => navigate('/skill-build/nirmaan#packages'),
         }
       : user
@@ -151,12 +153,12 @@ export default function FreeTrial() {
   return (
     <section id="free-trial" className="bg-nirmaan-cream/50 py-16 md:py-20">
       <div className="container">
-        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm md:p-12">
+        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
           {/* Branded accent ribbon along the top edge. */}
           <span aria-hidden className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-nirmaan-green via-nirmaan-green-light to-nirmaan-olive" />
           {/* Soft brand glows for depth (kept behind the content). */}
-          <span aria-hidden className="pointer-events-none absolute -left-24 top-6 size-56 rounded-full bg-nirmaan-green/10 blur-3xl" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 size-56 rounded-full bg-nirmaan-olive/10 blur-3xl" />
+          <span aria-hidden className="pointer-events-none absolute -left-24 top-6 size-64 rounded-full bg-nirmaan-green/25 blur-3xl" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 size-64 rounded-full bg-nirmaan-olive/25 blur-3xl" />
 
           <div className="relative">
             {/* Nirmaan mark */}

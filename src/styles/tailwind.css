@@ -5,6 +5,79 @@
    classes those components use, plus a few custom brand utilities below.
    Imported AFTER global.css so utilities win ties on Tailwind-built pages.
    ===================================================================== */
+/* ---------------------------------------------------------------------
+   The variable defaults Preflight would have set.
+
+   Preflight is off (see the note above), and it is also the only thing that
+   declares Tailwind's `--tw-*` variables as empty on every element. Several
+   utility groups build ONE property out of many of those variables at once,
+   with no fallbacks — for example:
+
+     .blur-3xl { --tw-blur: blur(64px);
+                 filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) … }
+
+   With the others undefined the whole `filter` value is invalid, so it resolves
+   to `none` and the class does nothing at all — silently, with no warning and
+   no sign in the markup. The same went for transform, backdrop-filter, ring and
+   the gradient utilities: `blur-*`, `scale-*`, `-translate-y-*`, `rotate-*`,
+   `ring-*` and `bg-gradient-to-* from-… to-…` were all dead across the site.
+   `shadow-*` was the one survivor, because its vars carry `0 0 #0000` fallbacks.
+
+   Declaring the defaults here restores every one of them without bringing back
+   Preflight's element resets, which is what we did not want.
+   --------------------------------------------------------------------- */
+*,
+::before,
+::after {
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x: ;
+  --tw-pan-y: ;
+  --tw-pinch-zoom: ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position: ;
+  --tw-gradient-via-position: ;
+  --tw-gradient-to-position: ;
+  --tw-ordinal: ;
+  --tw-slashed-zero: ;
+  --tw-numeric-figure: ;
+  --tw-numeric-spacing: ;
+  --tw-numeric-fraction: ;
+  --tw-ring-inset: ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur: ;
+  --tw-brightness: ;
+  --tw-contrast: ;
+  --tw-grayscale: ;
+  --tw-hue-rotate: ;
+  --tw-invert: ;
+  --tw-saturate: ;
+  --tw-sepia: ;
+  --tw-drop-shadow: ;
+  --tw-backdrop-blur: ;
+  --tw-backdrop-brightness: ;
+  --tw-backdrop-contrast: ;
+  --tw-backdrop-grayscale: ;
+  --tw-backdrop-hue-rotate: ;
+  --tw-backdrop-invert: ;
+  --tw-backdrop-opacity: ;
+  --tw-backdrop-saturate: ;
+  --tw-backdrop-sepia: ;
+}
+
 @tailwind components;
 @tailwind utilities;
 
