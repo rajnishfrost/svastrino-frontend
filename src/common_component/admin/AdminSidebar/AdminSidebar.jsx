@@ -65,6 +65,7 @@ const NAV = [
   { label: 'Scholarship', to: '/admin/scholarship', icon: 'scholarship', module: 'scholarship' },
   { label: 'Services', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
   { label: 'Skill Builds', to: '/admin/skill-builds', icon: 'skillbuilds', module: 'skill-builds' },
+  { label: 'Reviews', to: '/admin/testimonials', icon: 'blogs', module: 'testimonials' },
   // Guarded by 'users', same as the API — reopening a course is a decision about that student's account.
   { label: 'Support', to: '/admin/tickets', icon: 'tickets', module: 'users' },
   { label: 'Users', to: '/admin/users', icon: 'users', module: 'users' },

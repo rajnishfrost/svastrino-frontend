@@ -59,6 +59,7 @@ import AdminDashboard from './pages/admin/dashboardpage/AdminDashboard.jsx'
 import AdminSkillBuilds from './pages/admin/skillbuildspage/AdminSkillBuilds.jsx'
 import AdminContent from './pages/admin/contentpage/AdminContent.jsx'
 import AdminBlogs from './pages/admin/blogspage/AdminBlogs.jsx'
+import AdminTestimonials from './pages/admin/testimonialspage/AdminTestimonials.jsx'
 import AdminCareerLibrary from './pages/admin/careerlibrarypage/AdminCareerLibrary.jsx'
 import AdminUsers from './pages/admin/userspage/AdminUsers.jsx'
 import AdminCoupons from './pages/admin/couponspage/AdminCoupons.jsx'
@@ -208,6 +209,7 @@ export default function App() {
                   <Route path="/packages" element={<Navigate to="/admin/skill-builds" replace />} />
                   <Route path="/content" element={<AdminContent />} />
                   <Route path="/blogs" element={<AdminBlogs />} />
+                  <Route path="/testimonials" element={<AdminTestimonials />} />
                   <Route path="/career-library" element={<AdminCareerLibrary />} />
                   <Route path="/users" element={<AdminUsers />} />
                   <Route path="/enquiries" element={<AdminEnquiries />} />

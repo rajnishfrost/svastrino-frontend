@@ -20,6 +20,7 @@ const MODULES = [
   { key: 'orders', label: 'Orders' },
   { key: 'scholarship', label: 'Scholarship' },
   { key: 'skill-builds', label: 'Skill Builds' },
+  { key: 'testimonials', label: 'Reviews' },
   { key: 'users', label: 'Users' },
 ]
 const roleTone = (r) => (r.key === 'superadmin' ? 'warn' : r.panel ? 'ok' : 'muted')
