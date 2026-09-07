@@ -156,11 +156,14 @@ export default function FreeTrial() {
     <section id="free-trial" className="bg-nirmaan-green py-16 md:py-20">
       <div className="container">
         <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
-          {/* Branded accent ribbon along the top edge. */}
-          <span aria-hidden className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-nirmaan-green via-nirmaan-green-light to-nirmaan-olive" />
-          {/* Soft brand glows for depth (kept behind the content). */}
-          <span aria-hidden className="pointer-events-none absolute -left-24 top-6 size-64 rounded-full bg-nirmaan-green/25 blur-3xl" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 size-64 rounded-full bg-nirmaan-olive/25 blur-3xl" />
+          {/* Two flat tinted circles, hung off the edges so the card's
+              overflow-hidden crops them to a half and a quarter — the shapes
+              the design asks for. They were written as blurred glows back when
+              `blur` generated no CSS in this project, so they rendered crisp
+              and the design was drawn around that; once blur started working
+              the pair became a smudge across the card. Solid is the intent. */}
+          <span aria-hidden className="pointer-events-none absolute -left-24 top-6 size-40 rounded-full bg-nirmaan-green/10 sm:size-56" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 size-40 rounded-full bg-nirmaan-olive/10 sm:size-56" />
 
           <div className="relative">
             {/* Nirmaan mark */}
