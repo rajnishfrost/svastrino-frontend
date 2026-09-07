@@ -121,7 +121,7 @@ export default function EnquireForm() {
 
       {/* Side by side, and min-w-0 so a long address shrinks its column instead
           of pushing the grid wider than the card. */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <EnquiryContactField
           className="min-w-0"
           kind="email" label="Email" value={values.email} onChange={set('email')}

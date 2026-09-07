@@ -297,7 +297,36 @@ export function EnquiryContactField({
       value={value}
       onChange={onChange}
       placeholder={placeholder || 'Phone number'}
-      inputStyle={{ fontFamily: 'inherit' }}
+      // The library lays the country selector and the number out as flex
+      // siblings and lets both shrink. In a narrow column the number's natural
+      // width wins, the selector is squeezed to about 22px, and its centred
+      // flag spills out either side — where the row's rounded edge clips it.
+      // Pin the selector to its own width; the number absorbs what is left.
+      countrySelectorStyleProps={{
+        // position:static hands the dropdown's containing block to the row, so
+        // right:0 below lines the list up with the field's right edge. Left to
+        // the library the list starts at the flag and runs 300px right, which
+        // puts most of it outside the card.
+        style: { flex: '0 0 auto', position: 'static' },
+        buttonStyle: { flexShrink: 0 },
+        flagStyle: { flexShrink: 0 },
+        dropdownStyleProps: {
+          style: {
+            left: 'auto',
+            right: 0,
+            top: '48px',
+            width: 'min(300px, calc(100vw - 24px))',
+            border: '1px solid rgba(15, 44, 92, 0.15)',
+            borderRadius: '8px',
+            // The library lets the browser draw its default focus ring on the
+            // list; every other control here suppresses it.
+            outline: 'none',
+            boxShadow: '0 12px 28px rgba(15, 44, 92, 0.14)',
+          },
+          listItemStyle: { fontFamily: 'inherit' },
+        },
+      }}
+      inputStyle={{ fontFamily: 'inherit', flex: '1 1 0%', minWidth: 0 }}
       style={style}
     />
   )
@@ -306,14 +335,36 @@ export function EnquiryContactField({
   if (!hideable) {
     return (
       <FieldShell label={label} error={error} htmlFor={kind} className={className}>
-        {isPhone ? phoneInput(phoneVars(invalid)) : emailInput(inputClass(invalid))}
+        {isPhone ? (
+          // Left to itself the library draws a border around the country button
+          // AND another around the number, so the field reads as two boxes
+          // joined by a seam — nothing else on the form looks like that. The
+          // row owns the single border instead, exactly as the masked variant
+          // below already does, and the parts inside draw none. No clipping
+          // here: the country dropdown is absolutely positioned inside the row,
+          // so overflow-hidden would cut the country list down to a sliver.
+          <div className={`relative flex h-11 w-full items-center rounded-lg border border-solid bg-white ${invalid ? bad : ok}`}>
+            {phoneInput({
+              ...phoneVars(invalid),
+              flex: '1 1 0%',
+              minWidth: 0,
+              '--react-international-phone-border-color': 'transparent',
+              '--react-international-phone-border-radius': '7px',
+              '--react-international-phone-height': '42px',
+            })}
+          </div>
+        ) : emailInput(inputClass(invalid))}
       </FieldShell>
     )
   }
 
   return (
     <FieldShell label={label} error={error} htmlFor={kind} className={className}>
-      <div className={`flex h-11 w-full items-center overflow-hidden rounded-lg border bg-white ${invalid ? bad : ok}`}>
+      {/* border-solid because Preflight is off: Tailwind's `border` sets the
+          width, and a <div> has no border style of its own to show it with.
+          A phone brings an absolutely positioned country dropdown with it, so
+          this row must not clip; nothing else in here overflows. */}
+      <div className={`relative flex h-11 w-full items-center rounded-lg border border-solid bg-white ${isPhone ? '' : 'overflow-hidden'} ${invalid ? bad : ok}`}>
         {masked ? (
           <input
             id={kind}
@@ -329,6 +380,7 @@ export function EnquiryContactField({
             flex: '1 1 0%',
             minWidth: 0,
             '--react-international-phone-border-color': 'transparent',
+            '--react-international-phone-border-radius': '7px',
             '--react-international-phone-height': '42px',
           })
         ) : (
