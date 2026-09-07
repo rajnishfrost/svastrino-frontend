@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
-import { fetchTestimonials } from '../../../api/content.js'
-import { ALL_PROGRAMS } from './journeyStages.js'
+import { fetchServiceCategories, fetchTestimonials } from '../../../api/content.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
 import ProgramEmblem from '../../../common_component/user/ProgramEmblem/ProgramEmblem.jsx'
 import Testimonials from '../../../common_component/user/Testimonials/Testimonials.jsx'
@@ -19,30 +18,56 @@ import { ArrowRight } from 'lucide-react'
 // single row, ordered by this sequence, with each card labelled by its category.
 const CATEGORY_ORDER = ['career-counselling', 'personalised-mentoring']
 
+/**
+ * One program as this page reads it. The catalogue is the only owner now: the
+ * copy used to sit in journeyStages.js while the price and the buy rule sat in
+ * the database, and the two drifted — Breakthrough said "Talk to an expert"
+ * here while the server was still willing to sell it straight from checkout.
+ */
+const toCard = (p, category) => ({
+  slug: p.slug,
+  name: p.name,
+  tagline: p.tagline,
+  summary: p.summary,
+  duration: p.durationLabel,
+  sessions: p.sessionsLabel,
+  mode: p.deliveryMode,
+  buyMode: p.buyMode || 'self-serve',
+  bookingSku: p.sku,
+  category: { slug: category.slug, name: category.name },
+})
+
 export default function Services() {
-  // Programs come from the static ALL_PROGRAMS list (the client-owned copy in
-  // journeyStages.js) instead of the backend, so this page no longer waits on —
-  // or can fail from — a programs fetch. Testimonials are still fetched.
-  const programs = ALL_PROGRAMS
+  // undefined = still loading; [] = loaded empty, or the request failed.
+  const [programs, setPrograms] = useState(undefined)
   const [testimonials, setTestimonials] = useState([])
 
   useEffect(() => {
     let cancelled = false
+    fetchServiceCategories()
+      .then((d) => {
+        if (cancelled) return
+        setPrograms((d.categories || []).flatMap((c) => (c.programs || []).map((p) => toCard(p, c))))
+      })
+      .catch(() => { if (!cancelled) setPrograms([]) })
     fetchTestimonials()
       .then((t) => { if (!cancelled) setTestimonials(t.testimonials) })
       .catch(() => {}) // optional — the testimonials section hides itself when empty
     return () => { cancelled = true }
   }, [])
 
+  const loading = programs === undefined
+  const list = programs || []
+
   // Group programs by their sub-category, in the defined order.
   const groups = CATEGORY_ORDER
     .map((slug) => {
-      const items = programs.filter((p) => p.category?.slug === slug)
+      const items = list.filter((p) => p.category?.slug === slug)
       return items.length ? { slug, name: items[0].category.name, programs: items } : null
     })
     .filter(Boolean)
   // Any program without a known category still shows, under "Other".
-  const uncategorised = programs.filter((p) => !CATEGORY_ORDER.includes(p.category?.slug))
+  const uncategorised = list.filter((p) => !CATEGORY_ORDER.includes(p.category?.slug))
   if (uncategorised.length) groups.push({ slug: 'other', name: 'Other services', programs: uncategorised })
 
   return (
@@ -60,6 +85,38 @@ export default function Services() {
 
       <section className="bg-white py-16">
         <div className="container">
+          {loading && (
+            // Three card-shaped blocks, so the page keeps its height and the
+            // testimonials below it do not jump when the programs land.
+            <div className="grid gap-6 md:grid-cols-3" aria-hidden>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="animate-pulse rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+                  <div className="size-12 rounded-xl bg-brand-navy/5" />
+                  <div className="mt-4 h-3 w-28 rounded bg-brand-navy/5" />
+                  <div className="mt-2 h-5 w-44 rounded bg-brand-navy/10" />
+                  <div className="mt-3 h-3.5 w-full rounded bg-brand-navy/5" />
+                  <div className="mt-5 space-y-2">
+                    {[0, 1, 2, 3].map((j) => <div key={j} className="h-3 w-full rounded bg-brand-navy/5" />)}
+                  </div>
+                  <div className="mt-6 h-10 rounded-lg bg-brand-navy/5" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!loading && list.length === 0 && (
+            <p className="text-center text-sm text-brand-slate">
+              The programs could not be loaded just now.{' '}
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-brand-crimson underline"
+              >
+                Try again
+              </button>
+            </p>
+          )}
+
           <div className="grid gap-6 md:grid-cols-3">
             {groups.flatMap((g) => g.programs).map((p) => {
                 // Breakthrough is the flagship long-term program — give it a

@@ -21,3 +21,6 @@ export const fetchCourse = (slug) => api(`/user/content/courses/${encodeURICompo
 
 /** One policy/legal page (markdown body). → { page } */
 export const fetchSitePage = (slug) => api(`/user/content/pages/${encodeURIComponent(slug)}`)
+
+/** The Services catalogue, grouped by sub-category — one card per program. */
+export const fetchServiceCategories = () => api('/user/mentoring/categories')
