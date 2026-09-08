@@ -1,119 +1,40 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
-import ScholarshipCycleEditor from '../../../common_component/scholarship/ScholarshipCycleEditor.jsx'
+import SponsoredCoursePicker from '../../../common_component/admin/SponsoredCoursePicker/SponsoredCoursePicker.jsx'
 import '../adminShared.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 /**
- * Nirmaan Scholarship admin — the whole program, across every partner.
+ * Partner organisations — the admin side of the organisation portal.
  *
- * Organisations run their own cycles now, so admin's job is oversight: review
- * applications, decide what each partner may reach, and be able to open ANY
- * cycle's settings, questions, enrolments, results and individual answer sheets.
- * The cycle editor is the very same component the organisation portal uses, so
- * the two views can't drift apart.
+ * A body applies through the public form and can do nothing until it is
+ * approved here: approving creates the owner account and sends the
+ * set-password link. `modules` is what that portal may reach, and it is read on
+ * every request, so revoking one takes effect immediately.
  */
-const TABS = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'organisations', label: 'Organisations' },
-  { key: 'cycles', label: 'Scholarship cycles' },
-]
-
-export default function AdminScholarship() {
-  const [tab, setTab] = useState('overview')
-  // Set when drilling into one organisation or cycle from a table.
-  const [orgFocus, setOrgFocus] = useState(null)
-  const [cycleFocus, setCycleFocus] = useState(null)
-
-  const openOrg = (id) => { setOrgFocus(id); setTab('organisations') }
-  const openCycles = (orgId) => { setOrgFocus(orgId); setCycleFocus(null); setTab('cycles') }
-
-  return (
-    <div>
-      <h1 className="adm-title">Nirmaan Scholarship</h1>
-      <p className="adm-sub">
-        Approve partner organisations, control what each one can reach, and see every cycle they run.
-      </p>
-
-      <div className="adm-toolbar" style={{ gap: 8 }}>
-        {TABS.map((t) => (
-          <button key={t.key}
-                  className={`adm-btn adm-btn--sm${tab === t.key ? '' : ' adm-btn--ghost'}`}
-                  onClick={() => { setTab(t.key); setCycleFocus(null) }}>{t.label}</button>
-        ))}
-      </div>
-
-      {tab === 'overview' && <Overview onOpenOrgs={() => setTab('organisations')} />}
-      {tab === 'organisations' && (
-        <Organisations focusId={orgFocus} onClearFocus={() => setOrgFocus(null)} onOpenCycles={openCycles} />
-      )}
-      {tab === 'cycles' && (
-        <Cycles
-          orgFilter={orgFocus}
-          onClearOrgFilter={() => setOrgFocus(null)}
-          focusId={cycleFocus}
-          onFocus={setCycleFocus}
-          onOpenOrg={openOrg}
-        />
-      )}
-    </div>
-  )
-}
-
-// ---- Overview ----------------------------------------------------------------
-function Overview({ onOpenOrgs }) {
-  const [stats, setStats] = useState(null)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    api('/admin/scholarship/overview', { auth: 'admin' })
-      .then((d) => setStats(d.stats))
-      .catch((e) => setError(e.message))
-  }, [])
-
-  if (error) return <p className="adm-error">{error}</p>
-  if (!stats) return <p className="adm-empty">Loading…</p>
-
-  return (
-    <section>
-      <div className="adm-stat-grid">
-        <div className="adm-stat-card"><strong>{stats.organisations}</strong><span>Partner organisations</span></div>
-        <div className="adm-stat-card"><strong>{stats.activeOrganisations}</strong><span>Approved &amp; active</span></div>
-        <div className="adm-stat-card"><strong>{stats.pendingOrganisations}</strong><span>Awaiting review</span></div>
-        <div className="adm-stat-card"><strong>{stats.liveCycles}</strong><span>Live cycles</span></div>
-        <div className="adm-stat-card"><strong>{stats.cycles}</strong><span>Cycles all-time</span></div>
-        <div className="adm-stat-card"><strong>{stats.enrolments}</strong><span>Student enrolments</span></div>
-        <div className="adm-stat-card"><strong>{stats.submitted}</strong><span>Tests submitted</span></div>
-        <div className="adm-stat-card"><strong>{stats.winners}</strong><span>Winners declared</span></div>
-      </div>
-
-      {stats.pendingOrganisations > 0 && (
-        <section className="adm-panel">
-          <h2 style={{ fontSize: 16, marginBottom: 6 }}>
-            {stats.pendingOrganisations} organisation{stats.pendingOrganisations === 1 ? '' : 's'} waiting for review
-          </h2>
-          <p className="adm-sub">
-            Approving one creates its login account and emails a set-password link to its portal.
-          </p>
-          <button className="adm-btn" onClick={onOpenOrgs}>Review applications</button>
-        </section>
-      )}
-    </section>
-  )
-}
-
-// ---- Organisations -----------------------------------------------------------
 const TYPE_LABEL = {
   school: 'School', college: 'College', village: 'Village / Panchayat',
   ngo: 'NGO / Trust', coaching: 'Coaching centre', corporate: 'Corporate', other: 'Other',
 }
 const ALL_MODULES = [
   { key: 'students', label: 'Students', hint: 'Add students and bulk-import a roster' },
-  { key: 'scholarship', label: 'Scholarship', hint: 'Run cycles, questions, results' },
   { key: 'profile', label: 'Profile', hint: 'Edit their public listing' },
 ]
 
-function Organisations({ focusId, onClearFocus, onOpenCycles }) {
+export default function AdminOrganisations() {
+  return (
+    <div className="adm-page">
+      <h1 className="adm-title">Organisations</h1>
+      <p className="adm-sub">
+        Review partner applications, decide what each one can reach in its portal, and see the students they have added.
+      </p>
+      <Organisations />
+    </div>
+  )
+}
+
+function Organisations() {
   const [rows, setRows] = useState(null)
   const [status, setStatus] = useState('')
   const [q, setQ] = useState('')
@@ -122,28 +43,29 @@ function Organisations({ focusId, onClearFocus, onOpenCycles }) {
   const [edit, setEdit] = useState(null)     // org being configured
   const [detail, setDetail] = useState(null) // drill-down payload
   const [busy, setBusy] = useState(false)
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
-  const load = (st = status, search = q) => {
+  const load = (st = status, search = q, pageNo = page) => {
     const p = new URLSearchParams()
     if (st) p.set('status', st)
     if (search.trim()) p.set('q', search.trim())
-    const qs = p.toString()
-    return api(`/admin/scholarship/organisations${qs ? `?${qs}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.organisations))
+    p.set('page', pageNo)
+    return api(`/admin/organisations?${p}`, { auth: 'admin' })
+      .then((d) => { setRows(d.organisations); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
   }
 
-  useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load() }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Drill straight into an organisation when arrived at from another tab.
   useEffect(() => {
-    if (focusId) openDetail(focusId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusId])
+  }, [])
 
   const openDetail = async (id) => {
     setError('')
-    try { setDetail(await api(`/admin/scholarship/organisations/${id}`, { auth: 'admin' })) }
+    try { setDetail(await api(`/admin/organisations/${id}`, { auth: 'admin' })) }
     catch (e) { setError(e.message) }
   }
 
@@ -151,7 +73,7 @@ function Organisations({ focusId, onClearFocus, onOpenCycles }) {
     const { org, action } = review
     setBusy(true); setError('')
     try {
-      await api(`/admin/scholarship/organisations/${org.id}`, {
+      await api(`/admin/organisations/${org.id}`, {
         method: 'PATCH', auth: 'admin',
         body: { status: action, reason: action === 'rejected' ? reason : '' },
       })
@@ -163,8 +85,7 @@ function Organisations({ focusId, onClearFocus, onOpenCycles }) {
     return (
       <OrgDetail
         detail={detail}
-        onBack={() => { setDetail(null); onClearFocus() }}
-        onOpenCycles={onOpenCycles}
+        onBack={() => setDetail(null)}
         onConfigure={() => setEdit(detail.organisation)}
         editing={edit}
         onCloseEdit={(changed) => { setEdit(null); if (changed) openDetail(detail.organisation.id) }}
@@ -233,16 +154,17 @@ function Organisations({ focusId, onClearFocus, onOpenCycles }) {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="organisation" />
 
       {review && (
         <ConfirmModal
           title={review.action === 'approved' ? `Approve “${review.org.name}”?` : `Reject “${review.org.name}”?`}
           message={review.action === 'approved'
-            ? 'This creates their organisation login and emails a set-password link to their portal, where they can add students and run their scholarship.'
-            : 'They’ll be emailed the outcome.'}
+            ? 'This creates their organisation login and emails a set-password link to their portal, where they can add and manage their students.'
+            : 'They will not get a portal login. Nothing is emailed.'}
           confirmLabel={review.action === 'approved' ? 'Approve' : 'Reject'}
           danger={review.action === 'rejected'}
-          input={review.action === 'rejected' ? { label: 'Reason (optional — emailed to them)', placeholder: 'e.g. Not eligible this cycle' } : undefined}
+          input={review.action === 'rejected' ? { label: 'Reason (optional — emailed to them)', placeholder: 'e.g. Not eligible' } : undefined}
           busy={busy}
           onCancel={() => setReview(null)}
           onConfirm={doReview}
@@ -253,8 +175,8 @@ function Organisations({ focusId, onClearFocus, onOpenCycles }) {
 }
 
 // ---- One organisation, in full ----------------------------------------------
-function OrgDetail({ detail, onBack, onOpenCycles, onConfigure, editing, onCloseEdit }) {
-  const { organisation: o, stats, cycles } = detail
+function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
+  const { organisation: o, stats } = detail
   const [students, setStudents] = useState(null)
   const [showStudents, setShowStudents] = useState(false)
   const [error, setError] = useState('')
@@ -263,7 +185,7 @@ function OrgDetail({ detail, onBack, onOpenCycles, onConfigure, editing, onClose
     setShowStudents(true)
     if (students) return
     try {
-      const d = await api(`/admin/scholarship/organisations/${o.id}/students`, { auth: 'admin' })
+      const d = await api(`/admin/organisations/${o.id}/students`, { auth: 'admin' })
       setStudents(d.students)
     } catch (e) { setError(e.message) }
   }
@@ -298,9 +220,6 @@ function OrgDetail({ detail, onBack, onOpenCycles, onConfigure, editing, onClose
 
       <div className="adm-stat-grid">
         <div className="adm-stat-card"><strong>{stats.students}</strong><span>Students added</span></div>
-        <div className="adm-stat-card"><strong>{stats.enrolments}</strong><span>Enrolments</span></div>
-        <div className="adm-stat-card"><strong>{stats.submitted}</strong><span>Tests submitted</span></div>
-        <div className="adm-stat-card"><strong>{stats.cycles}</strong><span>Cycles run</span></div>
       </div>
 
       {error && <p className="adm-error">{error}</p>}
@@ -309,7 +228,6 @@ function OrgDetail({ detail, onBack, onOpenCycles, onConfigure, editing, onClose
         <button className="adm-btn adm-btn--ghost" onClick={loadStudents}>
           {showStudents ? 'Refresh students' : 'View students'}
         </button>
-        <button className="adm-btn adm-btn--ghost" onClick={() => onOpenCycles(o.id)}>Open their cycles</button>
       </div>
 
       {showStudents && (
@@ -339,29 +257,6 @@ function OrgDetail({ detail, onBack, onOpenCycles, onConfigure, editing, onClose
         )
       )}
 
-      <h3 style={{ fontSize: 16, margin: '18px 0 8px' }}>Cycles</h3>
-      {cycles.length === 0 ? <p className="adm-empty">No cycles yet.</p> : (
-        <div className="adm-panel adm-table-wrap">
-          <table className="adm-table">
-            <thead><tr><th>Year</th><th>Title</th><th>Status</th><th>Questions</th><th>Enrolled</th><th>Submitted</th><th>Winner</th></tr></thead>
-            <tbody>
-              {cycles.map((c) => (
-                <tr key={c.id}>
-                  <td className="adm-num">{c.year}</td>
-                  <td>{c.title}</td>
-                  <td><span className={`adm-badge adm-badge--${c.open ? 'ok' : c.status === 'draft' ? 'muted' : 'warn'}`}>{c.status}</span></td>
-                  <td className="adm-num">{c.questions}</td>
-                  <td className="adm-num">{c.enrolled}</td>
-                  <td className="adm-num">{c.submitted}</td>
-                  <td>{c.winnerName || '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {editing && <ConfigureModal org={editing} onClose={onCloseEdit} />}
     </section>
   )
 }
@@ -371,6 +266,7 @@ function ConfigureModal({ org, onClose }) {
   const [modules, setModules] = useState(org.modules || [])
   const [publicListed, setPublicListed] = useState(org.publicListed !== false)
   const [active, setActive] = useState(org.active !== false)
+  const [packages, setPackages] = useState(org.packages || [])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -380,8 +276,8 @@ function ConfigureModal({ org, onClose }) {
   const save = async () => {
     setBusy(true); setError('')
     try {
-      await api(`/admin/scholarship/organisations/${org.id}`, {
-        method: 'PUT', auth: 'admin', body: { modules, publicListed, active },
+      await api(`/admin/organisations/${org.id}`, {
+        method: 'PUT', auth: 'admin', body: { modules, publicListed, active, packages },
       })
       onClose(true)
     } catch (e) { setError(e.message) } finally { setBusy(false) }
@@ -405,6 +301,12 @@ function ConfigureModal({ org, onClose }) {
 
         <hr style={{ border: 'none', borderTop: '1px solid var(--gray-200)', margin: '14px 0' }} />
 
+        {/* Changing this reaches students who claim their account from now on;
+            seats already granted are enrollments in their own right and stay. */}
+        <SponsoredCoursePicker value={packages} onChange={setPackages} />
+
+        <hr style={{ border: 'none', borderTop: '1px solid var(--gray-200)', margin: '14px 0' }} />
+
         <label style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10, fontSize: 14 }}>
           <input type="checkbox" checked={publicListed} onChange={(e) => setPublicListed(e.target.checked)} />
           Show in the public /organisations directory
@@ -424,107 +326,3 @@ function ConfigureModal({ org, onClose }) {
   )
 }
 
-// ---- Cycles across every organisation ---------------------------------------
-function Cycles({ orgFilter, onClearOrgFilter, focusId, onFocus, onOpenOrg }) {
-  const [rows, setRows] = useState(null)
-  const [status, setStatus] = useState('')
-  const [year, setYear] = useState('')
-  const [error, setError] = useState('')
-
-  const load = () => {
-    const p = new URLSearchParams()
-    if (orgFilter) p.set('organisation', orgFilter)
-    if (status) p.set('status', status)
-    if (year) p.set('year', year)
-    const qs = p.toString()
-    return api(`/admin/scholarship/cycles${qs ? `?${qs}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.cycles))
-      .catch((e) => setError(e.message))
-  }
-
-  useEffect(() => { setRows(null); load() }, [orgFilter, status, year]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const cycle = rows?.find((c) => c.id === focusId) || null
-
-  if (cycle) {
-    return (
-      <section>
-        <button className="adm-link" style={{ padding: 0, marginBottom: 10 }} onClick={() => onFocus(null)}>← All cycles</button>
-        <ScholarshipCycleEditor
-          key={cycle.id}
-          cycle={cycle}
-          basePath="/admin/scholarship"
-          auth="admin"
-          onChanged={load}
-          onDeleted={() => { onFocus(null); load() }}
-        />
-      </section>
-    )
-  }
-
-  const years = [...new Set((rows || []).map((c) => c.year))].sort((a, b) => b - a)
-
-  return (
-    <section>
-      <div className="adm-toolbar">
-        <select className="adm-select" style={{ width: 170 }} value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">All statuses</option>
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-          <option value="archived">Archived</option>
-        </select>
-        <select className="adm-select" style={{ width: 140 }} value={year} onChange={(e) => setYear(e.target.value)}>
-          <option value="">All years</option>
-          {years.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
-        {orgFilter && (
-          <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={onClearOrgFilter}>
-            Clear organisation filter ✕
-          </button>
-        )}
-      </div>
-
-      {error && <p className="adm-error">{error}</p>}
-      {!rows ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
-        <p className="adm-empty">No cycles yet.</p>
-      ) : (
-        <div className="adm-panel adm-table-wrap">
-          <table className="adm-table">
-            <thead>
-              <tr>
-                <th>Year</th><th>Organisation</th><th>Cycle</th><th>Status</th>
-                <th>Questions</th><th>Enrolled</th><th>Submitted</th><th>Winner</th><th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((c) => (
-                <tr key={c.id}>
-                  <td className="adm-num">{c.year}</td>
-                  <td>
-                    <button className="adm-link" style={{ padding: 0, fontSize: 14 }} onClick={() => onOpenOrg(c.organisation)}>
-                      {c.organisationName}
-                    </button>
-                    <div className="adm-sub" style={{ margin: 0 }}>
-                      {TYPE_LABEL[c.organisationType] || c.organisationType}{c.organisationCity ? ` · ${c.organisationCity}` : ''}
-                    </div>
-                  </td>
-                  <td>{c.title}</td>
-                  <td>
-                    <span className={`adm-badge adm-badge--${c.open ? 'ok' : c.status === 'draft' ? 'muted' : 'warn'}`}>
-                      {c.status === 'published' ? (c.open ? 'test open' : c.upcoming ? 'scheduled' : c.ended ? 'closed' : 'published') : c.status}
-                    </span>
-                  </td>
-                  <td className="adm-num">{c.questions}</td>
-                  <td className="adm-num">{c.enrolled}</td>
-                  <td className="adm-num">{c.submitted}</td>
-                  <td>{c.winnerName || '—'}{c.winnerEmail && <div className="adm-sub" style={{ margin: 0 }}>{c.winnerEmail}</div>}</td>
-                  <td><button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => onFocus(c.id)}>Open</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </section>
-  )
-}

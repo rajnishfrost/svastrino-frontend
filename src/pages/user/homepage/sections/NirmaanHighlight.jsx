@@ -5,10 +5,6 @@ import { ArrowRight, Check, GraduationCap } from 'lucide-react'
  * Home · section 9 — highlight for the Nirmaan Skill-Build product. Uses the
  * Nirmaan palette (green / brown / cream), so it is unaffected by the crimson
  * site accent.
- *
- * NOTE: the approved design also shows a scholarship note (a dashed-green box).
- * It stays hidden until the scholarship page is re-enabled in the router and
- * the scholarship copy is confirmed — see the commented block below.
  */
 const POINTS = [
   "Youth-Focused Life & Career Development Course",
@@ -46,16 +42,6 @@ export default function NirmaanHighlight() {
                   </li>
                 ))}
               </ul>
-
-              {/* Scholarship note — hidden until the scholarship route + copy are confirmed.
-              <div className="mt-6 rounded-xl border border-dashed border-nirmaan-green/50 bg-white/70 p-4 text-sm text-nirmaan-brown-soft">
-                <strong className="font-semibold text-nirmaan-brown">🎓 Scholarship available.</strong>{' '}
-                One deserving student can win their entire Nirmaan package free.{' '}
-                <Link to="/nirmaan-scholarship" className="font-semibold text-nirmaan-green underline-offset-4 hover:underline">
-                  See how the scholarship works →
-                </Link>
-              </div>
-              */}
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link

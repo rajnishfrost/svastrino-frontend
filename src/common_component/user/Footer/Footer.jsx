@@ -49,7 +49,7 @@ function registerColumn(user) {
   return {
     title: user ? 'Your account' : 'Register',
     links: [
-      // Scholarship is hidden for now, so partner enquiries go through Contact.
+      // Partner enquiries go through Contact.
       { label: 'Partner with us', to: '/contact' },
       ...(user
         ? [

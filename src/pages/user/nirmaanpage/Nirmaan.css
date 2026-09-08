@@ -364,21 +364,12 @@
 
 /* ---- 50/50 brown:green balance ----
    Headings alternate down the page: Hero(brown) · Benefits(green) ·
-   How-it-works(brown) · Packages(green) · Scholarship(brown). Green still
+   How-it-works(brown) · Packages(green). Green still
    owns every accent/action (buttons, checks, badges, prices, hero phrase),
    so the two colours land ~50/50. Scoped to each section id. */
 #how .section-title,
-#scholarship .section-title {
-  color: var(--nirmaan-brown);
-}
 #how .section-eyebrow,
-#scholarship .section-eyebrow {
-  color: var(--nirmaan-brown);
-}
 #how .nirmaan-step-n,
-#scholarship .nirmaan-step-n {
-  background: var(--nirmaan-brown);
-}
 
 /* ---- Responsive ---- */
 @media (max-width: 900px) {
@@ -406,15 +397,6 @@
   }
 }
 
-/* Scholarship section — closing note under the steps */
-.nirmaan-scholarship-note {
-  margin-top: var(--space-4);
-}
-.nirmaan-scholarship-note a {
-  color: var(--color-accent, #2f7ae5);
-  font-weight: 600;
-  text-decoration: underline;
-}
 
 /* ---- The 24-week journey ---- */
 .nirmaan-phases { max-width: 820px; margin: var(--space-5) auto 0; }

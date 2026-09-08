@@ -7,8 +7,7 @@ import './Offers.css'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 /**
- * "New offers" — the discounts, new batches and scholarship windows the team
- * has running right now.
+ * "New offers" — the discounts and new batches the team has running right now.
  *
  * Public on purpose: an offer only works if somebody who has not signed up yet
  * can read it. The server decides what a signed-out visitor is allowed to see,
@@ -40,7 +39,7 @@ export default function Offers() {
       <PageHero
         eyebrow="Offers"
         title="New offers"
-        subtitle="Everything we have running at the moment — discounts, new batches and scholarship windows, in one place."
+        subtitle="Everything we have running at the moment — discounts and new batches, in one place."
       />
 
       <section className="section">

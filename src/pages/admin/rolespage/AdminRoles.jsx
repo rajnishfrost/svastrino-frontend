@@ -18,7 +18,7 @@ const MODULES = [
   { key: 'coupons', label: 'Coupons' },
   { key: 'mentoring', label: 'Mentoring' },
   { key: 'orders', label: 'Orders' },
-  { key: 'scholarship', label: 'Scholarship' },
+  { key: 'organisations', label: 'Organisations' },
   { key: 'skill-builds', label: 'Skill Builds' },
   { key: 'testimonials', label: 'Reviews' },
   { key: 'users', label: 'Users' },
