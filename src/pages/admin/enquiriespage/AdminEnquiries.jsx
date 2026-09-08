@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminEnquiries.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 /**
  * Everyone who has written in — the Contact page, the home-page banner, and the
@@ -45,17 +46,23 @@ export default function AdminEnquiries() {
   const [busyId, setBusyId] = useState('')
   const [openId, setOpenId] = useState('')
   const [note, setNote] = useState('')
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
   const load = useCallback(() => {
     const qs = new URLSearchParams()
     if (source) qs.set('source', source)
     if (status) qs.set('status', status)
+    qs.set('page', page)
     setError('')
-    api(`/admin/enquiries${qs.toString() ? `?${qs}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.enquiries))
+    api(`/admin/enquiries?${qs}`, { auth: 'admin' })
+      .then((d) => { setRows(d.enquiries); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
-  }, [source, status])
+  }, [source, status, page])
 
+  // A filter change starts again at page 1: staying on page 4 of a list that
+  // now has two pages shows an empty table and looks broken.
+  useEffect(() => { setPage(1) }, [source, status])
   useEffect(() => { load() }, [load])
 
   const patch = async (id, body) => {
@@ -197,6 +204,7 @@ export default function AdminEnquiries() {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="enquiry" />
     </>
   )
 }

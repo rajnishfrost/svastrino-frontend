@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
+import SponsoredCoursePicker from '../../../common_component/admin/SponsoredCoursePicker/SponsoredCoursePicker.jsx'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 // One account system: every person is one account with one role (managed on the
 // Roles page). Only superadmin, or a role that grants ≥1 module, can enter the panel.
@@ -24,6 +26,7 @@ const BLANK_ORG = {
   name: '', type: 'school', description: '', branch: '', address: '',
   city: '', state: '', pincode: '', website: '', contactPerson: '', phone: '',
   publicListed: true,
+  packages: [], // sponsored Skill-Build course SKUs — see SponsoredCoursePicker
 }
 
 // Red-outline an input that failed validation, and print the reason under it.
@@ -54,6 +57,9 @@ function Accounts({ me }) {
   const isSuper = me.role === 'superadmin'
   const [users, setUsers] = useState(null)
   const [roles, setRoles] = useState([])
+  const [signups, setSignups] = useState(null)
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
   const [q, setQ] = useState('')
   const [error, setError] = useState('')
   const [savingId, setSavingId] = useState(null)
@@ -62,8 +68,8 @@ function Accounts({ me }) {
   const [deletingId, setDeletingId] = useState(null)
 
   const loadList = (search = '') =>
-    api(`/admin/users${search ? `?q=${encodeURIComponent(search)}` : ''}`, { auth: 'admin' })
-      .then((d) => setUsers(d.users))
+    api(`/admin/users?${new URLSearchParams({ ...(search ? { q: search } : {}), page })}`, { auth: 'admin' })
+      .then((d) => { setUsers(d.users); setSignups(d.signups || null); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
 
   const load = () => {
@@ -72,8 +78,26 @@ function Accounts({ me }) {
   }
 
   useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  // Turning a page re-asks the server; the search box keeps whatever is in it.
+  useEffect(() => { loadList(q) }, [page]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const roleMap = Object.fromEntries(roles.map((r) => [r.key, r]))
+
+  // How the account came to exist, in the words a person would use.
+  const SIGNUP = {
+    password: { label: 'Email', tone: 'muted' },
+    google: { label: 'Google', tone: 'ok' },
+    invite: { label: 'Invited', tone: 'warn' },
+    guest: { label: 'Checkout', tone: 'muted' },
+  }
+  const STATUS = {
+    active: { label: 'Active', tone: 'ok' },
+    invited: { label: 'Invite sent', tone: 'warn' },
+    disabled: { label: 'Disabled', tone: 'muted' },
+  }
+  const onDate = (iso) => (iso
+    ? new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—')
   const tone = (key) => (key === 'superadmin' ? 'warn' : roleMap[key]?.panel ? 'ok' : 'muted')
   const label = (key) => roleMap[key]?.name || key
 
@@ -127,8 +151,8 @@ function Accounts({ me }) {
     <section>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 4 }}>
         <input className="adm-input" style={{ maxWidth: 280 }} placeholder="Search name or email"
-               value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && loadList(q)} />
-        <button className="adm-btn adm-btn--ghost" onClick={() => loadList(q)}>Search</button>
+               value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (setPage(1), loadList(q))} />
+        <button className="adm-btn adm-btn--ghost" onClick={() => { setPage(1); loadList(q) }}>Search</button>
         {isSuper && (
           <button className="adm-btn adm-btn--sm" style={{ marginLeft: 'auto' }}
                   onClick={() => { setEditing(null); setAdding((v) => !v) }}>+ New account</button>
@@ -143,6 +167,25 @@ function Accounts({ me }) {
         </div>
       )}
 
+      {/* Where accounts come from — counted across every account, not just the
+          rows a search happens to be showing. */}
+      {signups && (
+        <div className="adm-panel" style={{ display: 'flex', flexWrap: 'wrap', gap: 24, padding: '14px 18px', marginBottom: 14 }}>
+          {[
+            ['Total accounts', signups.total],
+            ['Signed up with email', signups.password],
+            ['Signed up with Google', signups.google],
+            ['Invited by an organisation', signups.invite],
+            ['Created at checkout', signups.guest],
+          ].map(([label, n]) => (
+            <div key={label}>
+              <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2 }}>{n}</div>
+              <div className="adm-sub" style={{ margin: 0 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {error && <p className="adm-error">{error}</p>}
       {!users ? <p className="adm-empty">Loading…</p> : users.length === 0 ? (
         <p className="adm-empty">No accounts found.</p>
@@ -150,16 +193,25 @@ function Accounts({ me }) {
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Verified</th><th>Role</th><th>Access</th><th>Student portal</th>{isSuper && <th></th>}</tr>
+              <tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Organisation</th><th>Signed up</th><th>Created</th><th>Access</th><th>Student portal</th>{isSuper && <th></th>}</tr>
             </thead>
             <tbody>
               {users.map((u) => (
                 <tr key={u.id}>
                   <td>{u.name || '—'}{me.id === u.id && <span className="adm-sub" style={{ fontWeight: 400 }}> (you)</span>}</td>
                   <td>{u.email}</td>
-                  <td>{u.emailVerified
-                    ? <span className="adm-badge adm-badge--ok">Yes</span>
-                    : <span className="adm-badge adm-badge--warn">No</span>}</td>
+                  {/* The same rule the organisation's roster uses. "Verified"
+                      used to sit here and answered a different question, which
+                      is how one student could read Active on one screen and
+                      Invite sent on the other. */}
+                  <td>
+                    <span className={`adm-badge adm-badge--${(STATUS[u.status] || STATUS.active).tone}`}>
+                      {(STATUS[u.status] || STATUS.active).label}
+                    </span>
+                    {!u.emailVerified && (
+                      <div className="adm-sub" style={{ margin: 0 }}>email unverified</div>
+                    )}
+                  </td>
                   <td>
                     {isSuper && roles.length && me.id !== u.id ? (
                       <select className="adm-select" style={{ width: 160 }} value={u.role} disabled={savingId === u.id}
@@ -169,6 +221,24 @@ function Accounts({ me }) {
                     ) : (
                       <span className={`adm-badge adm-badge--${tone(u.role)}`}>{label(u.role)}</span>
                     )}
+                  </td>
+                  {/* Every account belongs somewhere. A public signup belongs
+                      to nobody, and that is the answer, not a blank. */}
+                  <td>
+                    {u.organisation
+                      ? u.organisation.name
+                      : <span className="adm-sub" style={{ margin: 0 }}>Self</span>}
+                  </td>
+                  <td>
+                    <span className={`adm-badge adm-badge--${(SIGNUP[u.signupMethod] || SIGNUP.password).tone}`}>
+                      {(SIGNUP[u.signupMethod] || SIGNUP.password).label}
+                    </span>
+                  </td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    {onDate(u.createdAt)}
+                    <div className="adm-sub" style={{ margin: 0 }}>
+                      by {u.createdBy ? (u.createdBy.name || u.createdBy.email) : 'Self'}
+                    </div>
                   </td>
                   <td>
                     {u.active === false
@@ -223,6 +293,7 @@ function Accounts({ me }) {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="account" />
     </section>
   )
 }
@@ -239,13 +310,29 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [tried, setTried] = useState(false) // has submit been attempted?
+
+  // An account that already owns an organisation: its sponsored course is the
+  // one thing about that organisation an admin reaches for from HERE, so it is
+  // loaded from the organisation record and saved back alongside the account.
+  // `null` until it has loaded, so an unfinished fetch can never save as "none".
+  const ownedOrgId = account?.role === ORG_ROLE ? account?.organisation?.id : null
+  const [ownedPkgs, setOwnedPkgs] = useState(null)
+  const [loadedPkgs, setLoadedPkgs] = useState(null)
+  useEffect(() => {
+    if (!ownedOrgId) return
+    api(`/admin/organisations/${ownedOrgId}`, { auth: 'admin' })
+      .then((d) => { const v = d.organisation?.packages || []; setOwnedPkgs(v); setLoadedPkgs(v) })
+      .catch(() => { setOwnedPkgs([]); setLoadedPkgs([]) })
+  }, [ownedOrgId])
+  const pkgsChanged = ownedPkgs != null && loadedPkgs != null &&
+    JSON.stringify([...ownedPkgs].sort()) !== JSON.stringify([...loadedPkgs].sort())
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
   const setOrgField = (k, v) => setOrg((p) => ({ ...p, [k]: v }))
   const selected = roles.find((r) => r.key === f.role)
 
   // Only ask for organisation details when we'd actually be creating one — i.e.
   // the role is changing TO organisation. An account that already owns one keeps
-  // its details on the Scholarship page (and in its own portal).
+  // its details on the Organisations page (and in its own portal).
   const needsOrg = f.role === ORG_ROLE && account?.role !== ORG_ROLE
 
   // What's wrong, per field. The button stays clickable and submitting shows
@@ -293,6 +380,14 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
             ...orgBody,
           },
         })
+        // Only when it actually changed, and only while the account still owns
+        // the organisation — a role moved away from Organisation is refused by
+        // the server above, so reaching here means it does.
+        if (ownedOrgId && pkgsChanged) {
+          await api(`/admin/organisations/${ownedOrgId}`, {
+            method: 'PUT', auth: 'admin', body: { packages: ownedPkgs },
+          })
+        }
       }
       onSaved()
     } catch (e) { setErr(e.message) } finally { setBusy(false) }
@@ -330,16 +425,46 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
       {f.role === 'superadmin'
         ? <p className="adm-sub" style={{ marginTop: 4 }}>Full access to everything, including managing accounts &amp; roles.</p>
         : f.role === ORG_ROLE
-          ? <p className="adm-sub" style={{ marginTop: 4 }}>Partner organisation — no admin panel. Signs in to the <strong>/organisation</strong> portal to add students and run its scholarship.</p>
+          ? <p className="adm-sub" style={{ marginTop: 4 }}>Partner organisation — no admin panel. Signs in to the <strong>/organisation</strong> portal to add and manage its students.</p>
           : selected?.panel
             ? <p className="adm-sub" style={{ marginTop: 4 }}>Panel access to this role’s modules — edit them on the Roles page.</p>
             : <p className="adm-sub" style={{ marginTop: 4 }}>Site account — no panel access unless this role is given modules on the Roles page.</p>}
 
       {needsOrg && <OrgFields org={org} set={setOrgField} loginEmail={f.email} nameErr={fieldErr('orgName')} />}
       {f.role === ORG_ROLE && account?.role === ORG_ROLE && (
-        <p className="adm-sub" style={{ marginTop: 4 }}>
-          Edit this organisation’s name, address and access on the <strong>Scholarship → Organisations</strong> page.
-        </p>
+        <div className="adm-panel" style={{ marginTop: 12, background: 'var(--gray-50)' }}>
+          <h3 style={{ fontSize: 15, margin: '0 0 4px' }}>
+            {account.organisation?.name || 'Organisation'}
+          </h3>
+          <p className="adm-sub" style={{ marginTop: 0 }}>
+            Name, address and portal access are edited on the <strong>Organisations</strong> page.
+            The sponsored course is managed here as well.
+          </p>
+          {ownedPkgs == null
+            ? <p className="adm-sub" style={{ margin: 0 }}>Loading sponsored course…</p>
+            : <SponsoredCoursePicker value={ownedPkgs} onChange={setOwnedPkgs} />}
+        </div>
+      )}
+
+      {account?.removedFrom && !account.organisation && (
+        <div className="adm-panel" style={{ marginTop: 12, background: 'var(--gray-50)' }}>
+          <h3 style={{ fontSize: 15, margin: '0 0 4px' }}>Removed by their organisation</h3>
+          <p className="adm-sub" style={{ marginTop: 0 }}>
+            <strong>{account.removedFrom.name}</strong> removed this student from its roster
+            {account.removedFrom.at ? ` on ${fmt(account.removedFrom.at)}` : ''}.
+            Restoring puts them back on that roster, switches their login back on if the removal
+            switched it off, and grants the organisation’s sponsored course if they do not hold it yet.
+          </p>
+          <button type="button" className="adm-btn" disabled={busy} onClick={async () => {
+            setBusy(true); setErr('')
+            try {
+              await api(`/admin/organisations/students/${account.id}/restore`, { method: 'POST', auth: 'admin' })
+              onSaved()
+            } catch (e) { setErr(e.message) } finally { setBusy(false) }
+          }}>
+            {busy ? 'Restoring…' : `Restore to ${account.removedFrom.name}`}
+          </button>
+        </div>
       )}
 
       {!isNew && !isSelf && (
@@ -430,6 +555,8 @@ function OrgFields({ org, set, loginEmail, nameErr }) {
                  placeholder={loginEmail || 'Defaults to the login email'}
                  onChange={(e) => set('email', e.target.value)} /></div>
       </div>
+
+      <SponsoredCoursePicker value={org.packages || []} onChange={(v) => set('packages', v)} />
 
       <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 14 }}>
         <input type="checkbox" checked={org.publicListed !== false}

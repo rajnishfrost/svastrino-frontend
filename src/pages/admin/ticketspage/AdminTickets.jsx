@@ -2,6 +2,7 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminTickets.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 /**
  * Support conversations, and the one screen where a locked course is reopened.
@@ -110,17 +111,22 @@ export default function AdminTickets() {
     const t = setTimeout(() => setTerm(q.trim()), 300)
     return () => clearTimeout(t)
   }, [q])
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
   const load = useCallback(() => {
     const qs = new URLSearchParams()
     if (status) qs.set('status', status)
     if (term) qs.set('q', term)
+    qs.set('page', page)
     setError('')
-    api(`/admin/tickets${qs.toString() ? `?${qs}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.tickets))
+    api(`/admin/tickets?${qs}`, { auth: 'admin' })
+      .then((d) => { setRows(d.tickets); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
-  }, [status, term])
+  }, [status, term, page])
 
+  // A filter or search change starts again at page 1 — see AdminOrders.
+  useEffect(() => { setPage(1) }, [status, term])
   useEffect(() => { load() }, [load])
 
   /**
@@ -469,6 +475,7 @@ export default function AdminTickets() {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="ticket" />
 
       {confirm && (
         <div className="adm-modal-overlay" role="dialog" aria-modal="true" aria-label="Confirm reopening access">

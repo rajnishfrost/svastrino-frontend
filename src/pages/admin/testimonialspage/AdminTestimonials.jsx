@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
 import '../adminShared.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 /**
  * Reviews — the quotes that appear on the home page, the Services cards, each
@@ -108,6 +109,7 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
         </button>
         <button className="adm-btn adm-btn--ghost" onClick={onCancel} disabled={busy}>Cancel</button>
       </div>
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="review" />
     </div>
   )
 }
@@ -119,13 +121,15 @@ export default function AdminTestimonials() {
   const [editing, setEditing] = useState(null) // id
   const [adding, setAdding] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
-  const load = () =>
-    api('/admin/testimonials', { auth: 'admin' })
-      .then((d) => setRows(d.testimonials))
+  const load = (pageNo = page) =>
+    api(`/admin/testimonials?page=${pageNo}`, { auth: 'admin' })
+      .then((d) => { setRows(d.testimonials); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() /* eslint-disable-next-line */ }, [page])
 
   const done = async (text) => { setMsg(text); setEditing(null); setAdding(false); await load() }
 

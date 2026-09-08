@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 // Coupon endpoints live under the payments admin module.
 export default function AdminCoupons() {
@@ -10,13 +11,15 @@ export default function AdminCoupons() {
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [toggling, setToggling] = useState(null) // id of the coupon being switched
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
-  const load = () =>
-    api('/admin/payments/coupons', { auth: 'admin' })
-      .then((d) => setCoupons(d.coupons))
+  const load = (pageNo = page) =>
+    api(`/admin/payments/coupons?page=${pageNo}`, { auth: 'admin' })
+      .then((d) => { setCoupons(d.coupons); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() /* eslint-disable-next-line */ }, [page])
 
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
@@ -123,6 +126,7 @@ export default function AdminCoupons() {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="coupon" />
     </div>
   )
 }

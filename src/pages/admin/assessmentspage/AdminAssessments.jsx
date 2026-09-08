@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
 import '../adminShared.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 const STATUS_CLS = { completed: 'ok', submitted: 'warn', in_progress: 'muted', not_started: 'muted' }
 const STATUS_LABEL = {
@@ -21,13 +22,21 @@ export default function AdminAssessments() {
   const [status, setStatus] = useState('submitted') // default = the pending queue
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // assessment being completed
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
-  const load = (st = status) =>
-    api(`/admin/assessments${st ? `?status=${st}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.assessments))
+  const load = (st = status, pageNo = page) => {
+    const qs = new URLSearchParams()
+    if (st) qs.set('status', st)
+    qs.set('page', pageNo)
+    return api(`/admin/assessments?${qs}`, { auth: 'admin' })
+      .then((d) => { setRows(d.assessments); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
+  }
 
-  useEffect(() => { load() /* eslint-disable-next-line */ }, [status])
+  // A filter change starts again at page 1 — see AdminOrders.
+  useEffect(() => { setPage(1) }, [status])
+  useEffect(() => { load() /* eslint-disable-next-line */ }, [status, page])
 
   const reopen = async (id) => {
     if (!confirm('Send this back to the student as “in progress”?')) return
@@ -106,6 +115,7 @@ export default function AdminAssessments() {
           onSaved={() => { setEditing(null); load() }}
         />
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="assessment" />
     </div>
   )
 }
