@@ -116,7 +116,7 @@ export default function Resources({ view = 'all' }) {
         illustration={<ProgramHeroArt src={heroArt} alt="" />}
       />
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-10 md:py-14">
         <div className="container">
           {/* ---- Landing ---- */}
           {view === 'all' && (
@@ -242,7 +242,7 @@ export default function Resources({ view = 'all' }) {
       </section>
 
       {latest.length > 0 && (
-        <section className="bg-soft py-16 md:py-20">
+        <section className="bg-soft py-12 md:py-16">
           <div className="container">
             <div className="text-center">
               <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">From the blog</p>
@@ -250,13 +250,28 @@ export default function Resources({ view = 'all' }) {
                 Latest reading
               </h2>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
               {latest.map((p) => (
-                <article key={p.slug} className={cardClass}>
-                  <h3 className="font-display text-lg font-bold text-brand-navy">
-                    <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
+                <article
+                  key={p.slug}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                >
+                  {p.coverImage && (
+                    <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
+                      <img
+                        src={p.coverImage}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </Link>
+                  )}
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
+                      <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
+                    </h3>
+                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
+                  </div>
                 </article>
               ))}
             </div>
