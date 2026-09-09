@@ -109,7 +109,7 @@ export default function CourseDetail() {
           <button
             type="button"
             onClick={goBack}
-            className="text-sm font-semibold text-brand-crimson hover:underline"
+            className="cursor-pointer border-0 bg-transparent p-0 font-sans text-sm font-semibold text-brand-crimson hover:underline"
           >
             ← All career streams
           </button>
