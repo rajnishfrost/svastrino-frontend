@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import SearchSuggest from '../../../common_component/user/SearchSuggest/SearchSuggest.jsx'
 import { fetchBlogs, fetchBlogCategories } from '../../../api/blogs.js'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
@@ -90,6 +91,27 @@ export default function Blog() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // The five closest posts, offered under the box while the reader types.
+  const suggestPosts = useCallback(
+    (query) =>
+      fetchBlogs({ limit: 5, q: query }).then((d) =>
+        d.posts.map((p) => ({
+          key: p.slug,
+          label: p.title,
+          sub: p.categories?.[0] || formatDate(p.publishedAt),
+          to: `/${p.slug}`,
+        }))
+      ),
+    []
+  )
+
+  // Emptying the box drops the filter with it — see the same handler in
+  // Resources.jsx; the applied search lives in the URL, not in the field.
+  const onSearchChange = (next) => {
+    setSearch(next)
+    if (!next.trim() && q) update({ q: '' })
+  }
+
   const onSearch = (e) => {
     e.preventDefault()
     update({ q: search.trim() })
@@ -130,13 +152,14 @@ export default function Blog() {
             </div>
 
             <form className="flex shrink-0 items-center gap-2" onSubmit={onSearch}>
-              <input
-                type="search"
+              <SearchSuggest
+                className="w-full md:w-56"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={onSearchChange}
+                suggest={suggestPosts}
                 placeholder="Search posts…"
-                aria-label="Search blog posts"
-                className="h-10 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15 md:w-56"
+                ariaLabel="Search blog posts"
+                emptyLabel="No matching posts"
               />
               <button
                 type="submit"

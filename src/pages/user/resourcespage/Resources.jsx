@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import SearchSuggest from '../../../common_component/user/SearchSuggest/SearchSuggest.jsx'
 import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary, fetchCourses } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
@@ -130,6 +131,29 @@ export default function Resources({ view = 'all' }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // The five closest courses, offered under the box while the reader types.
+  const suggestCourses = useCallback(
+    (query) =>
+      fetchCourses({ limit: 5, q: query }).then((d) =>
+        d.courses.map((c) => ({
+          key: c.slug,
+          label: c.name,
+          sub: c.fields.map((f) => f.name).join(' · '),
+          to: `/${c.slug}`,
+        }))
+      ),
+    []
+  )
+
+  // Emptying the box drops the filter with it. The applied search lives in the
+  // URL and used to change only on submit, so clearing the field with its ✕ left
+  // the box looking empty over a list that was still filtered by what had been
+  // in it.
+  const onSearchChange = (next) => {
+    setSearch(next)
+    if (!next.trim() && q) update({ q: '' })
+  }
+
   const onSearch = (e) => {
     e.preventDefault()
     update({ q: search.trim() })
@@ -216,17 +240,16 @@ export default function Resources({ view = 'all' }) {
                 </div>
 
                 <form className="flex shrink-0 items-center gap-2" onSubmit={onSearch}>
-                  <div className="relative flex-1 md:w-56">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-slate" />
-                    <input
-                      type="search"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search careers…"
-                      aria-label="Search the career library"
-                      className="h-10 w-full rounded-lg border border-brand-navy/15 bg-white pl-9 pr-3 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15"
-                    />
-                  </div>
+                  <SearchSuggest
+                    className="flex-1 md:w-56"
+                    value={search}
+                    onChange={onSearchChange}
+                    suggest={suggestCourses}
+                    icon={Search}
+                    placeholder="Search careers…"
+                    ariaLabel="Search the career library"
+                    emptyLabel="No matching careers"
+                  />
                   <button
                     type="submit"
                     className="h-10 shrink-0 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"

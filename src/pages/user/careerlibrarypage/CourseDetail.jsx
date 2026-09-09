@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchCourse } from '../../../api/content.js'
+import RichText from '../../../common_component/user/RichText/RichText.jsx'
 
 export default function CourseDetail() {
   const { slug } = useParams()
@@ -98,11 +99,9 @@ export default function CourseDetail() {
     )
   }
 
-  const hasInstitutes = course.institutesIndia.length > 0 || course.institutesInternational.length > 0
-
   return (
     <>
-      <PageHero eyebrow="Career Library" title={course.name} subtitle={course.overview} />
+      <PageHero eyebrow="Career Library" title={course.name} />
 
       <section className="bg-white py-16 md:py-20">
         <div className="container mx-auto max-w-4xl">
@@ -128,101 +127,11 @@ export default function CourseDetail() {
             </div>
           )}
 
-          {/* Top qualities */}
-          {course.topQualities.length > 0 && (
-            <section className="mt-10">
-              <h2 className="border-b border-brand-navy/10 pb-2 font-display text-2xl font-bold text-brand-navy">
-                Qualities you'll need
-              </h2>
-              <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-                {course.topQualities.map((q, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-brand-navy">
-                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand-crimson" />
-                    {q}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* Jobs + salary */}
-          {course.topJobs.length > 0 && (
-            <section className="mt-10">
-              <h2 className="border-b border-brand-navy/10 pb-2 font-display text-2xl font-bold text-brand-navy">
-                Careers &amp; salaries
-              </h2>
-              <div className="mt-5 grid gap-6 md:grid-cols-2">
-                {course.topJobs.map((j, i) => (
-                  <article key={i} className="rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
-                    <h3 className="font-display text-lg font-bold text-brand-navy">{j.role}</h3>
-                    {j.description && <p className="mt-2 text-sm leading-relaxed text-brand-slate">{j.description}</p>}
-                    {(j.indiaSalary || j.globalSalary) && (
-                      <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-brand-navy/10 pt-4">
-                        {j.indiaSalary && (
-                          <div>
-                            <dt className="text-xs font-semibold uppercase tracking-wide text-brand-slate">India</dt>
-                            <dd className="font-display text-base font-bold text-brand-navy">{j.indiaSalary}</dd>
-                          </div>
-                        )}
-                        {j.globalSalary && (
-                          <div>
-                            <dt className="text-xs font-semibold uppercase tracking-wide text-brand-slate">Global</dt>
-                            <dd className="font-display text-base font-bold text-brand-navy">{j.globalSalary}</dd>
-                          </div>
-                        )}
-                      </dl>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Institutes */}
-          {hasInstitutes && (
-            <section className="mt-10">
-              <h2 className="border-b border-brand-navy/10 pb-2 font-display text-2xl font-bold text-brand-navy">
-                Top institutes
-              </h2>
-              <div className="mt-5 grid gap-6 md:grid-cols-2">
-                {course.institutesIndia.length > 0 && (
-                  <div className="rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
-                    <h3 className="font-display text-lg font-bold text-brand-navy">India</h3>
-                    <ul className="mt-3 space-y-1.5 text-sm text-brand-slate">
-                      {course.institutesIndia.map((n, i) => <li key={i}>{n}</li>)}
-                    </ul>
-                  </div>
-                )}
-                {course.institutesInternational.length > 0 && (
-                  <div className="rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
-                    <h3 className="font-display text-lg font-bold text-brand-navy">International</h3>
-                    <ul className="mt-3 space-y-1.5 text-sm text-brand-slate">
-                      {course.institutesInternational.map((n, i) => <li key={i}>{n}</li>)}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* Career ladder */}
-          {course.careerLadder.length > 0 && (
-            <section className="mt-10">
-              <h2 className="border-b border-brand-navy/10 pb-2 font-display text-2xl font-bold text-brand-navy">
-                Career ladder
-              </h2>
-              <ol className="mt-5 divide-y divide-brand-navy/10">
-                {course.careerLadder.map((step, i) => (
-                  <li key={i} className="flex items-start gap-4 py-4">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-crimson font-display text-sm font-bold text-white">
-                      {i + 1}
-                    </span>
-                    <p className="pt-1 text-sm text-brand-navy">{step}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )}
+          {/* The page itself — whatever an admin wrote, in the order they
+              wrote it. It used to be four fixed sections built from separate
+              fields; those were folded into this document by
+              migrateCourseSections.js on the server. */}
+          <RichText blocks={course.overviewBlocks} className="mt-8" />
 
           {/* CTA */}
           <div className="mt-12 rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
