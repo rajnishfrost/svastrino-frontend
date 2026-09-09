@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
-import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
+import { fetchFaqs, fetchTestimonials, fetchCareerLibrary, fetchCourses } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
 
@@ -17,6 +17,10 @@ import PageSeo from '../../../seo/PageSeo.jsx'
  *   /resources/success-stories    → client stories
  * One component drives them all via the `view` prop (set by the route).
  */
+// The Career Library reads like the blog: a stream filter, a search box and
+// twelve courses to a page — three full rows on a desktop grid.
+const PER_PAGE = 12
+
 const SUBPAGES = [
   { key: 'career-library', to: '/resources/career-library', label: 'Career Library', blurb: 'Explore career streams and the courses under each.' },
   { key: 'faqs', to: '/resources/faqs', label: 'FAQs', blurb: 'Answers to common questions about mentoring & counselling.' },
@@ -49,11 +53,21 @@ const VIEW_SEO = {
 }
 
 export default function Resources({ view = 'all' }) {
+  // The Career Library's stream, page and search live in the URL, so a filtered
+  // view is shareable and survives a refresh — the same as /blog.
+  const [params, setParams] = useSearchParams()
+  const field = params.get('field') || ''
+  const page = Number(params.get('page')) || 1
+  const q = params.get('q') || ''
+
   const [fields, setFields] = useState([])
   const [faqs, setFaqs] = useState([])
   const [stories, setStories] = useState([])
   const [latest, setLatest] = useState([])
-  const [q, setQ] = useState('') // Career Library search box
+  const [search, setSearch] = useState(q) // what is typed, before it is applied
+  const [courses, setCourses] = useState([])
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
+  const [coursesLoading, setCoursesLoading] = useState(true)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -78,7 +92,56 @@ export default function Resources({ view = 'all' }) {
     return () => { cancelled = true }
   }, [view, reloadKey])
 
+  // A page of courses. Separate from the effect above so paging or switching
+  // stream re-fetches one page, not the whole stream list behind the chips.
+  useEffect(() => {
+    if (view !== 'career-library') return
+    let cancelled = false
+    setCoursesLoading(true)
+
+    fetchCourses({ page, limit: PER_PAGE, field, q })
+      .then((d) => {
+        if (cancelled) return
+        setCourses(d.courses)
+        setPagination(d.pagination)
+      })
+      .catch((err) => { if (!cancelled) setError(err) })
+      .finally(() => { if (!cancelled) setCoursesLoading(false) })
+
+    return () => { cancelled = true }
+  }, [view, page, field, q, reloadKey])
+
   const retry = () => setReloadKey((k) => k + 1)
+
+  // Changing a filter returns to page one — staying on page four of a list that
+  // now has two shows an empty grid and reads as broken.
+  const update = (next) => {
+    const merged = { field, q, ...next }
+    const clean = {}
+    Object.entries(merged).forEach(([k, v]) => { if (v) clean[k] = v })
+    setParams(clean)
+  }
+
+  const goToPage = (n) => {
+    const clean = { page: String(n) }
+    if (field) clean.field = field
+    if (q) clean.q = q
+    setParams(clean)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const onSearch = (e) => {
+    e.preventDefault()
+    update({ q: search.trim() })
+  }
+
+  const filterBtn = (active) =>
+    `cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+      active
+        ? 'border-brand-crimson bg-brand-crimson text-white'
+        : 'border-brand-navy/15 bg-white text-brand-navy hover:border-brand-crimson hover:text-brand-crimson'
+    }`
+
   const meta = SUBPAGES.find((s) => s.key === view)
   // Themed hero illustration per resources sub-view.
   const heroArt = {
@@ -87,21 +150,6 @@ export default function Resources({ view = 'all' }) {
     faqs: '/assets/images/faqs-t.png',
     'success-stories': '/assets/images/success-t.png',
   }[view] || '/assets/images/all-resources-t.png'
-
-  // Career Library search. Matching a STREAM keeps all of its courses; matching
-  // only a course narrows that stream down to the courses that matched, so the
-  // visitor sees exactly what they searched for and nothing else.
-  const term = q.trim().toLowerCase()
-  const shownFields = !term
-    ? fields
-    : fields
-        .map((f) => {
-          if (f.name.toLowerCase().includes(term)) return f
-          const courses = f.courses.filter((c) => c.name.toLowerCase().includes(term))
-          return courses.length ? { ...f, courses } : null
-        })
-        .filter(Boolean)
-  const matchCount = shownFields.reduce((n, f) => n + f.courses.length, 0)
 
   const cardClass =
     'rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm'
@@ -151,61 +199,115 @@ export default function Resources({ view = 'all' }) {
                 will help you narrow it down.
               </p>
 
-              <div className="mx-auto mt-8 flex max-w-xl items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-slate" />
-                  <input
-                    type="search"
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder="Search a career or a stream — try “design” or “commerce”"
-                    aria-label="Search the career library"
-                    className="h-11 w-full rounded-lg border border-brand-navy/15 bg-white pl-9 pr-3 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15"
-                  />
-                </div>
-                {term && (
-                  <button
-                    type="button"
-                    onClick={() => setQ('')}
-                    className="h-11 shrink-0 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-medium text-brand-navy hover:text-brand-crimson"
-                  >
-                    Clear
+              <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div className="flex flex-wrap gap-2">
+                  <button className={filterBtn(!field)} onClick={() => update({ field: '' })}>
+                    All{!field && !q ? ` (${pagination.total})` : ''}
                   </button>
-                )}
+                  {fields.map((f) => (
+                    <button
+                      key={f.slug}
+                      className={filterBtn(field === f.slug)}
+                      onClick={() => update({ field: f.slug })}
+                    >
+                      {f.name} ({f.courseCount})
+                    </button>
+                  ))}
+                </div>
+
+                <form className="flex shrink-0 items-center gap-2" onSubmit={onSearch}>
+                  <div className="relative flex-1 md:w-56">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-slate" />
+                    <input
+                      type="search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search careers…"
+                      aria-label="Search the career library"
+                      className="h-10 w-full rounded-lg border border-brand-navy/15 bg-white pl-9 pr-3 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="h-10 shrink-0 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
+                  >
+                    Search
+                  </button>
+                </form>
               </div>
-              {term && (
-                <p className="mt-3 text-center text-sm text-brand-slate">
-                  {matchCount
-                    ? `${matchCount} career${matchCount === 1 ? '' : 's'} across ${shownFields.length} stream${shownFields.length === 1 ? '' : 's'}`
-                    : 'Nothing matched that search.'}
+
+              {(field || q) && (
+                <p className="mt-5 text-sm text-brand-slate">
+                  {pagination.total} {pagination.total === 1 ? 'career' : 'careers'}
+                  {field && <> in <strong className="text-brand-navy">{fields.find((f) => f.slug === field)?.name || field}</strong></>}
+                  {q && <> matching <strong className="text-brand-navy">“{q}”</strong></>}
+                  {' · '}
+                  <button
+                    className="cursor-pointer border-0 bg-transparent p-0 font-sans text-sm font-semibold text-brand-crimson hover:underline"
+                    onClick={() => { setSearch(''); setParams({}) }}
+                  >
+                    Clear filters
+                  </button>
                 </p>
               )}
 
-              <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {shownFields.map((f) => (
-                  <article key={f.slug} className={cardClass}>
-                    <h3 className="flex items-center gap-2 font-display text-lg font-bold text-brand-navy">
-                      {f.name}
-                      <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-brand-rose px-2 text-xs font-semibold text-brand-crimson">
-                        {term ? f.courses.length : f.courseCount}
-                      </span>
-                    </h3>
-                    {f.courses.length > 0 ? (
-                      <ul className="mt-3 space-y-1.5 text-sm">
-                        {f.courses.map((c) => (
-                          <li key={c.slug}>
-                            <Link to={`/${c.slug}`} className="text-brand-slate hover:text-brand-crimson hover:underline">
-                              {c.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-3 text-sm text-brand-slate">Courses coming soon.</p>
-                    )}
-                  </article>
-                ))}
-              </div>
+              {coursesLoading && <p className="mt-10 text-center text-brand-slate">Loading careers…</p>}
+              {!coursesLoading && courses.length === 0 && (
+                <p className="mt-10 text-center text-brand-slate">
+                  Nothing matched that search. Try a different word or another stream.
+                </p>
+              )}
+
+              {!coursesLoading && courses.length > 0 && (
+                <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {courses.map((c) => (
+                    <article
+                      key={c.slug}
+                      className={`group flex flex-col ${cardClass} transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5`}
+                    >
+                      <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
+                        <Link to={`/${c.slug}`} className="hover:text-brand-crimson">{c.name}</Link>
+                      </h3>
+                      <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{c.overview}</p>
+                      {c.fields.length > 0 && (
+                        <div className="mt-4 flex flex-wrap gap-1.5">
+                          {c.fields.map((f) => (
+                            <button
+                              key={f.slug}
+                              onClick={() => update({ field: f.slug })}
+                              className="cursor-pointer rounded-full border-0 bg-brand-rose px-2.5 py-0.5 font-sans text-xs font-semibold text-brand-crimson hover:underline"
+                            >
+                              {f.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )}
+
+              {!coursesLoading && pagination.pages > 1 && (
+                <nav className="mt-12 flex items-center justify-center gap-4" aria-label="Career library pagination">
+                  <button
+                    className="h-10 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-brand-navy"
+                    disabled={pagination.page <= 1}
+                    onClick={() => goToPage(pagination.page - 1)}
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-brand-slate">
+                    Page {pagination.page} of {pagination.pages}
+                  </span>
+                  <button
+                    className="h-10 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-brand-navy"
+                    disabled={pagination.page >= pagination.pages}
+                    onClick={() => goToPage(pagination.page + 1)}
+                  >
+                    Next
+                  </button>
+                </nav>
+              )}
             </div>
           )}
 

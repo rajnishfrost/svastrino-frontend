@@ -16,6 +16,16 @@ export const fetchTestimonials = (featured = false) =>
 /** Career library streams + courses. → { fields } */
 export const fetchCareerLibrary = () => api('/user/content/career-library')
 
+/** Paginated career-library courses. → { courses, pagination } */
+export const fetchCourses = ({ page, limit, field, q } = {}) => {
+  const search = new URLSearchParams()
+  Object.entries({ page, limit, field, q }).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== '') search.set(k, v)
+  })
+  const qs = search.toString()
+  return api(`/user/content/courses${qs ? `?${qs}` : ''}`)
+}
+
 /** One course detail page. → { course } */
 export const fetchCourse = (slug) => api(`/user/content/courses/${encodeURIComponent(slug)}`)
 
