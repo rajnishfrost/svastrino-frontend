@@ -19,7 +19,7 @@ import PageSeo from '../../../seo/PageSeo.jsx'
  */
 const SUBPAGES = [
   { key: 'career-library', to: '/resources/career-library', label: 'Career Library', blurb: 'Explore career streams and the courses under each.' },
-  { key: 'faqs', to: '/resources/faqs', label: "FAQ's", blurb: 'Answers to common questions about mentoring & counselling.' },
+  { key: 'faqs', to: '/resources/faqs', label: 'FAQs', blurb: 'Answers to common questions about mentoring & counselling.' },
   { key: 'success-stories', to: '/resources/success-stories', label: 'Success Stories', blurb: 'Real results from students and parents we’ve guided.' },
 ]
 
@@ -37,7 +37,7 @@ const VIEW_SEO = {
       'Browse careers by stream — science, commerce, arts, engineering and more — with what each field involves, the roles it leads to, where to study, and how salaries progress.',
   },
   faqs: {
-    title: "FAQ's — how Svastrino's mentoring and courses work",
+    title: "FAQs — how Svastrino's mentoring and courses work",
     description:
       'Answers to what people ask before starting: how sessions are booked, what each program covers, how the course is paced, and how payments and refunds work.',
   },

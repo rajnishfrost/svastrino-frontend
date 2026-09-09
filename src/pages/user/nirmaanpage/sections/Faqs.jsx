@@ -26,7 +26,7 @@ export default function Faqs() {
     <section id="faqs" className="section">
       <div className="container">
         <div className="text-center">
-          <h2 className="section-title">FAQ’s</h2>
+          <h2 className="section-title">FAQs</h2>
         </div>
         <div className="nirmaan-faqs">
           {FAQS.map((f, i) => {

@@ -23,7 +23,7 @@ const COLUMNS = [
     links: [
       { label: 'Career Library', to: '/resources/career-library' },
       { label: 'Blog', to: '/blog' },
-      { label: "FAQ's", to: '/resources/faqs' },
+      { label: 'FAQs', to: '/resources/faqs' },
       { label: 'Success Stories', to: '/resources/success-stories' },
     ],
   },
