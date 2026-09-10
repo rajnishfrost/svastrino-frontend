@@ -124,7 +124,7 @@ export default function Dashboard() {
     <section className="bg-white py-10 md:py-14">
       <div className="container">
         <div className="border-b border-brand-navy/10 pb-6">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">Your dashboard</h1>
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">Dashboard</h1>
           <p className="mt-2 text-brand-slate">Welcome back{user?.name ? `, ${user.name}` : ''}.</p>
         </div>
 
