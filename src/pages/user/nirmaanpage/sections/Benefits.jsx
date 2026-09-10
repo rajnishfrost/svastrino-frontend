@@ -114,7 +114,7 @@ export default function Benefits() {
         </div>
 
         <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
-          <h3 className="font-display text-xl font-bold text-nirmaan-brown">
+          <h3 className="font-display text-xl font-bold text-nirmaan-brown text-center">
             Specific Developments of the Course
           </h3>
           <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">

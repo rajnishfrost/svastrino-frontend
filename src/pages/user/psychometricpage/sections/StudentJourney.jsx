@@ -92,9 +92,9 @@ export default function StudentJourney() {
   }, [])
 
   return (
-    <section className="overflow-hidden bg-white py-16 md:py-20">
+    <section className="overflow-hidden bg-nirmaan-brown py-16 md:py-20">
       <div className="container">
-        <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+        <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
           Student Journey
         </h2>
 

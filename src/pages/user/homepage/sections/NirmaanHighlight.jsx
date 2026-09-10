@@ -8,7 +8,8 @@ import { ArrowRight, Check, GraduationCap } from 'lucide-react'
  */
 const POINTS = [
   "Youth-Focused Life & Career Development Course",
-  "24 Videos With Real-Life Concepts & Examples",
+  "24 Videos with Real-Life Concepts & Examples",
+  "Weekly Resource PDF with Extra Depth on Each Topic",
   "Daily 10-Minute Tasks to Build Habits, Mindsets & Skills",
   "Learn at Your Own Pace ",
   "Find a ‘New You’ Through the Course",

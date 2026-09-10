@@ -125,13 +125,13 @@ export default function Journey() {
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Course Journey</p>
-          <h2 className="capitalize mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
-            Your Transformative Journey Through the course
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+            Your Transformative Journey Through the Course
           </h2>
           <p className="mt-4 text-lg text-nirmaan-brown-soft">
             {/* A commitment of at most 15 minutes a day for the next 24 weeks — one weekly video, then one short task on each of the next six days. */}
             A commitment of at most 15 minutes a day for the next 24 weeks
-            <br />(Combination of 1 weekly video + 1 daily task for the next 6 days of the week)
+            <br />(Combination of 1 weekly video, 1 resource PDF on that week's topic and 1 daily task for the next 6 days of the week)
           </p>
         </div>
 
@@ -170,8 +170,8 @@ export default function Journey() {
                     className="space-y-1.5 border-t border-nirmaan-sand px-4 py-4 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
                   >
                     {p.weeks.map((w, j) => (
-                      <li key={w} className="pl-0 flex justify-start items-start gap-3">
-                        <div className={`text-nirmaan-green font-semibold whitespace-nowrap`}>Week {p.n*4-4+j+1} :</div>
+                      <li key={w} className="pl-0 flex justify-start items-start gap-2">
+                        <div className={`text-nirmaan-green font-semibold whitespace-nowrap w-16`}>Week {p.n*4-4+j+1}</div>:
                         <div className={``}>
                           <span className={`font-semibold`}>{w.text}</span><br/>
                           <span>{w.subText}</span>
