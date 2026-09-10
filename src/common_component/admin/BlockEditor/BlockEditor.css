@@ -1,0 +1,45 @@
+/* Makes the Editor.js canvas read as one of the panel's form fields, and gives
+   its floating toolbars room — the default styling assumes a full-width page. */
+.adm-blockeditor {
+  border: 1px solid var(--adm-border, #e2e6ee);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.adm-blockeditor:focus-within {
+  border-color: var(--color-primary, #0a1f43);
+}
+
+/* Says the box is an editor before anyone clicks it. */
+.adm-blockeditor__bar {
+  margin: 0;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--adm-border, #e2e6ee);
+  background: #f7f8fb;
+  border-radius: 7px 7px 0 0;
+  font-size: 12.5px;
+  color: #6b7280;
+}
+.adm-blockeditor__bar strong { color: var(--color-primary, #0a1f43); }
+
+.adm-blockeditor__canvas { padding: 6px 8px; }
+
+/* The add / drag buttons sit in the left gutter and fade in on hover, which is
+   easy to miss in a form. Inside the panel they stay visible. */
+.adm-blockeditor .ce-toolbar__plus,
+.adm-blockeditor .ce-toolbar__settings-btn { color: var(--color-primary, #0a1f43); }
+.adm-blockeditor .ce-toolbar__plus { background: #eef1f7; }
+
+/* The tool + plus buttons sit in the left gutter; without room they overlap the
+   text. 44px is what Editor.js reserves for the pair. */
+.adm-blockeditor .codex-editor--narrow .codex-editor__redactor { margin-right: 0; }
+.adm-blockeditor .ce-block__content,
+.adm-blockeditor .ce-toolbar__content { max-width: none; margin: 0 0 0 44px; }
+.adm-blockeditor .ce-toolbar__actions { right: auto; left: 0; }
+
+.adm-blockeditor .ce-paragraph { line-height: 1.6; font-size: 14px; }
+.adm-blockeditor h2.ce-header { font-size: 20px; margin: 12px 0 4px; }
+.adm-blockeditor h3.ce-header { font-size: 17px; margin: 10px 0 4px; }
+.adm-blockeditor h4.ce-header { font-size: 15px; margin: 8px 0 4px; }
+.adm-blockeditor .cdx-list { font-size: 14px; }
+.adm-blockeditor .cdx-quote { font-size: 14px; }

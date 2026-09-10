@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../../../api/client.js'
 import { legacyRootSeo } from '../../../seo/legacyRootSeo.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import BlockEditor from '../../../common_component/admin/BlockEditor/BlockEditor.jsx'
 import '../adminShared.css'
 
 /**
@@ -322,14 +323,15 @@ function CoursesTab({ fields, onCourseSaved }) {
 }
 
 const blankCourse = {
-  name: '', slug: '', overview: '', topQualities: '', institutesIndia: '',
-  institutesInternational: '', careerLadder: '', sourceUrl: '', active: true,
+  name: '', slug: '', overviewBlocks: null, sourceUrl: '', active: true,
   seoTitle: '', seoDescription: '', canonicalSlug: '',
 }
 
 function CourseEditor({ course, fields, onCancel, onSaved }) {
   const [f, setF] = useState(blankCourse)
-  const [jobs, setJobs] = useState([])
+  // The page is a rich document that lives in the editor, not in `f` — the form
+  // asks for it back when it saves.
+  const overview = useRef(null)
   const [picked, setPicked] = useState([]) // stream slugs
   const [loading, setLoading] = useState(!!course)
   const [busy, setBusy] = useState(false)
@@ -345,16 +347,16 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
     api(`/admin/career-library/courses/${course.id}`, { auth: 'admin' })
       .then(({ course: c }) => {
         setF({
-          name: c.name, slug: c.slug, overview: c.overview || '',
-          topQualities: (c.topQualities || []).join('\n'),
-          institutesIndia: (c.institutesIndia || []).join('\n'),
-          institutesInternational: (c.institutesInternational || []).join('\n'),
-          careerLadder: (c.careerLadder || []).join('\n'),
+          name: c.name, slug: c.slug,
+          // A course written before the editor existed — or restored from a
+          // plain-text backup — still opens with its overview in the field,
+          // rather than an empty editor over text that is really there.
+          overviewBlocks: c.overviewBlocks
+            || (c.overview ? { blocks: [{ type: 'paragraph', data: { text: c.overview } }] } : null),
           sourceUrl: c.sourceUrl || '', active: c.active,
           seoTitle: c.seoTitle || '', seoDescription: c.seoDescription || '',
           canonicalSlug: c.canonicalSlug || '',
         })
-        setJobs(c.topJobs || [])
         setPicked((c.fields || []).map((x) => x.slug))
       })
       .catch((e) => setErr(e.message))
@@ -369,18 +371,13 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
   const toggleField = (slug) =>
     setPicked((p) => (p.includes(slug) ? p.filter((s) => s !== slug) : [...p, slug]))
 
-  const setJob = (i, k, v) => setJobs((p) => p.map((j, idx) => (idx === i ? { ...j, [k]: v } : j)))
-  const addJob = () => setJobs((p) => [...p, { role: '', description: '', indiaSalary: '', globalSalary: '' }])
-  const removeJob = (i) => setJobs((p) => p.filter((_, idx) => idx !== i))
-
   const save = async () => {
     if (!f.name.trim()) return setErr('Course name is required')
     setBusy(true); setErr('')
+    const overviewBlocks = await overview.current?.save()
     const body = {
-      name: f.name, overview: f.overview, sourceUrl: f.sourceUrl, active: f.active,
-      topQualities: f.topQualities, institutesIndia: f.institutesIndia,
-      institutesInternational: f.institutesInternational, careerLadder: f.careerLadder,
-      topJobs: jobs, fields: picked,
+      name: f.name, overviewBlocks, sourceUrl: f.sourceUrl, active: f.active,
+      fields: picked,
       seoTitle: f.seoTitle, seoDescription: f.seoDescription, canonicalSlug: f.canonicalSlug,
     }
     try {
@@ -396,7 +393,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
     <div>
       <button className="adm-link" style={{ padding: 0, marginBottom: 8 }} onClick={onCancel}>← Back to all courses</button>
       <h2 style={{ fontSize: 20, marginBottom: 4 }}>{course ? `Edit ${course.name}` : 'New course'}</h2>
-      <p className="adm-sub">Everything on the public course page. List fields take one item per line.</p>
+      <p className="adm-sub">Everything on the public course page — one document, in the order you write it.</p>
 
       <div className="adm-panel">
         <div className="adm-row2">
@@ -456,51 +453,21 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           )}
         </div>
 
-        <div className="adm-field"><label>Overview — the intro under the page title</label>
-          <textarea className="adm-textarea" rows={4} value={f.overview} onChange={(e) => set('overview', e.target.value)} /></div>
-
-        <div className="adm-field"><label>Qualities you'll need (one per line)</label>
-          <textarea className="adm-textarea" rows={4} value={f.topQualities} onChange={(e) => set('topQualities', e.target.value)}
-                    placeholder={'Attention to detail\nAnalytical thinking'} /></div>
-
-        {/* ---- jobs ---- */}
         <div className="adm-field">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label style={{ marginBottom: 0 }}>Careers &amp; salaries</label>
-            <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={addJob}>+ Add career</button>
-          </div>
-          {jobs.length === 0 && <p className="adm-sub" style={{ margin: '6px 0 0' }}>None yet — the section is hidden on the site.</p>}
-          {jobs.map((j, i) => (
-            <div key={i} className="adm-subpanel">
-              <div className="adm-row2">
-                <div className="adm-field"><label>Role</label>
-                  <input className="adm-input" value={j.role} onChange={(e) => setJob(i, 'role', e.target.value)} placeholder="Statutory Auditor" /></div>
-                <div className="adm-field" style={{ alignSelf: 'end', paddingBottom: 10 }}>
-                  <button className="adm-link" style={{ color: 'var(--color-danger)', padding: 0 }} onClick={() => removeJob(i)}>Remove</button>
-                </div>
-              </div>
-              <div className="adm-field"><label>Description</label>
-                <textarea className="adm-textarea" rows={2} value={j.description} onChange={(e) => setJob(i, 'description', e.target.value)} /></div>
-              <div className="adm-row2">
-                <div className="adm-field"><label>India salary</label>
-                  <input className="adm-input" value={j.indiaSalary} onChange={(e) => setJob(i, 'indiaSalary', e.target.value)} placeholder="₹7–12 LPA" /></div>
-                <div className="adm-field"><label>Global salary</label>
-                  <input className="adm-input" value={j.globalSalary} onChange={(e) => setJob(i, 'globalSalary', e.target.value)} placeholder="$60–90k" /></div>
-              </div>
-            </div>
-          ))}
+          <label>Page content</label>
+          <BlockEditor
+            ref={overview}
+            value={f.overviewBlocks}
+            placeholder="Write the page — what this career is, what it takes, where it leads…"
+            minHeight={320}
+          />
+          <p className="adm-sub" style={{ margin: '6px 0 0', fontSize: 12.5 }}>
+            Headings become the page's sections. The old fixed ones — qualities,
+            careers &amp; salaries, institutes, career ladder — are ordinary
+            headings in here now, so they can be renamed, reordered or dropped
+            like anything else.
+          </p>
         </div>
-
-        <div className="adm-row2">
-          <div className="adm-field"><label>Top institutes — India (one per line)</label>
-            <textarea className="adm-textarea" rows={5} value={f.institutesIndia} onChange={(e) => set('institutesIndia', e.target.value)} /></div>
-          <div className="adm-field"><label>Top institutes — International (one per line)</label>
-            <textarea className="adm-textarea" rows={5} value={f.institutesInternational} onChange={(e) => set('institutesInternational', e.target.value)} /></div>
-        </div>
-
-        <div className="adm-field"><label>Career ladder — one step per line, in order</label>
-          <textarea className="adm-textarea" rows={5} value={f.careerLadder} onChange={(e) => set('careerLadder', e.target.value)}
-                    placeholder={'Articleship\nAssociate\nManager\nPartner'} /></div>
 
         <div className="adm-row2">
           <div className="adm-field"><label>Original URL (optional — for migrated pages)</label>

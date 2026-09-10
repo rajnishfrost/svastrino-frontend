@@ -30,6 +30,8 @@ export default {
     './src/pages/user/dashboardpage/**/*.jsx',
     './src/pages/user/downloadspage/**/*.jsx',
     './src/common_component/user/EnquiryFields/EnquiryFields.jsx',
+    './src/common_component/user/RichText/RichText.jsx',
+    './src/common_component/user/SearchSuggest/SearchSuggest.jsx',
     './src/common_component/user/Footer/Footer.jsx',
     './src/common_component/user/FaqAccordion/FaqAccordion.jsx',
     './src/common_component/user/Testimonials/Testimonials.jsx',
