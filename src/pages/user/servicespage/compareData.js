@@ -13,9 +13,9 @@ export const PROGRAMS = [
 /** The headline facts — shown as words, not ticks. */
 export const DETAILS = [
   { label: "Duration", values: ["10 Days", "2 Months", "2 Years"] },
-  { label: "No of Sessions", values: ["2 sessions", "3 sessions", "20 sessions x 1 hour OR 10 sessions x 2hours (As per student's speed)"] },
-  { label: "Total Time Inclusion", values: ["~5 hours through the process", "~10 hours through the process", "~45 hours through the process"] },
-  { label: "Purpose", values: ["Immediate Career Counselling", "Career Decision through Deep Self Reflection", "Personalised Mentoring for Overall Transformation (Life & Career)"] },
+  { label: "No of Sessions", values: ["2 Sessions", "3 Sessions", "10 Sessions of 2.5 Hours Each, Or 20 Sessions of 1 To 1.5 Hour Each (depending on the Student's pace)"] },
+  { label: "Total Time Inclusion", values: ["About 5 Hours", "About 10 Hours", "About 36 Hours"] },
+  { label: "Purpose", values: ["Immediate Career Counselling", "Career Decision Through Deep Self Reflection", "Personalised Mentoring for Overall Transformation (Life & Career)"] },
   { label: "Follow ups", values: ["Once", "Weekly till Program Ends", "Weekly till Program Ends"] },
 ]
 
@@ -30,8 +30,8 @@ export const CAPABILITIES = [
   { label: "Vision Development", has: [false, true, true] },
   { label: "Deep Self Realisation", has: [false, true, true] },
   { label: "Task Based Development", has: [false, true, true] },
-  { label: "5 year Career plan", has: [false, true, true] },
-  { label: "Developing a Strong Mindset", has: [false, true, true] },
+  { label: "5 Year Career plan", has: [false, true, true] },
+  { label: "Developing A Strong Mindset", has: [false, true, true] },
   { label: "Personal Mentoring", has: [false, true, true] },
   { label: "Leadership Development", has: [false, false, true] },
   { label: "Entrepreneur Development", has: [false, false, true] },
@@ -39,13 +39,13 @@ export const CAPABILITIES = [
   { label: "Encouraging Students to Attempt", has: [false, false, true] },
   { label: "Encouraging Students to Experience & Accept Results", has: [false, false, true] },
   { label: "Pushing Students to Grow Continuously", has: [false, false, true] },
-  { label: "Nurturing while Germinating", has: [false, false, true] },
+  { label: "Nurturing While Germinating", has: [false, false, true] },
   { label: "Micro Managing the Progress", has: [false, false, true] },
   { label: "Simulation Based Training", has: [false, false, true] },
   { label: "Developing Habit of Persistent Effort", has: [false, false, true] },
   { label: "Driving Purpose of Life", has: [false, false, true] },
   { label: "Guidance on Secret Success Mantra", has: [false, false, true] },
   { label: "Developing Leaders Surrounding", has: [false, false, true] },
-  { label: "Transforming students into Future Leaders", has: [false, false, true] },
-  { label: "Developing self learning mindset", has: [false, false, true] },
+  { label: "Transforming Students into Future Leaders", has: [false, false, true] },
+  { label: "Developing Self-learning Mindset", has: [false, false, true] },
 ]

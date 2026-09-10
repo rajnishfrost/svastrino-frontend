@@ -80,7 +80,7 @@ export default function Services() {
         illustration={<ProgramHeroArt src="/assets/images/all-services-t.png" alt="" />}
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
-        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare programs</Link>
+        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programs</Link>
       </PageHero>
 
       <section className="bg-white py-16">
@@ -151,7 +151,7 @@ export default function Services() {
                         to={`/services/${p.slug}`}
                         className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-brand-crimson px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
                       >
-                        View details
+                        View Details
                       </Link>
                       {/* Programs sold after a call (Breakthrough) send you to
                           their own page's call-back form, not to the checkout. */}
@@ -163,7 +163,7 @@ export default function Services() {
                         }
                         className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
                       >
-                        {p.buyMode === 'expert-call' ? 'Talk to an expert' : 'Book now'}
+                        {p.buyMode === 'expert-call' ? 'Talk to an Expert' : 'Book Now'}
                       </Link>
                     </div>
                   </article>
@@ -176,14 +176,14 @@ export default function Services() {
       <Testimonials
         items={testimonials}
         eyebrow="Success stories"
-        title="What clients say"
+        title="What People Say About Us !"
         className="bg-soft py-16 md:py-20"
         footer={
           <Link
             to="/resources/success-stories"
             className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
           >
-            Read all success stories&nbsp;&nbsp;<ArrowRight className="size-4" />
+            Read All Success Stories&nbsp;&nbsp;<ArrowRight className="size-4" />
           </Link>
         }
       />

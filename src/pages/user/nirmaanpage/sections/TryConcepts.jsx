@@ -38,7 +38,7 @@ const mmss = (m, s) => m * 60 + s
 const PREVIEWS = [
   {
     week: 5,
-    title: 'Confidence is Built, Not Born',
+    title: 'Confidence Is Built, Not Born',
     url: `${CDN}/nirmaan-w05/master.m3u8`,
     start: mmss(4, 57), end: mmss(6, 13), fullSeconds: 458,
   },

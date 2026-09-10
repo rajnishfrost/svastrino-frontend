@@ -27,6 +27,10 @@ import {
  * a week later is perfectly reasonable. So the collapsed state says we heard
  * them and offers the form back on one click.
  */
+
+const CLASSES = ['1st Year Undergraduate', '2nd Year Undergraduate', '3rd Year Undergraduate', '4th Year Undergraduate', '5th Year Undergraduate', 'Other']
+const inputClass = 'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+
 export default function EnquireForm() {
   const { user } = useAuth()
   const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user)
@@ -136,11 +140,30 @@ export default function EnquireForm() {
         />
       </div>
 
-      <EnquiryField
-        name="city" label="Location" placeholder="City / Town / Village Name"
-        autoComplete="address-level2" maxLength={80}
-        value={values.city} onChange={set('city')} error={errors.city}
-      />
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* Match FieldShell (used by EnquiryField) exactly — same wrapper gap and
+            block label — so the Class control lines up with Location beside it. */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-brand-navy" htmlFor="studentClass">Class</label>
+          <select id="studentClass" className={inputClass} name="studentClass" defaultValue="" required>
+            <option value="" disabled>
+              Select
+            </option>
+            {CLASSES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+        <EnquiryField
+          name="city" label="Location" placeholder="City / Town / Village Name"
+          autoComplete="address-level2" maxLength={80}
+          value={values.city} onChange={set('city')} error={errors.city}
+        />
+
+      </div>
+
 
       <EnquiryField
         name="message" label="What do you need help with?" rows={2} maxLength={2000}

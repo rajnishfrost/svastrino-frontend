@@ -160,7 +160,7 @@ export default function Packages() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Packages</p>
           <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
-            Choose your journey
+            Choose Your Journey
           </h2>
           <p className="mt-4 text-lg text-nirmaan-brown-soft">
             Pick your plan, then choose how you’d like to pay.
@@ -313,7 +313,7 @@ export default function Packages() {
 
         {list.some((p) => p.includesPsychometric) && (
           <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
-            <h3 className="font-display text-xl font-bold text-nirmaan-brown">About the psychometric test</h3>
+            <h3 className="font-display text-xl font-bold text-nirmaan-brown">About the Psychometric Test</h3>
             <p className="mt-3 text-sm leading-relaxed text-nirmaan-brown-soft">
               Some of the plans above include a psychometric test. It is a set of simple questions
               about what you enjoy, what comes easily to you and how you like to work. There is no
@@ -341,7 +341,7 @@ export default function Packages() {
               to="/skill-build/psychometric-testing"
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-nirmaan-green hover:underline"
             >
-              Read more about the test <ArrowRight className="size-4" />
+              Read More About the Test <ArrowRight className="size-4" />
             </Link>
           </div>
         )}

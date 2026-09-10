@@ -69,8 +69,8 @@ function registerColumn(user) {
             { label: 'Help & support', to: '/support' },
           ]
         : [
-            { label: 'Students Registration', to: '/login?mode=signup' },
-            { label: 'Students Login', to: '/login' },
+            { label: 'Student Registration', to: '/login?mode=signup' },
+            { label: 'Student Login', to: '/login' },
           ]),
     ],
   }
@@ -87,7 +87,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
-            <Link to="/" className="inline-flex rounded-2xl bg-white p-3">
+            <Link to="/" className="inline-flex rounded-[5px] bg-white p-[5px]">
               <img src="/logo.png" alt="Svastrino Consultancy Services" className="h-10 w-auto" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed">

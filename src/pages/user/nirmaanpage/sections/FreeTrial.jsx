@@ -132,7 +132,7 @@ export default function FreeTrial() {
         : {
             head: 'Liked the Glimpse but Still Unsure?',
             body: 'Start your 1-week free trial and experience the journey for yourself — the real videos, the real daily tasks, and the actual feel of the course.',
-            cta: 'Register for 1 week Free Trial',
+            cta: 'Register for 1 Week Free Trial',
             onClick: goRegister,
           }
 
@@ -198,7 +198,7 @@ export default function FreeTrial() {
               type="button"
               onClick={copy.onClick}
               disabled={busy}
-              className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark disabled:cursor-wait disabled:opacity-70"
+              className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark disabled:cursor-wait disabled:opacity-70 border-0"
             >
               {copy.cta} <ArrowRight className="size-4" />
             </button>

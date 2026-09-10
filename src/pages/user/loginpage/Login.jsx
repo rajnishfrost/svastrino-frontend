@@ -378,7 +378,7 @@ export default function Login() {
             </div>
 
             <button className="btn btn-primary" disabled={busy || forgotBusy}>
-              {busy ? 'Signing in…' : 'Log in'}
+              {busy ? 'Signing In…' : 'Log In'}
             </button>
           </form>
         ) : (
@@ -448,13 +448,13 @@ export default function Login() {
               />
               {confirmPw && (
                 <small className={`pw-match${confirmPw === password ? ' ok' : ''}`}>
-                  {confirmPw === password ? '✓ Passwords match' : '✗ Passwords do not match'}
+                  {confirmPw === password ? '✓ Passwords Match' : '✗ Passwords Do Not Match'}
                 </small>
               )}
             </Field>
 
             <button className="btn btn-primary" disabled={busy}>
-              {busy ? 'Creating account…' : 'Create account'}
+              {busy ? 'Creating Account…' : 'Create Account'}
             </button>
           </form>
         )}
@@ -478,14 +478,14 @@ export default function Login() {
             <>
               New to Svastrino?{' '}
               <button type="button" className="login-link" onClick={() => switchMode('signup')}>
-                Create an account
+                Create an Account
               </button>
             </>
           ) : (
             <>
               Already have an account?{' '}
               <button type="button" className="login-link" onClick={() => switchMode('login')}>
-                Log in
+                Log In
               </button>
             </>
           )}
@@ -520,10 +520,10 @@ function VerifyPanel({ email, resent, busy, onResend, onBack }) {
       )}
 
       <button type="button" className="btn btn-primary" onClick={onResend} disabled={busy}>
-        {busy ? 'Sending…' : 'Resend email'}
+        {busy ? 'Sending…' : 'Resend Email'}
       </button>
       <button type="button" className="login-link verify-back" onClick={onBack}>
-        Back to login
+        Back to Login
       </button>
 
       <p className="verify-foot">

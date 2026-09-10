@@ -384,7 +384,8 @@ export default function BookOnline() {
       <PageHero
         eyebrow="Book Online"
         title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
-        subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
+        // subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
+        subtitle="Select a program that you would want to get personalised session in."
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section">
@@ -438,9 +439,9 @@ export default function BookOnline() {
 
                     <div className="mt-5 border-y border-brand-navy/10 py-4">
                       <span className="font-display text-3xl font-extrabold text-brand-navy">{paiseInr(p.price)}</span>
-                      <span className="ml-1 text-sm text-brand-slate">
+                      {/* <span className="ml-1 text-sm text-brand-slate">
                         one-time · {p.sessions} session{p.sessions > 1 ? 's' : ''} × 2 hrs
-                      </span>
+                      </span> */}
                     </div>
 
                     {Array.isArray(p.features) && p.features.length > 0 && (
@@ -456,14 +457,14 @@ export default function BookOnline() {
 
                     {/* A programme sold after a conversation cannot be booked
                         from here at all — its own page runs that conversation. */}
-                    {byCall ? (
+                    {/* {byCall ? (
                       <Link
                         to={`/services/${p.slug}#talk-to-an-expert`}
                         className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-crimson px-5 text-sm font-semibold text-white no-underline transition-colors hover:bg-brand-crimson-dark"
                       >
                         Talk to an expert <ArrowRight className="size-4" />
                       </Link>
-                    ) : (
+                    ) : ( */}
                       <button
                         type="button"
                         onClick={() => syncParams({ program: p.sku })}
@@ -471,7 +472,7 @@ export default function BookOnline() {
                       >
                         Book Now <ArrowRight className="size-4" />
                       </button>
-                    )}
+                    {/* )} */}
                   </div>
                 )
               })}

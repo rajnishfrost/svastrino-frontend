@@ -16,6 +16,7 @@ import ProgramFaqs from './sections/ProgramFaqs.jsx'
 import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import TalkToExpert from './sections/TalkToExpert.jsx'
 import './Services.css' // keeps .svc-hero-trust (hero) styled; body sections use Tailwind
+import { ArrowRight } from 'lucide-react'
 
 // Themed hero background per program (optimised from the brand imagery).
 const HERO_IMG = {
@@ -72,7 +73,7 @@ export default function ServiceProgram() {
   // and the team sends a payment link afterwards. Every CTA on the page points
   // at the call-back form instead of the booking wizard.
   const expertCall = program?.buyMode === 'expert-call'
-  const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
+  const ctaLabel = expertCall ? 'Talk to an Expert' : 'Book Now'
 
   const trustLine = program?.trustLine || (expertCall
     ? 'Guided one-to-one by Svastrino mentors · No payment before you speak to us'
@@ -121,7 +122,7 @@ export default function ServiceProgram() {
         illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
       >
         <Cta className="btn btn-accent btn-large" />
-        <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
+        <Link to="/services" className="btn btn-secondary btn-large">All Services</Link>
         {/* The trust line the visitor needs before reading anything else. */}
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>
@@ -144,7 +145,7 @@ export default function ServiceProgram() {
 
       {/* Closing CTA — a dark navy band to finish on, for anyone who read all the
           way down. */}
-      <section className="bg-brand-navy py-16 md:py-20">
+      {/* <section className="bg-brand-navy py-16 md:py-20">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="font-display text-2xl font-extrabold text-white sm:text-3xl">Ready to begin {program.name}?</h2>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -153,6 +154,19 @@ export default function ServiceProgram() {
               Compare programs
             </Link>
           </div>
+        </div>
+      </section> */}
+      <section className="bg-brand-gradient py-14 md:py-16">
+        <div className="container mx-auto flex max-w-4xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+          <div>
+            <h2 className="font-display text-xl font-bold text-white sm:text-2xl">Still not sure...?</h2>
+          </div>
+          <Link
+            to={"/services/compare"}
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+          >
+            Compare Programs <ArrowRight className="size-4" />
+          </Link>
         </div>
       </section>
     </>

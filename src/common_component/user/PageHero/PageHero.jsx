@@ -30,7 +30,7 @@ export default function PageHero({ eyebrow, title, subtitle, children, bgImage, 
   ].filter(Boolean).join(' ')
 
   return (
-    <header className={cls} style={style}>
+    <header className={`${cls} !pb-14`} style={{...style, paddingBottom: "50px !important"}}>
       <div className="container">
         <div className="page-hero-copy">
           {eyebrow && <p className="page-hero-eyebrow">{eyebrow}</p>}
