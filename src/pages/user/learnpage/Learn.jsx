@@ -5,6 +5,7 @@ import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } from '../../../utils/offlineVideo.js'
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
+import { openWeekResource } from '../../../utils/weekResource.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
@@ -18,6 +19,8 @@ import './Learn.css'
  * video the following day. A report tracks target vs actual days.
  */
 const THEME_CLASS = { nirmaan: 'theme-nirmaan' }
+// A course whose own lockup carries its name wears it instead of a text title.
+const COURSE_LOGO = { nirmaan: '/nirmaan-wordmark.png' }
 const inr = (paise) => '₹' + (Math.round(Number(paise) || 0) / 100).toLocaleString('en-IN')
 
 // A higher tier reads as what it ADDS to the one the student is on, so
@@ -621,12 +624,21 @@ export default function Learn() {
         )}
         <header className="learn-head">
           <div>
-            <p className="learn-eyebrow">Skill Build</p>
-            <h1>{course.skillBuild.name}</h1>
+            {COURSE_LOGO[slug] ? (
+              <h1 className="learn-title-logo">
+                <img src={COURSE_LOGO[slug]} alt="" aria-hidden />
+                <span className="learn-eyebrow">Skill-Build · {course.skillBuild.name}</span>
+              </h1>
+            ) : (
+              <>
+                <p className="learn-eyebrow">Skill Build</p>
+                <h1>{course.skillBuild.name}</h1>
+              </>
+            )}
           </div>
           <div className="learn-progress">
             <div className="learn-progress-track"><span style={{ width: `${progress.percent}%` }} /></div>
-            <span className="learn-progress-label">{progress.completed}/{progress.total} · {progress.percent}%</span>
+            <span className="learn-progress-label">{progress.percent}%</span>
           </div>
         </header>
 
@@ -770,6 +782,11 @@ export default function Learn() {
                 <h2 className="learn-title">{active.title}</h2>
                 <p className="learn-desc">{active.description}</p>
 
+                {/* The week's reading sits between its rule and its tasks — the
+                    moment the student has just finished the video and is about
+                    to be asked about it. */}
+                <WeekResource slug={slug} session={active} />
+
                 {/* Questions — right below the video */}
                 {syncNote && <p className="learn-syncnote">📥 {syncNote}</p>}
                 <div ref={qRef}>
@@ -863,17 +880,105 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
 }
 
 /* ---------- Report strip (day tracking + today's task) ---------- */
+/**
+ * The week's written resource: what is in it, and a button that opens it as a
+ * printable document. The server sends `session.resource` ONLY once that week's
+ * video has been watched through — the same 90% mark that opens the first task
+ * — so before then this section is not on the page at all, and the content
+ * itself never travels with the course payload. The download fetches one week,
+ * on demand; there is no shape of this request that returns the whole course.
+ */
+function WeekResource({ slug, session }) {
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+  const res = session.resource
+  if (!res) return null
+
+  const open = async () => {
+    setBusy(true)
+    setErr('')
+    try {
+      openWeekResource(await api(`/user/learn/${slug}/sessions/${session.id}/resource`, { auth: 'user' }))
+    } catch (e) {
+      setErr(e.message || 'The resource could not be opened. Please try again.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="learn-resource">
+      <h3 className="learn-resource-title">📄 This week&rsquo;s resource</h3>
+      <p className="learn-resource-intro">
+        The written companion to this week&rsquo;s video — the same ideas in writing, with the
+        comparisons and examples set out so you can read them again while you work through the
+        tasks.{res.headings?.length ? ' Inside:' : ''}
+      </p>
+      {res.headings?.length > 0 && (
+        <ul className="learn-resource-list">
+          {res.headings.map((h, i) => <li key={i}>{h}</li>)}
+        </ul>
+      )}
+      <button type="button" className="btn btn-primary learn-resource-btn" onClick={open} disabled={busy}>
+        {busy ? 'Opening…' : `Download Week ${session.order} resource (PDF)`}
+      </button>
+      {/* Said plainly, because "download" and "a print view opens" are not the
+          same promise — and because this is one week, not the whole course. */}
+      <p className="learn-resource-note">
+        Opens a print view — choose &ldquo;Save as PDF&rdquo;. Week {session.order} only.
+      </p>
+      {err && <p className="learn-resource-err">{err}</p>}
+    </div>
+  )
+}
+
+// What the streak is worth, said once. The reward is deliberately unnamed here
+// — what it actually is belongs to the programme, not to this component.
+const STREAK_REWARD = 'Rewards are waiting for the students who keep it going.'
+
+/**
+ * The streak line, written for the situation the student is actually in. The
+ * reset rule is said out loud on every one of them, because a counter that
+ * only ever goes up is not a reason to come back tomorrow.
+ */
+function streakNote({ days, best, todayDone, brokenAfter }) {
+  const d = `${days} day${days === 1 ? '' : 's'}`
+  if (days > 0 && !todayDone) {
+    return `🔥 ${d} in a row — today's step makes it ${days + 1}. Miss a whole day and it goes back to zero. ${STREAK_REWARD}`
+  }
+  if (days > 0) {
+    return `🔥 ${d} in a row, and today is done. Come back tomorrow to keep it — one missed day takes it back to zero. ${STREAK_REWARD}`
+  }
+  if (brokenAfter) {
+    return `A missed day took your streak back to zero${best > 1 ? ` — your best run was ${best} days` : ''}. Take today's step and start a new one. ${STREAK_REWARD}`
+  }
+  return `Take a step every day and your streak starts counting. Miss a day and it goes back to zero. ${STREAK_REWARD}`
+}
+
 function ReportStrip({ report }) {
   const done = report.actualDays != null
   const task = report.todayTask
+  const streak = report.streak || { days: 0, best: 0, todayDone: false, brokenAfter: false }
   return (
     <div className="learn-report">
       <div className="learn-report-item">
         <span>Day</span>
         <strong>{report.daysElapsed} of {report.targetDays}</strong>
       </div>
-      {done && (
-        <div className="learn-report-item"><span>Completed in</span><strong>{report.actualDays} days</strong></div>
+      {done ? (
+        <>
+          <div className="learn-report-item"><span>Completed in</span><strong>{report.actualDays} days</strong></div>
+          {streak.best > 1 && (
+            <div className="learn-report-item"><span>Best streak</span><strong>{streak.best} days</strong></div>
+          )}
+        </>
+      ) : (
+        <div className="learn-report-item">
+          <span>Streak</span>
+          <strong className={`learn-streak${streak.days > 0 ? ' is-alive' : ''}`}>
+            {streak.days > 0 ? `🔥 ${streak.days} day${streak.days === 1 ? '' : 's'}` : '—'}
+          </strong>
+        </div>
       )}
       <span className={`learn-report-badge${done ? ' is-done' : report.onTrack ? ' is-ok' : ' is-late'}`}>
         {done
@@ -890,6 +995,7 @@ function ReportStrip({ report }) {
           {task.type === 'waiting' && task.unlockAt ? ` — opens ${fmtIst(task.unlockAt)}` : ''}
         </p>
       )}
+      {!done && <p className="learn-report-streak">{streakNote(streak)}</p>}
     </div>
   )
 }
