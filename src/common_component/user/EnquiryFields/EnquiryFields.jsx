@@ -258,6 +258,41 @@ export function EnquiryField({ id, name, label, value, onChange, error, placehol
 }
 
 /**
+ * A required dropdown, built on the same shell as EnquiryField so a select and a
+ * text field sitting beside it share one label style, one error style and one
+ * height rather than being talked into looking alike.
+ *
+ * The prompt option is disabled. "Select" is a question, not an answer, and
+ * leaving it selectable lets someone reopen the list and put the form back into
+ * the one state submission has to refuse.
+ */
+export function EnquirySelect({ id, name, label, value, onChange, error, options, placeholder = 'Select', className }) {
+  const invalid = !!error
+  return (
+    <FieldShell label={label} error={error} htmlFor={id || name} className={className}>
+      <select
+        id={id || name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        aria-invalid={invalid || undefined}
+        aria-describedby={invalid ? `${name}-error` : undefined}
+        className={inputClass(invalid)}
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </FieldShell>
+  )
+}
+
+/**
  * Email or phone that we already know.
  *
  * One bordered row serves every state, laid out with flex: the field grows, the
