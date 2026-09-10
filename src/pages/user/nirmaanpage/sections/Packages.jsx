@@ -341,7 +341,7 @@ export default function Packages() {
               to="/skill-build/psychometric-testing"
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-nirmaan-green hover:underline"
             >
-              Read more about the test <ArrowRight className="size-4" />
+              Read More About the Test <ArrowRight className="size-4" />
             </Link>
           </div>
         )}

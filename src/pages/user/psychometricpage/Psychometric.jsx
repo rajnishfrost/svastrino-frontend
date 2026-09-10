@@ -261,7 +261,7 @@ export default function Psychometric() {
               to="/skill-build/nirmaan#packages"
               className="relative inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
             >
-              View Nirmaan plans <ArrowRight className="size-4" />
+              View Nirmaan Plans <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>

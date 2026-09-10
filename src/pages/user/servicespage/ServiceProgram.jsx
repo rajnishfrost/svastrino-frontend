@@ -73,7 +73,7 @@ export default function ServiceProgram() {
   // and the team sends a payment link afterwards. Every CTA on the page points
   // at the call-back form instead of the booking wizard.
   const expertCall = program?.buyMode === 'expert-call'
-  const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
+  const ctaLabel = expertCall ? 'Talk to an Expert' : 'Book Now'
 
   const trustLine = program?.trustLine || (expertCall
     ? 'Guided one-to-one by Svastrino mentors · No payment before you speak to us'
@@ -122,7 +122,7 @@ export default function ServiceProgram() {
         illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
       >
         <Cta className="btn btn-accent btn-large" />
-        <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
+        <Link to="/services" className="btn btn-secondary btn-large">All Services</Link>
         {/* The trust line the visitor needs before reading anything else. */}
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>

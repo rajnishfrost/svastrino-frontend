@@ -141,7 +141,7 @@ export default function TalkToExpert({ program }) {
       <div className="container mx-auto max-w-4xl">
         <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
       <h2 className="font-display text-xl font-bold text-brand-navy">
-        {approved ? `You're cleared to start ${program.name}` : 'Talk to an expert first'}
+        {approved ? `You're Cleared to Start ${program.name}` : 'Talk to an Expert First'}
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-brand-slate">
         {approved
@@ -252,7 +252,7 @@ export default function TalkToExpert({ program }) {
               disabled={busy}
               className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark disabled:opacity-60"
             >
-              {busy ? 'Sending…' : 'Request a call back'}
+              {busy ? 'Sending…' : 'Request a Call Back'}
             </button>
             <span className="text-xs text-brand-slate">No payment now. We call you within one working day.</span>
           </div>

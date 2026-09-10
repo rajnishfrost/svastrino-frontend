@@ -584,6 +584,7 @@ export const PROGRAM_JOURNEYS_2 = {
         // title: 'Actual Sessions - Stage 3',
         title: 'Stage 2: Application of Blueprint',
         range: '(541 to 1800 minutes from Day 60 - Day 730)',
+        note: '[The following development are personalised as per participant speed, comfort & availability]',
         // note: 'Stage 2: Application of Blueprint (60 - 730 days)\n[The following development are personalised as per participant speed, comfort & availability]',
         steps: [
           {

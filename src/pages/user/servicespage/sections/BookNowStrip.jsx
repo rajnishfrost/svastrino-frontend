@@ -17,7 +17,7 @@ export default function BookNowStrip({ program, bookHref }) {
           to={bookHref}
           className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
         >
-          Book now <ArrowRight className="size-4" />
+          Book Now <ArrowRight className="size-4" />
         </Link>
       </div>
     </section>

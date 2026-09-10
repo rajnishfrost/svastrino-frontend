@@ -10,57 +10,109 @@ import { Minus, Plus } from 'lucide-react'
  */
 const PHASES = [
   {
-    n: 1, name: 'Self Awareness',
+    n: 1,
+    name: 'Self Awareness',
     weeks: [
-      'Your Start Doesn’t Define Your End',
-      'Discover Your Strengths & What Makes You, You',
-      'Understand Your Inner Voice & How It Shapes You',
-      'Understand Your Value & Define Your Own Success',
+      // 'Your Start Doesn’t Define Your End',
+      // 'Discover Your Strengths & What Makes You, You',
+      // 'Understand Your Inner Voice & How It Shapes You',
+      // 'Understand Your Value & Define Your Own Success',
+      {text: "Start ≠ End",
+      subText: "Your start doesn't define your end"},
+      {text: "Your Life Project Begins Now",
+      subText: "Discover your strengths & what makes you, you"},
+      {text: "The Identity Shift",
+      subText: "Discover your inner voice & how it shapes you"},
+      {text: "Design Your Personal Success Story",
+      subText: "Understand your value & define your own success"},
     ],
   },
   {
-    n: 2, name: 'Building the Success Engine',
+    n: 2,
+    name: 'Building the Success Engine',
     weeks: [
-      'Build Confidence Through Small Daily Improvements',
-      'Face Your Fears Instead of Letting Them Hold You Back',
-      'Learn to Communicate With Confidence',
-      'Build Discipline Even When Motivation Is Missing',
+      // 'Build Confidence Through Small Daily Improvements',
+      // 'Face Your Fears Instead of Letting Them Hold You Back',
+      // 'Learn to Communicate With Confidence',
+      // 'Build Discipline Even When Motivation Is Missing',
+      {text: "Confidence Is Built, Not Born",
+      subText: "Build confidence through small daily improvements"},
+      {text: "Overcoming Fear Of Any Kind",
+      subText: "Face your fears instead of letting them hold you back"},
+      {text: "Communicate With Confidence",
+      subText: "Learn to communicate your thoughts clearly and confidently"},
+      {text: "Discipline Is More Powerful Than Motivation",
+      subText: "Build the discipline to keep moving forward, even when motivation is missing"},
     ],
   },
   {
-    n: 3, name: 'Inner Growth Through Winning',
+    n: 3,
+    name: 'Inner Growth Through Winning',
     weeks: [
-      'Learn From Failure & Keep Trying',
-      'Learn to Trust Yourself & Your Decisions',
-      'Build Inner Strength to Handle Setbacks',
-      'Take Calculated Risks to Grow',
+      // 'Learn From Failure & Keep Trying',
+      // 'Learn to Trust Yourself & Your Decisions',
+      // 'Build Inner Strength to Handle Setbacks',
+      // 'Take Calculated Risks to Grow',
+      {text: "Fail To Train Well",
+      subText: "Learn from failure & keep trying"},
+      {text: "Being Courageous To Trust Yourself",
+      subText: "Build the courage to listen to yourself and make confident choices"},
+      {text: "Building Resilience",
+      subText: "Develop inner strength to bounce back from setbacks"},
+      {text: "Risk Taking For Growth",
+      subText: "Learn to step out of your comfort zone and make thoughtful choices"},
     ],
   },
   {
-    n: 4, name: 'Building Self',
+    n: 4,
+    name: 'Building Self',
     weeks: [
-      'Shift From a Fixed Mindset to a Growth Mindset',
-      'Learn to Unlearn, Relearn & Keep Growing',
-      'Learn How to Combine Work Hard With Work Smart',
-      'Keep Learning Beyond the Classroom',
+      // 'Shift From a Fixed Mindset to a Growth Mindset',
+      // 'Learn to Unlearn, Relearn & Keep Growing',
+      // 'Learn How to Combine Work Hard With Work Smart',
+      // 'Keep Learning Beyond the Classroom',
+      {text: "Fixed Mindset Vs Growth Mindset",
+      subText: "Learn to embrace challenges and see mistakes as opportunities to improve"},
+      {text: "Learning How To Unlearn & Relearn",
+      subText: "Challenge old beliefs, stay open to new ideas, and keep evolving"},
+      {text: "Hard Work + Smart Work",
+      subText: "Learn to work with greater focus, efficiency, and purpose"},
+      {text: "Learning Beyond School",
+      subText: "Discover how everyday experiences can become opportunities to learn and grow"},
     ],
   },
   {
     n: 5, name: 'Being Emotionally and Mentally Grounded',
     weeks: [
-      'Learn to Handle Stress Without Losing Control',
-      'Understand Your Emotions & Respond Wisely',
-      'Adapt to Change Without Losing Yourself',
-      'Turn Consistency Into Your Superpower',
+      // 'Learn to Handle Stress Without Losing Control',
+      // 'Understand Your Emotions & Respond Wisely',
+      // 'Adapt to Change Without Losing Yourself',
+      // 'Turn Consistency Into Your Superpower',
+      {text: "Handling Stress",
+      subText: "Learn to manage stress without losing control"},
+      {text: "Respond Wisely",
+      subText: "Understand your emotions & choose how you respond"},
+      {text: "Adaptability In A Changing World",
+      subText: "Learn to embrace change while staying true to who you are"},
+      {text: "The Power Of Consistency",
+      subText: "Discover how small, repeated actions can create lasting results"},
     ],
   },
   {
     n: 6, name: 'Building the Success Blueprint',
     weeks: [
-      'Create a Career Roadmap That Fits You',
-      'Turn Your Goals Into a 5-Year Growth Plan',
-      'Build the Skills to Succeed Anywhere',
-      'Create Your Personal Blueprint for Success',
+      // 'Create a Career Roadmap That Fits You',
+      // 'Turn Your Goals Into a 5-Year Growth Plan',
+      // 'Build the Skills to Succeed Anywhere',
+      // 'Create Your Personal Blueprint for Success',
+      {text: "Designing Your Career Roadmap",
+      subText: "Turn your strengths, interests, and goals into a clear career direction"},
+      {text: "Your 5-Year Growth Plan",
+      subText: "Set meaningful milestones to guide your personal and professional growth"},
+      {text: "Becoming Successful Anywhere",
+      subText: "Develop the mindset and abilities to thrive in any environment"},
+      {text: "The Personal Success Blueprint",
+      subText: "Bring everything you've learned together into your own plan for success"},
     ],
   },
 ]
@@ -115,9 +167,19 @@ export default function Journey() {
                 {isOpen && (
                   <ul
                     // start={firstWeek}
-                    className="space-y-1.5 border-t border-nirmaan-sand px-6 py-4 pl-10 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
+                    className="space-y-1.5 border-t border-nirmaan-sand px-4 py-4 text-sm text-nirmaan-brown marker:font-semibold marker:text-nirmaan-green"
                   >
-                    {p.weeks.map((w, j) => <li key={w} className="pl-0"><span className={`text-nirmaan-green font-semibold`}>Week {p.n*4-4+j+1}</span>: {w}</li>)}
+                    {p.weeks.map((w, j) => (
+                      <li key={w} className="pl-0 flex justify-start items-start gap-3">
+                        <div className={`text-nirmaan-green font-semibold whitespace-nowrap`}>Week {p.n*4-4+j+1} :</div>
+                        <div className={``}>
+                          <span className={`font-semibold`}>{w.text}</span><br/>
+                          <span>{w.subText}</span>
+                          {/* {w} */}
+
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 )}
               </div>

@@ -141,9 +141,11 @@ export default function EnquireForm() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="">
-          <label className="text-xs font-semibold text-brand-navy leading-none">Class</label>
-          <select className={inputClass} name="studentClass" defaultValue="" required>
+        {/* Match FieldShell (used by EnquiryField) exactly — same wrapper gap and
+            block label — so the Class control lines up with Location beside it. */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-brand-navy" htmlFor="studentClass">Class</label>
+          <select id="studentClass" className={inputClass} name="studentClass" defaultValue="" required>
             <option value="" disabled>
               Select
             </option>

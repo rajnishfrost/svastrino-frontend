@@ -81,16 +81,16 @@ function Stage({ stage, n }) {
               <ClockIcon className="shrink-0" /> {range}
             </span>
           )}
-          {noteLines[0] && (
+          {/* {noteLines[0] && (
             <span className="inline-flex rounded-full bg-brand-navy/5 px-3 py-1 text-sm font-semibold text-brand-navy">
               {noteLines[0]}
             </span>
-          )}
+          )} */}
         </div>
       )}
-      {noteLines.slice(1).map((line, i) => (
-        <p key={i} className="mt-2.5 max-w-prose text-sm italic leading-relaxed text-brand-slate">{line}</p>
-      ))}
+      {noteLines[0] && (
+        <p className="mt-2.5 text-sm italic leading-relaxed text-brand-slate">{noteLines[0]}</p>
+      )}
 
       {/* A stage of plain points (pre / post session). */}
       {loose.length > 0 && <Points points={loose} className="mt-5" />}

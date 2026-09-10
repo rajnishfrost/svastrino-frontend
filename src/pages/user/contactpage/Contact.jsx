@@ -189,7 +189,7 @@ export default function Contact() {
                     disabled={busy}
                     className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {busy ? 'Sending…' : 'Send message'}
+                    {busy ? 'Sending…' : 'Send Message'}
                   </button>
 
                   {err && (
