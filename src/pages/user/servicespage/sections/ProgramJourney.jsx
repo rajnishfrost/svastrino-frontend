@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react'
 import { PROGRAM_JOURNEYS_2 } from '../journeyStages.js'
 
 /**
@@ -30,6 +31,11 @@ function fromBackend(journey) {
 
 const cleanTitle = (t) => (t || '').replace(/\s*[-–—]\s*Stage\s*\d+\s*$/i, '').trim()
 const cleanRange = (r) => (r || '').replace(/^\s*\(\s*/, '').replace(/\s*\)\s*$/, '').trim()
+
+// Some inclusion lists carry a bare connector line ("Or", "And") between two
+// alternatives — it isn't an inclusion in its own right, so it renders as a
+// muted separator rather than a ticked item.
+const isConnector = (s) => /^(or|and|&|\+)$/i.test(String(s || '').trim())
 
 function ClockIcon({ className }) {
   return (
@@ -146,30 +152,57 @@ export default function ProgramJourney({ program }) {
 
       {/* What the program includes */}
       {(data.duration || inclusions.length > 0 || program.duration) && (
-        <div className="mt-8 overflow-hidden rounded-2xl border border-brand-navy/10 bg-brand-cream">
-          <div className="border-b border-brand-navy/10 bg-white/60 px-6 py-4 md:px-8">
-            <h3 className="font-display text-lg font-bold text-brand-navy">What the Program Includes</h3>
+        <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-brand-navy">
+          <div className="border-b border-white/10 bg-white/5 px-6 py-4 md:px-8">
+            <h3 className="font-display text-lg font-bold text-white">What the Program Includes</h3>
           </div>
-          <div className="grid gap-6 p-6 sm:grid-cols-[auto_1fr] sm:gap-10 md:p-8">
+          <div className="grid items-start gap-6 p-6 sm:grid-cols-[200px_1fr] sm:gap-8 md:p-8">
+            {/* Duration — a bordered stat card so the column reads as a deliberate
+                headline figure rather than a stray line with empty space beside it. */}
             {(data.duration || program.duration) && (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-brand-crimson">Total duration</p>
-                <p className="mt-1 font-display text-2xl font-extrabold text-brand-navy">{data.duration || program.duration}</p>
+              <div className="rounded-xl border border-white/15 bg-white/5 p-4 whitespace-nowrap">
+                <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Total duration</p>
+                <p className="mt-1 font-display text-[20px] font-extrabold leading-tight text-white">{data.duration || program.duration}</p>
               </div>
             )}
             {inclusions.length > 0 ? (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-brand-crimson">Inclusions</p>
-                <div className="mt-1.5 space-y-1 text-[15px] leading-relaxed text-brand-slate">
-                  {inclusions.map((line) => <p key={line}>{line}</p>)}
-                </div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Inclusions</p>
+                <ul className="mt-3 space-y-2.5">
+                  {inclusions.map((line) =>
+                    isConnector(line) ? (
+                      <li key={line} className="ml-[30px] text-xs font-semibold uppercase tracking-wide text-white/40">{line}</li>
+                    ) : (
+                      <li key={line} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-white/80">
+                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-crimson">
+                          <Check className="size-3 text-white" />
+                        </span>
+                        <span>{line}</span>
+                      </li>
+                    )
+                  )}
+                </ul>
               </div>
             ) : (program.sessions || program.mode) ? (
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-brand-crimson">Details</p>
-                <ul className="mt-1.5 space-y-1 text-[15px] text-brand-slate">
-                  {program.sessions && <li><strong className="font-semibold text-brand-navy">Sessions:</strong> {program.sessions}</li>}
-                  {program.mode && <li><strong className="font-semibold text-brand-navy">Delivered:</strong> {program.mode}</li>}
+                <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Details</p>
+                <ul className="mt-3 space-y-2.5">
+                  {program.sessions && (
+                    <li className="flex items-start gap-2.5 text-[15px] leading-relaxed text-white/80">
+                      <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-crimson">
+                        <Check className="size-3 text-white" />
+                      </span>
+                      <span><strong className="font-semibold text-white">Sessions:</strong> {program.sessions}</span>
+                    </li>
+                  )}
+                  {program.mode && (
+                    <li className="flex items-start gap-2.5 text-[15px] leading-relaxed text-white/80">
+                      <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-brand-crimson">
+                        <Check className="size-3 text-white" />
+                      </span>
+                      <span><strong className="font-semibold text-white">Delivered:</strong> {program.mode}</span>
+                    </li>
+                  )}
                 </ul>
               </div>
             ) : null}
