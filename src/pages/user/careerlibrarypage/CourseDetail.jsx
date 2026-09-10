@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { excerptFor } from '../../../seo/useSeo.js'
+import { useRootSeo } from '../../../seo/PageSeo.jsx'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
@@ -7,11 +9,23 @@ import { fetchCourse } from '../../../api/content.js'
 
 export default function CourseDetail() {
   const { slug } = useParams()
+  const navigate = useNavigate()
   const [course, setCourse] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
+
+  // Career pages also keep their legacy root address — see RootSlug.
+  useRootSeo({
+    slug,
+    canonicalSlug: course?.canonicalSlug,
+    seoTitle: course?.seoTitle,
+    seoDescription: course?.seoDescription,
+    ready: !!course,
+    title: course?.name,
+    description: excerptFor(course?.overview),
+  })
 
   useEffect(() => {
     let cancelled = false
@@ -33,6 +47,13 @@ export default function CourseDetail() {
   }, [slug, reloadKey])
 
   const retry = () => setReloadKey((k) => k + 1)
+
+  // Step back through the visitor's own history; fall back to the library when
+  // they landed here straight from a search result or a shared link.
+  const goBack = () => {
+    if (window.history.state?.idx > 0) navigate(-1)
+    else navigate('/resources#career-library')
+  }
 
   if (loading) {
     return (
@@ -85,9 +106,13 @@ export default function CourseDetail() {
 
       <section className="bg-white py-16 md:py-20">
         <div className="container mx-auto max-w-4xl">
-          <Link to="/resources#career-library" className="text-sm font-semibold text-brand-crimson hover:underline">
+          <button
+            type="button"
+            onClick={goBack}
+            className="cursor-pointer border-0 bg-transparent p-0 font-sans text-sm font-semibold text-brand-crimson hover:underline"
+          >
             ← All career streams
-          </Link>
+          </button>
 
           {course.fields.length > 0 && (
             <div className="mt-4 flex flex-wrap items-center gap-2">

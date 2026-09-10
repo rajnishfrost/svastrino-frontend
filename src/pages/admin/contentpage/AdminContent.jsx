@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
+import { fetchUploadMode, uploadDirectToS3, uploadThroughServer, awaitTranscode } from '../../../api/videoUpload.js'
 import '../adminShared.css'
 
 const TIER_LABEL = { 1: 'Discover+', 2: 'Clarity+', 3: 'Launch' }
@@ -192,38 +193,43 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
     setPhase('upload'); setPct(0); setEta('')
     autofillDuration(file) // detect from the local file immediately
 
-    // The server keys live transcode progress by this id (see upload.controller).
-    const uploadId = Math.random().toString(36).slice(2) + Date.now().toString(36)
-    let poll = null
-
     try {
-      const fd = new FormData()
-      fd.append('video', file)
+      // Which path this deployment uses. On AWS the browser sends the file
+      // straight to S3, because CloudFront allows an origin only 60 seconds to
+      // respond and a large video cannot travel through it at all. On a dev box
+      // it still goes through the API, exactly as before.
+      const { mode, partSize } = await fetchUploadMode().catch(() => ({ mode: 'server' }))
 
-      // Phase 1: bytes going up (real % from XHR). Phase 2: ffmpeg building the
-      // quality ladder on the server — polled from /upload/progress.
-      const req = apiUpload(`/admin/upload/video?uploadId=${uploadId}`, fd, {
-        auth: 'admin',
-        onProgress: (p) => {
-          setPct(p)
-          if (p >= 100) setPhase('process') // bytes done → server is transcoding
-        },
-      })
+      let jobId
+      if (mode === 's3') {
+        const done = await uploadDirectToS3(file, {
+          partSize,
+          onProgress: (p) => { setPct(p); if (p >= 100) setPhase('process') },
+        })
+        jobId = done.jobId
+      } else {
+        // The server keys the job by an id we choose, so polling can start
+        // before the upload request has returned.
+        jobId = Math.random().toString(36).slice(2) + Date.now().toString(36)
+        await uploadThroughServer(file, {
+          uploadId: jobId,
+          onProgress: (p) => { setPct(p); if (p >= 100) setPhase('process') },
+        })
+      }
 
-      poll = setInterval(async () => {
-        try {
-          const s = await api(`/admin/upload/progress/${uploadId}`, { auth: 'admin' })
-          if (!s?.found) return
-          setPhase('process')
+      // Bytes are stored either way; building the adaptive ladder is the longer
+      // job, and it runs behind the request that started it.
+      setPhase('process')
+      const { url, type, durationMins, warning } = await awaitTranscode(jobId, {
+        onProgress: (s) => {
           setPct(s.pct || 0)
           if (s.pct > 3 && s.elapsedMs) {
             const remaining = (s.elapsedMs / s.pct) * (100 - s.pct)
             setEta(remaining > 1000 ? `~${fmtLeft(remaining)} left` : 'almost done')
           }
-        } catch { /* transient */ }
-      }, 1000)
+        },
+      })
 
-      const { url, type, durationMins, warning } = await req
       set('videoUrl', url)
       if (durationMins) setF((p) => (p.durationMins ? p : { ...p, durationMins }))
       setUploadMsg(
@@ -234,7 +240,6 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
     } catch (e) {
       setErr(e.message)
     } finally {
-      if (poll) clearInterval(poll)
       setUploading(false)
       setPct(0); setEta(''); setPhase('')
     }
@@ -419,8 +424,11 @@ function AnswersViewer({ session, onClose }) {
   )
 }
 
-// ---- Captions: upload SRT/VTT per language, delete, AI-translate ------------
+// ---- Captions: upload SRT/VTT per language, delete ---------------------------
 const LANGS = [
+  // The course is spoken in Hinglish, so its own track is tagged hi-latn -
+  // romanized Hindi. That leaves plain 'hi' free for a real Devanagari track.
+  { v: 'hi-latn', label: 'Hinglish' },
   { v: 'hi', label: 'Hindi' }, { v: 'en', label: 'English' },
   { v: 'mr', label: 'Marathi' }, { v: 'gu', label: 'Gujarati' },
   { v: 'ta', label: 'Tamil' }, { v: 'te', label: 'Telugu' },
@@ -431,11 +439,10 @@ const langLabel = (v) => LANGS.find((l) => l.v === v)?.label || v.toUpperCase()
 function CaptionsEditor({ session, onClose, onChanged }) {
   const sid = sidOf(session)
   const [tracks, setTracks] = useState(session.captions || [])
-  const [lang, setLang] = useState('hi')
+  const [lang, setLang] = useState('hi-latn')
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [tgt, setTgt] = useState('en') // translate target
 
   const upload = async () => {
     if (!file) { setError('Pick a .srt or .vtt file'); return }
@@ -459,17 +466,6 @@ function CaptionsEditor({ session, onClose, onChanged }) {
     } catch (e) { setError(e.message) } finally { setBusy(false) }
   }
 
-  const translate = async (fromLang) => {
-    if (tgt === fromLang) { setError('Pick a different target language'); return }
-    setBusy(true); setError('')
-    try {
-      const d = await api(`/admin/sessions/${sid}/captions/${fromLang}/translate`, {
-        method: 'POST', auth: 'admin', body: { targetLang: tgt, targetLabel: langLabel(tgt) },
-      })
-      setTracks(d.captions); onChanged?.()
-    } catch (e) { setError(e.message) } finally { setBusy(false) }
-  }
-
   return (
     <div>
       <h3 style={{ fontSize: 15, marginBottom: 8 }}>Captions — {session.title}</h3>
@@ -483,19 +479,12 @@ function CaptionsEditor({ session, onClose, onChanged }) {
       ) : (
         <div className="adm-table-wrap" style={{ marginBottom: 12 }}>
           <table className="adm-table">
-            <thead><tr><th>Language</th><th>File</th><th>Translate to →</th><th></th></tr></thead>
+            <thead><tr><th>Language</th><th>File</th><th></th></tr></thead>
             <tbody>
               {tracks.map((t) => (
                 <tr key={t.lang}>
                   <td>{t.label} <span className="adm-sub">({t.lang})</span></td>
                   <td><a className="adm-link" href={t.url} target="_blank" rel="noreferrer">view ↗</a></td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
-                    <select className="adm-select" style={{ width: 120 }} value={tgt} onChange={(e) => setTgt(e.target.value)}>
-                      {LANGS.filter((l) => l.v !== t.lang).map((l) => <option key={l.v} value={l.v}>{l.label}</option>)}
-                    </select>
-                    <button className="adm-btn adm-btn--ghost adm-btn--sm" style={{ marginLeft: 6 }}
-                            disabled={busy} onClick={() => translate(t.lang)}>AI translate</button>
-                  </td>
                   <td><button className="adm-link" style={{ color: 'var(--color-danger)' }} disabled={busy} onClick={() => remove(t.lang)}>Remove</button></td>
                 </tr>
               ))}

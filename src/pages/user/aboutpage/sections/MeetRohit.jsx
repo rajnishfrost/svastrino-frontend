@@ -10,13 +10,16 @@ const PARAS = [
   'Rohit still works the same way he did on day one — understand the student first, and let the career plan follow from that. What drives him now is bigger than one student at a time. He wants a generation that chooses its own path, instead of settling for whatever was expected of them.',
 ]
 
+// The founder's photo ships with the build. It used to point at /uploads,
+// which only a developer's machine can answer — the production container
+// starts that directory empty, so the picture was missing on the live site.
 export default function MeetRohit() {
   return (
     <section id="meet-rohit" className="section section--alt">
       <div className="container about-founder-wrap">
         <div className="about-founder-photo">
           <img
-            src="/uploads/content/2023/04/meet-rohit.jpg"
+            src="/images/meet-rohit.jpg"
             alt="Rohit M. Gala, founder of Svastrino"
             loading="lazy"
           />

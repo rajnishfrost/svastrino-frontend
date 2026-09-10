@@ -5,7 +5,7 @@ const OrgContext = createContext(null)
 
 /**
  * The signed-in organisation's own record: profile, granted modules, headline
- * stats and its live scholarship cycle.
+ * stats.
  *
  * One shared session powers the whole app, so there's no separate org login —
  * `/org/me` simply 403s for anyone who doesn't own an approved organisation,

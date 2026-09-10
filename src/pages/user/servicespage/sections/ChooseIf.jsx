@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 
 /**
- * Programme page · "Choose this program if…" — lets the visitor rule
+ * Program page · "Choose this program if…" — lets the visitor rule
  * themselves in or out before reading any further. Hidden when empty.
  */
 export default function ChooseIf({ items = [] }) {

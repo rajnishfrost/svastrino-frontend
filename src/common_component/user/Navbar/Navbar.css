@@ -134,30 +134,29 @@
   }
 }
 
-/* Skill Build dropdown — menu is flush with the pill's bottom (no margin gap)
-   so the mouse can travel from pill → menu without leaving the hover area.
-   Visual breathing room comes from padding INSIDE the menu, not a gap. */
+/* Skill Build dropdown — left-aligned to the pill so it opens rightward, matching
+   the other menus. A small gap sits below the green pill for breathing room; the
+   invisible ::before bridge spans that gap so the mouse can still travel from
+   pill → menu without the hover dropping. */
 .nav-skill-build {
   position: relative;
 }
 
 .nav-dropdown-menu--skill-build {
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;             /* open rightward, aligned to the pill's left edge (like the other menus) */
   min-width: 160px;
-  margin-top: 0;
-  padding-top: 12px;   /* extra top padding for breathing room */
+  margin-top: 8px;     /* gap below the green pill so the menu isn't glued to the badge */
 }
 
-/* Invisible bridge: ::before extends the hoverable surface UP into the pill's
-   own area so hover survives micro-jitters between pill and menu. */
+/* Invisible bridge: ::before extends the hoverable surface UP through the gap and
+   into the pill's own area so hover survives the gap and any micro-jitters. */
 .nav-dropdown-menu--skill-build::before {
   content: '';
   position: absolute;
-  top: -6px;                          /* small overlap into the pill zone */
+  top: -10px;                         /* reach up through the 8px gap into the pill zone */
   left: 0;
   right: 0;
-  height: 8px;
+  height: 12px;
   background: transparent;
 }
 

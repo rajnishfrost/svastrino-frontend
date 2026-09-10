@@ -1,38 +1,25 @@
-import { useState } from 'react'
-import { Minus, Plus } from 'lucide-react'
+import FaqAccordion from '../../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 
 /**
- * Programme page · the questions people ask about THIS programme. One answer
- * open at a time. Hidden when the programme has no questions written yet.
+ * Program page · the questions people ask about THIS program. One answer
+ * open at a time. Hidden when the program has no questions written yet.
  */
 export default function ProgramFaqs({ faqs = [] }) {
-  const [open, setOpen] = useState(null)
   if (!faqs.length) return null
 
+  // Program FAQs come through as { q, a }; normalise to the shared shape.
+  const items = faqs.map((f, i) => ({ id: i, question: f.q, answer: f.a }))
+
   return (
-    <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
-      <h2 className="font-display text-xl font-bold text-brand-navy">Questions about this programme</h2>
-      <div className="mt-4 divide-y divide-brand-navy/10 border-t border-brand-navy/10">
-        {faqs.map((f, i) => {
-          const isOpen = open === i
-          return (
-            <div key={f.q}>
-              <button
-                type="button"
-                className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left"
-                aria-expanded={isOpen}
-                onClick={() => setOpen(isOpen ? null : i)}
-              >
-                <span className="font-medium text-brand-navy">{f.q}</span>
-                <span className="text-brand-crimson">
-                  {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
-                </span>
-              </button>
-              {isOpen && <p className="pb-4 text-sm leading-relaxed text-brand-slate">{f.a}</p>}
-            </div>
-          )
-        })}
+    <section className="bg-soft py-14 md:py-16">
+      <div className="container mx-auto max-w-4xl">
+        <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+          <h2 className="font-display text-xl font-bold text-brand-navy">Questions about this program</h2>
+          <div className="mt-5">
+            <FaqAccordion items={items} />
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

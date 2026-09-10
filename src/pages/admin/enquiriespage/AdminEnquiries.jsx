@@ -2,13 +2,14 @@ import { Fragment, useCallback, useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminEnquiries.css'
+import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 
 /**
  * Everyone who has written in — the Contact page, the home-page banner, and the
  * "talk to an expert" form on the Breakthrough page all land here.
  *
  * Approving an expert-call request is not just book-keeping: until it is
- * approved the checkout refuses that programme, so this page is where a
+ * approved the checkout refuses that program, so this page is where a
  * Breakthrough sale is actually unlocked after the call.
  */
 const SOURCES = [
@@ -45,17 +46,23 @@ export default function AdminEnquiries() {
   const [busyId, setBusyId] = useState('')
   const [openId, setOpenId] = useState('')
   const [note, setNote] = useState('')
+  const [page, setPage] = useState(1)
+  const [pg, setPg] = useState({ page: 1, pages: 1, total: 0 })
 
   const load = useCallback(() => {
     const qs = new URLSearchParams()
     if (source) qs.set('source', source)
     if (status) qs.set('status', status)
+    qs.set('page', page)
     setError('')
-    api(`/admin/enquiries${qs.toString() ? `?${qs}` : ''}`, { auth: 'admin' })
-      .then((d) => setRows(d.enquiries))
+    api(`/admin/enquiries?${qs}`, { auth: 'admin' })
+      .then((d) => { setRows(d.enquiries); setPg({ page: d.page, pages: d.pages, total: d.total }) })
       .catch((e) => setError(e.message))
-  }, [source, status])
+  }, [source, status, page])
 
+  // A filter change starts again at page 1: staying on page 4 of a list that
+  // now has two pages shows an empty table and looks broken.
+  useEffect(() => { setPage(1) }, [source, status])
   useEffect(() => { load() }, [load])
 
   const patch = async (id, body) => {
@@ -80,7 +87,7 @@ export default function AdminEnquiries() {
       <h1 className="adm-title">Enquiries</h1>
       <p className="adm-sub">
         Everyone who has written in. Approving an expert-call request is what
-        opens the checkout for that programme.
+        opens the checkout for that program.
       </p>
 
       <div className="adm-toolbar">
@@ -157,7 +164,7 @@ export default function AdminEnquiries() {
                           className="adm-btn adm-btn--sm"
                           disabled={busyId === r.id}
                           onClick={() => patch(r.id, { status: 'approved' })}
-                          title="Opens the checkout for this programme and emails them the booking link"
+                          title="Opens the checkout for this program and emails them the booking link"
                         >
                           Approve to pay
                         </button>
@@ -197,6 +204,7 @@ export default function AdminEnquiries() {
           </table>
         </div>
       )}
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="enquiry" />
     </>
   )
 }

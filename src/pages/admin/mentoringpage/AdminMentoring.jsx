@@ -134,7 +134,9 @@ function BookingsTab() {
                   <tr key={b.id} className="adm-edit-row">
                     <td colSpan={7}>
                       <div className="adm-ment-edit">
-                        <strong>{b.user?.name}</strong> · {b.programName} · session #{b.sessionNumber} · {fmtWhen(b.startAt)}
+                        <strong>{b.user?.name}</strong>
+                        {b.user?.email ? <> · {b.user.email}</> : null}
+                        {' · '}{b.programName} · session #{b.sessionNumber} · {fmtWhen(b.startAt)}
                         <label className="adm-label">Session update (visible to the student)
                           <textarea className="adm-input" rows={3} value={form.update}
                                     onChange={(e) => setForm({ ...form, update: e.target.value })}
@@ -164,7 +166,18 @@ function BookingsTab() {
                   </tr>
                 ) : (
                   <tr key={b.id}>
-                    <td>{b.user ? <span title={b.user.email}>{b.user.name || b.user.email}</span> : '—'}</td>
+                    <td>
+                      {b.user ? (
+                        <>
+                          <strong>{b.user.name || '—'}</strong>
+                          {b.user.email && (
+                            <a className="adm-link adm-ment-email" href={`mailto:${b.user.email}`}>
+                              {b.user.email}
+                            </a>
+                          )}
+                        </>
+                      ) : '—'}
+                    </td>
                     <td>{b.programName}</td>
                     <td className="adm-num">#{b.sessionNumber}</td>
                     <td>{fmtWhen(b.startAt)}</td>
@@ -239,6 +252,11 @@ function ProgramsTab() {
                       <h3 style={{ fontSize: 18 }}>{p.name}
                         {' '}<span className={`adm-badge adm-badge--${p.active ? 'ok' : 'muted'}`}>{p.active ? 'Active' : 'Hidden'}</span>
                         {p.featured && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 6 }}>Featured</span>}
+                        {/* Worth seeing at a glance: this decides whether the
+                            site takes money for the program on the spot. */}
+                        {p.buyMode === 'expert-call' && (
+                          <span className="adm-badge adm-badge--muted" style={{ marginLeft: 6 }}>Sold after a call</span>
+                        )}
                       </h3>
                       <p className="adm-sub" style={{ margin: '4px 0 8px' }}>
                         ₹{p.priceInr.toLocaleString('en-IN')}
@@ -246,6 +264,12 @@ function ProgramsTab() {
                         {p.sessionsCount != null && ` · ${p.sessionsCount} session${p.sessionsCount > 1 ? 's' : ''} × ${(p.sessionMins || 120) / 60} hrs`}
                         {` · SKU: ${p.sku}`}
                       </p>
+                      {(p.durationLabel || p.deliveryMode) && (
+                        <p className="adm-sub" style={{ margin: '-4px 0 8px' }}>
+                          {[p.durationLabel && `Duration: ${p.durationLabel}`, p.deliveryMode && `Mode: ${p.deliveryMode}`]
+                            .filter(Boolean).join(' · ')}
+                        </p>
+                      )}
                       <ul style={{ fontSize: 13.5, color: 'var(--color-text-muted)', listStyle: 'disc', paddingLeft: 18 }}>
                         {p.features.map((f, i) => <li key={i}>{f}</li>)}
                       </ul>
@@ -271,6 +295,9 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
     priceInr: pkg?.priceInr ?? '', earlyBirdInr: pkg?.earlyBirdInr ?? '',
     sessionsCount: pkg?.sessionsCount ?? '', sessionMins: pkg?.sessionMins ?? '120',
     features: (pkg?.features || []).join('\n'), cta: pkg?.cta || '', badge: pkg?.badge || '',
+    summary: pkg?.summary || '', trustLine: pkg?.trustLine || '',
+    durationLabel: pkg?.durationLabel || '', sessionsLabel: pkg?.sessionsLabel || '',
+    deliveryMode: pkg?.deliveryMode || 'Online', buyMode: pkg?.buyMode || 'self-serve',
     featured: pkg?.featured || false, active: pkg ? pkg.active : true, order: pkg?.order ?? '',
   })
   const [busy, setBusy] = useState(false)
@@ -292,6 +319,9 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         sessionsCount: f.sessionsCount === '' ? null : Number(f.sessionsCount),
         sessionMins: f.sessionMins === '' ? null : Number(f.sessionMins),
         features: f.features.split('\n').map((s) => s.trim()).filter(Boolean),
+        summary: f.summary, trustLine: f.trustLine,
+        durationLabel: f.durationLabel, sessionsLabel: f.sessionsLabel,
+        deliveryMode: f.deliveryMode, buyMode: f.buyMode,
         cta: f.cta || (isNew ? `Book ${f.name}` : undefined),
         badge: f.badge || null,
         featured: f.featured, active: f.active,
@@ -334,7 +364,28 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         <div className="adm-field"><label>Sessions in the program</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
         <div className="adm-field"><label>Session length (mins)</label><input className="adm-input adm-num" type="number" value={f.sessionMins} onChange={(e) => set('sessionMins', e.target.value)} /></div>
       </div>
-      <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
+      <div className="adm-field"><label>Tagline (red line on the card)</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
+      <div className="adm-field"><label>Summary (the paragraph on the /services card)</label><textarea className="adm-textarea" rows={3} value={f.summary} onChange={(e) => set('summary', e.target.value)} /></div>
+      {/* These three read out as "Duration: … / Sessions: … / Mode: …" on the
+          card. They are the words a visitor reads — the numbers above are what
+          the booking calendar and the enrollment actually count. */}
+      <div className="adm-row2">
+        <div className="adm-field"><label>Duration (as written on the card)</label><input className="adm-input" value={f.durationLabel} onChange={(e) => set('durationLabel', e.target.value)} placeholder="e.g. 45 - 60 days" /></div>
+        <div className="adm-field"><label>Mode</label><input className="adm-input" value={f.deliveryMode} onChange={(e) => set('deliveryMode', e.target.value)} placeholder="Online" /></div>
+      </div>
+      <div className="adm-field"><label>Sessions (as written on the card)</label><textarea className="adm-textarea" rows={2} value={f.sessionsLabel} onChange={(e) => set('sessionsLabel', e.target.value)} placeholder="e.g. Pre-session 90 minutes + 3 sessions of ~2.5 hours each" /></div>
+      <div className="adm-field">
+        <label>How it is bought</label>
+        <select className="adm-input" value={f.buyMode} onChange={(e) => set('buyMode', e.target.value)}>
+          <option value="self-serve">Book now — pays online straight away</option>
+          <option value="expert-call">Talk to an expert — checkout opens only after the team approves</option>
+        </select>
+      </div>
+      <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
+        {f.buyMode === 'expert-call'
+          ? 'The card shows "Talk to an expert" and the server refuses a direct checkout for this SKU.'
+          : 'The card shows "Book now" and anyone can pay for it online.'}
+      </p>
       <div className="adm-field"><label>Features (one per line)</label><textarea className="adm-textarea" rows={4} value={f.features} onChange={(e) => set('features', e.target.value)} /></div>
       <div className="adm-row2">
         <div className="adm-field"><label>Button text (blank = auto)</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} /></div>

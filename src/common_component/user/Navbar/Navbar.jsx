@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import NotificationBell from '../NotificationBell/NotificationBell.jsx'
 import './Navbar.css'
 
@@ -38,7 +39,7 @@ const MENTORING_LINKS = [
 const RESOURCES_LINKS = [
   { label: 'Blog', to: '/blog' },
   { label: 'Career Library', to: '/resources/career-library' },
-  { label: "FAQ's", to: '/resources/faqs' },
+  { label: 'FAQs', to: '/resources/faqs' },
   { label: 'Success Stories', to: '/resources/success-stories' },
 ]
 
@@ -72,13 +73,13 @@ export default function Navbar() {
         <div className={`nav-links${open ? ' is-open' : ''}`}>
           {/* On Svastrino: "Skill Build" green pill with hover dropdown (Nirmaan inside).
               On the Nirmaan page: plain "Home" link back to the Svastrino homepage. */}
-          {isNirmaan ? (
+          {/* {isNirmaan ? (
             <Link to="/" onClick={close} className="nav-item">
               Home
             </Link>
-          ) : (
+          ) : ( */}
             <SkillBuildDropdown onNavigate={close} />
-          )}
+          {/* )} */}
 
           {/* <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} /> */}
           <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} />
@@ -119,13 +120,37 @@ export default function Navbar() {
 const canHover = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(hover: hover)').matches === true
 
-/** Hover props for a dropdown, or nothing at all on a touch device. */
-function hoverProps(setOpen) {
-  if (!canHover()) return {}
-  return {
-    onMouseEnter: () => setOpen(true),
-    onMouseLeave: () => setOpen(false),
+/**
+ * Dropdown open-state with a hover "grace period": the menu opens instantly on
+ * enter, but closing waits a beat (~180ms). That stops a tiny mouse wobble — or
+ * the diagonal trip across to a submenu — from snapping the menu shut, which is
+ * what made the Services dropdown feel over-sensitive. Touch devices get no
+ * hover handlers at all (see canHover); their click handler drives the menu.
+ */
+function useHoverMenu(delay = 180) {
+  const [open, setOpen] = useState(false)
+  const closeTimer = useRef(null)
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
   }
+  // Clear any pending close timer if the component unmounts mid-countdown.
+  useEffect(() => cancelClose, [])
+  const hoverProps = canHover()
+    ? {
+        onMouseEnter: () => {
+          cancelClose()
+          setOpen(true)
+        },
+        onMouseLeave: () => {
+          cancelClose()
+          closeTimer.current = setTimeout(() => setOpen(false), delay)
+        },
+      }
+    : {}
+  return { open, setOpen, hoverProps }
 }
 
 const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
@@ -133,7 +158,7 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
 /** Green pill with a hover dropdown. Currently exposes only "Nirmaan" inside;
  *  add more items to the array as new skill-build courses launch. */
 function SkillBuildDropdown({ onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
   const items = [
     { label: 'Nirmaan', to: '/skill-build/nirmaan' },
     { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
@@ -142,7 +167,7 @@ function SkillBuildDropdown({ onNavigate }) {
   return (
     <div
       className={`nav-dropdown nav-skill-build${open ? ' is-open' : ''}`}
-      {...hoverProps(setOpen)}
+      {...hoverProps}
     >
       <button
         type="button"
@@ -151,7 +176,7 @@ function SkillBuildDropdown({ onNavigate }) {
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       >
-        Skill Build
+        Skill-Build
       </button>
 
       <div className="nav-dropdown-menu nav-dropdown-menu--skill-build" role="menu">
@@ -167,12 +192,12 @@ function SkillBuildDropdown({ onNavigate }) {
 
 /** A hover/click dropdown that is still tappable on mobile (renders inline). */
 function Dropdown({ label, to, items, onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
 
   return (
     <div
       className={`nav-dropdown${open ? ' is-open' : ''}`}
-      {...hoverProps(setOpen)}
+      {...hoverProps}
     >
       <button
         type="button"
@@ -207,12 +232,11 @@ function Dropdown({ label, to, items, onNavigate }) {
 /** A category row that reveals its programs — flyout on hover (desktop),
  *  expands inline on tap (mobile drawer). */
 function SubMenu({ item, onNavigate }) {
-  const [open, setOpen] = useState(false)
+  const { open, setOpen, hoverProps } = useHoverMenu()
   return (
     <div
       className={`nav-sub${open ? ' is-open' : ''}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      {...hoverProps}
     >
       <button type="button" className="nav-sub-trigger" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         {item.label}
@@ -303,15 +327,23 @@ function ProfileMenu({ user, onNavigate }) {
             <ShieldIcon /> Organisation Portal
           </Link>
         )}
-        <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <GridIcon /> Dashboard
-        </Link>
-        <Link to="/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <DownloadIcon /> Downloads
-        </Link>
-        <Link to="/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-          <GearIcon /> Settings
-        </Link>
+        {/* The student side of the menu, and only for an account the student
+            portal is open to. Offering a Dashboard link to a panel-only account
+            would be offering a door that answers "no access" — better not to
+            draw the door. They keep the whole public site either way. */}
+        {hasPortalAccess(user) && (
+          <>
+            <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <GridIcon /> Dashboard
+            </Link>
+            <Link to="/dashboard/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <DownloadIcon /> Downloads
+            </Link>
+            <Link to="/dashboard/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
+              <GearIcon /> Settings
+            </Link>
+          </>
+        )}
         <button
           type="button"
           className="nav-profile-item nav-profile-signout"

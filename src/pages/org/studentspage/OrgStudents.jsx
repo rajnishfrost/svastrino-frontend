@@ -12,8 +12,36 @@ import '../../admin/adminShared.css'
  * Only if the organisation confirms do we send it again for real — so nobody
  * discovers a typo'd column after 400 invite emails have gone out.
  */
+/**
+ * How far a student is through the sponsored course, and whether they are
+ * keeping its one-step-a-day clock. Both come from the server, on the same
+ * rule the student's own report uses, so the two never disagree.
+ */
+function ProgressCells({ course }) {
+  const p = course?.progress
+  if (!p || course.status !== 'granted') return <><td>—</td><td>—</td></>
+  const pace = {
+    'not-started': ['muted', 'Not started'],
+    'on-track': ['ok', 'On track'],
+    ahead: ['ok', `Ahead by ${p.driftDays} day${p.driftDays === 1 ? '' : 's'}`],
+    behind: ['warn', `Behind by ${p.driftDays} day${p.driftDays === 1 ? '' : 's'}`],
+    done: ['ok', 'Completed'],
+  }[p.pace] || ['muted', p.pace]
+  return (
+    <>
+      <td>
+        {p.completed} / {p.total} sessions
+        <div className="adm-sub" style={{ margin: 0 }}>
+          {p.percent}%{p.startedAt ? ` · day ${p.daysElapsed}` : ''}
+        </div>
+      </td>
+      <td><span className={`adm-badge adm-badge--${pace[0]}`}>{pace[1]}</span></td>
+    </>
+  )
+}
+
 export default function OrgStudents() {
-  const { currentCycle, refresh } = useOrg()
+  const { organisation, sponsoredCourses = [], refresh } = useOrg()
   const [rows, setRows] = useState(null)
   const [q, setQ] = useState('')
   const [error, setError] = useState('')
@@ -49,11 +77,11 @@ export default function OrgStudents() {
     <div>
       <h1 className="adm-title">Students</h1>
       <p className="adm-sub">
-        Add your students once — each gets an email to set their password, and they’re entered into
-        your current scholarship automatically.
-        {currentCycle
-          ? <> They’ll join <strong>{currentCycle.title}</strong>.</>
-          : <> <strong>No published cycle yet</strong> — students you add now will be enrolled once you publish one.</>}
+        Add your students once — each gets an email to set their password.
+        {sponsoredCourses.length > 0 && (
+          <> Each of them also receives <strong>{sponsoredCourses.map((c) => c.name).join(' and ')}</strong> —
+          it opens the moment they set that password, so “Course” reads “After password” until they do.</>
+        )}
       </p>
 
       <div className="adm-toolbar">
@@ -80,8 +108,9 @@ export default function OrgStudents() {
             <table className="adm-table">
               <thead>
                 <tr>
-                  <th>Student</th><th>Class</th><th>Section</th><th>Roll no.</th>
-                  <th>Account</th><th>Scholarship</th><th></th>
+                  <th>Student</th><th>Class</th><th>Account</th><th>Course</th>
+                  {sponsoredCourses.length > 0 && <><th>Progress</th><th>Pace</th></>}
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -89,22 +118,25 @@ export default function OrgStudents() {
                   <tr key={r.id}>
                     <td>{r.name}<div className="adm-sub" style={{ margin: 0 }}>{r.email}</div></td>
                     <td>{r.studentClass || '—'}</td>
-                    <td>{r.section || '—'}</td>
-                    <td>{r.rollNo || '—'}</td>
                     <td>
-                      {r.activated
-                        ? <span className="adm-badge adm-badge--ok">Active</span>
-                        : <span className="adm-badge adm-badge--warn">Invite sent</span>}
+                      {/* One shared rule, computed on the server, so this and the
+                          admin panel never describe the same student two ways. */}
+                      {r.status === 'disabled'
+                        ? <span className="adm-badge adm-badge--muted">Removed</span>
+                        : r.status === 'active'
+                          ? <span className="adm-badge adm-badge--ok">Active</span>
+                          : <span className="adm-badge adm-badge--warn">Invite sent</span>}
                     </td>
                     <td>
-                      {r.attempt === 'submitted'
-                        ? <span className="adm-badge adm-badge--ok">{r.score}/{r.total}</span>
-                        : r.attempt === 'in_progress'
-                          ? <span className="adm-badge adm-badge--warn">In progress</span>
-                          : r.enrolled
-                            ? <span className="adm-badge adm-badge--muted">Enrolled</span>
-                            : <span className="adm-badge adm-badge--muted">Not enrolled</span>}
+                      {/* Null when the organisation sponsors nothing — the
+                          column is then honest blanks rather than a status. */}
+                      {!r.course
+                        ? '—'
+                        : r.course.status === 'granted'
+                          ? <span className="adm-badge adm-badge--ok" title={r.course.names.join(', ')}>Enrolled</span>
+                          : <span className="adm-badge adm-badge--warn" title={r.course.names.join(', ')}>After password</span>}
                     </td>
+                    {sponsoredCourses.length > 0 && <ProgressCells course={r.course} />}
                     <td><button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={() => setDel(r)}>Remove</button></td>
                   </tr>
                 ))}
@@ -126,9 +158,13 @@ export default function OrgStudents() {
       )}
       {del && (
         <ConfirmModal
-          title={`Remove ${del.name}?`}
-          message="They’re removed from your organisation and this year’s scholarship. Their Svastrino account itself stays — they can still log in."
-          confirmLabel="Remove"
+          title={`Remove ${del.name} from ${organisation?.name || 'your organisation'}?`}
+          message={
+            'They leave your roster. If the account was created for them by you, their login is switched off ' +
+            'until you add them again (same email) or Svastrino restores them — nothing they have done is deleted' +
+            (sponsoredCourses.length ? `, and their ${sponsoredCourses.map((c) => c.name).join(' / ')} access is kept.` : '.')
+          }
+          confirmLabel="Yes, remove"
           danger
           busy={busy}
           onCancel={() => setDel(null)}
@@ -179,7 +215,7 @@ function ImportModal({ onClose, onDone, onSample }) {
         {!result && (
           <>
             <p className="adm-sub">
-              Your CSV needs these columns: <strong>name, email, phone, class, section, rollNo</strong>.
+              Your CSV needs these columns: <strong>name, email, phone, class</strong>.
               Email is the one that must be filled in — it’s how each student signs in.
             </p>
             <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={onSample} style={{ marginBottom: 14 }}>
@@ -253,7 +289,7 @@ function ImportModal({ onClose, onDone, onSample }) {
 }
 
 /* ---------------- Single student ---------------- */
-const BLANK = { name: '', email: '', phone: '', class: '', section: '', rollNo: '' }
+const BLANK = { name: '', email: '', phone: '', class: '' }
 
 function AddStudentModal({ onClose, onDone }) {
   const [f, setF] = useState(BLANK)
@@ -281,12 +317,6 @@ function AddStudentModal({ onClose, onDone }) {
             <input className="adm-input" value={f.phone} onChange={(e) => set('phone', e.target.value)} maxLength={20} /></div>
           <div className="adm-field"><label>Class</label>
             <input className="adm-input" value={f.class} onChange={(e) => set('class', e.target.value)} maxLength={20} /></div>
-        </div>
-        <div className="adm-row2">
-          <div className="adm-field"><label>Section</label>
-            <input className="adm-input" value={f.section} onChange={(e) => set('section', e.target.value)} maxLength={20} /></div>
-          <div className="adm-field"><label>Roll no.</label>
-            <input className="adm-input" value={f.rollNo} onChange={(e) => set('rollNo', e.target.value)} maxLength={30} /></div>
         </div>
         {error && <p className="adm-error">{error}</p>}
         <div className="adm-modal-actions">

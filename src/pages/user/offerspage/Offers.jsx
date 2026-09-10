@@ -4,10 +4,10 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchOffers } from '../../../api/notifications.js'
 import './Offers.css'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 /**
- * "New offers" — the discounts, new batches and scholarship windows the team
- * has running right now.
+ * "New offers" — the discounts and new batches the team has running right now.
  *
  * Public on purpose: an offer only works if somebody who has not signed up yet
  * can read it. The server decides what a signed-out visitor is allowed to see,
@@ -17,6 +17,10 @@ const fmtDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 
 export default function Offers() {
+  usePageSeo({
+    title: 'Offers — what is running right now',
+    description: 'Current offers on Svastrino mentoring programs and the Nirmaan course.',
+  })
   const [offers, setOffers] = useState(null)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
@@ -35,7 +39,7 @@ export default function Offers() {
       <PageHero
         eyebrow="Offers"
         title="New offers"
-        subtitle="Everything we have running at the moment — discounts, new batches and scholarship windows, in one place."
+        subtitle="Everything we have running at the moment — discounts and new batches, in one place."
       />
 
       <section className="section">

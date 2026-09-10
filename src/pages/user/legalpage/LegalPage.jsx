@@ -4,6 +4,8 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchSitePage } from '../../../api/content.js'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
+import { excerptFor } from '../../../seo/useSeo.js'
 import './LegalPage.css'
 
 const formatDate = (iso) =>
@@ -36,6 +38,15 @@ export default function LegalPage() {
 
     return () => { cancelled = true }
   }, [slug, reloadKey])
+
+  // The policy's own name and opening lines, so a terms page is not indexed
+  // under the site's generic title. Held back until the page has arrived: the
+  // prerenderer captures whatever the title says at that moment.
+  usePageSeo({
+    title: page?.title,
+    description: excerptFor(page?.content),
+    ready: !!page,
+  })
 
   const retry = () => setReloadKey((k) => k + 1)
 

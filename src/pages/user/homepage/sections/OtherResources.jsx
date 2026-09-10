@@ -9,8 +9,8 @@ import SectionHeading from './SectionHeading.jsx'
 const WAYS = [
   {
     icon: Library,
-    need: 'I Want to Explore Various Careers & Courses',
-    text: 'Check out different careers, courses and pathways to see what could be a good fit for you.',
+    need: 'I Want to Explore Careers & Courses',
+    text: '​Check out different careers, courses and pathways to see what could be a good fit for you.',
     cta: 'Browse Career Library',
     to: '/resources/career-library',
   },
@@ -28,20 +28,20 @@ export default function OtherResources() {
     <section className="bg-soft py-20 md:py-24">
       <div className="container">
         <SectionHeading
-          title="Not Ready To Choose from Services Yet?"
-          subtitle="Explore Other Ways, We Can Help. Explore career details, courses and practical guidance at your own pace."
+          title="Not Ready to Choose a Service Yet?"
+          subtitle="​There are other ways we can help. Explore career details, courses and practical guidance at your own pace."
         />
 
         <div className="mx-auto mt-14 grid max-w-4xl gap-6 md:grid-cols-2">
           {WAYS.map((w) => (
             <Link key={w.to} to={w.to} className="group">
-              <div className="flex h-full items-start gap-5 rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
+              <div className="flex h-full items-stretch gap-5 rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
                 <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-rose text-brand-crimson">
                   <w.icon className="size-7" />
                 </span>
-                <div>
+                <div className={`flex flex-col`}>
                   <h3 className="font-display text-xl font-bold text-brand-navy">{w.need}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-slate">{w.text}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-brand-slate flex-1">{w.text}</p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-crimson">
                     {w.cta}
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 
 /**
  * Site footer (content per src/content/footer.md). Styled with Tailwind to
@@ -22,7 +23,7 @@ const COLUMNS = [
     links: [
       { label: 'Career Library', to: '/resources/career-library' },
       { label: 'Blog', to: '/blog' },
-      { label: "FAQ's", to: '/resources/faqs' },
+      { label: 'FAQs', to: '/resources/faqs' },
       { label: 'Success Stories', to: '/resources/success-stories' },
     ],
   },
@@ -48,21 +49,28 @@ function registerColumn(user) {
   return {
     title: user ? 'Your account' : 'Register',
     links: [
-      // Scholarship is hidden for now, so partner enquiries go through Contact.
+      // Partner enquiries go through Contact.
       { label: 'Partner with us', to: '/contact' },
       ...(user
         ? [
-            { label: 'Dashboard', to: '/dashboard' },
-            { label: 'My Downloads', to: '/downloads' },
-            { label: 'Settings', to: '/settings' },
+            // The student pages, and only for an account the portal is open to.
+            // A panel-only account would meet "no access with this account" at
+            // every one of them, so the links are not drawn for it.
+            ...(hasPortalAccess(user)
+              ? [
+                  { label: 'Dashboard', to: '/dashboard' },
+                  { label: 'My Downloads', to: '/dashboard/downloads' },
+                  { label: 'Settings', to: '/dashboard/settings' },
+                ]
+              : []),
             // Signed-in only: support threads belong to an account, so there is
             // nothing for a signed-out visitor to see there. They have Contact
             // Us in the Company column instead.
             { label: 'Help & support', to: '/support' },
           ]
         : [
-            { label: 'Students Registration', to: '/login?mode=signup' },
-            { label: 'Students Login', to: '/login' },
+            { label: 'Student Registration', to: '/login?mode=signup' },
+            { label: 'Student Login', to: '/login' },
           ]),
     ],
   }
@@ -76,7 +84,7 @@ export default function Footer() {
   return (
     <footer className="mt-auto bg-brand-navy-dark text-white/70">
       <div className="container py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
             <Link to="/" className="inline-flex rounded-[5px] bg-white p-[5px]">

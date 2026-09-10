@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchBlogs, fetchBlogCategories } from '../../../api/blogs.js'
+import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
 const PER_PAGE = 12
 
@@ -37,6 +39,11 @@ export default function Blog() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [reloadKey, setReloadKey] = useState(0)
+
+  // Held until the posts land: the prerenderer captures the page the moment its
+  // title is set, and a listing captured at "Loading posts…" gives a crawler no
+  // links to follow into the 219 articles below it.
+  usePageSeo({ ready: !loading })
 
   useEffect(() => {
     fetchBlogCategories()
@@ -101,6 +108,7 @@ export default function Blog() {
         eyebrow="Blog"
         title="From the Svastrino blog"
         subtitle="Insights on careers, mentoring, study abroad and building the skills that matter."
+        illustration={<ProgramHeroArt src="/assets/images/blog-t.png" alt="" />}
       />
 
       <section className="bg-white py-16 md:py-20">
@@ -165,7 +173,7 @@ export default function Blog() {
                   className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                 >
                   {p.coverImage && (
-                    <Link to={`/blog/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
+                    <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
                       <img
                         src={p.coverImage}
                         alt=""
@@ -177,7 +185,7 @@ export default function Blog() {
                   <div className="flex flex-1 flex-col p-6">
                     <OwnerBadge owner={p.owner} />
                     <h3 className="mt-3 font-display text-lg font-bold leading-snug text-brand-navy">
-                      <Link to={`/blog/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
+                      <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
                     </h3>
                     <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
                     <div className="mt-4 flex items-center gap-2 text-xs text-brand-slate">

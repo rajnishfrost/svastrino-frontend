@@ -6,6 +6,8 @@ import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { useGoogleAuth } from '../../../hooks/useGoogleAuth.js'
 import { validatePassword } from '../../../utils/password.js'
+import { TRIAL_INTENT, LEARN_PATH } from '../nirmaanpage/trialIntent.js'
+import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import './Login.css'
 
@@ -63,7 +65,46 @@ export default function Login() {
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const { ready: googleReady, configured: googleConfigured, signIn: googleSignIn } = useGoogleAuth()
-  const from = location.state?.from || '/dashboard'
+  // Where to land afterwards. Somewhere specific if they were sent here from
+  // it — /checkout?pkg=…, a course — otherwise the home page rather than the
+  // dashboard: signing in is not the same as asking to see your dashboard, and
+  // /dashboard immediately redirects on to its default tab, so a plain login
+  // used to end on /dashboard/skill-build without anyone having asked for it.
+  const from = location.state?.from || '/'
+
+  // The flag the Nirmaan page leaves behind when a visitor pressed "Start the
+  // free trial" before they had an account.
+  const trialIntent = () => {
+    try { return localStorage.getItem(TRIAL_INTENT) } catch { return null } // private mode
+  }
+
+  /**
+   * Someone who came here to start the Nirmaan free trial.
+   *
+   * Sign-up does not log anyone in: it emails a verification link, and clicking
+   * that link lands on a brand-new /login with none of the router state that
+   * sent them here — often on a different day. So the Nirmaan page leaves a
+   * flag in localStorage and this picks it up on the next successful login,
+   * grants the trial, and drops them into the course instead of the dashboard.
+   *
+   * The grant is best-effort on purpose: if it fails (a trial already spent,
+   * the network) the student still gets signed in, and the Nirmaan page will
+   * tell them where they actually stand.
+   */
+  const landAfterLogin = async (user) => {
+    if (user?.panel) return navigate('/admin', { replace: true })
+
+    // A panel-only account cannot open anything inside the portal, so honouring
+    // a `from` that points there — or starting a trial — would only walk them
+    // into "no access with this account". The public site is what they have.
+    if (!hasPortalAccess(user)) return navigate('/', { replace: true })
+
+    if (!trialIntent()) return navigate(from, { replace: true })
+
+    try { localStorage.removeItem(TRIAL_INTENT) } catch { /* already gone */ }
+    try { await api('/user/learn/trial', { method: 'POST', auth: 'user' }) } catch { /* see note above */ }
+    return navigate(LEARN_PATH, { replace: true })
+  }
 
 
   // Surface the email-verification result the backend redirects back with
@@ -126,7 +167,7 @@ export default function Login() {
       login(data.token, data.user)
       // One login for everyone: panel accounts land in the admin panel, the
       // rest go to their user dashboard (or wherever they were headed).
-      navigate(data.user?.panel ? '/admin' : from, { replace: true })
+      await landAfterLogin(data.user)
     } catch (err) {
       // Account exists but the email isn't confirmed yet — send them to the
       // "verify your email" panel with a resend option instead of a dead-end.
@@ -209,7 +250,17 @@ export default function Login() {
         body: { accessToken },
       })
       login(data.token, data.user)
-      navigate(data.user?.panel ? '/admin' : from, { replace: true })
+      // Signing up with Google skips the verification link, and with it the
+      // free week that page offers. So a student who has just finished signing
+      // up is handed to /welcome to be offered it — a page outside GuestRoute,
+      // which would otherwise bounce them to the dashboard the moment the
+      // session landed, before anything shown HERE could be seen. Not for one
+      // who already said yes on the Nirmaan page: landAfterLogin grants it for
+      // them, and asking again would be asking twice.
+      if (data.firstSignIn && !trialIntent() && !data.user?.panel && hasPortalAccess(data.user)) {
+        return navigate('/welcome', { replace: true, state: { offerTrial: true, from } })
+      }
+      await landAfterLogin(data.user)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -327,7 +378,7 @@ export default function Login() {
             </div>
 
             <button className="btn btn-primary" disabled={busy || forgotBusy}>
-              {busy ? 'Signing in…' : 'Log in'}
+              {busy ? 'Signing In…' : 'Log In'}
             </button>
           </form>
         ) : (
@@ -397,13 +448,13 @@ export default function Login() {
               />
               {confirmPw && (
                 <small className={`pw-match${confirmPw === password ? ' ok' : ''}`}>
-                  {confirmPw === password ? '✓ Passwords match' : '✗ Passwords do not match'}
+                  {confirmPw === password ? '✓ Passwords Match' : '✗ Passwords Do Not Match'}
                 </small>
               )}
             </Field>
 
             <button className="btn btn-primary" disabled={busy}>
-              {busy ? 'Creating account…' : 'Create account'}
+              {busy ? 'Creating Account…' : 'Create Account'}
             </button>
           </form>
         )}
@@ -427,14 +478,14 @@ export default function Login() {
             <>
               New to Svastrino?{' '}
               <button type="button" className="login-link" onClick={() => switchMode('signup')}>
-                Create an account
+                Create an Account
               </button>
             </>
           ) : (
             <>
               Already have an account?{' '}
               <button type="button" className="login-link" onClick={() => switchMode('login')}>
-                Log in
+                Log In
               </button>
             </>
           )}
@@ -469,10 +520,10 @@ function VerifyPanel({ email, resent, busy, onResend, onBack }) {
       )}
 
       <button type="button" className="btn btn-primary" onClick={onResend} disabled={busy}>
-        {busy ? 'Sending…' : 'Resend email'}
+        {busy ? 'Sending…' : 'Resend Email'}
       </button>
       <button type="button" className="login-link verify-back" onClick={onBack}>
-        Back to login
+        Back to Login
       </button>
 
       <p className="verify-foot">

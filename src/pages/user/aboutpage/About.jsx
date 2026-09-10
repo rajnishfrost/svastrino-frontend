@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Compass } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import PageSeo from '../../../seo/PageSeo.jsx'
+import MediaRecognition from './sections/MediaRecognition.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 
 // Static About copy (content per src/content/about-svastrino.md). It changes
 // rarely, so it lives here rather than in the DB. Programs, FAQs and success
 // stories remain dynamic (from /api/user/content).
 
-const FOUNDER_IMG = '/uploads/content/2023/04/meet-rohit.jpg' // served by the API, proxied in dev
+const FOUNDER_IMG = '/assets/images/founder-rohit-gala.jpg'
 
 const MILESTONES = [
   { year: '2009', title: 'Where It All Began', text: 'Founded by Rohit M. Gala, Svastrino began with 20 students in Mumbai.' },
@@ -26,42 +29,42 @@ const MEET_ROHIT = [
 ]
 
 const TEAM = [
-  { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: null, linkedin: null },
-  { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: null, linkedin: null },
-  { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: null, linkedin: null },
-  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: null, linkedin: null },
-  { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: null, linkedin: null },
-  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: null, linkedin: null },
+  { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: '/assets/images/team/rohit-gala.png', linkedin: null },
+  { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: '/assets/images/team/miloni-gala.png', linkedin: null },
+  { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
+  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
+  { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
+  // { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravi.png', linkedin: null },
+  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/raviSir3.jpeg', linkedin: null },
 ]
 
 const SERVICES = [
   { need: 'For Immediate Career Counselling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
-  { need: 'Choosing career through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
-  { need: 'To Transform Completely through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
-  { need: 'To Build Skills and Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
-  { need: 'To verify your potential & career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
+  { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
+  { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
-
-// Newspaper/magazine scans — add { src, title } to switch the media band on.
-const MEDIA_CUTTINGS = []
 
 const initials = (n) => n.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 
 export default function About() {
   return (
     <>
+      <PageSeo />
       <PageHero
-        eyebrow="About"
-        title="About Svastrino"
+        eyebrow="About Svastrino"
+        title="We Build People, Not Just Careers"
         subtitle="At Svastrino, we believe you cannot build a successful career without first building yourself. We help individuals understand themselves, build the right skills and mindset, and make confident career decisions."
+        illustration={<ProgramHeroArt src="/assets/images/about-tr.png" alt="" />}
       />
 
       {/* ---- Our story ---- */}
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-16">
         <div className="container grid items-start gap-10 lg:grid-cols-[1.5fr_1fr]">
           <div>
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-              Our story
+            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
+              Our Story
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-brand-slate">
               In 2009, Svastrino began with 20 students and a simple belief that choosing a career
@@ -73,19 +76,17 @@ export default function About() {
             </p>
           </div>
 
-          {/* Founder card */}
-          <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5">
-            <img
-              src={FOUNDER_IMG}
-              alt="Rohit M. Gala, founder of Svastrino"
-              loading="lazy"
-              className="aspect-[4/3] w-full rounded-xl object-cover"
-            />
-            <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>
-            <p className="mt-0.5 text-sm font-semibold text-brand-crimson">
-              Founder &amp; Chief Career Mentor · 17+ years
-            </p>
-          </div>
+          {/* Origin image */}
+          <img
+            // src="/assets/images/our-story.png"
+            src="/assets/images/real-story.jpg"
+            alt="The Svastrino story — from 20 students in 2009 to today"
+            loading="lazy"
+            decoding="async"
+            // width={1400}
+            // height={933}
+            className="w-full rounded-2xl object-cover shadow-xl shadow-brand-navy/10"
+          />
         </div>
       </section>
 
@@ -116,10 +117,10 @@ export default function About() {
       <section className="bg-white py-16 md:py-20">
         <div className="container">
           <div className="mx-auto max-w-3xl">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">
+            <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
               How we got here!
             </h2>
-            <ol className="mt-8 space-y-6 border-l-2 border-brand-crimson/20 pl-6">
+            <ul className="mt-8 space-y-6 border-l-2 border-brand-crimson/20">
               {MILESTONES.map((m) => (
                 <li key={m.year} className="relative">
                   <span className="absolute -left-[1.95rem] top-1 flex size-4 items-center justify-center rounded-full border-2 border-brand-crimson bg-white" />
@@ -130,7 +131,7 @@ export default function About() {
                   <p className="mt-1 text-sm leading-relaxed text-brand-slate">{m.text}</p>
                 </li>
               ))}
-            </ol>
+            </ul>
           </div>
         </div>
       </section>
@@ -150,42 +151,25 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---- Media recognition (hidden until scans are added) ---- */}
-      {MEDIA_CUTTINGS.length > 0 && (
-        <section className="bg-white py-16 md:py-20">
-          <div className="container text-center">
-            <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">
-              Media recognition
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy">
-              Reflections of our impact through National Newspapers
-            </h2>
-          </div>
-          <div className="group relative mt-10 overflow-hidden">
-            <ul className="flex w-max animate-marquee items-center gap-4 group-hover:[animation-play-state:paused]">
-              {[...MEDIA_CUTTINGS, ...MEDIA_CUTTINGS].map((c, i) => (
-                <li key={`${c.src}-${i}`}>
-                  <img src={c.src} alt={c.title} loading="lazy" className="h-48 w-auto rounded-lg border border-brand-navy/10" />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
+      {/* ---- Media recognition (newspaper cards + zoomable lightbox) ---- */}
+      <MediaRecognition />
 
       {/* ---- Meet Rohit Gala ---- */}
       <section className="bg-soft py-16 md:py-20">
-        <div className="container grid items-start gap-10 md:grid-cols-[260px_1fr]">
+        <div className="container grid items-start gap-10 md:grid-cols-[320px_1fr]">
           <div>
             <img
               src={FOUNDER_IMG}
               alt="Rohit M. Gala, founder of Svastrino"
               loading="lazy"
+              decoding="async"
+              // width={675}
+              // height={900}
               className="w-full rounded-2xl object-cover"
             />
             <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>
             <p className="mt-0.5 text-sm font-semibold text-brand-crimson">
-              Founder &amp; Chief Career Mentor · 17+ years
+              Founder &amp; Chief Career Mentor<br />17+ years
             </p>
           </div>
           <div>
@@ -213,7 +197,7 @@ export default function About() {
                 key={m.name}
                 className="flex flex-col items-center rounded-xl border border-brand-navy/5 bg-white p-6 text-center shadow-sm"
               >
-                <div className="flex size-24 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
+                <div className="flex size-60 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
                   {m.photo ? (
                     <img src={m.photo} alt={m.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
@@ -241,20 +225,25 @@ export default function About() {
       <section className="bg-soft py-16 md:py-20">
         <div className="container">
           <h2 className="mx-auto max-w-2xl text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy sm:text-3xl">
-            Now that you know us, let us assist in exploring our services
+            Now that you know us, let us assist you in exploring our services
           </h2>
           <ul className="mx-auto mt-10 max-w-2xl divide-y divide-brand-navy/10">
-            {SERVICES.map((r) => (
-              <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
-                <span className="text-brand-navy">{r.need}</span>
-                <Link
-                  to={r.to}
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-brand-crimson hover:underline"
-                >
-                  {r.label} <ArrowRight className="size-4" />
-                </Link>
-              </li>
-            ))}
+            {SERVICES.map((r) => {
+              // Skill-Build (Nirmaan) programs carry the Nirmaan green so they
+              // read as a distinct sub-brand from the crimson Svastrino services.
+              const isNirmaan = r.to.startsWith('/skill-build')
+              return (
+                <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
+                  <span className={isNirmaan ? 'text-nirmaan-brown' : 'text-brand-navy'}>{r.need}</span>
+                  <Link
+                    to={r.to}
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold hover:underline ${isNirmaan ? 'text-nirmaan-green' : 'text-brand-crimson'}`}
+                  >
+                    {r.label} <ArrowRight className="size-4" />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </section>

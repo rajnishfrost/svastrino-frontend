@@ -35,7 +35,7 @@ export function isNetworkError(err) {
  * @param {string} path        e.g. "/user/auth/send-otp"
  * @param {object} opts        { method, body, auth: 'user' | 'admin' }
  */
-export async function api(path, { method = 'GET', body, auth = false } = {}) {
+export async function api(path, { method = 'GET', body, auth = false, keepalive = false } = {}) {
   // FormData (file uploads) must NOT be JSON-stringified, and the browser sets
   // its own multipart Content-Type (with boundary), so we omit ours.
   const isForm = typeof FormData !== 'undefined' && body instanceof FormData
@@ -50,6 +50,9 @@ export async function api(path, { method = 'GET', body, auth = false } = {}) {
     method,
     headers,
     body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
+    // keepalive lets a request outlive the page - used for the "where was I in
+    // the video" save that goes out as the tab closes.
+    keepalive,
   })
 
   let data = null

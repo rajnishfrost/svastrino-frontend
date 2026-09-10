@@ -12,7 +12,7 @@ import '../../admin/adminShared.css'
  * they're sent.
  */
 export default function OrgProfile() {
-  const { organisation, typeLabel, refresh } = useOrg()
+  const { organisation, typeLabel, sponsoredCourses = [], refresh } = useOrg()
   const [f, setF] = useState(() => ({
     name: organisation?.name || '',
     description: organisation?.description || '',
@@ -62,7 +62,7 @@ export default function OrgProfile() {
         <div className="adm-field"><label>About (shown in the public directory)</label>
           <textarea className="adm-input" rows={4} value={f.description} maxLength={1200}
                     onChange={(e) => set('description', e.target.value)}
-                    placeholder="e.g. A CBSE senior secondary school in east Delhi, running the Nirmaan scholarship for classes 9–12." />
+                    placeholder="e.g. A CBSE senior secondary school in east Delhi, classes 9–12." />
           <span className="adm-sub" style={{ fontSize: 12 }}>{f.description.length}/1200</span></div>
 
         <div className="adm-row2">
@@ -113,6 +113,18 @@ export default function OrgProfile() {
           {saved && <span className="adm-sub" style={{ margin: 0 }}>Saved ✓</span>}
         </div>
       </form>
+
+      <section className="adm-panel" style={{ maxWidth: 720 }}>
+        <h2 style={{ fontSize: 16, marginBottom: 8 }}>Course allotted to your students</h2>
+        {sponsoredCourses.length ? (
+          <p className="adm-sub" style={{ margin: 0 }}>
+            <strong style={{ fontSize: 18, color: 'var(--navy)' }}>{sponsoredCourses.map((c) => c.name).join(', ')}</strong>
+            <br />Every student you add receives it the moment they set their password. Contact us to change it.
+          </p>
+        ) : (
+          <p className="adm-sub" style={{ margin: 0 }}>No course is allotted yet — contact us to sponsor one for your students.</p>
+        )}
+      </section>
 
       <section className="adm-panel" style={{ maxWidth: 720 }}>
         <h2 style={{ fontSize: 16, marginBottom: 8 }}>Your organisation code</h2>

@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import { PROGRAMS, DETAILS, CAPABILITIES } from './compareData.js'
 import './Compare.css'
+import PageSeo from '../../../seo/PageSeo.jsx'
+import { ArrowRight } from 'lucide-react'
 
 /**
  * Compare the three counselling and mentoring programs side by side — for the
@@ -13,12 +16,14 @@ import './Compare.css'
 export default function CompareServices() {
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="Services"
-        title="Compare our programs"
-        subtitle="What each programme covers, side by side — so you can see exactly where they differ."
+        title="Compare Our Programs"
+        subtitle="What each program covers, side by side, so you can see exactly where they differ."
+        illustration={<ProgramHeroArt src="/assets/images/compare-t.png" alt="" />}
       >
-        <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
+        {/* <Link to="/services" className="btn btn-secondary btn-large">All services</Link> */}
       </PageHero>
 
       <section className="section">
@@ -26,13 +31,13 @@ export default function CompareServices() {
           <div className="cmp-wrap">
             <table className="cmp-table">
               <caption className="cmp-caption">
-                Programme comparison — ✓ means the programme includes it
+                <span className={`text-green-600 font-semibold`}>✓</span> means the program includes it
               </caption>
               <thead>
                 <tr>
-                  <th scope="col" className="cmp-corner">Programme</th>
+                  <th scope="col" className="cmp-corner">Program</th>
                   {PROGRAMS.map((p) => (
-                    <th scope="col" key={p.slug}>
+                    <th scope="col" key={p.slug} className='!text-center'>
                       <span className="cmp-cat">{p.category}</span>
                       <Link to={`/services/${p.slug}`}>{p.name}</Link>
                     </th>
@@ -49,15 +54,18 @@ export default function CompareServices() {
                 ))}
 
                 <tr className="cmp-divider">
-                  <th scope="row" colSpan={PROGRAMS.length + 1}>What’s included</th>
+                  {/* Colours go on the <th>, not the <tr>: the cell's own
+                      background/color (from `.cmp-divider th`) paints over the
+                      row's, so styling the row has no visible effect. */}
+                  <th scope="row" colSpan={PROGRAMS.length + 1} className="!bg-brand-navy !text-white">What’s included</th>
                 </tr>
 
                 {CAPABILITIES.map((c) => (
                   <tr key={c.label}>
                     <th scope="row">{c.label}</th>
                     {c.has.map((yes, i) => (
-                      <td key={i} className={yes ? 'cmp-yes' : 'cmp-no'}>
-                        <span aria-hidden>{yes ? '✓' : '—'}</span>
+                      <td key={i} className={`!text-center ${yes ? 'cmp-yes' : 'cmp-no'}`}>
+                        <span aria-hidden className={`${yes ? "text-green-600" : "text-brand-crimson"} font-semibold`}>{yes ? '✓' : 'X'}</span>
                         <span className="sr-only">{yes ? 'Included' : 'Not included'}</span>
                       </td>
                     ))}
@@ -80,7 +88,8 @@ export default function CompareServices() {
                         }
                         className="btn btn-primary"
                       >
-                        {p.expertCall ? 'Talk to an expert' : `Book ${p.name.replace(' Program', '')}`}
+                        {/* {p.expertCall ? 'Talk to an expert' : `Book ${p.name.replace(' Program', '')}`} */}
+                        {p.expertCall ? 'Talk to an expert' : `Book Now`}&nbsp;&nbsp;<ArrowRight className="size-4" />
                       </Link>
                     </td>
                   ))}
@@ -90,7 +99,7 @@ export default function CompareServices() {
           </div>
 
           <p className="cmp-note">
-            Still not sure? A short <Link to="/services/bulls-eye">counselling session</Link> will
+            Still not sure? A short <Link to="/services/bulls-eye" className={`text-brand-navy font-semibold`}>counselling session</Link> will
             help you pick the right one.
           </p>
         </div>

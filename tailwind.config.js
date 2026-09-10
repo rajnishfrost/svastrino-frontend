@@ -27,7 +27,12 @@ export default {
     './src/pages/user/psychometricpage/**/*.jsx',
     './src/pages/user/nirmaanpage/**/*.jsx',
     './src/pages/user/bookonlinepage/**/*.jsx',
+    './src/pages/user/dashboardpage/**/*.jsx',
+    './src/pages/user/downloadspage/**/*.jsx',
+    './src/common_component/user/EnquiryFields/EnquiryFields.jsx',
     './src/common_component/user/Footer/Footer.jsx',
+    './src/common_component/user/FaqAccordion/FaqAccordion.jsx',
+    './src/common_component/user/Testimonials/Testimonials.jsx',
   ],
   theme: {
     extend: {

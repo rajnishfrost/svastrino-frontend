@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
+import { legacyRootSeo } from '../../../seo/legacyRootSeo.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import '../adminShared.css'
@@ -290,7 +291,7 @@ function CoursesTab({ fields, onCourseSaved }) {
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="adm-link" onClick={() => setEditing(c)}>Edit</button>
                       {c.active && (
-                        <a className="adm-link" href={`/career-library/${c.slug}`} target="_blank" rel="noreferrer"
+                        <a className="adm-link" href={`/${c.slug}`} target="_blank" rel="noreferrer"
                            style={{ textDecoration: 'none' }}>View ↗</a>
                       )}
                       <button className="adm-link" style={{ color: 'var(--color-danger)' }} onClick={() => setDel(c)}>Delete</button>
@@ -323,6 +324,7 @@ function CoursesTab({ fields, onCourseSaved }) {
 const blankCourse = {
   name: '', slug: '', overview: '', topQualities: '', institutesIndia: '',
   institutesInternational: '', careerLadder: '', sourceUrl: '', active: true,
+  seoTitle: '', seoDescription: '', canonicalSlug: '',
 }
 
 function CourseEditor({ course, fields, onCancel, onSaved }) {
@@ -333,6 +335,8 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
+  // What svastrino.com shows for this address today, offered as the placeholder.
+  const legacy = legacyRootSeo(f.slug)
 
   // The table rows carry only name/slug/streams — the long-form content comes
   // from a full fetch.
@@ -347,6 +351,8 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           institutesInternational: (c.institutesInternational || []).join('\n'),
           careerLadder: (c.careerLadder || []).join('\n'),
           sourceUrl: c.sourceUrl || '', active: c.active,
+          seoTitle: c.seoTitle || '', seoDescription: c.seoDescription || '',
+          canonicalSlug: c.canonicalSlug || '',
         })
         setJobs(c.topJobs || [])
         setPicked((c.fields || []).map((x) => x.slug))
@@ -375,6 +381,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
       topQualities: f.topQualities, institutesIndia: f.institutesIndia,
       institutesInternational: f.institutesInternational, careerLadder: f.careerLadder,
       topJobs: jobs, fields: picked,
+      seoTitle: f.seoTitle, seoDescription: f.seoDescription, canonicalSlug: f.canonicalSlug,
     }
     try {
       if (course) await api(`/admin/career-library/courses/${course.id}`, { method: 'PATCH', auth: 'admin', body })
@@ -395,8 +402,42 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
         <div className="adm-row2">
           <div className="adm-field"><label>Name</label>
             <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Chartered Accountancy" /></div>
-          <div className="adm-field"><label>Slug — the URL: /career-library/<em>{f.slug || '…'}</em></label>
-            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+          <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
+            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} />
+          {course?.slug && f.slug !== course?.slug && (
+            <p className="adm-sub" style={{ margin: '4px 0 0', color: 'var(--color-warning, #a15c00)' }}>
+              svastrino.com/{course?.slug} will redirect here once the redirects are
+              rebuilt (server: npm run build:redirects) and the CloudFront function redeployed.
+            </p>
+          )}
+          </div>
+        </div>
+
+        {/* What search engines show. Left blank, the page keeps the wording
+            svastrino.com published for this address — which is what it has
+            ranked with for years — so these are shown as the placeholder
+            rather than filled in, and only a deliberate entry overrides it. */}
+        <div className="adm-panel-sub">
+          <p className="adm-sub" style={{ margin: '0 0 10px' }}>
+            Search result — leave blank to keep what svastrino.com already shows
+          </p>
+          <div className="adm-field"><label>Search title</label>
+            <input className="adm-input" value={f.seoTitle}
+              onChange={(e) => set('seoTitle', e.target.value)}
+              placeholder={legacy?.title || 'Uses the name above'} /></div>
+          <div className="adm-field"><label>Search description</label>
+            <textarea className="adm-input" rows={2} value={f.seoDescription}
+              onChange={(e) => set('seoDescription', e.target.value)}
+              placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
+          <div className="adm-field"><label>Same as another page (optional)</label>
+            <input className="adm-input" value={f.canonicalSlug}
+              onChange={(e) => set('canonicalSlug', slugify(e.target.value))}
+              placeholder="another-page-slug" />
+            <p className="adm-sub" style={{ margin: '4px 0 0' }}>
+              For two pages that say close to the same thing. Both keep working;
+              search engines pool the ranking onto the one named here instead of
+              splitting it between them.
+            </p></div>
         </div>
 
         <div className="adm-field">

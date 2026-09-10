@@ -115,6 +115,13 @@ export async function listQualities(url, durationSec = 0) {
 }
 
 /* ---------- download / remove ---------- */
+/** Drop every cached entry under a video's folder (its playlists and segments). */
+async function purgeFolder(cache, url) {
+  const base = isHls(url) ? dirOf(url) : absUrl(url)
+  const keys = await cache.keys()
+  await Promise.all(keys.filter((r) => r.url.startsWith(base)).map((r) => cache.delete(r)))
+}
+
 /**
  * Download a video for offline use.
  * @param {string} url        master.m3u8 (or a plain media URL)
@@ -133,6 +140,7 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
     try { bytes += (await b.arrayBuffer()).byteLength } catch { /* ignore */ }
   }
 
+  try {
   if (!isHls(url)) {
     // Plain file (MP4 fallback uploads)
     const res = await fetch(url)
@@ -182,6 +190,13 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
       }))
     }
   }
+  } catch (err) {
+    // Half a video is worse than none. With its slim playlist in the cache the
+    // player would choose the saved copy and then stall on the first segment
+    // that never arrived - so a failed download leaves nothing behind.
+    await purgeFolder(cache, url).catch(() => {})
+    throw err
+  }
 
   const idx = readIndex()
   idx[url] = {
@@ -198,9 +213,7 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
 export async function removeDownload(url) {
   if (!('caches' in window)) return
   const cache = await caches.open(VIDEO_CACHE)
-  const base = dirOf(url)
-  const keys = await cache.keys()
-  await Promise.all(keys.filter((r) => r.url.startsWith(base)).map((r) => cache.delete(r)))
+  await purgeFolder(cache, url)
   const idx = readIndex()
   delete idx[url]
   writeIndex(idx)

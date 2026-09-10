@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Mail, MapPin, Phone } from 'lucide-react'
+import { CheckCircle2, Mail, MapPin, Phone } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { api } from '../../../api/client.js'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 // Real contact details from the Svastrino site. Static on purpose — offices and
 // handles change rarely, so there's no value in a DB round-trip for them.
@@ -32,7 +34,7 @@ const SOCIALS = [
 ]
 
 const inputClass =
-  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
 
 export default function Contact() {
   const { user } = useAuth()
@@ -71,7 +73,13 @@ export default function Contact() {
 
   return (
     <>
-      <PageHero eyebrow="Contact us" title="Get in Touch" />
+      <PageSeo />
+      <PageHero
+        eyebrow="Contact us"
+        title="Get in Touch"
+        subtitle="Questions about a program, the psychometric test, or booking a session? Reach out — we're happy to help."
+        illustration={<ProgramHeroArt src="/assets/images/contact-us-t.png" alt="" />}
+      />
 
       <section className="bg-white py-16 md:py-20">
         <div className="container">
@@ -79,9 +87,49 @@ export default function Contact() {
             {/* Enquiry form (wider, left) */}
             <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5 md:p-8">
               {sent ? (
-                <p className="py-6 text-base font-semibold text-nirmaan-green">
-                  Thanks! We&rsquo;ll get back to you soon.
-                </p>
+                /* The same shape the other forms use when they are done: a mark,
+                   a heading, and what happens next — not one green line in an
+                   otherwise empty card. It names the address the confirmation
+                   went to, because that is the question someone asks next. */
+                <div className="flex flex-col items-center gap-4 px-4 py-12 text-center">
+                  <span className="flex size-16 items-center justify-center rounded-full bg-brand-rose">
+                    <CheckCircle2 className="size-8 text-brand-crimson" />
+                  </span>
+                  <div>
+                    <h2 className="font-display text-2xl font-extrabold text-brand-navy">
+                      Thank you &mdash; your message is with us
+                    </h2>
+                    <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-brand-slate">
+                      Someone from our team will get back to you shortly. We have sent a
+                      confirmation to{' '}
+                      <strong className="font-semibold text-brand-navy">{form.email}</strong>{' '}
+                      so you have it on record.
+                    </p>
+                  </div>
+                  <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row">
+                    <a
+                      href={`tel:${PHONE_HREF}`}
+                      className="inline-flex h-11 items-center justify-center rounded-lg bg-brand-crimson px-6 text-sm font-semibold text-white no-underline transition-colors hover:bg-brand-crimson-dark"
+                    >
+                      Call us instead
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // A fresh sheet, minus what the account already tells us.
+                        setForm({
+                          name: user?.name || '', email: user?.email || '',
+                          phone: user?.phone || '', message: '',
+                        })
+                        setErr('')
+                        setSent(false)
+                      }}
+                      className="cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-brand-crimson underline-offset-4 hover:underline"
+                    >
+                      Send another message
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <form onSubmit={onSubmit} className="space-y-5">
                   <div className="space-y-1.5">
@@ -90,7 +138,7 @@ export default function Contact() {
                       className={inputClass}
                       type="text"
                       required
-                      placeholder="Your name"
+                      placeholder="Full name"
                       autoComplete="name"
                       value={form.name}
                       onChange={set('name')}
@@ -112,7 +160,7 @@ export default function Contact() {
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-brand-navy">
-                      Contact number <span className="font-normal text-brand-slate">(optional)</span>
+                      Phone number <span className="font-normal text-brand-slate">(optional)</span>
                     </label>
                     <input
                       className={inputClass}
@@ -141,7 +189,7 @@ export default function Contact() {
                     disabled={busy}
                     className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {busy ? 'Sending…' : 'Send message'}
+                    {busy ? 'Sending…' : 'Send Message'}
                   </button>
 
                   {err && (

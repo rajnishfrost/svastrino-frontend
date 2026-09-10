@@ -1,0 +1,80 @@
+/* =====================================================================
+   Testimonials carousel — a STEPPED slider (not a continuous marquee):
+   shows exactly N cards, holds, then slides by one card. Mechanics live in
+   plain CSS (+ an inline transform from the component) so they never depend on
+   Tailwind's JIT scanning this file. The card's own look uses Tailwind classes.
+   ===================================================================== */
+
+.testi-viewport {
+  overflow: hidden;
+  /* room so card shadows aren't clipped top/bottom */
+  padding: 6px 0;
+}
+
+.testi-track {
+  display: flex;
+  width: 100%;
+}
+
+/* Only the autoplay slide is animated; the seamless "snap back to start" is done
+   with this class removed, so it happens instantly and invisibly. */
+.testi-track.is-animating {
+  transition: transform 0.6s ease;
+}
+
+/* Card slot. The 12px side padding becomes the gap between cards (24px) and a
+   small inset at the row's ends. flex-basis/max-width are set inline so the
+   component can switch between 2-up (desktop) and 1-up (phone). */
+.testi-slide {
+  /* Hold the slot width (basis/max-width set inline) instead of shrinking to
+     fit — the extra slides overflow the track and are clipped by the viewport,
+     so only `visible` cards show at once. */
+  flex-grow: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 0 12px;
+}
+
+.testi-slide > figure {
+  height: 100%; /* equal-height cards across the row */
+}
+
+/* Fewer testimonials than fit: just centre what we have, no sliding. */
+.testi-static {
+  justify-content: center;
+}
+
+/* ---- Prev / Next controls ---- */
+.testi-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.testi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 9999px;
+  border: 1px solid var(--gray-200);
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.testi-btn:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+.testi-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+

@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
+import {
+  useEnquiryForm, EnquiryField, EnquiryContactField,
+} from '../../../../common_component/user/EnquiryFields/EnquiryFields.jsx'
 
 /**
  * Home · section 1 (inside the banner) — "Enquire With Us!".
  * A low-commitment way in for a visitor who is not ready to pick a service.
  * Posts to /user/enquiry, the same endpoint the Contact page uses; `source`
  * tells the team which form it came from.
+ *
+ * The fields, their validation and the masked prefill all come from
+ * EnquiryFields, so this form and the "talk to an expert" panel ask for exactly
+ * the same things in exactly the same way.
+ *
+ * The request is sent WITH the account token when there is one. The endpoint is
+ * public and works fine without it; sending it is what lets the team open the
+ * enquiry and the account side by side instead of matching them up by hand.
+ *
+ * A signed-in visitor who has already written in gets the form COLLAPSED rather
+ * than removed. Removed would be wrong twice over: this is the hero's whole
+ * right-hand column and taking it away leaves a hole, and unlike the program
+ * pages there is no queue here to wait in — asking a second, different question
+ * a week later is perfectly reasonable. So the collapsed state says we heard
+ * them and offers the form back on one click.
  */
-const CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'Graduate', 'Other']
 
-const inputClass =
-  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+const CLASSES = ['1st Year Undergraduate', '2nd Year Undergraduate', '3rd Year Undergraduate', '4th Year Undergraduate', '5th Year Undergraduate', 'Other']
+const inputClass = 'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
 
 export default function EnquireForm() {
   const { user } = useAuth()
+  const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user)
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  // undefined = not looked up yet; null = nothing on file. Only known for a
+  // signed-in visitor — a signed-out browser cannot be recognised, and guessing
+  // would greet a stranger with someone else's receipt.
+  const [standing, setStanding] = useState(undefined)
+  const [reopened, setReopened] = useState(false)
 
-  // The fields are uncontrolled, so the values are read off the form itself
-  // when it is submitted. That keeps the markup exactly as designed.
+  useEffect(() => {
+    if (!user) { setStanding(null); return undefined }
+    let live = true
+    api('/user/enquiry/mine?source=home', { auth: 'user' })
+      .then((d) => { if (live) setStanding(d.enquiry || null) })
+      .catch(() => { if (live) setStanding(null) }) // show the form rather than nothing
+    return () => { live = false }
+  }, [user])
+
   const submit = async (e) => {
     e.preventDefault()
-    const data = Object.fromEntries(new FormData(e.currentTarget))
+    if (!check()) return
     setErr(''); setBusy(true)
     try {
       await api('/user/enquiry', {
         method: 'POST',
-        body: { ...data, email: user?.email || '', source: 'home' },
+        auth: user ? 'user' : false,
+        body: { ...values, source: 'home' },
       })
       setSent(true)
     } catch (ex) {
@@ -51,8 +82,34 @@ export default function EnquireForm() {
     )
   }
 
+  // Already written in, and not asking for the form back.
+  if (standing && !reopened) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10 text-center">
+        <CheckCircle2 className="size-12 text-brand-crimson" />
+        <h3 className="font-display text-xl font-bold text-brand-navy">We have your enquiry</h3>
+        <p className="text-sm text-brand-slate">
+          You wrote to us on{' '}
+          {new Date(standing.createdAt).toLocaleDateString('en-IN', {
+            day: 'numeric', month: 'short', year: 'numeric',
+          })}
+          . Someone from our team will connect with you shortly — there is nothing more to do.
+        </p>
+        <button
+          type="button"
+          onClick={() => setReopened(true)}
+          className="mt-1 cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold text-brand-crimson underline-offset-4 hover:underline"
+        >
+          Ask something else
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <form onSubmit={submit} className="space-y-4">
+    // noValidate: the browser's own bubbles would pre-empt our messages, and it
+    // only ever complains about one field at a time.
+    <form ref={formRef} onSubmit={submit} noValidate className="space-y-4">
       <div>
         <h3 className="font-display text-xl font-bold text-brand-navy">Enquire With Us!</h3>
         <p className="mt-1 text-sm text-brand-slate">
@@ -61,36 +118,34 @@ export default function EnquireForm() {
         </p>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-brand-navy">Your name</label>
-        <input className={inputClass} name="name" autoComplete="name" placeholder="Your name"
-               defaultValue={user?.name || ''} required />
+      <EnquiryField
+        name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={80}
+        value={values.name} onChange={set('name')} error={errors.name}
+      />
+
+      {/* Side by side, and min-w-0 so a long address shrinks its column instead
+          of pushing the grid wider than the card. */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <EnquiryContactField
+          className="min-w-0"
+          kind="email" label="Email" value={values.email} onChange={set('email')}
+          error={errors.email} masked={masked.email}
+          hideable={hideable.email} onToggle={() => toggle('email')}
+        />
+        <EnquiryContactField
+          className="min-w-0"
+          kind="phone" label="Phone number" value={values.phone} onChange={set('phone')}
+          error={errors.phone} masked={masked.phone}
+          hideable={hideable.phone} onToggle={() => toggle('phone')}
+        />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-brand-navy">Phone number</label>
-        <div className="flex gap-2">
-          <span className="inline-flex h-11 items-center rounded-lg border border-brand-navy/15 bg-brand-cream px-3 text-sm font-medium text-brand-navy">
-            +91
-          </span>
-          <input
-            className={inputClass}
-            type="tel"
-            name="phone"
-            inputMode="numeric"
-            pattern="[0-9]{10}"
-            maxLength={10}
-            placeholder="10-digit number"
-            defaultValue={user?.phone || ''}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* Match FieldShell (used by EnquiryField) exactly — same wrapper gap and
+            block label — so the Class control lines up with Location beside it. */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-brand-navy">Your class</label>
-          <select className={inputClass} name="studentClass" defaultValue="" required>
+          <label className="block text-xs font-semibold text-brand-navy" htmlFor="studentClass">Class</label>
+          <select id="studentClass" className={inputClass} name="studentClass" defaultValue="" required>
             <option value="" disabled>
               Select
             </option>
@@ -101,21 +156,20 @@ export default function EnquireForm() {
             ))}
           </select>
         </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-brand-navy">City</label>
-          <input className={inputClass} name="city" placeholder="Your city" required />
-        </div>
+        <EnquiryField
+          name="city" label="Location" placeholder="City / Town / Village Name"
+          autoComplete="address-level2" maxLength={80}
+          value={values.city} onChange={set('city')} error={errors.city}
+        />
+
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-brand-navy">What do you need help with?</label>
-        <textarea
-          className={`${inputClass} h-auto py-2.5`}
-          name="message"
-          rows={2}
-          placeholder="Tell us in a line or two"
-        />
-      </div>
+
+      <EnquiryField
+        name="message" label="What do you need help with?" rows={2} maxLength={2000}
+        placeholder="Tell us in a line or two"
+        value={values.message} onChange={set('message')} error={errors.message}
+      />
 
       {err && (
         <p className="text-sm text-brand-crimson" role="alert">
@@ -128,7 +182,7 @@ export default function EnquireForm() {
         disabled={busy}
         className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-6 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {busy ? 'Sending…' : 'Enquire Now →'}
+        {busy ? 'Sending…' : <>Enquire Now <ArrowRight className="size-4" /></>}
       </button>
     </form>
   )

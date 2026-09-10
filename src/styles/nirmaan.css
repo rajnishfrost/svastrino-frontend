@@ -57,7 +57,7 @@
   --shadow-lg: 0 20px 50px rgba(59, 40, 34, 0.16);
 
   /* ---- Nirmaan uses a classic serif for headings ---- */
-  --font-serif: Georgia, 'Times New Roman', serif;
+  /* --font-serif: Georgia, 'Times New Roman', serif; */
 }
 
 /* The footer keeps the warm Nirmaan brown even in the green theme (per request) —

@@ -38,6 +38,15 @@ export const IconVolMute = (p) => (
   </svg>
 )
 
+export const IconCaptions = (p) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}>
+    <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+    <text x="12" y="15.6" textAnchor="middle" fontSize="9.5" fontWeight="800"
+          fontFamily="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+          fill="currentColor" stroke="none">CC</text>
+  </svg>
+)
+
 export const IconGear = (p) => (
   <svg {...base} {...p}>
     <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.31-.07.63-.07.94s.02.63.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.38.3.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.25.41.48.41h3.84c.23 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z" />
@@ -56,6 +65,17 @@ export const IconLock = (p) => (
   <svg {...base} {...p}>
     <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9h-1V6A5 5 0 0 0 7 6v2H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM8.9 6a3.1 3.1 0 0 1 6.2 0v2H8.9V6z" />
   </svg>
+)
+
+/* Theatre mode — the wide in-page view, the one under a YouTube player that
+   makes the video big without leaving the page. A plain rectangle for "go
+   wide", a narrower one for "come back". */
+export const IconTheatre = (p) => (
+  <svg {...base} {...p}><path d="M3 6h18a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm1 2v8h16V8H4z" /></svg>
+)
+
+export const IconTheatreExit = (p) => (
+  <svg {...base} {...p}><path d="M5 6h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm1 2v8h12V8H6z" /></svg>
 )
 
 export const IconDownload = (p) => (

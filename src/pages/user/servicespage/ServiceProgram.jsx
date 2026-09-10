@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import { useSeo, excerptFor } from '../../../seo/useSeo.js'
+import { seoFor } from '../../../seo/legacySeo.js'
 import { fetchProgram } from '../../../api/content.js'
+import { PROGRAM_HERO, PROGRAM_BENEFITS } from './journeyStages.js'
 import ProgramOverview from './sections/ProgramOverview.jsx'
 import ChooseIf from './sections/ChooseIf.jsx'
 import ProgramJourney from './sections/ProgramJourney.jsx'
@@ -10,8 +13,25 @@ import Benefits from './sections/Benefits.jsx'
 import BookNowStrip from './sections/BookNowStrip.jsx'
 import ProgramTestimonials from './sections/ProgramTestimonials.jsx'
 import ProgramFaqs from './sections/ProgramFaqs.jsx'
+import ProgramHeroArt from './sections/ProgramHeroArt.jsx'
 import TalkToExpert from './sections/TalkToExpert.jsx'
 import './Services.css' // keeps .svc-hero-trust (hero) styled; body sections use Tailwind
+import { ArrowRight } from 'lucide-react'
+
+// Themed hero background per program (optimised from the brand imagery).
+const HERO_IMG = {
+  'bulls-eye': '/assets/images/programs/bulls-eye.jpg',
+  bloom: '/assets/images/programs/bloom.jpg',
+  breakthrough: '/assets/images/programs/breakthrough.jpg',
+}
+
+// Flat vector illustration per program. Where a slug has one, the hero switches
+// to the light split illustration layout instead of the photo background.
+const HERO_ILLUS = {
+  'bulls-eye': '/assets/images/programs/bullsEye-t.png',
+  bloom: '/assets/images/programs/bloom-3-t.png',
+  breakthrough: '/assets/images/programs/break-6-t.png',
+}
 
 /**
  * A single program's own page (Bull's Eye / Bloom / Breakthrough). Pulls the
@@ -38,19 +58,30 @@ export default function ServiceProgram() {
 
   const bookHref = program?.bookingSku ? `/book-online?program=${program.bookingSku}` : '/book-online'
 
+  // Each program page keeps the title and description its old address ranked
+  // with; a program added since then falls back to its own summary.
+  const legacy = seoFor(`/services/${slug}`)
+  useSeo({
+    ready: !!program,
+    title: legacy?.title || program?.name,
+    description: legacy?.description || excerptFor(program?.summary),
+    path: `/services/${slug}`,
+    exact: !!legacy?.title,
+  })
+
   // Breakthrough is not sold from a checkout page — the visitor asks for a call
   // and the team sends a payment link afterwards. Every CTA on the page points
   // at the call-back form instead of the booking wizard.
   const expertCall = program?.buyMode === 'expert-call'
-  const ctaLabel = expertCall ? 'Talk to an expert' : 'Book now'
+  const ctaLabel = expertCall ? 'Talk to an Expert' : 'Book Now'
 
   const trustLine = program?.trustLine || (expertCall
-    ? 'Guided one to one by Svastrino mentors · no payment before you speak to us'
-    : 'Guided one to one by Svastrino mentors')
+    ? 'Guided one-to-one by Svastrino mentors · No payment before you speak to us'
+    : 'Guided one-to-one by Svastrino mentors')
 
   /**
-   * The main call to action. For a self-serve programme it navigates to the
-   * booking wizard; for an expert-call programme it only scrolls down the page,
+   * The main call to action. For a self-serve program it navigates to the
+   * booking wizard; for an expert-call program it only scrolls down the page,
    * which is a plain anchor rather than a route change.
    */
   function Cta({ className }) {
@@ -81,39 +112,61 @@ export default function ServiceProgram() {
 
   return (
     <>
+      {/* Hero title + tagline use the static PROGRAM_HERO copy (client's latest
+          wording); any program not listed there falls back to the API response. */}
       <PageHero
         eyebrow={program.category?.name || 'Services'}
-        title={program.name}
-        subtitle={program.tagline}
+        title={PROGRAM_HERO[slug]?.title || program.name}
+        subtitle={PROGRAM_HERO[slug]?.tagline || program.tagline}
+        bgImage={HERO_IMG[slug]}
+        illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
       >
         <Cta className="btn btn-accent btn-large" />
-        <Link to="/services" className="btn btn-secondary btn-large">All services</Link>
+        <Link to="/services" className="btn btn-secondary btn-large">All Services</Link>
         {/* The trust line the visitor needs before reading anything else. */}
         <p className="svc-hero-trust">{trustLine}</p>
       </PageHero>
 
-      <section className="bg-white py-16 md:py-20">
-        <div className="container mx-auto max-w-4xl space-y-6">
-          <ProgramOverview program={program} />
-          <ChooseIf items={program.chooseIf} />
-          <ProgramJourney program={program} />
-          <Benefits items={program.benefits} programName={program.name} />
-          {expertCall
-            ? <TalkToExpert program={program} />
-            : <BookNowStrip program={program} bookHref={bookHref} />}
-          <ProgramTestimonials slug={program.slug} programName={program.name} />
-          <ProgramFaqs faqs={program.faqs} />
+      {/* Each section below is its own full-width band with its own background
+          tone, so the page reads with rhythm (like the home page) rather than as
+          one long white column. Sections with no data (benefits / faqs / stories)
+          render nothing, so they never leave an empty coloured band. */}
+      {/* <ProgramOverview program={program} /> */}
+      {/* <ChooseIf items={program.chooseIf} /> */}
+      <ProgramJourney program={program} />
+      {/* Benefits come from the static PROGRAM_BENEFITS copy (client's latest
+          wording); any program not listed there falls back to the API. */}
+      <Benefits items={PROGRAM_BENEFITS[slug] || program.benefits} programName={program.name} />
+      {expertCall
+        ? <TalkToExpert program={program} />
+        : <BookNowStrip program={program} bookHref={bookHref} />}
+      <ProgramTestimonials slug={program.slug} programName={program.name} />
+      <ProgramFaqs faqs={program.faqs} />
 
-          {/* Closing CTA — for anyone who read all the way down. */}
-          <div className="rounded-2xl border border-brand-navy/5 bg-brand-cream p-8 text-center">
-            <h2 className="font-display text-2xl font-extrabold text-brand-navy">Ready to begin {program.name}?</h2>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Cta className="btn btn-primary btn-large" />
-              <Link to="/services/compare" className="btn btn-secondary btn-large">
-                Compare programs
-              </Link>
-            </div>
+      {/* Closing CTA — a dark navy band to finish on, for anyone who read all the
+          way down. */}
+      {/* <section className="bg-brand-navy py-16 md:py-20">
+        <div className="container mx-auto max-w-3xl text-center">
+          <h2 className="font-display text-2xl font-extrabold text-white sm:text-3xl">Ready to begin {program.name}?</h2>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Cta className="btn btn-accent btn-large" />
+            <Link to="/services/compare" className="btn btn-large border-white/70 text-white hover:bg-white hover:text-brand-navy">
+              Compare programs
+            </Link>
           </div>
+        </div>
+      </section> */}
+      <section className="bg-brand-gradient py-14 md:py-16">
+        <div className="container mx-auto flex max-w-4xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+          <div>
+            <h2 className="font-display text-xl font-bold text-white sm:text-2xl">Still not sure...?</h2>
+          </div>
+          <Link
+            to={"/services/compare"}
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+          >
+            Compare Programs <ArrowRight className="size-4" />
+          </Link>
         </div>
       </section>
     </>

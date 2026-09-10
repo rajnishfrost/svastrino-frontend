@@ -11,8 +11,11 @@ import {
 } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
+import { ArrowRight, Check, GraduationCap } from 'lucide-react'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './BookOnline.css'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Counselling & mentoring booking wizard. Four steps (as per spec):
@@ -361,6 +364,7 @@ export default function BookOnline() {
   if (loadErr) {
     return (
       <>
+        <PageSeo />
         <PageHero eyebrow="Book Online" title="Book a session" />
         <section className="section"><div className="container bo-wrap">
           <div className="card bo-card"><p className="bo-error">{loadErr}</p></div>
@@ -376,10 +380,13 @@ export default function BookOnline() {
 
   return (
     <>
+      <PageSeo />
       <PageHero
         eyebrow="Book Online"
-        title={rescheduleId ? 'Reschedule your session' : 'Book a mentoring session'}
-        subtitle="2-hour one-on-one sessions · book from 3 days ahead, up to 2 months in advance."
+        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
+        // subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
+        subtitle="Select a program that you would want to get personalised session in."
+        illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section">
         <div className="container bo-wrap">
@@ -400,28 +407,75 @@ export default function BookOnline() {
             </ol>
           )}
 
-          {/* ---- Step 0 · choose a program ---- */}
+          {/* ---- Step 0 · choose a program ----
+              The cards are the pricing design from the UI sheet, but every
+              figure on them comes from the SERVER, not from a list typed in
+              here. The wizard charges what the catalogue says, so a card that
+              carried its own price would eventually quote one number and take
+              another — which is the worst kind of bug to find out about at a
+              payment screen. */}
           {step === 'program' && (
-            <div className="bo-programs">
-              {programs == null ? <p>Loading programs…</p> : programs.map((p) => (
-                <div key={p.sku} className={`card bo-card bo-program ${p.featured ? 'is-featured' : ''}`}>
-                  {p.badge && <span className="bo-badge">{p.badge}</span>}
-                  <h2>{p.name}</h2>
-                  {p.tagline && <p className="bo-muted">{p.tagline}</p>}
-                  <p className="bo-price">
-                    {paiseInr(p.price)} <span className="bo-muted">· {p.sessions} session{p.sessions > 1 ? 's' : ''} × 2 hrs</span>
-                  </p>
-                  {Array.isArray(p.features) && p.features.length > 0 && (
-                    <ul className="bo-features">{p.features.map((f) => <li key={f}>{f}</li>)}</ul>
-                  )}
-                  {/* One way out of a card: read the programme first. Booking
-                      starts from the programme's own page, so nobody commits to
-                      a date and a payment before knowing what they bought. */}
-                  <Link to={`/services/${p.slug}`} className="btn btn-primary bo-program-btn">
-                    View details
-                  </Link>
-                </div>
-              ))}
+            <div className="grid items-stretch gap-6 md:grid-cols-3">
+              {programs == null ? <p>Loading programs…</p> : programs.map((p) => {
+                const byCall = p.buyMode === 'expert-call'
+                return (
+                  <div
+                    key={p.sku}
+                    className={
+                      p.featured
+                        ? 'relative z-10 flex flex-col rounded-2xl border-2 border-brand-crimson bg-white p-7 shadow-2xl shadow-brand-crimson/20 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/25'
+                        : 'flex flex-col rounded-2xl border-2 border-transparent bg-white p-7 shadow-lg shadow-brand-navy/10 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-navy/[0.18]'
+                    }
+                  >
+                    {p.badge && (
+                      <span className="mb-3 self-start rounded-full bg-brand-crimson/10 px-3 py-1 text-xs font-semibold text-brand-crimson">
+                        {p.badge}
+                      </span>
+                    )}
+                    <h2 className="font-display text-xl font-bold text-brand-navy">{p.name}</h2>
+                    {p.tagline && (
+                      <p className="mt-2 text-sm font-semibold leading-relaxed text-brand-crimson">{p.tagline}</p>
+                    )}
+
+                    <div className="mt-5 border-y border-brand-navy/10 py-4">
+                      <span className="font-display text-3xl font-extrabold text-brand-navy">{paiseInr(p.price)}</span>
+                      {/* <span className="ml-1 text-sm text-brand-slate">
+                        one-time · {p.sessions} session{p.sessions > 1 ? 's' : ''} × 2 hrs
+                      </span> */}
+                    </div>
+
+                    {Array.isArray(p.features) && p.features.length > 0 && (
+                      <ul className="mt-5 flex-1 space-y-2.5">
+                        {p.features.map((f) => (
+                          <li key={f} className="flex items-start gap-2 text-sm text-brand-navy/80">
+                            <Check className="mt-0.5 size-4 shrink-0 text-brand-crimson" />
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {/* A programme sold after a conversation cannot be booked
+                        from here at all — its own page runs that conversation. */}
+                    {/* {byCall ? (
+                      <Link
+                        to={`/services/${p.slug}#talk-to-an-expert`}
+                        className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-crimson px-5 text-sm font-semibold text-white no-underline transition-colors hover:bg-brand-crimson-dark"
+                      >
+                        Talk to an expert <ArrowRight className="size-4" />
+                      </Link>
+                    ) : ( */}
+                      <button
+                        type="button"
+                        onClick={() => syncParams({ program: p.sku })}
+                        className="mt-6 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+                      >
+                        Book Now <ArrowRight className="size-4" />
+                      </button>
+                    {/* )} */}
+                  </div>
+                )
+              })}
             </div>
           )}
 
@@ -446,7 +500,7 @@ export default function BookOnline() {
           {soldOut && (
             <div className="card bo-card">
               <p>All {owned.sessionsTotal} sessions of <strong>{program?.name}</strong> are already booked.</p>
-              <Link to="/dashboard" className="btn btn-primary">View your sessions</Link>
+              <Link to="/dashboard/services" className="btn btn-primary">View your sessions</Link>
             </div>
           )}
 
@@ -679,7 +733,7 @@ export default function BookOnline() {
                 {receipt ? ' Your receipt has been emailed to you.' : ''}
               </p>
               <div className="bo-actions">
-                <Link to="/dashboard" className="btn btn-primary">Go to dashboard</Link>
+                <Link to="/dashboard/services" className="btn btn-primary">Go to dashboard</Link>
                 {owned && owned.sessionsRemaining > 1 && !rescheduleId && (
                   <button className="btn btn-secondary"
                           onClick={() => { setBooking(null); setReceipt(null); setSlot(''); setDate(''); syncParams({ date: '', start: '' }); setStep('schedule'); fetchMyMentoring().then(setMine).catch(() => {}) }}>
@@ -690,6 +744,49 @@ export default function BookOnline() {
             </div>
           )}
 
+        </div>
+      </section>
+
+      {/* Cross-sell to the Nirmaan skill-build course — kept in its own green
+          Nirmaan theme so it reads as a distinct, related offering rather than
+          another mentoring program. */}
+      <section className="bg-white py-14 md:py-16">
+        <div className="container">
+          <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] bg-nirmaan-cream p-8 md:p-10">
+            {/* A flat tinted circle hung off the corner, cropped by the card.
+                Solid, not a blurred glow: this palette is flat by design. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-20 size-40 rounded-full bg-nirmaan-green/10 sm:size-56"
+            />
+
+            <div className="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+              <div className="flex size-24 shrink-0 items-center justify-center rounded-full bg-white">
+                <img src="/nirmaan-tree.png" alt="" aria-hidden className="size-full object-contain p-2.5" />
+              </div>
+
+              <div className="flex-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-nirmaan-brown px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                  <GraduationCap className="size-3.5" /> Skill Build
+                </span>
+                <h2 className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
+                  Want to build your mindset, confidence, and skills to succeed in life and career?
+                </h2>
+                <p className="mt-2 text-sm text-nirmaan-brown-soft">
+                  Explore{' '}
+                  <span className="font-semibold text-nirmaan-green">Nirmaan — Soch Se Vikas</span>, our
+                  youth-focused life &amp; career development course.
+                </p>
+              </div>
+
+              <Link
+                to="/skill-build/nirmaan"
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white no-underline transition-colors hover:bg-nirmaan-green-dark"
+              >
+                Explore Nirmaan <ArrowRight className="size-4" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </>

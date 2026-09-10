@@ -66,13 +66,13 @@
 .svc-cta { text-align: center; }
 .svc-cta .svc-actions { justify-content: center; }
 
-/* ── Programme page: the trust line under the hero buttons ───────────────── */
+/* ── Program page: the trust line under the hero buttons ───────────────── */
 .svc-hero-trust {
   width: 100%; margin: var(--space-3) 0 0;
   font-size: 13.5px; opacity: 0.85;
 }
 
-/* ── Programme page: journey intro + what the programme includes ─────────── */
+/* ── Program page: journey intro + what the program includes ─────────── */
 .svc-journey-intro {
   font-size: 15px; line-height: 1.6;
   color: var(--color-text-muted); margin: 0 0 var(--space-4);
@@ -101,7 +101,7 @@
 }
 .svc-inclusions li span { font-size: 14.5px; color: var(--color-heading); }
 
-/* ── Programme page: mid-page booking band ───────────────────────────────── */
+/* ── Program page: mid-page booking band ───────────────────────────────── */
 .svc-book-strip {
   background: var(--color-inverse-bg); color: var(--color-inverse-text);
   border-radius: var(--radius-lg); padding: var(--space-5);
@@ -111,7 +111,7 @@
 .svc-book-strip h2 { font-size: 22px; margin: 0 0 6px; color: inherit; }
 .svc-book-strip p { margin: 0; font-size: 14px; opacity: 0.85; }
 
-/* ── Programme page: proof + questions ───────────────────────────────────── */
+/* ── Program page: proof + questions ───────────────────────────────────── */
 .svc-panel-plain { display: grid; gap: var(--space-4); }
 .svc-panel-plain .svc-h2 { margin-bottom: 0; }
 

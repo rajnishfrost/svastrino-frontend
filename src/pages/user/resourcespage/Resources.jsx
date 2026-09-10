@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Minus, Plus, Search } from 'lucide-react'
+import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
+import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
+import PageSeo from '../../../seo/PageSeo.jsx'
 
 /**
  * Resources hub. Each sub-category is now its OWN page:
@@ -16,16 +19,40 @@ import { fetchLatestBlogs } from '../../../api/blogs.js'
  */
 const SUBPAGES = [
   { key: 'career-library', to: '/resources/career-library', label: 'Career Library', blurb: 'Explore career streams and the courses under each.' },
-  { key: 'faqs', to: '/resources/faqs', label: "FAQ's", blurb: 'Answers to common questions about mentoring & counselling.' },
+  { key: 'faqs', to: '/resources/faqs', label: 'FAQs', blurb: 'Answers to common questions about mentoring & counselling.' },
   { key: 'success-stories', to: '/resources/success-stories', label: 'Success Stories', blurb: 'Real results from students and parents we’ve guided.' },
 ]
+
+// One component answers four addresses, so each needs its own title and
+// description — otherwise all four compete in search results as the same page.
+const VIEW_SEO = {
+  all: {
+    title: 'Resources — career library, blogs, FAQs and success stories',
+    description:
+      'Explore careers and courses at your own pace: a library of 52 career fields, articles on mentoring and studying abroad, answers to common questions, and stories from students we have guided.',
+  },
+  'career-library': {
+    title: 'Career Library — explore 52 careers and the courses that lead to them',
+    description:
+      'Browse careers by stream — science, commerce, arts, engineering and more — with what each field involves, the roles it leads to, where to study, and how salaries progress.',
+  },
+  faqs: {
+    title: "FAQs — how Svastrino's mentoring and courses work",
+    description:
+      'Answers to what people ask before starting: how sessions are booked, what each program covers, how the course is paced, and how payments and refunds work.',
+  },
+  'success-stories': {
+    title: 'Success stories — students we have guided, in their words',
+    description:
+      'Read what students and parents say after working with Svastrino: the confusion they arrived with, what changed, and where they went next.',
+  },
+}
 
 export default function Resources({ view = 'all' }) {
   const [fields, setFields] = useState([])
   const [faqs, setFaqs] = useState([])
   const [stories, setStories] = useState([])
   const [latest, setLatest] = useState([])
-  const [openFaq, setOpenFaq] = useState(null)
   const [q, setQ] = useState('') // Career Library search box
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -53,6 +80,13 @@ export default function Resources({ view = 'all' }) {
 
   const retry = () => setReloadKey((k) => k + 1)
   const meta = SUBPAGES.find((s) => s.key === view)
+  // Themed hero illustration per resources sub-view.
+  const heroArt = {
+    all: '/assets/images/all-resources-t.png',
+    'career-library': '/assets/images/library.png',
+    faqs: '/assets/images/faqs-t.png',
+    'success-stories': '/assets/images/success-t.png',
+  }[view] || '/assets/images/all-resources-t.png'
 
   // Career Library search. Matching a STREAM keeps all of its courses; matching
   // only a course narrows that stream down to the courses that matched, so the
@@ -74,13 +108,15 @@ export default function Resources({ view = 'all' }) {
 
   return (
     <>
+      <PageSeo {...VIEW_SEO[view] || VIEW_SEO.all} />
       <PageHero
         eyebrow="Resources"
         title={meta ? meta.label : 'Resources'}
         subtitle={meta ? meta.blurb : "Career library, FAQs and success stories — everything we've learned, in one place."}
+        illustration={<ProgramHeroArt src={heroArt} alt="" />}
       />
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-10 md:py-14">
         <div className="container">
           {/* ---- Landing ---- */}
           {view === 'all' && (
@@ -158,7 +194,7 @@ export default function Resources({ view = 'all' }) {
                       <ul className="mt-3 space-y-1.5 text-sm">
                         {f.courses.map((c) => (
                           <li key={c.slug}>
-                            <Link to={`/career-library/${c.slug}`} className="text-brand-slate hover:text-brand-crimson hover:underline">
+                            <Link to={`/${c.slug}`} className="text-brand-slate hover:text-brand-crimson hover:underline">
                               {c.name}
                             </Link>
                           </li>
@@ -175,30 +211,11 @@ export default function Resources({ view = 'all' }) {
 
           {/* ---- FAQs ---- */}
           {!loading && !error && view === 'faqs' && (
-            <div id="faqs" className="mx-auto max-w-3xl space-y-8">
+            <div id="faqs" className="mx-auto max-w-3xl space-y-10">
               {faqs.map((group) => (
                 <div key={group.section}>
-                  <h3 className="font-display text-lg font-bold text-brand-navy">{group.section}</h3>
-                  <div className="mt-3 divide-y divide-brand-navy/10 border-y border-brand-navy/10">
-                    {group.items.map((item) => {
-                      const open = openFaq === item.id
-                      return (
-                        <div key={item.id}>
-                          <button
-                            className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left"
-                            onClick={() => setOpenFaq(open ? null : item.id)}
-                            aria-expanded={open}
-                          >
-                            <span className="font-medium text-brand-navy">{item.question}</span>
-                            <span className="text-brand-crimson">
-                              {open ? <Minus className="size-4" /> : <Plus className="size-4" />}
-                            </span>
-                          </button>
-                          {open && <p className="pb-4 text-sm leading-relaxed text-brand-slate">{item.answer}</p>}
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <h3 className="mb-4 font-display text-lg font-bold text-brand-navy">{group.section}</h3>
+                  <FaqAccordion items={group.items} />
                 </div>
               ))}
             </div>
@@ -225,7 +242,7 @@ export default function Resources({ view = 'all' }) {
       </section>
 
       {latest.length > 0 && (
-        <section className="bg-soft py-16 md:py-20">
+        <section className="bg-soft py-12 md:py-16">
           <div className="container">
             <div className="text-center">
               <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">From the blog</p>
@@ -233,13 +250,28 @@ export default function Resources({ view = 'all' }) {
                 Latest reading
               </h2>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
               {latest.map((p) => (
-                <article key={p.slug} className={cardClass}>
-                  <h3 className="font-display text-lg font-bold text-brand-navy">
-                    <Link to={`/blog/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
+                <article
+                  key={p.slug}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                >
+                  {p.coverImage && (
+                    <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
+                      <img
+                        src={p.coverImage}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </Link>
+                  )}
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
+                      <Link to={`/${p.slug}`} className="hover:text-brand-crimson">{p.title}</Link>
+                    </h3>
+                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-brand-slate">{p.excerpt}</p>
+                  </div>
                 </article>
               ))}
             </div>

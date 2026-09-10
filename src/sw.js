@@ -83,14 +83,44 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url)
   const sameOrigin = url.origin === self.location.origin
 
-  // 1) Media — live stream when online, downloaded copy when not.
+  // 1) Media. A DOWNLOADED copy is served first, online or not. It used to be
+  //    network-first, and that is why a saved video stalled part-way when the
+  //    connection dropped: online, hls.js had read the real playlist and was
+  //    on whichever quality it liked; when the network went, the segments it
+  //    wanted next were never the ones that had been saved. Playing the saved
+  //    copy from the start means the rung in use is always the rung on disk.
+  //    Anything not saved streams as before.
   if (sameOrigin && url.pathname.startsWith('/uploads/')) {
     event.respondWith((async () => {
+      const saved = await serveMedia(req)
+      if (saved) return saved
       try {
         return await fetch(req)
       } catch {
-        return (await serveMedia(req)) || Response.error()
+        return Response.error()
       }
+    })())
+    return
+  }
+
+  // 1b) Media on a DIFFERENT origin. In production uploaded media is not served
+  //     from this site at all — it comes from its own CloudFront distribution
+  //     (CDN_URL), so a video URL is https://<media>.cloudfront.net/hls/… and
+  //     rule 1 above, which needs BOTH the same origin and an /uploads/ path,
+  //     never sees it. Without this the Download button still fills the cache
+  //     and the video still refuses to play offline, which is the one thing the
+  //     download was for.
+  //
+  //     Only a request we actually hold a downloaded copy of is taken over. For
+  //     anything else cross-origin (fonts, the Google sign-in script, the
+  //     payment gateway) the original failure is re-thrown, so those behave
+  //     exactly as they did before this worker existed.
+  //     Same rule as above: a saved copy comes first, whatever the network.
+  if (!sameOrigin) {
+    event.respondWith((async () => {
+      const saved = await serveMedia(req)
+      if (saved) return saved
+      return fetch(req) // no copy - the original request, failures and all
     })())
     return
   }

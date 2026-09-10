@@ -4,3 +4,7 @@ dist-ssr
 *.local
 .env
 .DS_Store
+
+# Local full-res backups of images that were compressed for the web.
+# Kept on disk as a safety net; not shipped and not committed.
+image-originals

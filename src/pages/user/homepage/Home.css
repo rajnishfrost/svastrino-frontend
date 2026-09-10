@@ -716,20 +716,6 @@
   color: var(--nirmaan-green);
   font-weight: 700;
 }
-.home-nirmaan-scholarship {
-  background: #fff;
-  border: 1px dashed var(--nirmaan-green);
-  border-radius: var(--radius-md, 12px);
-  padding: 12px 16px;
-  font-size: 14.5px;
-  color: var(--nirmaan-brown);
-  margin-bottom: 20px;
-}
-.home-nirmaan-scholarship a {
-  color: var(--nirmaan-green-dark);
-  font-weight: 600;
-  white-space: nowrap;
-}
 .home-nirmaan-ctas {
   display: flex;
   gap: 12px;

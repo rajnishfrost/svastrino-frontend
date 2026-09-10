@@ -30,8 +30,8 @@ const ICON = {
   orders: <Svg><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></Svg>,
   // Roles — shield with a tick (access control)
   roles: <Svg><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z" /><path d="m9 12 2 2 4-4" /></Svg>,
-  // Scholarship — graduation cap + award ribbon
-  scholarship: <Svg><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4" /><circle cx="20" cy="17" r="2.4" /></Svg>,
+  // Organisations — graduation cap + award ribbon
+  organisations: <Svg><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v4c0 1.5 2.7 3 6 3s6-1.5 6-3v-4" /><circle cx="20" cy="17" r="2.4" /></Svg>,
   // Skill Builds — graduation cap (courses)
   skillbuilds: <Svg><path d="M22 10 12 5 2 10l10 5 10-5Z" /><path d="M6 12v5c3 2.5 9 2.5 12 0v-5" /><path d="M22 10v6" /></Svg>,
   // Settings — gear (site-wide options)
@@ -62,9 +62,10 @@ const NAV = [
   { label: 'Orders', to: '/admin/orders', icon: 'orders', module: 'orders' },
   { label: 'Roles', to: '/admin/roles', icon: 'roles', superadmin: true },
   { label: 'Settings', to: '/admin/settings', icon: 'settings', superadmin: true },
-  { label: 'Scholarship', to: '/admin/scholarship', icon: 'scholarship', module: 'scholarship' },
+  { label: 'Organisations', to: '/admin/organisations', icon: 'organisations', module: 'organisations' },
   { label: 'Services', to: '/admin/mentoring', icon: 'mentoring', module: 'mentoring' },
   { label: 'Skill Builds', to: '/admin/skill-builds', icon: 'skillbuilds', module: 'skill-builds' },
+  { label: 'Reviews', to: '/admin/testimonials', icon: 'blogs', module: 'testimonials' },
   // Guarded by 'users', same as the API — reopening a course is a decision about that student's account.
   { label: 'Support', to: '/admin/tickets', icon: 'tickets', module: 'users' },
   { label: 'Users', to: '/admin/users', icon: 'users', module: 'users' },

@@ -49,7 +49,7 @@ function summaryLines(order) {
   if (order.discount > 0)
     lines.push({ label: `Coupon ${order.couponCode || ''}`.trim(), value: '– ' + money(order.discount), good: true })
   if (order.isUpgrade && order.creditApplied > 0)
-    lines.push({ label: 'Upgrade credit (already paid)', value: '– ' + money(order.creditApplied), good: true })
+    lines.push({ label: 'Upgrade credit (plan you own)', value: '– ' + money(order.creditApplied), good: true })
   return lines
 }
 
@@ -153,7 +153,7 @@ function invoiceHtml(order, customer) {
     </div>
 
     <div class="foot">
-      Thank you for choosing ${esc(COMPANY.name)}. ${order.isUpgrade ? 'This purchase upgraded your existing plan; the amount you had already paid was credited above. ' : ''}This is a computer-generated invoice and does not require a signature.${order.refundedAt ? ' <strong>Refunded on ' + esc(fmtDate(order.refundedAt)) + '.</strong>' : ''}
+      Thank you for choosing ${esc(COMPANY.name)}. ${order.isUpgrade ? 'This purchase upgraded your existing plan; the price of the plan you already held was credited above. ' : ''}This is a computer-generated invoice and does not require a signature.${order.refundedAt ? ' <strong>Refunded on ' + esc(fmtDate(order.refundedAt)) + '.</strong>' : ''}
     </div>
   </div>
 

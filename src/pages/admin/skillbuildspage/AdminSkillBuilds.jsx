@@ -20,6 +20,7 @@ export default function AdminSkillBuilds() {
   const [editingPkg, setEditingPkg] = useState(null) // package id
   const [addingCourse, setAddingCourse] = useState(false)
   const [addingPkgFor, setAddingPkgFor] = useState(null) // course slug
+  const [showRetired, setShowRetired] = useState(null) // course slug whose retired rows are open
 
   const load = () => {
     api('/admin/skill-builds', { auth: 'admin' }) // course-only
@@ -57,7 +58,13 @@ export default function AdminSkillBuilds() {
       {!builds && !error && <p className="adm-empty">Loading…</p>}
 
       {builds && builds.map((b) => {
-        const pkgs = packages.filter((p) => p.skillBuild?.slug === b.slug)
+        const all = packages.filter((p) => p.skillBuild?.slug === b.slug)
+        // Rows that are on the site do the work; the rest are kept for a reason
+        // that has nothing to do with selling — a retired plan a student still
+        // owns, or the free trial — so they are folded away rather than mixed in.
+        const pkgs = all.filter((p) => p.listed && p.active)
+        const retired = all.filter((p) => !(p.listed && p.active))
+        const rows = showRetired === b.slug ? [...pkgs, ...retired] : pkgs
         return (
           <div key={b.slug} className="adm-panel">
             {/* ---- course header ---- */}
@@ -99,11 +106,11 @@ export default function AdminSkillBuilds() {
                 </div>
               )}
 
-              {pkgs.length === 0 && addingPkgFor !== b.slug && (
+              {pkgs.length === 0 && retired.length === 0 && addingPkgFor !== b.slug && (
                 <p className="adm-empty">No packages yet — add the first one.</p>
               )}
 
-              {pkgs.map((p) => (
+              {rows.map((p) => (
                 <div key={p.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--gray-100, #f2f2f2)' }}>
                   {editingPkg === p.id ? (
                     <PackageEditForm pkg={p} onCancel={() => setEditingPkg(null)} onSaved={done} />
@@ -111,14 +118,24 @@ export default function AdminSkillBuilds() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
                       <div>
                         <strong style={{ fontSize: 15.5 }}>{p.name}</strong>
-                        {' '}<span className={`adm-badge adm-badge--${p.active ? 'ok' : 'muted'}`}>{p.active ? 'Active' : 'Hidden'}</span>
+                        {/* A card only reaches the site when it is BOTH listed and
+                            sellable, so the badge says so rather than reading
+                            "On the site" for a plan nobody can see. */}
+                        {' '}<span className={`adm-badge adm-badge--${p.listed && p.active ? 'ok' : 'muted'}`}>
+                          {p.listed && p.active ? 'On the site' : 'Not on the site'}
+                        </span>
+                        {!p.active && <span className="adm-badge adm-badge--muted" style={{ marginLeft: 6 }}>Cannot be bought</span>}
                         {p.featured && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 6 }}>Featured</span>}
+                        {p.includesPsychometric && <span className="adm-badge adm-badge--muted" style={{ marginLeft: 6 }}>+ Test</span>}
                         {p.badge && <span className="adm-badge adm-badge--muted" style={{ marginLeft: 6 }}>{p.badge}</span>}
                         <p className="adm-sub" style={{ margin: '3px 0 0' }}>
-                          ₹{p.priceInr.toLocaleString('en-IN')}
-                          {p.earlyBirdInr != null && ` · early bird ₹${p.earlyBirdInr.toLocaleString('en-IN')}`}
-                          {` · ${p.period}`}
-                          {` · ${p.features.length} feature${p.features.length === 1 ? '' : 's'}`}
+                          {p.paymentMode === 'per-phase'
+                            ? `₹${p.priceInr.toLocaleString('en-IN')} × ${p.phases} phases = ₹${(p.priceInr * p.phases).toLocaleString('en-IN')}`
+                            : `₹${p.priceInr.toLocaleString('en-IN')}`}
+                          {p.paymentMode !== 'per-phase' && p.earlyBirdInr != null && ` · pays ₹${p.earlyBirdInr.toLocaleString('en-IN')}`}
+                          {p.modeLabel && ` · ${p.modeLabel}`}
+                          {` · ${p.features.length} inclusion${p.features.length === 1 ? '' : 's'}`}
+                          {` · ${(p.benefits || []).length} benefit${(p.benefits || []).length === 1 ? '' : 's'}`}
                           {` · SKU: ${p.sku}`}
                         </p>
                       </div>
@@ -127,6 +144,18 @@ export default function AdminSkillBuilds() {
                   )}
                 </div>
               ))}
+
+              {retired.length > 0 && (
+                <button
+                  className="adm-link"
+                  style={{ marginTop: 10 }}
+                  onClick={() => setShowRetired(showRetired === b.slug ? null : b.slug)}
+                >
+                  {showRetired === b.slug
+                    ? 'Hide retired packages'
+                    : `Show ${retired.length} retired package${retired.length === 1 ? '' : 's'}`}
+                </button>
+              )}
             </div>
           </div>
         )
@@ -242,28 +271,72 @@ function PackageFields({ f, set, isNew }) {
         <div className="adm-field"><label>Period label</label><input className="adm-input" value={f.period} onChange={(e) => set('period', e.target.value)} placeholder="one-time / 6 months" /></div>
         <div className="adm-field"><label>Access days (blank = one-time)</label><input className="adm-input adm-num" type="number" value={f.durationDays} onChange={(e) => set('durationDays', e.target.value)} /></div>
       </div>
+      <div className="adm-row2">
+        <div className="adm-field">
+          <label>How it is paid</label>
+          <select className="adm-input" value={f.paymentMode} onChange={(e) => set('paymentMode', e.target.value)}>
+            <option value="one-time">Pay once — the whole course opens</option>
+            <option value="per-phase">Pay as you use — one phase per payment</option>
+          </select>
+        </div>
+        <div className="adm-field">
+          <label>Phases the course is cut into</label>
+          <input className="adm-input adm-num" type="number" min="1" value={f.phases} onChange={(e) => set('phases', e.target.value)} />
+        </div>
+      </div>
+      <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
+        {f.paymentMode === 'per-phase'
+          ? `Price above is ONE instalment. The card will read "x ${f.phases || 1}" and show the full run.`
+          : 'Price above is the whole course. Paying once opens every phase immediately.'}
+      </p>
+      <div className="adm-row2">
+        <div className="adm-field">
+          <label>Payment-mode label (the toggle on the site)</label>
+          <input className="adm-input" value={f.modeLabel} onChange={(e) => set('modeLabel', e.target.value)} placeholder="Pay Once / Pay As You Use" />
+        </div>
+        <div className="adm-field">
+          <label>Price note (green line under the costs)</label>
+          <input className="adm-input" value={f.priceNote} onChange={(e) => set('priceNote', e.target.value)} placeholder="e.g. Flat 25% Discount" />
+        </div>
+      </div>
       <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
-      <div className="adm-field"><label>Features (one per line)</label><textarea className="adm-textarea" rows={4} value={f.features} onChange={(e) => set('features', e.target.value)} /></div>
+      <div className="adm-field"><label>Inclusions — what the plan includes (one per line)</label><textarea className="adm-textarea" rows={5} value={f.features} onChange={(e) => set('features', e.target.value)} /></div>
+      <div className="adm-field"><label>Benefits — what the student gets out of it (one per line)</label><textarea className="adm-textarea" rows={4} value={f.benefits} onChange={(e) => set('benefits', e.target.value)} /></div>
       <div className="adm-row2">
         <div className="adm-field"><label>Button text {isNew ? '(blank = auto)' : ''}</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} /></div>
         <div className="adm-field"><label>Badge (blank = none)</label><input className="adm-input" value={f.badge} onChange={(e) => set('badge', e.target.value)} placeholder="e.g. Most Popular" /></div>
       </div>
-      <div style={{ display: 'flex', gap: 18, margin: '4px 0 14px', fontSize: 14 }}>
-        <label><input type="checkbox" checked={f.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured</label>
-        <label><input type="checkbox" checked={f.active} onChange={(e) => set('active', e.target.checked)} /> Active (visible on site)</label>
+      <div style={{ display: 'flex', gap: 18, margin: '4px 0 6px', fontSize: 14, flexWrap: 'wrap' }}>
+        <label><input type="checkbox" checked={f.includesPsychometric} onChange={(e) => set('includesPsychometric', e.target.checked)} /> Includes the psychometric test</label>
+        <label><input type="checkbox" checked={f.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured (highlighted card)</label>
+        <label><input type="checkbox" checked={f.listed} onChange={(e) => set('listed', e.target.checked)} /> Listed (a card shows on the site)</label>
+        <label><input type="checkbox" checked={f.active} onChange={(e) => set('active', e.target.checked)} /> Active (can be bought)</label>
       </div>
+      {/* Retiring a plan is 'listed' off, NOT 'active' off: payments looks a
+          student's tier up by sku, so switching a plan they own to inactive
+          also takes away the upgrade credit they paid for. */}
+      <p className="adm-hint" style={{ margin: '0 0 14px', fontSize: 12, opacity: 0.75 }}>
+        To retire a plan, untick <strong>Listed</strong> and leave <strong>Active</strong> on — the card
+        disappears from the site while students who already bought it keep their access and upgrade credit.
+      </p>
     </>
   )
 }
 
+const lines = (t) => String(t || '').split('\n').map((s) => s.trim()).filter(Boolean)
 const pkgBody = (f) => ({
   name: f.name, tagline: f.tagline,
   price: toPaise(f.priceInr),
   earlyBird: f.earlyBirdInr === '' ? null : toPaise(f.earlyBirdInr),
   period: f.period,
   durationDays: f.durationDays === '' ? null : Number(f.durationDays),
-  features: f.features.split('\n').map((s) => s.trim()).filter(Boolean),
-  badge: f.badge || null, featured: f.featured, active: f.active,
+  features: lines(f.features),
+  benefits: lines(f.benefits),
+  modeLabel: f.modeLabel, priceNote: f.priceNote,
+  paymentMode: f.paymentMode,
+  phases: Math.max(1, Number(f.phases) || 1),
+  includesPsychometric: !!f.includesPsychometric,
+  badge: f.badge || null, featured: f.featured, active: f.active, listed: f.listed,
 })
 
 function PackageEditForm({ pkg, onCancel, onSaved }) {
@@ -271,8 +344,12 @@ function PackageEditForm({ pkg, onCancel, onSaved }) {
     name: pkg.name, sku: pkg.sku, tagline: pkg.tagline || '',
     priceInr: pkg.priceInr, earlyBirdInr: pkg.earlyBirdInr ?? '',
     period: pkg.period, durationDays: pkg.durationDays ?? '',
-    features: pkg.features.join('\n'), cta: pkg.cta, badge: pkg.badge || '',
-    featured: pkg.featured, active: pkg.active,
+    features: (pkg.features || []).join('\n'), benefits: (pkg.benefits || []).join('\n'),
+    modeLabel: pkg.modeLabel || '', priceNote: pkg.priceNote || '',
+    paymentMode: pkg.paymentMode || 'one-time', phases: pkg.phases ?? 1,
+    includesPsychometric: !!pkg.includesPsychometric,
+    cta: pkg.cta, badge: pkg.badge || '',
+    featured: pkg.featured, active: pkg.active, listed: pkg.listed !== false,
   })
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
@@ -306,7 +383,9 @@ function NewPackageForm({ courseSlug, onCancel, onSaved }) {
   const [f, setF] = useState({
     name: '', sku: '', tagline: '',
     priceInr: '', earlyBirdInr: '', period: 'one-time', durationDays: '',
-    features: '', cta: '', badge: '', featured: false, active: true,
+    features: '', benefits: '', modeLabel: '', priceNote: '',
+    paymentMode: 'one-time', phases: 1, includesPsychometric: false,
+    cta: '', badge: '', featured: false, active: true, listed: true,
   })
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')

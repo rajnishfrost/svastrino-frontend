@@ -337,3 +337,109 @@
   }
   .login-card { padding: 18px; }
 }
+
+/* ---------------------------------------------------------------------
+   The free-week offer over the sign-up form. Wears the Nirmaan colours
+   rather than the site's navy: the trial is a Nirmaan thing, and the card
+   it opens over is the only brand-navy surface it touches.
+   --------------------------------------------------------------------- */
+.trial-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(59, 40, 34, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.trial-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--white);
+  border: 1px solid #f1ead5;                 /* nirmaan cream-dark */
+  border-radius: 22px;
+  padding: 28px 24px 22px;
+  text-align: center;
+  box-shadow: 0 22px 55px -18px rgba(59, 40, 34, 0.45);
+}
+
+.trial-modal-mark {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #faf6ec;                       /* nirmaan cream */
+  display: grid;
+  place-items: center;
+}
+.trial-modal-mark img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+
+.trial-modal-ribbon {
+  display: inline-block;
+  background: #3b2822;                       /* nirmaan brown */
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 13px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.trial-modal-card h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(20px, 4.5vw, 24px);
+  color: #3b2822;
+}
+
+.trial-modal-sub {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #5a3f33;                            /* nirmaan brown-soft */
+}
+
+.trial-modal-points {
+  list-style: none;
+  margin: 16px 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.trial-modal-points li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 14px;
+  color: #3b2822;
+}
+.trial-modal-points li::before {
+  content: '✓';
+  position: absolute;
+  left: 6px;
+  color: #3f7932;                            /* nirmaan green */
+  font-weight: 700;
+}
+
+.trial-modal-go {
+  width: 100%;
+  background: #3f7932;
+  border-color: #3f7932;
+}
+.trial-modal-go:hover { background: #2d5723; border-color: #2d5723; }
+
+.trial-modal-skip {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #786c5b;                            /* nirmaan gray-500 */
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.trial-modal-skip:hover { color: #3b2822; }

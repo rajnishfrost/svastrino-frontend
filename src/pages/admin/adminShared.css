@@ -265,3 +265,12 @@
   font-weight: 500;
   color: var(--color-danger);
 }
+
+/* Student e-mail under the name in the bookings table — secondary to the name,
+   but readable without hovering, because an admin about to take a session
+   needs it to hand. */
+.adm-ment-email {
+  display: block;
+  font-size: 12.5px;
+  margin-top: 2px;
+}

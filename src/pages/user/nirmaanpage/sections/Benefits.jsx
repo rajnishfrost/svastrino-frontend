@@ -49,14 +49,31 @@ function MentorIcon() {
     </svg>
   )
 }
+function BookIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M12 7C10.4 5.6 8.4 5 6 5v12c2.4 0 4.4 0.6 6 2 1.6-1.4 3.6-2 6-2V5c-2.4 0-4.4 0.6-6 2z" />
+      <line x1="12" y1="7" x2="12" y2="19" />
+    </svg>
+  )
+}
+function BriefcaseIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3" y="7.5" width="18" height="12.5" rx="2" />
+      <path d="M8.5 7.5V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2" />
+      <line x1="3" y1="12.5" x2="21" y2="12.5" />
+    </svg>
+  )
+}
 
 const BENEFITS = [
   { Icon: CompassIcon, title: 'Self-Awareness', text: 'Understand your strengths, interests, emotions & overall life.' },
   { Icon: ReportIcon, title: 'Confidence', text: 'Develop confidence through small actions rather than motivation.' },
   { Icon: RoadmapIcon, title: 'Mindset', text: 'Learn to handle & evolve from failure, fear, criticism & uncertainty.' },
   { Icon: MentorIcon, title: 'Personal Growth', text: 'Build awareness, discipline, focus, and habits.' },
-  { Icon: CompassIcon, title: 'Academic Development', text: 'Ask questions, handle setbacks & improve performance.' },
-  { Icon: RoadmapIcon, title: 'Career Readiness', text: 'Explore options & pick the one you dream & desire.' },
+  { Icon: BookIcon, title: 'Academic Development', text: 'Ask questions, handle setbacks & improve performance.' },
+  { Icon: BriefcaseIcon, title: 'Career Readiness', text: 'Explore options & pick the one you dream & desire.' },
 ]
 
 const DEVELOPMENTS = [
@@ -74,7 +91,7 @@ const DEVELOPMENTS = [
 
 export default function Benefits() {
   return (
-    <section className="bg-nirmaan-cream/50 py-16 md:py-20">
+    <section className="bg-nirmaan-cream py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">What you get</p>
@@ -98,7 +115,7 @@ export default function Benefits() {
 
         <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
           <h3 className="font-display text-xl font-bold text-nirmaan-brown">
-            Specific developments of the programme
+            Specific Developments of the Course
           </h3>
           <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
             {DEVELOPMENTS.map((d) => (
@@ -112,10 +129,6 @@ export default function Benefits() {
           </ul>
         </div>
 
-        <p className="mx-auto mt-10 max-w-3xl text-center font-display text-lg font-semibold italic text-nirmaan-green">
-          From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I know what I
-          can do next.”
-        </p>
       </div>
     </section>
   )

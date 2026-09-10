@@ -33,6 +33,14 @@ export function onOutboxChange(fn) {
 
 export const pendingCount = () => read().length
 
+/**
+ * How many queued writes have keys starting with `prefix` — e.g. the plays of
+ * one video that have not reached the server yet. Lets a caller tell "the
+ * server is behind me" from "the server and I agree".
+ */
+export const pendingWithPrefix = (prefix) =>
+  read().filter((i) => String(i.key).startsWith(prefix)).length
+
 /** Queue a write for later. `key` dedupes; `path`/`body` replay through api(). */
 export function enqueue({ key, path, body }) {
   const items = read().filter((i) => i.key !== key)
