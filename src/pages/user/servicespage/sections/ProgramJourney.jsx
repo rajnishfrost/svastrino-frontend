@@ -61,7 +61,7 @@ function Stage({ stage, n }) {
   const range = cleanRange(stage.range)
 
   return (
-    <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm md:p-7">
+    <div className="relative rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm md:p-7">
       {/* Header — the numbered badge sits INLINE with the stage name (same flex
           row, vertically centred), so the two can never drift out of alignment. */}
       <div className="flex items-center gap-4">
@@ -75,7 +75,7 @@ function Stage({ stage, n }) {
 
       {/* Timing chip + phase note */}
       {(range || noteLines[0]) && (
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2 md:absolute md:right-2 md:top-6">
           {range && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 px-3 py-1 text-sm font-semibold text-brand-crimson">
               <ClockIcon className="shrink-0" /> {range}
@@ -123,7 +123,7 @@ export default function ProgramJourney({ program }) {
       <div className="text-center">
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">The journey</p>
         <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-          Your program journey
+          Your Program Journey
         </h2>
         {data.subtitle && (
           <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-brand-slate">{data.subtitle}</p>
@@ -148,7 +148,7 @@ export default function ProgramJourney({ program }) {
       {(data.duration || inclusions.length > 0 || program.duration) && (
         <div className="mt-8 overflow-hidden rounded-2xl border border-brand-navy/10 bg-brand-cream">
           <div className="border-b border-brand-navy/10 bg-white/60 px-6 py-4 md:px-8">
-            <h3 className="font-display text-lg font-bold text-brand-navy">What the program includes</h3>
+            <h3 className="font-display text-lg font-bold text-brand-navy">What the Program Includes</h3>
           </div>
           <div className="grid gap-6 p-6 sm:grid-cols-[auto_1fr] sm:gap-10 md:p-8">
             {(data.duration || program.duration) && (
@@ -174,7 +174,7 @@ export default function ProgramJourney({ program }) {
               </div>
             ) : null}
           </div>
-          {program.brochureUrl && (
+          {/* {program.brochureUrl && (
             <div className="px-6 pb-6 md:px-8">
               <a
                 href={program.brochureUrl}
@@ -185,7 +185,7 @@ export default function ProgramJourney({ program }) {
                 Download brochure (PDF)
               </a>
             </div>
-          )}
+          )} */}
         </div>
       )}
       </div>

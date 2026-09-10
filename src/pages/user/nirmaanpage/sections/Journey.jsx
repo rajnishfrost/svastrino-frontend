@@ -74,7 +74,7 @@ export default function Journey() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Course Journey</p>
           <h2 className="capitalize mt-3 font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
-            Your Transformative Journey through the course
+            Your Transformative Journey Through the course
           </h2>
           <p className="mt-4 text-lg text-nirmaan-brown-soft">
             {/* A commitment of at most 15 minutes a day for the next 24 weeks — one weekly video, then one short task on each of the next six days. */}

@@ -37,7 +37,7 @@ export default function CompareServices() {
                 <tr>
                   <th scope="col" className="cmp-corner">Program</th>
                   {PROGRAMS.map((p) => (
-                    <th scope="col" key={p.slug}>
+                    <th scope="col" key={p.slug} className='!text-center'>
                       <span className="cmp-cat">{p.category}</span>
                       <Link to={`/services/${p.slug}`}>{p.name}</Link>
                     </th>

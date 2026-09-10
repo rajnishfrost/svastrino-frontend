@@ -176,7 +176,7 @@ export default function Services() {
       <Testimonials
         items={testimonials}
         eyebrow="Success stories"
-        title="What clients say"
+        title="What People Say About Us !"
         className="bg-soft py-16 md:py-20"
         footer={
           <Link

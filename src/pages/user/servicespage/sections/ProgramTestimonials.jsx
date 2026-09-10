@@ -34,7 +34,7 @@ export default function ProgramTestimonials({ slug, programName }) {
       <div className="container mx-auto max-w-4xl">
         <Testimonials
           items={stories}
-          title={`What clients say ${programName}`}
+          title={`What Clients Say About ${programName}`}
           bare
           compact
         />

@@ -328,7 +328,7 @@ export const PROGRAM_BENEFITS = {
   'bulls-eye': [
     "Professional career clarity before deadlines",
     "Expert opinion on Streams, Courses, Colleges & Universities",
-    "A step-by-step personalised global career plans, starting from Grade 8",
+    "A step-by-step personalised global career plan, starting from Grade 8",
     "Resolve last-minute career confusion with expert advice",
     "Understand our ideologies and see the impact of long-term mentoring",
     "Experience full service from the comfort of your home"
@@ -371,7 +371,7 @@ export const PROGRAM_JOURNEYS_2 = {
     stages: [
       {
         title: 'Pre-Session - Stage 1',
-        range: '(0 to 90 Minutes on Day 1)',
+        range: '(0 to 90 minutes on Day 1)',
         steps: [
           {
             points: [
@@ -440,11 +440,11 @@ export const PROGRAM_JOURNEYS_2 = {
   },
 
   bloom: {
-    subtitle: "The Bloom journey helps you understand yourself, build your vision and create a clear path forward",
+    subtitle: "The Bloom journey helps you understand yourself, build your vision and create a clear path forward.",
     stages: [
       {
         title: 'Pre-Session - Stage 1',
-        range: '(0 to 90 Minutes on Day 1)',
+        range: '(0 to 90 minutes on Day 1)',
         steps: [
           {
             points: [
@@ -456,7 +456,7 @@ export const PROGRAM_JOURNEYS_2 = {
       },
       {
         title: 'Actual Sessions - Stage 2',
-        range: '(91 to 540 minutes From Day 3 to Day 60)',
+        range: '(91 to 540 minutes from Day 3 to Day 60)',
         steps: [
           {
             title: "Complete Personality Analysis (Day 3)",
@@ -468,7 +468,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Tailored Tasks for Self-Discovery (Day 4 to 20)",
+            title: "Tailored Tasks for Self-Discovery (Day 4 - 20)",
             points: [
               "Tasks designed to uncover your hidden strengths",
               "Sharpening focus and restoring inner balance",
@@ -486,7 +486,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Building a Habit of Consistent Growth (Day 22 to 45)",
+            title: "Building a Habit of Consistent Growth (Day 22 - 45)",
             points: [
               "Practising the natural habit of showing up daily",
               "Building self-drive through passion & purpose",
@@ -494,7 +494,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Life & Career Pathway Planning (Day 46-60)",
+            title: "Life & Career Pathway Planning (Day 46 - 60)",
             points: [
               "Final alignment of your mindsets with your purpose & visions",
               "Clarity on 5 areas of growth: academics, skills, exposure, personal & social",
@@ -506,7 +506,7 @@ export const PROGRAM_JOURNEYS_2 = {
         ],
       },
     ],
-    duration: "45- 60 Days",
+    duration: "45 - 60 Days",
     inclusions: [
       "Pre-session 90 minutes +",
       "3 sessions of ~2.5 hours each",
@@ -519,20 +519,21 @@ export const PROGRAM_JOURNEYS_2 = {
     stages: [
       {
         title: 'Pre-Session - Stage 1',
-        range: '(0 to 90 Minutes on Day 1)',
+        range: '(0 to 90 minutes on Day 1)',
         steps: [
           {
             points: [
-              "Undersanding your background, academics, and personal development so far",
+              "Understanding your background, academics, and personal development so far",
               "Organising all the details for the planned personalised mentoring program",
             ],
           },
         ],
       },
       {
-        title: 'Actual Sessions - Stage 2',
-        range: '(91 to 540 minutes From Day 3 to Day 60)',
-        note: 'Stage 1: Mindset Building (0 to 60 Days)',
+        // title: 'Actual Sessions - Stage 2',
+        title: 'Stage 1: Mindset Building',
+        range: '(91 to 540 minutes from Day 3 - Day 60)',
+        // note: 'Stage 1: Mindset Building (0 - 60 Days)',
         steps: [
           {
             title: "Life & Background Study (Day 3)",
@@ -544,7 +545,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Tailored Tasks for Self-Discovery (Day 4 to 20)",
+            title: "Tailored Tasks for Self-Discovery (Day 4 - 20)",
             points: [
               "Personalised tasks to uncover your hidden strengths and potential",
               "Exercises designed to build focus, balance, clarity & vision",
@@ -561,7 +562,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Creating the Right Environment for Growth (Day 22 to 45)",
+            title: "Creating the Right Environment for Growth (Day 22 - 45)",
             points: [
               "Building strong inner awareness to build the right outer conditions",
               "Surrounding you with the right sets of mindsets, ideologies & people",
@@ -569,7 +570,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Infuse Your Personal Life with Career Blueprint (Day 46 to 60)",
+            title: "Infuse Your Personal Life with Career Blueprint (Day 46 - 60)",
             points: [
               "Reflecting changes in your attitude, thinking, and purpose",
               "Driving final clarity and alignment to your life and career goals",
@@ -580,9 +581,10 @@ export const PROGRAM_JOURNEYS_2 = {
         ],
       },
       {
-        title: 'Actual Sessions - Stage 3',
-        range: '(541 to 1800 minutes From Day 60 to Day 730)',
-        note: 'Stage 2: Application of Blueprint (60 to 730 days)\n[The following development are personalised as per participant speed, comfort & availability]',
+        // title: 'Actual Sessions - Stage 3',
+        title: 'Stage 2: Application of Blueprint',
+        range: '(541 to 1800 minutes from Day 60 - Day 730)',
+        // note: 'Stage 2: Application of Blueprint (60 - 730 days)\n[The following development are personalised as per participant speed, comfort & availability]',
         steps: [
           {
             title: "Encouraging You to Take Action",
@@ -641,7 +643,7 @@ export const PROGRAM_JOURNEYS_2 = {
             ],
           },
           {
-            title: "Parent Alignment & Guidance (Every 3-4 Months)",
+            title: "Parent Alignment & Guidance (Every 3 - 4 Months)",
             points: [
               "Understand the changes and growth happening within your child",
               "Align your expectations with their evolving goals and aspirations",

@@ -11,7 +11,7 @@ export default function BookNowStrip({ program, bookHref }) {
     <section className="bg-brand-gradient py-14 md:py-16">
       <div className="container mx-auto flex max-w-4xl flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
         <div>
-          <h2 className="font-display text-xl font-bold text-white sm:text-2xl">Ready to begin {program.name}?</h2>
+          <h2 className="font-display text-xl font-bold text-white sm:text-2xl">Ready to begin the {program.name}?</h2>
         </div>
         <Link
           to={bookHref}

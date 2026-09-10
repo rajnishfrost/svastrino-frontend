@@ -83,8 +83,8 @@ export default function About() {
             alt="The Svastrino story — from 20 students in 2009 to today"
             loading="lazy"
             decoding="async"
-            width={1400}
-            height={933}
+            // width={1400}
+            // height={933}
             className="w-full rounded-2xl object-cover shadow-xl shadow-brand-navy/10"
           />
         </div>
@@ -156,15 +156,15 @@ export default function About() {
 
       {/* ---- Meet Rohit Gala ---- */}
       <section className="bg-soft py-16 md:py-20">
-        <div className="container grid items-start gap-10 md:grid-cols-[260px_1fr]">
+        <div className="container grid items-start gap-10 md:grid-cols-[320px_1fr]">
           <div>
             <img
               src={FOUNDER_IMG}
               alt="Rohit M. Gala, founder of Svastrino"
               loading="lazy"
               decoding="async"
-              width={675}
-              height={900}
+              // width={675}
+              // height={900}
               className="w-full rounded-2xl object-cover"
             />
             <h3 className="mt-4 font-display text-xl font-bold text-brand-navy">Rohit M. Gala</h3>

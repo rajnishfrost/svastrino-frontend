@@ -20,8 +20,9 @@ export default function NirmaanHighlight() {
       <div className="container">
         <div className="relative overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-nirmaan-cream">
           <div className="relative grid items-center gap-8 p-8 md:grid-cols-[1.6fr_0.9fr] md:p-12">
-            {/* Body */}
-            <div>
+            {/* Body — on mobile it sits BELOW the art (column-reverse); on md+ it
+                takes the left column of the normal row. */}
+            <div className="order-2 md:order-1">
               <span className="inline-flex items-center gap-2 rounded-full bg-nirmaan-brown px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-white">
                 New · Skill Build
               </span>
@@ -59,17 +60,19 @@ export default function NirmaanHighlight() {
               </div>
             </div>
 
-            {/* Art */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52">
-                <img src="/nirmaan-tree.png" alt="" aria-hidden className="h-full w-full object-contain" />
+            {/* Art — on mobile it sits ABOVE the body (column-reverse); on md+ it
+                takes the right column of the normal row. */}
+            <div className="order-1 flex flex-col items-center justify-center md:order-2">
+              {/* <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52"> */}
+              <div className="flex size-44 items-center justify-center rounded-full p-6 md:size-52">
+                <img src="/nirmaan-vertical.png" alt="" aria-hidden className="h-full w-full object-contain scale-[2.5]" />
               </div>
-              <span className="mt-4 inline-flex items-center gap-2 text-4xl font-semibold uppercase tracking-wide text-nirmaan-brown p-1 leading-none px-4" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+              {/* <span className="mt-4 inline-flex items-center gap-2 text-4xl font-semibold uppercase tracking-wide text-nirmaan-brown p-1 leading-none px-4" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
                 Nirmaan
               </span>
               <span className="mt-2 inline-flex items-center gap-2 text-base font-thin uppercase tracking-wide bg-nirmaan-brown text-white p-1 leading-none px-9" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
                 Soch Se Vikas
-              </span>
+              </span> */}
             </div>
           </div>
         </div>

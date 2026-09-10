@@ -80,9 +80,10 @@ export default function Psychometric() {
               Not sure which stream or career actually fits you?
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-nirmaan-brown-soft lg:mx-0">
-              Take this simple test to uncover your natural potential in just 4 easy steps. It&rsquo;s
+              {/* Take this simple test to uncover your natural potential in just 4 easy steps. It&rsquo;s
               simple — find the best suitable streams or career options that match your interests &amp;
-              aspirations.
+              aspirations. */}
+              Take this test to uncover your natural potential in just 4 easy steps. Find the streams or careers that match your interests and aspirations.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:items-start">
               <a
@@ -93,7 +94,7 @@ export default function Psychometric() {
               </a>
               <a
                 href="#which-test"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white"
               >
                 Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
               </a>
@@ -248,7 +249,7 @@ export default function Psychometric() {
                 <GraduationCap className="size-3.5" /> Bundle offer
               </span>
               <p className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
-                Club it with <span className="text-nirmaan-green">Nirmaan</span> &amp; get a flat 25% discount
+                Club it with <span className="text-nirmaan-green">Nirmaan</span> &amp; get a flat discount
               </p>
               {/* <p className="mt-2 text-sm text-nirmaan-brown-soft">
                 Our investment in your development — pair the test with the full Nirmaan course and save.
