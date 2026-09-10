@@ -312,11 +312,11 @@ export const PROGRAM_JOURNEYS = {
 export const PROGRAM_HERO = {
   'bulls-eye': {
     title: "Bull's Eye Program",
-    tagline: "Get a quick yet accurate solution for your Career Confusion. Trusted by 14k students over 17+ years."
+    tagline: "Get a quick yet accurate solution for your career confusion. Trusted by 14k students over 17+ years."
   },
   'bloom': {
     title: "Bloom Program",
-    tagline: "Cultivate a Visionary Mindset and Set Goals for a Bright Future. Trusted by 500+ students."
+    tagline: "Cultivate a Visionary Mindset and Set Goals for a bright future. Trusted by 500+ students."
   },
   'breakthrough': {
     title: "Breakthrough Program",
@@ -431,11 +431,13 @@ export const PROGRAM_JOURNEYS_2 = {
         ],
       },
     ],
-    duration: "~ 10 Days",
+    duration: "About 10 days",
     inclusions: [
-      "Pre-session 90 minutes +",
-      "2 sessions of ~ 2.5 hours each",
-      "And, Follow-ups in between sessions",
+      // "Pre-session 90 minutes +",
+      // "2 sessions of ~ 2.5 hours each",
+      // "And, Follow-ups in between sessions",
+      "2 sessions of about 2.5 hours each, including the pre-session",
+      "Follow-ups in between sessions"
     ],
   },
 
@@ -506,11 +508,14 @@ export const PROGRAM_JOURNEYS_2 = {
         ],
       },
     ],
-    duration: "45 - 60 Days",
+    duration: "About 2 months",
     inclusions: [
-      "Pre-session 90 minutes +",
-      "3 sessions of ~2.5 hours each",
-      "+ Weekly follow-ups & support throughout the program",
+      // "Pre-session 90 minutes +",
+      // "3 sessions of ~2.5 hours each",
+      // "+ Weekly follow-ups & support throughout the program",
+      "Pre-session of 90 minutes",
+      "3 sessions of about 2.5 hours each",
+      "Weekly follow-ups and support throughout the program"
     ],
   },
 
@@ -659,13 +664,17 @@ export const PROGRAM_JOURNEYS_2 = {
     ],
     closing:
       "At Svastrino, we don't just build careers; we build the person behind them. Every session, every task, and every reflection is designed to sharpen a mind that thinks bigger, acts bolder, and lives with unshakable purpose.",
-    duration: "2 Years with atleast 2,200 minutes",
+    duration: "2 Years",
     inclusions: [
-      "Pre-session 90 minutes +",
-      "10 Sessions of 2 Hours each",
-      "Or",
-      "20 Sessions of 1 Hour each (Depending on students' speed, availability, and comfort)",
-      "Spread over 2 years + regular follow-ups and support in between sessions",
+      // "Pre-session 90 minutes +",
+      // "10 Sessions of 2 Hours each",
+      // "Or",
+      // "20 Sessions of 1 Hour each (Depending on students' speed, availability, and comfort)",
+      // "Spread over 2 years + regular follow-ups and support in between sessions",
+      "Pre-session of 90 minutes",
+      "10 sessions of 2.5 hours each, or 20 sessions of 1 to 1.5 hour each (depending on the student's pace, availability and comfort)",
+      "Weekly follow-ups and support in between sessions",
+      "At least 2,200 minutes of mentoring with follow-ups"
     ],
   },
 }
