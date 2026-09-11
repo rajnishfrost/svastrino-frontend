@@ -23,7 +23,7 @@ export default function ProgramHeroArt({ src, alt = '' }) {
   return (
     <div className="hero-art">
       <img
-        className="hero-art-img max-h-[425px] w-auto"
+        className="hero-art-img max-h-[325px] w-auto"
         src={src}
         alt={alt}
         loading="eager"

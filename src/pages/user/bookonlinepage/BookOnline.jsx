@@ -423,7 +423,7 @@ export default function BookOnline() {
                     key={p.sku}
                     className={
                       p.featured
-                        ? 'relative z-10 flex flex-col rounded-2xl border-2 border-brand-crimson bg-white p-7 shadow-2xl shadow-brand-crimson/20 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/25'
+                        ? 'relative z-10 flex flex-col rounded-2xl border-2 border-brand-crimson bg-white p-7 shadow-2xl shadow-brand-crimson/50 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/70'
                         : 'flex flex-col rounded-2xl border-2 border-transparent bg-white p-7 shadow-lg shadow-brand-navy/10 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-navy/[0.18]'
                     }
                   >
