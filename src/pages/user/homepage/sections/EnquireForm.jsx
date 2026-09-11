@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 import {
-  useEnquiryForm, EnquiryField, EnquiryContactField,
+  useEnquiryForm, EnquiryField, EnquiryContactField, EnquirySelect,
 } from '../../../../common_component/user/EnquiryFields/EnquiryFields.jsx'
 
 /**
@@ -29,11 +29,17 @@ import {
  */
 
 const CLASSES = ['1st Year Undergraduate', '2nd Year Undergraduate', '3rd Year Undergraduate', '4th Year Undergraduate', '5th Year Undergraduate', 'Other']
-const inputClass = 'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+
+// Class is not one of the shared fields — only this form asks for it — so it is
+// declared as an extra the same way the expert-call panel declares its calling
+// time. The wording completes "Please fill in ...".
+const EXTRA = { studentClass: 'which class you are in' }
 
 export default function EnquireForm() {
   const { user } = useAuth()
-  const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user)
+  const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user, {
+    studentClass: '',
+  })
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
@@ -54,7 +60,7 @@ export default function EnquireForm() {
 
   const submit = async (e) => {
     e.preventDefault()
-    if (!check()) return
+    if (!check(EXTRA)) return
     setErr(''); setBusy(true)
     try {
       await api('/user/enquiry', {
@@ -141,27 +147,17 @@ export default function EnquireForm() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {/* Match FieldShell (used by EnquiryField) exactly — same wrapper gap and
-            block label — so the Class control lines up with Location beside it. */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-semibold text-brand-navy" htmlFor="studentClass">Class</label>
-          <select id="studentClass" className={inputClass} name="studentClass" defaultValue="" required>
-            <option value="" disabled>
-              Select
-            </option>
-            {CLASSES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
+        <EnquirySelect
+          className="min-w-0"
+          name="studentClass" label="Class" options={CLASSES}
+          value={values.studentClass} onChange={set('studentClass')} error={errors.studentClass}
+        />
         <EnquiryField
+          className="min-w-0"
           name="city" label="Location" placeholder="City / Town / Village Name"
           autoComplete="address-level2" maxLength={80}
           value={values.city} onChange={set('city')} error={errors.city}
         />
-
       </div>
 
 

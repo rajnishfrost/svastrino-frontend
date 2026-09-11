@@ -20,6 +20,23 @@
 .learn-head h1 {
   font-size: 28px;
 }
+/* A logo title: the lockup stands in for the words, with the course named
+   underneath it in the same eyebrow style the other screens use. */
+.learn-title-logo {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.learn-title-logo img {
+  display: block;
+  height: 56px;
+  width: auto;
+}
+@media (max-width: 520px) {
+  .learn-title-logo img { height: 42px; }
+}
 .learn-plan {
   color: var(--color-text-muted);
   font-size: 14px;
@@ -458,6 +475,35 @@
   font-size: 13.5px;
   font-weight: 600;
   color: var(--color-heading);
+}
+/* The week's written resource, between the rule of the week and its tasks.
+   Set apart from both so it reads as something offered, not as more rule. */
+.learn-resource {
+  border: 1px solid var(--gray-200);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--white);
+  padding: 16px 18px;
+  margin: 0 0 20px;
+}
+.learn-resource-title { margin: 0 0 6px; font-size: 15px; color: var(--color-heading); }
+.learn-resource-intro { margin: 0 0 10px; font-size: 13.5px; line-height: 1.65; color: var(--color-text-muted); }
+.learn-resource-list { margin: 0 0 14px; padding-left: 20px; list-style: disc; }
+.learn-resource-list li { font-size: 13.5px; line-height: 1.6; color: var(--color-heading); margin-bottom: 4px; }
+.learn-resource-btn:disabled { opacity: .6; cursor: default; }
+.learn-resource-note { margin: 8px 0 0; font-size: 12px; color: var(--color-text-muted); }
+.learn-resource-err { margin: 8px 0 0; font-size: 13px; color: #9a3412; }
+
+/* The streak count, and the line that says why it is worth keeping. A run that
+   is alive is coloured; a dash is left muted so a zero does not shout. */
+.learn-streak { font-variant-numeric: tabular-nums; color: var(--color-text-muted); }
+.learn-streak.is-alive { color: #9a5b16; }
+.learn-report-streak {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
 }
 /* How many plays are left on the open video. */
 .learn-plays-note {
