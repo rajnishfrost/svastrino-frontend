@@ -312,15 +312,15 @@ export const PROGRAM_JOURNEYS = {
 export const PROGRAM_HERO = {
   'bulls-eye': {
     title: "Bull's Eye Program",
-    tagline: "Get a quick yet accurate solution for your career confusion. Trusted by 14k students over 17+ years."
+    tagline: "Get a quick yet accurate solution for your career confusion.\n\rTrusted by 14k students over 17+ years."
   },
   'bloom': {
     title: "Bloom Program",
-    tagline: "Cultivate a visionary mindset and set goals for a bright future. Trusted by 500+ students."
+    tagline: "Cultivate a visionary mindset and set goals for a bright future.\n\rTrusted by 500+ students."
   },
   'breakthrough': {
     title: "Breakthrough Program",
-    tagline: "Ace the art of self-discipline and evolve into an enterprising leader. Trusted by 290+ students."
+    tagline: "Ace the art of self-discipline and evolve into an enterprising leader.\n\rTrusted by 290+ students."
   }
 }
 

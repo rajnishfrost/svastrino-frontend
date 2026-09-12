@@ -241,6 +241,7 @@ export default function Psychometric() {
             <div className="relative flex size-24 shrink-0 flex-col items-center justify-center rounded-full bg-nirmaan-green text-white shadow-sm ring-4 ring-nirmaan-green/15">
               <span className="font-display text-2xl font-extrabold leading-none">25%</span>
               <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/90">off</span>
+              <span className="absolute right-3 top-3 text-3xl font-extrabold leading-none">*</span>
             </div>
 
             {/* Copy */}

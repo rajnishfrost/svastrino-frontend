@@ -15,6 +15,11 @@
 
 .cmp-table {
   width: 100%;
+  /* Fixed layout so the program columns don't size to their text (Breakthrough
+     has the longest copy and would otherwise grow widest). With the first
+     column pinned to a set width below, the three program columns divide the
+     remaining space equally. */
+  table-layout: fixed;
   border-collapse: collapse;
   min-width: 720px;
   font-size: 14.5px;
@@ -45,6 +50,9 @@
   background: var(--color-surface);
   font-weight: 600;
   color: var(--color-heading);
+  /* Fixed layout reads the first row's cell to size the whole first column, so
+     the label column is set here; the three program columns share the rest. */
+  width: 230px;
   min-width: 230px;
   z-index: 1;
 }

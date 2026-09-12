@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import './PageHero.css'
 
 /**
@@ -35,7 +36,19 @@ export default function PageHero({ eyebrow, title, subtitle, children, bgImage, 
         <div className="page-hero-copy">
           {eyebrow && <p className="page-hero-eyebrow">{eyebrow}</p>}
           <h1 className="page-hero-title">{title}</h1>
-          {subtitle && <p className="page-hero-sub">{subtitle}</p>}
+          {/* Plain newlines in a string collapse to a space in HTML, so we turn
+              each line break in the subtitle into a real <br>. Splitting on a run
+              of \n/\r means a stray "\n\r" pair still yields a single break. */}
+          {subtitle && (
+            <p className="page-hero-sub">
+              {String(subtitle).split(/[\r\n]+/).map((line, i) => (
+                <Fragment key={i}>
+                  {i > 0 && <br />}
+                  {line}
+                </Fragment>
+              ))}
+            </p>
+          )}
           {children && <div className="page-hero-actions">{children}</div>}
         </div>
         {illustration && <div className="page-hero-figure">{illustration}</div>}
