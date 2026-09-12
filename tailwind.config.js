@@ -29,6 +29,7 @@ export default {
     './src/pages/user/bookonlinepage/**/*.jsx',
     './src/pages/user/dashboardpage/**/*.jsx',
     './src/pages/user/downloadspage/**/*.jsx',
+    './src/common_component/user/Pagination/Pagination.jsx',
     './src/common_component/user/EnquiryFields/EnquiryFields.jsx',
     './src/common_component/user/RichText/RichText.jsx',
     './src/common_component/user/SearchSuggest/SearchSuggest.jsx',

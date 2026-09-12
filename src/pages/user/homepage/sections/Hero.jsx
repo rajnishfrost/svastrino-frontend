@@ -9,7 +9,7 @@ import Wave from './Wave.jsx'
  * or leave an enquiry without choosing anything yet.
  */
 const STATS = [
-  { icon: Star, figure: '17 Years', caption: 'of experience' },
+  { icon: Star, figure: '17+ Years', caption: 'of Experience' },
   { icon: GraduationCap, figure: '14k+', caption: 'Students counselled' },
   { icon: Users, figure: '290', caption: 'Students mentored' },
   { icon: School, figure: '49', caption: 'Partner institutions' },

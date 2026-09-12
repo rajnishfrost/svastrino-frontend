@@ -89,7 +89,7 @@ export default function CompareServices() {
                         className="btn btn-primary"
                       >
                         {/* {p.expertCall ? 'Talk to an expert' : `Book ${p.name.replace(' Program', '')}`} */}
-                        {p.expertCall ? 'Talk to an expert' : `Book Now`}&nbsp;&nbsp;<ArrowRight className="size-4" />
+                        {p.expertCall ? 'Talk to an Expert' : `Book Now`}&nbsp;&nbsp;<ArrowRight className="size-4" />
                       </Link>
                     </td>
                   ))}

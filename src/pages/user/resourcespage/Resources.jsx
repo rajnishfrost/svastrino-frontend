@@ -6,6 +6,7 @@ import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import SearchSuggest from '../../../common_component/user/SearchSuggest/SearchSuggest.jsx'
 import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
+import Pagination from '../../../common_component/user/Pagination/Pagination.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary, fetchCourses } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -380,26 +381,13 @@ export default function Resources({ view = 'all' }) {
                 </div>
               )}
 
-              {!coursesLoading && pagination.pages > 1 && (
-                <nav className="mt-12 flex items-center justify-center gap-4" aria-label="Career library pagination">
-                  <button
-                    className="h-10 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-brand-navy"
-                    disabled={pagination.page <= 1}
-                    onClick={() => goToPage(pagination.page - 1)}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-sm text-brand-slate">
-                    Page {pagination.page} of {pagination.pages}
-                  </span>
-                  <button
-                    className="h-10 cursor-pointer rounded-lg border border-brand-navy/15 bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-brand-navy"
-                    disabled={pagination.page >= pagination.pages}
-                    onClick={() => goToPage(pagination.page + 1)}
-                  >
-                    Next
-                  </button>
-                </nav>
+              {!coursesLoading && (
+                <Pagination
+                  page={pagination.page}
+                  pages={pagination.pages}
+                  onChange={goToPage}
+                  ariaLabel="Career library pagination"
+                />
               )}
             </div>
           )}

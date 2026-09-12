@@ -13,10 +13,10 @@ export const PROGRAMS = [
 /** The headline facts — shown as words, not ticks. */
 export const DETAILS = [
   { label: "Duration", values: ["10 Days", "2 Months", "2 Years"] },
-  { label: "No of Sessions", values: ["2 Sessions", "3 Sessions", "10 Sessions of 2.5 Hours Each, Or 20 Sessions of 1 To 1.5 Hour Each (depending on the Student's pace)"] },
-  { label: "Total Time Inclusion", values: ["About 5 Hours", "About 10 Hours", "About 36 Hours"] },
+  { label: "No. of Sessions", values: ["2 Sessions", "3 Sessions", "10 Sessions of 2.5 Hours Each, Or 20 Sessions of 1 To 1.5 Hour Each (depending on the Student's pace)"] },
+  { label: "Total Time", values: ["About 5 Hours", "About 10 Hours", "About 36 Hours"] },
   { label: "Purpose", values: ["Immediate Career Counselling", "Career Decision Through Deep Self Reflection", "Personalised Mentoring for Overall Transformation (Life & Career)"] },
-  { label: "Follow ups", values: ["Once", "Weekly till Program Ends", "Weekly till Program Ends"] },
+  { label: "Follow-Ups", values: ["Once", "Weekly, Until Program Ends", "Weekly, Until Program Ends"] },
 ]
 
 /** What each program includes. true = included, false = not part of it. */
@@ -31,7 +31,7 @@ export const CAPABILITIES = [
   { label: "Deep Self Realisation", has: [false, true, true] },
   { label: "Task Based Development", has: [false, true, true] },
   { label: "5 Year Career plan", has: [false, true, true] },
-  { label: "Developing A Strong Mindset", has: [false, true, true] },
+  { label: "Developing a Strong Mindset", has: [false, true, true] },
   { label: "Personal Mentoring", has: [false, true, true] },
   { label: "Leadership Development", has: [false, false, true] },
   { label: "Entrepreneur Development", has: [false, false, true] },
