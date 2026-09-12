@@ -11,7 +11,7 @@ import ProgramEmblem from '../../../../common_component/user/ProgramEmblem/Progr
  */
 const SERVICES = [
   {
-    need: 'I need Immediate Career Counselling and Clarity',
+    need: 'I Need Immediate Career Counselling and Clarity',
     who: 'For individuals who want to make a confident stream & career choice',
     points: [
       "Resolve Last-Minute Career Confusion",
@@ -25,7 +25,7 @@ const SERVICES = [
     accent: 'crimson',
   },
   {
-    need: 'I want to choose my career through Deep Self-Reflection',
+    need: 'I Want to Choose My Career Through Deep Self-Reflection',
     who: 'For individuals who want career clarity through self-reflection',
     points: [
       "Explore Your Potential & Talents",
@@ -40,7 +40,7 @@ const SERVICES = [
     accent: 'blue',
   },
   {
-    need: 'I want Long-Term Mentoring and Complete Transformation',
+    need: 'I Want Long-Term Mentoring and Complete Transformation',
     who: 'For individuals who want to grow into visionary leaders',
     points: [
       "Discover Natural & Hidden Talents",
@@ -57,7 +57,7 @@ const SERVICES = [
     featured: true,
   },
   {
-    need: 'I want to build my Skills and Myself',
+    need: 'I Want to Build My Skills And Myself',
     who: 'For teens, freshers & young professionals who want to become future-ready',
     points: [
       "Build Deep Self-Awareness & Self-Control",
@@ -72,11 +72,11 @@ const SERVICES = [
     accent: 'green',
   },
   {
-    need: 'I want a Scientifically Analysis to decide my Career',
-    who: 'For individuals who want to to verify their potential & career options scientifically',
+    need: 'I Want a Scientific Analysis to Decide My Career',
+    who: 'For individuals who want to verify their potential & career options scientifically',
     points: [
       "Know Yourself Like Never Before",
-      "Discover Suitable, Streams, Careers & Directions",
+      "Discover Suitable Streams, Careers & Directions",
       "Reduce Confusion, Pressure & Assumption",
       "Decide Your Personal Journey Confidently",
     ],

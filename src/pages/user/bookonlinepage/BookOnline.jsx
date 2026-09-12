@@ -385,7 +385,7 @@ export default function BookOnline() {
         eyebrow="Book Online"
         title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
         // subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
-        subtitle="Select a program that you would want to get personalised session in."
+        subtitle="Select the program that you would want to book a personalised session for"
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section">

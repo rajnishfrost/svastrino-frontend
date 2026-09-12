@@ -16,7 +16,7 @@ export default function AboutUs() {
       <div className="pointer-events-none absolute -bottom-24 -right-24 size-72 rounded-full bg-brand-crimson/10 blur-3xl" aria-hidden />
 
       <div className="container relative">
-        <SectionHeading title="Get To Know Us And Our Roots" invert />
+        <SectionHeading title="Get to Know Us and Our Roots" invert />
 
         <div className="mx-auto mt-8 max-w-3xl space-y-4 text-center text-white/70">
           <p className="text-balance leading-relaxed">

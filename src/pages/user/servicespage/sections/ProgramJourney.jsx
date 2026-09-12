@@ -157,10 +157,10 @@ function StageHeading({ title, range, note }) {
   const noteLines = note ? note.split('\n').map((l) => l.trim()).filter(Boolean) : []
   return (
     <div className="lg:pr-16">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <h3 className="font-display text-xl font-bold text-brand-navy">{title}</h3>
+      <div className="inline-flex flex-wrap items-center justify-start gap-x-4 gap-y-2 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
+        <h3 className="font-display text-xl font-bold text-brand-navy lg:text-white">{title}</h3>
         {range && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 px-3 py-1 text-[13px] font-semibold text-brand-crimson">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 lg:bg-brand-crimson px-3 py-1 text-[13px] font-semibold text-brand-crimson lg:text-white">
             <ClockIcon className="shrink-0" /> {range}
           </span>
         )}

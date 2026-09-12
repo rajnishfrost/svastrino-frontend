@@ -249,7 +249,7 @@ export default function Psychometric() {
                 <GraduationCap className="size-3.5" /> Bundle offer
               </span>
               <p className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
-                Club it with <span className="text-nirmaan-green">Nirmaan</span> &amp; get a flat discount
+                Club it with <span className="text-nirmaan-green">Nirmaan</span> &amp; get a flat 25% discount
               </p>
               {/* <p className="mt-2 text-sm text-nirmaan-brown-soft">
                 Our investment in your development — pair the test with the full Nirmaan course and save.

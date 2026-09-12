@@ -9,7 +9,7 @@ import SectionHeading from './SectionHeading.jsx'
 const POINTS = [
   {
     icon: HelpCircle,
-    stat: 'Only 10.4 % of Indian students receive professional career guidance',
+    stat: 'Only 10.4% of Indian students receive professional career guidance',
     answer:
       'We help you Understand Yourself by identifying your natural Strengths, Talents, and Values so you can make choices that feel right for you.',
     sourceLink: "https://www.deccanherald.com/india/only-10-of-indian-students-receive-career-guidance-study-3743428"
@@ -70,7 +70,7 @@ export default function ProblemsWeSolve() {
               <HelpCircle className="size-6" />
             </span>
             <h3 className="mt-5 font-display text-base font-bold leading-snug text-brand-navy">
-              Only 10.4 % of Indian students receive professional career guidance
+              Only 10.4% of Indian students receive professional career guidance
             </h3>
             <span className="mt-auto inline-flex items-center gap-1 self-start pt-4 text-sm font-medium text-brand-crimson underline-offset-2 transition-colors hover:text-brand-crimson hover:underline">Our Solution</span>
             <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-rose p-3.5">

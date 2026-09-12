@@ -316,7 +316,7 @@ export const PROGRAM_HERO = {
   },
   'bloom': {
     title: "Bloom Program",
-    tagline: "Cultivate a Visionary Mindset and Set Goals for a bright future. Trusted by 500+ students."
+    tagline: "Cultivate a visionary mindset and set goals for a bright future. Trusted by 500+ students."
   },
   'breakthrough': {
     title: "Breakthrough Program",
@@ -386,7 +386,7 @@ export const PROGRAM_JOURNEYS_2 = {
         range: '(91 to 240 minutes on Day 3)',
         steps: [
           {
-            title: "Getting to know you",
+            title: "Getting to Know You",
             points: [
               "Identifying personality, strengths, background, and career interests",
               "Recognising your unique potential, natural talents & abilities",
@@ -587,9 +587,9 @@ export const PROGRAM_JOURNEYS_2 = {
       },
       {
         // title: 'Actual Sessions - Stage 3',
-        title: 'Stage 2: Application of Blueprint',
+        title: 'Stage 2: Application',
         range: '(541 to 1800 minutes from Day 60 - Day 730)',
-        note: '[The following development are personalised as per participant speed, comfort & availability]',
+        note: "[The following developments are personalised as per each participant's speed, comfort & availability.]",
         // note: 'Stage 2: Application of Blueprint (60 - 730 days)\n[The following development are personalised as per participant speed, comfort & availability]',
         steps: [
           {
