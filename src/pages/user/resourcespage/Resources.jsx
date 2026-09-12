@@ -53,6 +53,55 @@ const VIEW_SEO = {
   },
 }
 
+/**
+ * Card-shaped blocks in place of the career grid while a page of courses is on
+ * its way. A stream chip or a search used to leave one line of text where the
+ * cards had been, which reads as an empty page rather than a busy one. `count`
+ * follows the courses already on screen, so swapping a filter holds its height.
+ */
+function CoursesSkeleton({ count }) {
+  return (
+    <>
+      <p className="sr-only" role="status">Loading careers…</p>
+      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
+        {Array.from({ length: count }, (_, i) => (
+          <div key={i} className="animate-skeleton rounded-[10px] border border-brand-navy/10 bg-white p-6 shadow-sm">
+            <div className="h-5 w-3/4 rounded bg-brand-navy/20" />
+            <div className="mt-4 space-y-2">
+              <div className="h-3 w-full rounded bg-brand-navy/10" />
+              <div className="h-3 w-full rounded bg-brand-navy/10" />
+              <div className="h-3 w-5/6 rounded bg-brand-navy/10" />
+            </div>
+            <div className="mt-4 flex gap-1.5">
+              <div className="h-5 w-24 rounded-full bg-brand-crimson/15" />
+              <div className="h-5 w-16 rounded-full bg-brand-crimson/15" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+// First load of the library, when the streams behind the chips have not arrived
+// either: the filter row is stood in for as well, so the whole block does not
+// appear out of nothing. Once the streams land the real chips take over and only
+// the grid is still waiting.
+const CHIP_WIDTHS = ['w-20', 'w-28', 'w-24', 'w-16', 'w-32', 'w-24', 'w-20', 'w-28']
+
+function CareerLibrarySkeleton() {
+  return (
+    <div>
+      <div className="mt-8 flex flex-wrap gap-2" aria-hidden>
+        {CHIP_WIDTHS.map((w, i) => (
+          <div key={i} className={`h-9 animate-skeleton rounded-full bg-brand-navy/10 ${w}`} />
+        ))}
+      </div>
+      <CoursesSkeleton count={6} />
+    </div>
+  )
+}
+
 export default function Resources({ view = 'all' }) {
   // The Career Library's stream, page and search live in the URL, so a filtered
   // view is shareable and survives a refresh — the same as /blog.
@@ -178,6 +227,18 @@ export default function Resources({ view = 'all' }) {
   const cardClass =
     'rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm'
 
+  // The library's cards carry their own corner and their own hover, so the
+  // radius is written here rather than as a second `rounded-*` over cardClass —
+  // two of those in one class list is a coin toss on which one CSS applies.
+  //
+  // `border-solid` is not redundant: this project runs Tailwind with preflight
+  // off (tailwind.config.js), and without preflight nothing sets a default
+  // border-style — so `border` alone gives a 1px border of style none, which
+  // draws nothing. The resting border is transparent, so the card looks exactly
+  // as it does now until the hover colours it and the row does not shift.
+  const careerCardClass =
+    'rounded-[10px] border border-solid border-transparent bg-white p-6 shadow-sm'
+
   return (
     <>
       <PageSeo {...VIEW_SEO[view] || VIEW_SEO.all} />
@@ -209,24 +270,22 @@ export default function Resources({ view = 'all' }) {
             </div>
           )}
 
-          {loading && view !== 'all' && <p className="text-center text-brand-slate">Loading…</p>}
+          {loading && view === 'career-library' && <CareerLibrarySkeleton />}
+          {loading && view !== 'all' && view !== 'career-library' && (
+            <p className="text-center text-brand-slate">Loading…</p>
+          )}
           {error && !loading && <ConnectionState error={error} onRetry={retry} label="the resources" />}
 
           {/* ---- Career library ---- */}
           {!loading && !error && view === 'career-library' && (
             <div id="career-library">
-              <p className="mx-auto max-w-2xl text-center text-brand-slate">
-                Explore career streams and the courses that sit under each. Not sure where you fit? A{' '}
-                <Link to="/services" className="font-semibold text-brand-crimson hover:underline">
-                  counselling session
-                </Link>{' '}
-                will help you narrow it down.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex flex-wrap gap-2">
                   <button className={filterBtn(!field)} onClick={() => update({ field: '' })}>
-                    All{!field && !q ? ` (${pagination.total})` : ''}
+                    {/* The total belongs to the page that has landed — while one
+                        is on its way the chip would otherwise read "All (0)"
+                        over a grid of skeletons. */}
+                    All{!field && !q && !coursesLoading ? ` (${pagination.total})` : ''}
                   </button>
                   {fields.map((f) => (
                     <button
@@ -274,7 +333,7 @@ export default function Resources({ view = 'all' }) {
                 </p>
               )}
 
-              {coursesLoading && <p className="mt-10 text-center text-brand-slate">Loading careers…</p>}
+              {coursesLoading && <CoursesSkeleton count={courses.length || 6} />}
               {!coursesLoading && courses.length === 0 && (
                 <p className="mt-10 text-center text-brand-slate">
                   Nothing matched that search. Try a different word or another stream.
@@ -286,14 +345,25 @@ export default function Resources({ view = 'all' }) {
                   {courses.map((c) => (
                     <article
                       key={c.slug}
-                      className={`group flex flex-col ${cardClass} transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5`}
+                      className={`group relative flex flex-col ${careerCardClass} transition-all hover:-translate-y-1.5 hover:border-brand-crimson hover:shadow-xl hover:shadow-brand-navy/5`}
                     >
-                      <h3 className="font-display text-lg font-bold leading-snug text-brand-navy">
-                        <Link to={`/${c.slug}`} className="hover:text-brand-crimson">{c.name}</Link>
+                      <h3 className="font-display text-lg font-bold leading-snug text-brand-navy group-hover:text-brand-crimson">
+                        <Link to={`/${c.slug}`}>
+                          {/* The card IS the link: this stretches the title's
+                              anchor over the whole card, so a click anywhere on
+                              it opens the career. Written this way rather than
+                              wrapping the card in a <Link> because the stream
+                              chips below are buttons — an anchor around them
+                              would be invalid, and clicking one would navigate
+                              instead of filtering. */}
+                          <span className="absolute inset-0" aria-hidden />
+                          {c.name}
+                        </Link>
                       </h3>
                       <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{c.overview}</p>
                       {c.fields.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-1.5">
+                        // Above the stretched anchor, so a chip still filters.
+                        <div className="relative mt-4 flex flex-wrap gap-1.5">
                           {c.fields.map((f) => (
                             <button
                               key={f.slug}

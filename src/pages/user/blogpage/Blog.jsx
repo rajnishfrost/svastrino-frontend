@@ -26,6 +26,38 @@ function OwnerBadge({ owner }) {
   )
 }
 
+/**
+ * Card-shaped blocks in place of the grid while a page of posts is on its way.
+ * A category or a search used to leave one line of text where the cards had
+ * been, which reads as an empty page rather than a busy one. `count` follows
+ * the posts already on screen, so swapping a filter holds the height it had.
+ */
+function PostsSkeleton({ count }) {
+  return (
+    <>
+      <p className="sr-only" role="status">Loading posts…</p>
+      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
+        {Array.from({ length: count }, (_, i) => (
+          <div key={i} className="animate-skeleton overflow-hidden rounded-xl border border-brand-navy/10 bg-white shadow-sm">
+            <div className="aspect-[16/9] bg-brand-navy/10" />
+            <div className="p-6">
+              <div className="h-5 w-20 rounded-full bg-brand-navy/15" />
+              <div className="mt-3 h-5 w-11/12 rounded bg-brand-navy/20" />
+              <div className="mt-2 h-5 w-2/3 rounded bg-brand-navy/20" />
+              <div className="mt-4 space-y-2">
+                <div className="h-3 w-full rounded bg-brand-navy/10" />
+                <div className="h-3 w-full rounded bg-brand-navy/10" />
+                <div className="h-3 w-4/5 rounded bg-brand-navy/10" />
+              </div>
+              <div className="mt-5 h-3 w-32 rounded bg-brand-navy/10" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function Blog() {
   // URL is the source of truth so filters/pages are shareable and survive a refresh.
   const [params, setParams] = useSearchParams()
@@ -182,7 +214,7 @@ export default function Blog() {
             </p>
           )}
 
-          {loading && <p className="mt-10 text-center text-brand-slate">Loading posts…</p>}
+          {loading && <PostsSkeleton count={posts.length || 6} />}
           {error && !loading && <div className="mt-10"><ConnectionState error={error} onRetry={retry} label="posts" /></div>}
           {!loading && !error && posts.length === 0 && (
             <p className="mt-10 text-center text-brand-slate">No posts found. Try a different search or category.</p>

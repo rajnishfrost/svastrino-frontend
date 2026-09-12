@@ -80,10 +80,18 @@ export default {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-50%)' },
         },
+        // Tailwind's own `pulse` fades to .5 opacity, which takes a light
+        // placeholder block all the way to white — half of every cycle the
+        // skeleton is invisible. This one only dims.
+        skeleton: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.72' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.5s ease-out both',
         marquee: 'marquee 32s linear infinite',
+        skeleton: 'skeleton 1.6s ease-in-out infinite',
       },
     },
   },
