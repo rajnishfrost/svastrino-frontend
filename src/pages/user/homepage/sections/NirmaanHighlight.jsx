@@ -66,7 +66,11 @@ export default function NirmaanHighlight() {
             <div className="order-1 flex flex-col items-center justify-center md:order-2">
               {/* <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52"> */}
               <div className="flex size-44 items-center justify-center rounded-full p-6 md:size-52">
-                <img src="/nirmaan-vertical.png" alt="" aria-hidden className="h-full w-full object-contain scale-[2.5]" />
+                {/* NirmaanLogo.png, the same file the Nirmaan page's hero uses —
+                    its strap reads "Soch Se Vikas". nirmaan-vertical.png reads
+                    "Soch Se Vikas Tak", which is the wrong wording. The scale
+                    suits a wide lockup where the old one was nearly square. */}
+                <img src="/NirmaanLogo.png" alt="" aria-hidden className="h-full w-full object-contain scale-[2.4]" />
               </div>
               {/* <span className="mt-4 inline-flex items-center gap-2 text-4xl font-semibold uppercase tracking-wide text-nirmaan-brown p-1 leading-none px-4" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
                 Nirmaan
