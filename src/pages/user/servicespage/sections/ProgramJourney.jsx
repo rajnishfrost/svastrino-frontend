@@ -1,26 +1,30 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { Check, Minus, Plus } from 'lucide-react'
+import {
+  Check, Search, Compass, ListChecks, Brain, Sparkles,
+  Route, Rocket, TrendingUp, Handshake, BadgeCheck, Flag, Star, Heart,
+} from 'lucide-react'
 import { PROGRAM_JOURNEYS_2 } from '../journeyStages.js'
 
 /**
- * Program page · the journey, shown as ONE continuous timeline so it reads as a
+ * Program page · the journey, shown as ONE continuous timeline that reads as a
  * single path from the first session to the last. Data comes from
  * PROGRAM_JOURNEYS_2 (the client's supplied copy): each stage carries a timing
  * line and either a plain list of points or a set of named steps; some stages
  * add a phase `note`, and the program adds `duration` and `inclusions`. A
  * program with no stage breakdown falls back to the flat backend journey.
  *
- * DESKTOP is the home page's "Your Journey" treatment, transposed to vertical:
- * gradient numbered nodes on a single SMOOTH road, cards zig-zagging left/right
- * of it. The road is drawn through the *measured* node centres and re-measured
- * on resize / expand, so it stays smooth for any card height. Because a program
- * can be long (Breakthrough is ~15 steps) the cards COLLAPSE — only the open one
- * shows its points, so the path stays short. MOBILE straightens the road into a
+ * LAYOUT: a stage is now just a HEADING row (its title + timing, with any note
+ * beneath) — the card is the STEP. Every step renders open (no accordion): the
+ * whole journey is visible at once, its step cards alternating left / right of a
+ * single SMOOTH road. The road (home page's "Your Journey" treatment, transposed
+ * to vertical) is drawn through the *measured* node centres and re-measured on
+ * resize, so it stays smooth for any card height. Each node carries an ICON
+ * (cycled from PALETTE) rather than a number. MOBILE straightens the road into a
  * left-rail timeline.
  *
  * The stored copy is verbatim; the two `clean*` helpers only tidy it for display
  * (drop the wrapping parens on a timing line, and the redundant "- Stage N" from
- * a title, since each node is already numbered).
+ * a title, since the stage heading already labels the group).
  */
 
 // Backend flat journey → the stage shape, so an unknown program still renders.
@@ -54,9 +58,17 @@ const NODE_GRADS = [
   ['#0f2c5c', '#0a1f43'],
 ]
 
+// One icon per step, cycled down the journey. Ordered so a program reads as a
+// natural arc (analyse → orient → practise → apply → progress); a program with
+// more steps than icons simply wraps around.
+const PALETTE = [
+  Search, Compass, ListChecks, Brain, Sparkles, Route,
+  Rocket, TrendingUp, Handshake, BadgeCheck, Flag, Star, Heart,
+]
+
 // One smooth path weaving VERTICALLY through the measured node centres: the
 // control points share the midpoint Y, so the road eases top→bottom in gentle
-// S-curves between the alternating left/right badges. (Home page's roadPath,
+// S-curves between the alternating left/right nodes. (Home page's roadPath,
 // transposed from horizontal to vertical.)
 function roadPath(points) {
   if (points.length < 2) return ''
@@ -79,14 +91,14 @@ function ClockIcon({ className }) {
   )
 }
 
-// The numbered disc that sits on the road — solid gradient, white halo, glow.
-// Styled inline (not Tailwind): global.css ships a hard `*` reset, so inline
-// geometry is the reliable way to guarantee a crisp node.
-function Node({ n, i, size = 52 }) {
+// The disc that sits on the road — solid gradient, white halo, glow, with the
+// step's icon inside. Styled inline (not Tailwind): global.css ships a hard `*`
+// reset and this project pins an old lucide build, so inline geometry + explicit
+// icon size/color props are the reliable way to guarantee a crisp node.
+function Node({ Icon, i, size = 52 }) {
   const grad = NODE_GRADS[i % NODE_GRADS.length]
   return (
     <span
-      className="font-display"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -98,13 +110,9 @@ function Node({ n, i, size = 52 }) {
         background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})`,
         border: '4px solid #fff',
         boxShadow: '0 12px 24px -10px rgba(15,44,92,0.5)',
-        color: '#fff',
-        fontWeight: 800,
-        fontSize: Math.round(size * 0.4),
-        lineHeight: 1,
       }}
     >
-      {n}
+      <Icon size={Math.round(size * 0.42)} color="#ffffff" strokeWidth={2.15} />
     </span>
   )
 }
@@ -123,75 +131,42 @@ function Points({ points, className = '' }) {
   )
 }
 
-/** The expanded content of a stage: plain points and/or named sub-steps. */
-function StageBody({ stage }) {
-  const titled = stage.steps.filter((s) => s.title)
-  const loose = stage.steps.filter((s) => !s.title).flatMap((s) => s.points)
-
+/**
+ * One step of the journey, as an always-open card: an optional step heading over
+ * its points. Untitled steps (pre / post session) render as a plain point list —
+ * the stage heading above already labels them.
+ */
+function StepCard({ step }) {
   return (
-    <>
-      {/* A stage of plain points (pre / post session). */}
-      {loose.length > 0 && <Points points={loose} />}
-
-      {/* Named steps — plain blocks (a bold heading over its points). No box or
-          rule: the stage card is the only card here, and boxing each step inside
-          it just stacks a card in a card. */}
-      {titled.length > 0 && (
-        <div className={`space-y-5 ${loose.length > 0 ? 'mt-5' : ''}`}>
-          {titled.map((step, i) => (
-            <div key={i}>
-              <h4 className="font-display text-[15px] font-bold text-brand-navy md:text-base">{step.title}</h4>
-              <Points points={step.points} className="mt-2" />
-            </div>
-          ))}
-        </div>
+    <div className="w-full rounded-2xl bg-white p-5 shadow-xl shadow-brand-navy/5 ring-1 ring-brand-navy/10">
+      {step.title && (
+        <h4 className="font-display text-[15px] font-bold text-brand-navy md:text-base">{step.title}</h4>
       )}
-    </>
+      <Points points={step.points} className={step.title ? 'mt-2' : ''} />
+    </div>
   )
 }
 
 /**
- * The collapsible card for one stage — shared by the desktop timeline and the
- * mobile rail. The number lives on the road node, not in the header, so the two
- * layouts stay identical.
+ * A stage label: its (cleaned) title on the left, timing pill on the right, and
+ * any note beneath. It carries no node — the nodes belong to the step cards that
+ * follow it. `pr` reserves the right lane the road runs down so the pill never
+ * collides with it.
  */
-function StageCard({ stage, n, total, isOpen, onToggle }) {
-  const range = cleanRange(stage.range)
-  const noteLines = stage.note ? stage.note.split('\n').map((l) => l.trim()).filter(Boolean) : []
-  const heading = cleanTitle(stage.title) || (total > 1 ? `Stage ${n}` : 'What happens')
-
+function StageHeading({ title, range, note }) {
+  const noteLines = note ? note.split('\n').map((l) => l.trim()).filter(Boolean) : []
   return (
-    <div
-      className={`w-full rounded-2xl bg-white shadow-xl transition ${
-        isOpen ? 'shadow-brand-navy/10 ring-1 ring-brand-navy/10' : 'shadow-brand-navy/5 ring-1 ring-brand-navy/5'
-      }`}
-    >
-      <button
-        type="button"
-        aria-expanded={isOpen}
-        onClick={onToggle}
-        className="flex w-full cursor-pointer items-center gap-3 p-5 text-left rounded-2xl border-brand-crimson border"
-      >
-        <span className="min-w-0 flex-1">
-          <span className="block font-display text-lg font-bold text-brand-navy">{heading}</span>
-          {range && (
-            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 px-2.5 py-0.5 text-[13px] font-semibold text-brand-crimson">
-              <ClockIcon className="shrink-0" /> {range}
-            </span>
-          )}
-        </span>
-        <span className="shrink-0 text-brand-crimson">
-          {isOpen ? <Minus className="size-5" /> : <Plus className="size-5" />}
-        </span>
-      </button>
-
-      {isOpen && (
-        <div className="border-x-0 border-b-0 border-t border-solid border-brand-navy/10 px-5 pb-5 pt-4">
-          {noteLines[0] && (
-            <p className="mb-3 text-sm italic leading-relaxed text-brand-slate">{noteLines[0]}</p>
-          )}
-          <StageBody stage={stage} />
-        </div>
+    <div className="lg:pr-16">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <h3 className="font-display text-xl font-bold text-brand-navy">{title}</h3>
+        {range && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 px-3 py-1 text-[13px] font-semibold text-brand-crimson">
+            <ClockIcon className="shrink-0" /> {range}
+          </span>
+        )}
+      </div>
+      {noteLines[0] && (
+        <p className="mt-2 text-sm italic leading-relaxed text-brand-slate">{noteLines[0]}</p>
       )}
     </div>
   )
@@ -199,15 +174,32 @@ function StageCard({ stage, n, total, isOpen, onToggle }) {
 
 export default function ProgramJourney({ program }) {
   const data = PROGRAM_JOURNEYS_2[program.slug] || fromBackend(program.journey)
-  // First stage open, the rest collapsed. null = all closed.
-  const [open, setOpen] = useState(0)
-  const toggle = (i) => setOpen((cur) => (cur === i ? null : i))
 
   const wrapRef = useRef(null)
   const badgeRefs = useRef([])
   const [road, setRoad] = useState({ d: '', w: 0, h: 0 })
 
   const stages = data?.stages || []
+
+  // Flatten the stages into a single top-to-bottom list of rows — a `stage`
+  // heading followed by its `card` steps — while numbering the cards
+  // continuously (ci) so the road, alternation and icons run unbroken across
+  // stage boundaries.
+  const rows = []
+  let ci = 0
+  stages.forEach((stage, si) => {
+    rows.push({
+      kind: 'stage',
+      title: cleanTitle(stage.title) || (stages.length > 1 ? `Stage ${si + 1}` : 'What happens'),
+      range: cleanRange(stage.range),
+      note: stage.note,
+    })
+    stage.steps.forEach((step) => {
+      rows.push({ kind: 'card', ci, step })
+      ci++
+    })
+  })
+  const cardCount = ci
 
   useLayoutEffect(() => {
     const wrap = wrapRef.current
@@ -223,11 +215,11 @@ export default function ProgramJourney({ program }) {
       setRoad({ d: roadPath(pts), w: wr.width, h: wr.height })
     }
     measure()
-    // Re-measure whenever the layout reflows — a card expanding, a resize, fonts.
+    // Re-measure whenever the layout reflows — a resize, fonts, a program swap.
     const ro = new ResizeObserver(measure)
     ro.observe(wrap)
     return () => ro.disconnect()
-  }, [open, stages.length])
+  }, [program.slug, cardCount])
 
   if (!data) return null
   const inclusions = data.inclusions || []
@@ -246,11 +238,13 @@ export default function ProgramJourney({ program }) {
           )}
         </div>
 
-        {/* DESKTOP — serpentine road, cards alternating left/right of it. */}
-        <div ref={wrapRef} className="relative mx-auto mt-14 hidden max-w-4xl lg:block">
+        {/* DESKTOP — stage headings interleaved with step cards that alternate
+            left / right of one smooth road. `pr-7` reserves room so a right-hand
+            node isn't clipped where its card sits flush to the track edge. */}
+        <div ref={wrapRef} className="relative mx-auto mt-14 hidden max-w-4xl pr-7 lg:block">
           {road.d && road.w > 0 && (
             <svg
-              className="pointer-events-none absolute inset-0"
+              className="pointer-events-none absolute inset-0 z-10"
               width={road.w}
               height={road.h}
               viewBox={`0 0 ${road.w} ${road.h}`}
@@ -269,52 +263,60 @@ export default function ProgramJourney({ program }) {
             </svg>
           )}
 
-          <ol className="relative space-y-8">
-            {stages.map((stage, i) => {
-              const left = i % 2 === 0
-              return (
-                <li key={i} className="grid grid-cols-2 gap-x-24">
-                  <div className={left ? 'col-start-1 flex justify-end' : 'col-start-2 flex justify-start'}>
-                    {/* The card, with the road node pinned to its INNER edge so the
-                        node straddles the gutter the road runs down. */}
-                    <div className="relative w-full">
-                      <span
-                        ref={(el) => { badgeRefs.current[i] = el }}
-                        className={`absolute top-1/2 z-10 -translate-y-1/2 ${
-                          left ? 'right-0 translate-x-1/2' : 'left-0 -translate-x-1/2'
-                        }`}
-                      >
-                        <Node n={i + 1} i={i} />
-                      </span>
-                      <StageCard stage={stage} n={i + 1} total={stages.length} isOpen={open === i} onToggle={() => toggle(i)} />
-                    </div>
+          <ul className="relative">
+            {rows.map((row, i) =>
+              row.kind === 'stage' ? (
+                <li key={i} className="mt-12 first:mt-0">
+                  <StageHeading title={row.title} range={row.range} note={row.note} />
+                </li>
+              ) : (
+                <li key={i} className="mt-6 flex">
+                  {/* Even cards sit flush-left; odd cards shift right (ml-auto),
+                      swinging their right-edge node across the track so the road
+                      weaves. The node straddles the card's inner-right corner. */}
+                  <div className={`relative w-[80%] ${row.ci % 2 === 0 ? '' : 'ml-auto'}`}>
+                    <span
+                      ref={(el) => { badgeRefs.current[row.ci] = el }}
+                      className="absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-1/2"
+                    >
+                      <Node Icon={PALETTE[row.ci % PALETTE.length]} i={row.ci} />
+                    </span>
+                    <StepCard step={row.step} />
                   </div>
                 </li>
               )
-            })}
-          </ol>
+            )}
+          </ul>
         </div>
 
-        {/* MOBILE / TABLET — the road straightens into a left-rail timeline. */}
-        <ol className="mt-12 space-y-5 lg:hidden">
-          {stages.map((stage, i) => (
-            <li key={i} className="relative flex gap-4">
-              <div className="flex flex-col items-center">
-                <Node n={i + 1} i={i} size={44} />
-                {i < stages.length - 1 && (
-                  <span
-                    aria-hidden
-                    className="my-2 w-1 flex-1 rounded-full"
-                    style={{ background: 'linear-gradient(#c8102e66, #2f7ae566, #0f2c5c66)' }}
-                  />
-                )}
-              </div>
-              <div className="flex-1 pb-1">
-                <StageCard stage={stage} n={i + 1} total={stages.length} isOpen={open === i} onToggle={() => toggle(i)} />
-              </div>
-            </li>
-          ))}
-        </ol>
+        {/* MOBILE / TABLET — the road straightens into a left-rail timeline. The
+            rail connects consecutive cards; it breaks at a stage heading. */}
+        <ul className="mt-12 space-y-5 lg:hidden">
+          {rows.map((row, i) =>
+            row.kind === 'stage' ? (
+              <li key={i} className={i === 0 ? '' : 'pt-3'}>
+                <StageHeading title={row.title} range={row.range} note={row.note} />
+              </li>
+            ) : (
+              <li key={i} className="relative flex gap-4">
+                <div className="flex flex-col items-center">
+                  <Node Icon={PALETTE[row.ci % PALETTE.length]} i={row.ci} size={44} />
+                  {/* Continue the rail only while the next row is another card. */}
+                  {rows[i + 1]?.kind === 'card' && (
+                    <span
+                      aria-hidden
+                      className="my-2 w-1 flex-1 rounded-full"
+                      style={{ background: 'linear-gradient(#c8102e66, #2f7ae566, #0f2c5c66)' }}
+                    />
+                  )}
+                </div>
+                <div className="flex-1 pb-1">
+                  <StepCard step={row.step} />
+                </div>
+              </li>
+            )
+          )}
+        </ul>
 
         {/* Closing line */}
         {data.closing && (
