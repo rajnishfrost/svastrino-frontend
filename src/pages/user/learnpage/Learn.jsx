@@ -5,7 +5,7 @@ import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } from '../../../utils/offlineVideo.js'
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
-import { openWeekResource } from '../../../utils/weekResource.js'
+import { openResourceWindow, writeWeekResource, closeResourceWindow } from '../../../utils/weekResource.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
@@ -895,11 +895,16 @@ function WeekResource({ slug, session }) {
   if (!res) return null
 
   const open = async () => {
+    // The window is claimed here, in the click itself — see openResourceWindow:
+    // asking for it after the fetch is what turned this button into an .html
+    // download whenever the server took a moment to answer.
+    const win = openResourceWindow(session.order)
     setBusy(true)
     setErr('')
     try {
-      openWeekResource(await api(`/user/learn/${slug}/sessions/${session.id}/resource`, { auth: 'user' }))
+      writeWeekResource(win, await api(`/user/learn/${slug}/sessions/${session.id}/resource`, { auth: 'user' }))
     } catch (e) {
+      closeResourceWindow(win)
       setErr(e.message || 'The resource could not be opened. Please try again.')
     } finally {
       setBusy(false)

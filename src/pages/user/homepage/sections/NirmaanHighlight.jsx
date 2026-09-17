@@ -66,6 +66,8 @@ export default function NirmaanHighlight() {
             <div className="order-1 flex flex-col items-center justify-center md:order-2">
               {/* <div className="flex size-44 items-center justify-center rounded-full bg-white p-6 shadow-inner ring-1 ring-nirmaan-sand md:size-52"> */}
               <div className="flex size-44 items-center justify-center rounded-full p-6 md:size-52">
+                {/* The -t file, not nirmaan-vertical.png: that one's strap reads
+                    "Soch Se Vikas Tak", which is the wrong wording. */}
                 <img src="/nirmaan-vertical-t.png" alt="" aria-hidden className="h-full w-full object-contain scale-[2.5]" />
               </div>
               {/* <span className="mt-4 inline-flex items-center gap-2 text-4xl font-semibold uppercase tracking-wide text-nirmaan-brown p-1 leading-none px-4" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
