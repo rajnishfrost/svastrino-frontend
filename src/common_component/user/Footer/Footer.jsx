@@ -87,8 +87,9 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
-            <Link to="/" className="inline-flex rounded-[5px] bg-white p-[5px]">
-              <img src="/logo.png" alt="Svastrino Consultancy Services" className="h-10 w-auto" />
+            <Link to="/" className="inline-flex rounded-[5px] bg-white p-2">
+              <img src="/logo.png" alt="Svastrino Consultancy Services" className="w-full h-auto" />
+              {/* <img src="/svastrino-icon-t.png" alt="Svastrino Consultancy Services" className="w-full" /> */}
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed">
               Futuristic career guidance — personalised mentoring &amp; courses to shape your path.

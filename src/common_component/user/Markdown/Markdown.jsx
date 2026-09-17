@@ -18,17 +18,18 @@ function renderInline(text, keyPrefix = '') {
     const key = `${keyPrefix}-${i}`
 
     if (chunk.startsWith('**') && chunk.endsWith('**')) {
-      return <strong key={key}>{chunk.slice(2, -2)}</strong>
+      // Recurse so a link (or italic) nested inside bold still renders.
+      return <strong key={key}>{renderInline(chunk.slice(2, -2), key)}</strong>
     }
     if ((chunk.startsWith('*') && chunk.endsWith('*')) || (chunk.startsWith('_') && chunk.endsWith('_'))) {
-      return <em key={key}>{chunk.slice(1, -1)}</em>
+      return <em key={key}>{renderInline(chunk.slice(1, -1), key)}</em>
     }
 
     const link = chunk.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
     if (link) {
       const [, label, href] = link
-      // Only allow http(s) and relative targets — blocks javascript: URLs.
-      const safe = /^(https?:\/\/|\/)/i.test(href) ? href : '#'
+      // Only allow http(s), mailto: and relative targets — blocks javascript: URLs.
+      const safe = /^(https?:\/\/|mailto:|\/)/i.test(href) ? href : '#'
       const external = safe.startsWith('http')
       return (
         <a key={key} href={safe} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
