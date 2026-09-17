@@ -4,34 +4,17 @@ import { api } from '../../../api/client.js'
 import { dashboardTabFor } from '../dashboardpage/dashboardTab.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { classOptionsFor } from '../../../utils/studentClass.js'
+import { openCashfreeCheckout } from '../../../utils/cashfree.js'
+import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import './Checkout.css'
 
 /**
  * Checkout for a Skill-Build package. Protected route (login required).
  * Flow: quote → (apply coupon) → create order → pay → verify → receipt.
- * With real Razorpay (GATEWAY=razorpay on the server) the hosted widget opens;
+ * With real Cashfree (GATEWAY=cashfree on the server) its checkout popup opens;
  * without keys the server returns { mock:true } and a local test panel is shown.
  */
 const inr = (n) => '₹' + Number(n).toLocaleString('en-IN')
-
-const RZP_SRC = 'https://checkout.razorpay.com/v1/checkout.js'
-// Load Razorpay's checkout.js once; resolves true when window.Razorpay is ready.
-function loadRazorpay() {
-  return new Promise((resolve) => {
-    if (window.Razorpay) return resolve(true)
-    const existing = document.querySelector(`script[src="${RZP_SRC}"]`)
-    if (existing) {
-      existing.addEventListener('load', () => resolve(true))
-      existing.addEventListener('error', () => resolve(false))
-      return
-    }
-    const s = document.createElement('script')
-    s.src = RZP_SRC
-    s.onload = () => resolve(true)
-    s.onerror = () => resolve(false)
-    document.body.appendChild(s)
-  })
-}
 
 export default function Checkout() {
   const [params] = useSearchParams()
@@ -120,7 +103,7 @@ export default function Checkout() {
     }
   }
 
-  // Step 1 → create the order, then open Razorpay (or the mock panel in dev).
+  // Step 1 → create the order, then open Cashfree (or the mock panel in dev).
   const proceed = async () => {
     setBusy(true)
     setLoadErr('')
@@ -134,7 +117,7 @@ export default function Checkout() {
       if (res.mock) {
         setStep('paying') // no keys → local test panel
       } else {
-        await openRazorpay(res)
+        await openCashfree(res)
       }
     } catch (e) {
       // These two the student can fix right here, so they belong on the class
@@ -165,54 +148,31 @@ export default function Checkout() {
     setStep('success')
   }
 
-  // Open the hosted Razorpay checkout. Its handler returns payment id + signature,
-  // which we verify server-side before granting access.
-  const openRazorpay = async (res) => {
-    let refused = false // set by the gateway's own failure event, read on dismiss
-    const ready = await loadRazorpay()
-    if (!ready || !window.Razorpay) {
-      setLoadErr('Could not load the payment gateway. Check your connection and try again.')
-      return
-    }
-    const rzp = new window.Razorpay({
-      key: res.key,
-      order_id: res.gatewayOrderId,
-      amount: res.amount,
-      currency: res.currency || 'INR',
-      name: 'Svastrino',
-      description: res.packageLabel,
-      prefill: { name: user?.name || '', email: user?.email || '', contact: user?.phone || '' },
-      theme: { color: '#2f7ae5' },
-      handler: async (resp) => {
-        setBusy(true)
-        try {
-          await confirm({
-            orderId: res.orderId,
-            razorpay_payment_id: resp.razorpay_payment_id,
-            razorpay_order_id: resp.razorpay_order_id,
-            razorpay_signature: resp.razorpay_signature,
-          })
-        } catch (e) {
-          setLoadErr(e.message)
-        } finally {
-          setBusy(false)
-        }
-      },
-      // A refusal closes the widget too, and that is the gateway's outcome to
-      // record, not an abandoned basket — so only a plain dismissal cancels.
-      modal: { ondismiss: () => { setBusy(false); if (!refused) abandon(res.orderId) } },
-    })
-    // A refused payment replaces the screen; closing the widget only stops the
-    // spinner, because the customer chose to step away and may come straight back.
-    rzp.on('payment.failed', (r) => {
-      refused = true
+  // Open Cashfree's checkout popup. What it reports when it closes is not proof
+  // of anything — a closed window and a refused card come back alike — so our
+  // server asks Cashfree how the order stands before granting access.
+  const openCashfree = async (res) => {
+    setBusy(true)
+    setLoadErr('')
+    try {
+      const result = await openCashfreeCheckout(res)
+      if (!result) {
+        setLoadErr('Could not load the payment gateway. Check your connection and try again.')
+        return
+      }
+      // An in-app browser cannot hold the popup, so Cashfree has taken the
+      // customer away to pay. The webhook grants access; they land on their orders.
+      if (result.redirect) return
+      await confirm({ orderId: res.orderId })
+    } catch (e) {
+      // A refusal replaces the screen. Closing the popup without paying only
+      // stops the spinner: the customer chose to step away and may come straight
+      // back, and the server has already parked the order.
+      if (e.code === 'PAYMENT_FAILED') setPayFailed(e.message)
+      else if (e.code !== 'PAYMENT_NOT_COMPLETED') setLoadErr(e.message)
+    } finally {
       setBusy(false)
-      setPayFailed(r?.error?.description || '')
-      // Razorpay keeps its own retry screen open on top of ours, so the customer
-      // sees two different offers to try again and never reads what we wrote.
-      try { rzp.close() } catch { /* already closed */ }
-    })
-    rzp.open()
+    }
   }
 
   // Mock test panel only (dev, no keys): the server simulates a successful charge.
@@ -242,6 +202,10 @@ export default function Checkout() {
     return <section className="section"><div className="container checkout-wrap"><p>Loading…</p></div></section>
   }
 
+  // A plan this student cannot buy — the one they are on, or one their plan
+  // rules out — is said here instead of offering a Pay button the order refuses.
+  const refusal = ['owned', 'blocked'].includes(quote.standing?.state) ? quote.standing : null
+
   // Ask before they press Pay when the plan bundles the test and the account
   // has no class on it — and keep asking while the server is refusing over it.
   const askClass = (quote.includesPsychometric && !user?.studentClass) || !!classBlock
@@ -260,7 +224,7 @@ export default function Checkout() {
             reason={payFailed}
             item={order?.packageLabel || quote?.packageLabel}
             amount={quote?.rupees?.amount != null ? `₹${Number(quote.rupees.amount).toLocaleString('en-IN')}` : ''}
-            onRetry={() => { setPayFailed(''); if (order) openRazorpay(order) }}
+            onRetry={() => { setPayFailed(''); if (order) openCashfree(order) }}
             backTo="/skill-build/nirmaan#packages"
             backLabel="Back to packages"
           />
@@ -333,7 +297,17 @@ export default function Checkout() {
 
             {/* ---- Pay panel ---- */}
             <div className="card checkout-card checkout-pay">
-              {step === 'summary' ? (
+              {step === 'summary' && refusal ? (
+                <>
+                  <h2 className="checkout-h2">
+                    {refusal.state === 'owned' ? 'This is your current plan' : 'Not available on your plan'}
+                  </h2>
+                  <p className="checkout-muted">{refusal.message}</p>
+                  <button className="btn btn-primary checkout-full" onClick={() => navigate(dashboardTabFor(packageId))}>
+                    Go to dashboard
+                  </button>
+                </>
+              ) : step === 'summary' ? (
                 <>
                   <h2 className="checkout-h2">Payment</h2>
                   <p className="checkout-muted">You'll pay securely. Cards, UPI, net-banking & wallets supported.</p>
@@ -370,12 +344,12 @@ export default function Checkout() {
                   </button>
                 </>
               ) : (
-                // Mock "gateway" panel — stands in for the Razorpay widget.
+                // Mock "gateway" panel — stands in for the Cashfree popup.
                 <div className="checkout-gateway">
                   <p className="checkout-gateway-tag">TEST MODE · Mock gateway</p>
                   <h2 className="checkout-h2">Confirm payment</h2>
                   <p className="checkout-muted">
-                    This simulates the Razorpay checkout. In production the real
+                    This simulates the Cashfree checkout. In production the real
                     payment widget opens here.
                   </p>
                   <div className="checkout-payable">
