@@ -36,6 +36,11 @@ const fmtDate = (iso) =>
 export default function CourseExpired({ course, user, slug }) {
   const access = course?.access || {}
   const archived = access.state === 'archived'
+  // A free trial that has run out shuts the same doors as a paid year, but the
+  // student never bought anything — telling them their "year" is over after a
+  // week, and to ask us for more time, is the wrong conversation. They are a
+  // prospect, so the way forward is the packages.
+  const trial = !!access.trial
   const courseName = course?.skillBuild?.name || 'this course'
 
   // The record carries the two dates the course payload does not know about —
@@ -96,6 +101,18 @@ export default function CourseExpired({ course, user, slug }) {
               that you did this course, and when.
             </p>
           </>
+        ) : trial ? (
+          <>
+            <h1>Your free week with {courseName} is over</h1>
+            <p className="learn-exp-lead">
+              The free trial runs for one week, so the videos and tasks are now closed.
+              {sessionsTotal > 0 && ` You finished ${sessionsDone} of ${sessionsTotal} sessions.`}
+            </p>
+            <p className="learn-exp-lead">
+              Everything you wrote is saved. Pick a package and you carry on from Week 2, with the
+              rest of the weeks and all their tasks.
+            </p>
+          </>
         ) : finished ? (
           <>
             <h1>You finished {courseName}. Well done.</h1>
@@ -121,24 +138,30 @@ export default function CourseExpired({ course, user, slug }) {
 
         <dl className="learn-exp-facts">
           <div className="learn-exp-fact">
-            <dt>Enrolled on</dt><dd>{fmtDate(access.enrolledAt)}</dd>
+            <dt>{trial ? 'Trial began on' : 'Enrolled on'}</dt><dd>{fmtDate(access.enrolledAt)}</dd>
           </div>
           <div className="learn-exp-fact">
             <dt>Started on</dt><dd>{startedAt ? fmtDate(startedAt) : 'Not started'}</dd>
           </div>
+          {!trial && (
+            <div className="learn-exp-fact">
+              <dt>Completed on</dt>
+              <dd>{record?.completedAt ? fmtDate(record.completedAt) : 'Not completed'}</dd>
+            </div>
+          )}
           <div className="learn-exp-fact">
-            <dt>Completed on</dt>
-            <dd>{record?.completedAt ? fmtDate(record.completedAt) : 'Not completed'}</dd>
-          </div>
-          <div className="learn-exp-fact">
-            <dt>Access ended on</dt><dd>{fmtDate(access.expiresAt)}</dd>
+            <dt>{trial ? 'Trial ended on' : 'Access ended on'}</dt><dd>{fmtDate(access.expiresAt)}</dd>
           </div>
         </dl>
 
         {!archived && (
           <>
             <div className="learn-exp-actions">
-              {!finished && (
+              {trial ? (
+                <Link className="btn btn-primary" to={`/skill-build/${encodeURIComponent(slug)}#packages`}>
+                  See the packages
+                </Link>
+              ) : !finished && (
                 <Link
                   className="btn btn-primary"
                   to={`/support/new?course=${encodeURIComponent(slug)}&reason=expired`}
@@ -148,7 +171,7 @@ export default function CourseExpired({ course, user, slug }) {
               )}
               <button
                 type="button"
-                className={finished ? 'btn btn-primary' : 'btn btn-secondary'}
+                className={finished && !trial ? 'btn btn-primary' : 'btn btn-secondary'}
                 onClick={download}
                 disabled={busy}
               >

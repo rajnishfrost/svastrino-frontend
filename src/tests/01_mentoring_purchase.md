@@ -128,12 +128,12 @@ The account is created here from what is typed. Rules from
 | ------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- |
 | MENT-E1 | Read the Verify screen                                           | Program, session number, full date, time with duration, name, email, phone, and the fee breakdown                           | PASS |
 | MENT-E2 | Read the closing line                                            | `You can reschedule any session until 2 days before it starts.`                                                             | PASS |
-| MENT-E3 | Pay with`4111 1111 1111 1111`                                  | Confirmation with program, session, when, amount and receipt number                                                         | PASS |
+| MENT-E3 | Pay with card`4706 1312 1121 2123`, expiry `03/28`, CVV `123`, OTP `111000` | Confirmation with program, session, when, amount and receipt number                                                         | TO RE-RUN (Cashfree) |
 | MENT-E4 | Watch the moment payment succeeds                                | **No** `Cannot read properties of null (reading 'orderId')`. That bug took the money and made no booking; it is fixed | PASS |
-| MENT-E5 | Pay with Razorpay's failure card                                 | Razorpay's window closes and one screen answers:`Your payment did not go through` · `Nothing has been charged.`          | PASS |
+| MENT-E5 | Pay by UPI with`testfailure@gocash`                              | Cashfree's window closes and one screen answers:`Your payment did not go through` · `Nothing has been charged.`          | TO RE-RUN (Cashfree) |
 | MENT-E6 | On that screen press*Try the payment again*, then pay properly | Goes through. A failed attempt does not kill the order                                                                        | PASS |
 | MENT-E7 | Open the payment window, close it with ✕                        | Spinner stops; the page offers to reopen it. Never stuck on`Processing…`                                                   | PASS |
-| MENT-E8 | Check the currency offered                                       | Live mode: INR only. Test mode may also offer a foreign currency — that is Razorpay's test behaviour                         | PASS |
+| MENT-E8 | Check the currency offered                                       | INR only                                                                                                                      | TO RE-RUN (Cashfree) |
 | MENT-E9 | Book session 2 after paying                                      | Straight to the calendar, no payment step. One payment covers every session                                                   | PASS |
 
 ---

@@ -64,6 +64,58 @@ const BTN_PRIMARY =
   'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border-0 bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark'
 const BTN_OUTLINE =
   'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-5 text-sm font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white'
+const BTN_DISABLED =
+  'mt-6 inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-lg border border-nirmaan-sand bg-nirmaan-cream px-5 text-sm font-semibold text-nirmaan-brown-soft'
+
+/**
+ * The card's button, for a student who already holds a plan of this course. The
+ * server decides what they may do with each plan — the same rules the checkout
+ * enforces — so a card never offers a sale the order would refuse. `standing`
+ * is that answer for this plan; with none (a visitor, or someone who owns no
+ * plan yet) the card sells as normal.
+ */
+function PlanAction({ pkg, standing, featured }) {
+  const cls = featured ? BTN_PRIMARY : BTN_OUTLINE
+  switch (standing?.state) {
+    case 'owned':
+      return (
+        <>
+          <Link to="/learn/nirmaan" className={BTN_PRIMARY}>
+            Your current plan · Go to course <ArrowRight className="size-4" />
+          </Link>
+          {standing.code === 'ALL_PHASES_PAID' && (
+            <p className="mt-2 text-center text-xs text-nirmaan-brown-soft">Every phase is paid for.</p>
+          )}
+        </>
+      )
+    case 'next-phase':
+      return (
+        <Link to={`/checkout?pkg=${pkg.sku}`} className={BTN_PRIMARY}>
+          Pay for phase {standing.nextPhase} · ₹{Number(standing.rupees).toLocaleString('en-IN')}{' '}
+          <ArrowRight className="size-4" />
+        </Link>
+      )
+    case 'upgrade':
+      return (
+        <Link to={`/checkout?pkg=${pkg.sku}`} className={cls}>
+          Upgrade for ₹{Number(standing.rupees).toLocaleString('en-IN')} <ArrowRight className="size-4" />
+        </Link>
+      )
+    case 'blocked':
+      return (
+        <>
+          <span className={BTN_DISABLED} aria-disabled="true">Not available on your plan</span>
+          <p className="mt-2 text-center text-xs text-nirmaan-brown-soft">{standing.message}</p>
+        </>
+      )
+    default:
+      return (
+        <Link to={`/checkout?pkg=${pkg.sku}`} className={cls}>
+          {pkg.cta} <ArrowRight className="size-4" />
+        </Link>
+      )
+  }
+}
 
 /** Paise → the bare Indian-format number the cards print after a ₹. */
 const fmtInr = (paise) => (Math.round(Number(paise) || 0) / 100).toLocaleString('en-IN')
@@ -108,6 +160,8 @@ export default function Packages() {
   // undefined = still loading; [] = loaded and empty (or the request failed).
   const [packages, setPackages] = useState(undefined)
   const [failed, setFailed] = useState(false)
+  // sku → what this signed-in student may do with that plan (see PlanAction).
+  const [standing, setStanding] = useState({})
 
   useEffect(() => {
     let live = true
@@ -116,6 +170,18 @@ export default function Packages() {
       .catch(() => { if (live) { setPackages([]); setFailed(true) } })
     return () => { live = false }
   }, [])
+
+  useEffect(() => {
+    setStanding({})
+    if (!user?.id) return
+    let live = true
+    api('/user/payments/upgrade-status?product=nirmaan', { auth: 'user' })
+      .then((d) => { if (live) setStanding(d.packages || {}) })
+      // Without an answer the cards sell as normal; the checkout still refuses
+      // anything the student cannot buy.
+      .catch(() => {})
+    return () => { live = false }
+  }, [user?.id])
 
   const loading = packages === undefined
   const list = packages || []
@@ -302,9 +368,7 @@ export default function Packages() {
                     </div>
                   )}
 
-                  <Link to={`/checkout?pkg=${pkg.sku}`} className={featured ? BTN_PRIMARY : BTN_OUTLINE}>
-                    {pkg.cta} <ArrowRight className="size-4" />
-                  </Link>
+                  <PlanAction pkg={pkg} standing={standing[pkg.sku]} featured={featured} />
                 </div>
               )
             })}
