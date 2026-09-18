@@ -77,6 +77,21 @@ jobs:
           PRERENDER_API: ${{ vars.PRERENDER_API || 'https://d1d66ne3xrrmwd.cloudfront.net' }}
         run: npm run prerender
 
+      # The distribution answers a missed address with /404.html, and serves
+      # every signed-in route from /app.html. Prerendering writes both, and is
+      # allowed to fail — so if it did, stop here rather than sync a dist/
+      # without them: --delete would take the live copies down with it, and the
+      # 404 rule would be left pointing at a file that no longer exists.
+      - name: Check the prerender produced what CloudFront depends on
+        run: |
+          for f in dist/404.html dist/app.html; do
+            [ -s "$f" ] || {
+              echo "::error::$f is missing — the prerender step did not finish"
+              exit 1
+            }
+          done
+          echo "✓ $(ls -d dist/*/index.html 2>/dev/null | wc -l) pages, plus 404.html and app.html"
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -94,7 +109,18 @@ jobs:
             --exclude "*index.html" \
             --exclude "sw.js" \
             --exclude "*.webmanifest" \
+            --exclude "404.html" \
+            --exclude "app.html" \
+            --exclude "__shell.html" \
             --cache-control "public,max-age=31536000,immutable"
+
+      # __shell.html is the prerender step's own scratch copy of the unrendered
+      # build. It has no business being reachable — served, it is a second copy
+      # of the site with no content in it — and an excluded file is not one
+      # --delete removes, so it is deleted by name.
+      - name: Remove the prerender scratch file from the bucket
+        run: |
+          aws s3 rm "s3://${{ vars.S3_BUCKET }}/__shell.html" --only-show-errors || true
 
       # "*index.html", not "index.html": prerendering writes one per page, at
       # law/index.html and 290 others. Matching only the root left every other
@@ -105,6 +131,10 @@ jobs:
       # builds, so caching them would pin users to the old app. This is a PWA
       # (vite-plugin-pwa, registerType autoUpdate) - a stale sw.js is especially
       # bad because the service worker then keeps serving the old shell offline.
+      #
+      # 404.html and app.html keep their names too, and are the same kind of
+      # file as index.html — one is what a missing address answers with, the
+      # other is what every signed-in route is served from.
       - name: Upload entry point and service worker (no-cache)
         run: |
           aws s3 sync dist/ "s3://${{ vars.S3_BUCKET }}/" \
@@ -112,6 +142,8 @@ jobs:
             --include "*index.html" \
             --include "sw.js" \
             --include "*.webmanifest" \
+            --include "404.html" \
+            --include "app.html" \
             --cache-control "no-cache,must-revalidate"
 
       - name: Invalidate CloudFront
