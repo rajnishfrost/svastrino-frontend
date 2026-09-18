@@ -73,9 +73,14 @@ cf get-distribution-config --id "$DIST" > "$WORK/before.json"
 echo "  saved: $WORK/before.json"
 
 # ---- 1. the function ------------------------------------------------------
+#
+# No commas in the Comment. --function-config takes the CLI's shorthand syntax,
+# where a comma separates one key from the next, so a comma inside a value ends
+# it: the first attempt at this passed a readable sentence and was told the
+# Comment was a list of three strings.
 ETAG="$(cf describe-function --name "$FUNC" --query 'ETag' --output text)"
 cf update-function --name "$FUNC" --if-match "$ETAG" \
-  --function-config "Comment=Serve each page from its own file, 301 moved and duplicate addresses, app routes to the shell,Runtime=cloudfront-js-2.0" \
+  --function-config "Comment=Serve each page from its own file - 301 moved and duplicate addresses - app routes to the shell,Runtime=cloudfront-js-2.0" \
   --function-code "fileb://$HERE/legacy-redirects.js" \
   --query 'FunctionSummary.FunctionMetadata.Stage' --output text
 echo "  ✓ new code staged"
@@ -131,9 +136,16 @@ echo "  ✓ function published"
 # The TTL is 300 rather than 10: a 404 is not a state worth re-asking the
 # origin about several times a second, and CloudFront serves the cached page
 # just as fast.
+#
+# Read again rather than reusing what was saved at the top: publishing a
+# function that is attached to this distribution changes the distribution, and
+# with it the ETag that update-distribution is checked against. The first run
+# of this got as far as publishing and was then refused for a stale one.
+cf get-distribution-config --id "$DIST" > "$WORK/current.json"
+
 ALREADY="$(python3 -c "
 import json
-items = json.load(open('$WORK/before.json'))['DistributionConfig']['CustomErrorResponses'].get('Items') or []
+items = json.load(open('$WORK/current.json'))['DistributionConfig']['CustomErrorResponses'].get('Items') or []
 print('yes' if items and all(
     i.get('ResponsePagePath') == '/404.html' and i.get('ResponseCode') == '404' for i in items
 ) else 'no')
@@ -145,7 +157,7 @@ else
   python3 - "$WORK" <<'PY'
 import json, sys
 work = sys.argv[1]
-d = json.load(open(f'{work}/before.json'))
+d = json.load(open(f'{work}/current.json'))
 c = d['DistributionConfig']
 c['CustomErrorResponses'] = {
     'Quantity': 2,
