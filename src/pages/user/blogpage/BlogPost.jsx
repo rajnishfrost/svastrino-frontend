@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { excerptFor } from '../../../seo/useSeo.js'
 import { useRootSeo } from '../../../seo/PageSeo.jsx'
+import { useJsonLd, article, breadcrumbs } from '../../../seo/useJsonLd.js'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
@@ -32,6 +33,32 @@ export default function BlogPost() {
     image: post?.coverImage || undefined,
     type: 'article',
   })
+
+  // The same page, described to a search engine rather than to a reader: what
+  // kind of thing it is, when it was written, and where it sits on the site.
+  // The canonical slug, not the address in the bar, so a renamed article
+  // describes itself as the one page it wants to rank as.
+  const canonicalPath = `/${post?.canonicalSlug || slug}`
+  useJsonLd(
+    post && article({
+      title: post.seoTitle || post.title,
+      description: post.seoDescription || post.excerpt || excerptFor(post.body),
+      path: canonicalPath,
+      image: post.coverImage || undefined,
+      publishedAt: post.publishedAt,
+      updatedAt: post.updatedAt,
+      author: post.author,
+    }),
+    !!post,
+  )
+  useJsonLd(
+    post && breadcrumbs([
+      { name: 'Home', path: '/' },
+      { name: 'Blog', path: '/blog' },
+      { name: post.title, path: canonicalPath },
+    ]),
+    !!post,
+  )
 
   useEffect(() => {
     let cancelled = false

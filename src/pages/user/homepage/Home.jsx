@@ -13,9 +13,13 @@ import IndustryPresence from './sections/IndustryPresence.jsx'
 import AboutUs from './sections/AboutUs.jsx'
 import NirmaanHighlight from './sections/NirmaanHighlight.jsx'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
+import { useJsonLd, organization } from '../../../seo/useJsonLd.js'
 
 export default function Home() {
   usePageSeo()
+  // Ties the site to the Instagram, LinkedIn, Facebook and X accounts as one
+  // organisation. The home page only — see organization().
+  useJsonLd(organization())
   return (
     <div>
       <Hero />

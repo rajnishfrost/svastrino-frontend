@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { excerptFor } from '../../../seo/useSeo.js'
 import { useRootSeo } from '../../../seo/PageSeo.jsx'
+import { useJsonLd, breadcrumbs } from '../../../seo/useJsonLd.js'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
@@ -27,6 +28,19 @@ export default function CourseDetail() {
     title: course?.name,
     description: excerptFor(course?.overview),
   })
+
+  // A career page is not an article and not a course anyone enrols in here, so
+  // it is described only by where it sits: the trail is what a search result
+  // shows in place of the bare address, and "Home › Career Library › Law"
+  // reads as a page worth opening in a way svastrino.com/law does not.
+  useJsonLd(
+    course && breadcrumbs([
+      { name: 'Home', path: '/' },
+      { name: 'Career Library', path: '/resources/career-library' },
+      { name: course.name, path: `/${course.canonicalSlug || slug}` },
+    ]),
+    !!course,
+  )
 
   useEffect(() => {
     let cancelled = false

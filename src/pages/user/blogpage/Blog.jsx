@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
@@ -59,12 +59,28 @@ function PostsSkeleton({ count }) {
   )
 }
 
+/**
+ * Where page n of the unfiltered list lives. Page one is /blog itself rather
+ * than /blog/page/1, so there is one address per page and not two.
+ */
+const pathForPage = (n) => (n <= 1 ? '/blog' : `/blog/page/${n}`)
+
 export default function Blog() {
   // URL is the source of truth so filters/pages are shareable and survive a refresh.
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const category = params.get('category') || ''
-  const page = Number(params.get('page')) || 1
   const q = params.get('q') || ''
+
+  // The unfiltered list pages by address — /blog/page/2 — because that is the
+  // form a crawler can follow and the prerenderer can write a file for; a
+  // ?page=2 would have been served page one's HTML and read as a duplicate of
+  // it. Filtered views keep the query string: they are for a reader narrowing
+  // things down, they are not in the sitemap, and there is no sense in
+  // prerendering every stream crossed with every page.
+  const { pageNumber } = useParams()
+  const filtered = !!(category || q)
+  const page = Number(pageNumber) || Number(params.get('page')) || 1
 
   const [search, setSearch] = useState(q)
   const [categories, setCategories] = useState([])
@@ -77,7 +93,9 @@ export default function Blog() {
   // Held until the posts land: the prerenderer captures the page the moment its
   // title is set, and a listing captured at "Loading posts…" gives a crawler no
   // links to follow into the 219 articles below it.
-  usePageSeo({ ready: !loading })
+  // Page two onwards needs a title of its own, or every listing page competes
+  // for the same words with the same wording and Google keeps one of them.
+  usePageSeo({ ready: !loading, title: page > 1 ? `Blog — page ${page}` : undefined })
 
   useEffect(() => {
     fetchBlogCategories()
@@ -108,15 +126,28 @@ export default function Blog() {
 
   const retry = () => setReloadKey((k) => k + 1)
 
-  // Any filter change resets to page 1.
+  // Any filter change resets to page 1. When the page number lives in the
+  // address rather than the query string, that means leaving /blog/page/4
+  // behind as well — setting the query alone would hold the reader on a page
+  // number the narrowed list may not reach.
   const update = (next) => {
     const merged = { category, q, ...next }
     const clean = {}
     Object.entries(merged).forEach(([k, v]) => { if (v) clean[k] = v })
+    if (pageNumber) {
+      const query = new URLSearchParams(clean).toString()
+      navigate(query ? `/blog?${query}` : '/blog')
+      return
+    }
     setParams(clean)
   }
 
   const goToPage = (n) => {
+    if (!filtered) {
+      // ScrollToTop already handles the jump when the address changes.
+      navigate(pathForPage(n))
+      return
+    }
     const clean = { page: String(n) }
     if (category) clean.category = category
     if (q) clean.q = q
@@ -209,7 +240,9 @@ export default function Blog() {
               {category && <> in <strong className="text-brand-navy">{category}</strong></>}
               {q && <> matching <strong className="text-brand-navy">“{q}”</strong></>}
               {' · '}
-              <button className="cursor-pointer font-semibold text-brand-crimson hover:underline" onClick={() => setParams({})}>
+              {/* Back to an unfiltered page one, wherever the page number is
+                  currently kept. */}
+              <button className="cursor-pointer font-semibold text-brand-crimson hover:underline" onClick={() => (pageNumber ? navigate('/blog') : setParams({}))}>
                 Clear filters
               </button>
             </p>
@@ -260,6 +293,7 @@ export default function Blog() {
               page={pagination.page}
               pages={pagination.pages}
               onChange={goToPage}
+              hrefFor={filtered ? undefined : pathForPage}
               ariaLabel="Blog pagination"
             />
           )}

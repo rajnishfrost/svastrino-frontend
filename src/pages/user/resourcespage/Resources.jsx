@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
@@ -28,6 +28,11 @@ const SUBPAGES = [
   { key: 'faqs', to: '/resources/faqs', label: 'FAQs', blurb: 'Answers to common questions about mentoring & counselling.' },
   { key: 'success-stories', to: '/resources/success-stories', label: 'Success Stories', blurb: 'Real results from students and parents we’ve guided.' },
 ]
+
+// FAQ group and section names become URL/anchor slugs — "Bull's Eye Program"
+// → "bull-s-eye-program". Used for ?group= and for the jump-to anchors.
+const slugify = (s) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 
 // One component answers four addresses, so each needs its own title and
 // description — otherwise all four compete in search results as the same page.
@@ -103,13 +108,24 @@ function CareerLibrarySkeleton() {
   )
 }
 
+/** Where page n of the unfiltered career library lives. Page one keeps the
+ *  plain address, so no page has two. */
+const pathForPage = (n) => (n <= 1 ? '/resources/career-library' : `/resources/career-library/page/${n}`)
+
 export default function Resources({ view = 'all' }) {
   // The Career Library's stream, page and search live in the URL, so a filtered
   // view is shareable and survives a refresh — the same as /blog.
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const field = params.get('field') || ''
-  const page = Number(params.get('page')) || 1
   const q = params.get('q') || ''
+
+  // Unfiltered pages have addresses of their own so a crawler can walk past the
+  // first twelve careers; a stream or a search stays in the query string. Same
+  // reasoning as /blog.
+  const { pageNumber } = useParams()
+  const filtered = !!(field || q)
+  const page = Number(pageNumber) || Number(params.get('page')) || 1
 
   const [fields, setFields] = useState([])
   const [faqs, setFaqs] = useState([])
@@ -170,10 +186,23 @@ export default function Resources({ view = 'all' }) {
     const merged = { field, q, ...next }
     const clean = {}
     Object.entries(merged).forEach(([k, v]) => { if (v) clean[k] = v })
+    // When the page number is in the address, returning to page one means
+    // leaving that address — setting the query alone would strand the reader
+    // on /page/4 of a list that may now be one page long.
+    if (pageNumber) {
+      const query = new URLSearchParams(clean).toString()
+      navigate(query ? `/resources/career-library?${query}` : '/resources/career-library')
+      return
+    }
     setParams(clean)
   }
 
   const goToPage = (n) => {
+    if (!filtered) {
+      // ScrollToTop already handles the jump when the address changes.
+      navigate(pathForPage(n))
+      return
+    }
     const clean = { page: String(n) }
     if (field) clean.field = field
     if (q) clean.q = q
@@ -209,6 +238,15 @@ export default function Resources({ view = 'all' }) {
     update({ q: search.trim() })
   }
 
+  // Which FAQ group is open. It lives in the URL so a link can point straight
+  // at one; an unknown or missing ?group= falls back to the first group.
+  const faqGroup = params.get('group') || ''
+  const openFaqGroup = faqs.find((g) => slugify(g.group) === faqGroup) || faqs[0] || null
+  const showFaqGroup = (group) => {
+    setParams(group === faqs[0]?.group ? {} : { group: slugify(group) })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const filterBtn = (active) =>
     `cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
       active
@@ -242,7 +280,12 @@ export default function Resources({ view = 'all' }) {
 
   return (
     <>
-      <PageSeo {...VIEW_SEO[view] || VIEW_SEO.all} />
+      {/* Page two onwards is given a title of its own, or every listing page
+          repeats page one's wording and Google keeps whichever it likes. */}
+      <PageSeo
+        {...VIEW_SEO[view] || VIEW_SEO.all}
+        {...(page > 1 ? { title: `Career Library — page ${page}` } : null)}
+      />
       <PageHero
         eyebrow="Resources"
         title={meta ? meta.label : 'Resources'}
@@ -327,7 +370,13 @@ export default function Resources({ view = 'all' }) {
                   {' · '}
                   <button
                     className="cursor-pointer border-0 bg-transparent p-0 font-sans text-sm font-semibold text-brand-crimson hover:underline"
-                    onClick={() => { setSearch(''); setParams({}) }}
+                    onClick={() => {
+                      setSearch('')
+                      // Back to an unfiltered page one, wherever the page
+                      // number is currently kept.
+                      if (pageNumber) navigate('/resources/career-library')
+                      else setParams({})
+                    }}
                   >
                     Clear filters
                   </button>
@@ -386,6 +435,7 @@ export default function Resources({ view = 'all' }) {
                   page={pagination.page}
                   pages={pagination.pages}
                   onChange={goToPage}
+                  hrefFor={filtered ? undefined : pathForPage}
                   ariaLabel="Career library pagination"
                 />
               )}
@@ -393,14 +443,54 @@ export default function Resources({ view = 'all' }) {
           )}
 
           {/* ---- FAQs ---- */}
-          {!loading && !error && view === 'faqs' && (
-            <div id="faqs" className="mx-auto max-w-3xl space-y-10">
-              {faqs.map((group) => (
-                <div key={group.section}>
-                  <h3 className="mb-4 font-display text-lg font-bold text-brand-navy">{group.section}</h3>
-                  <FaqAccordion items={group.items} />
+          {/* Two groups: the Nirmaan course, and everything about the mentoring
+              services. Services alone runs to fourteen sections, so the chips
+              under the tabs jump down rather than making people scroll. */}
+          {!loading && !error && view === 'faqs' && openFaqGroup && (
+            <div id="faqs" className="mx-auto max-w-3xl">
+              {faqs.length > 1 && (
+                <div className="flex flex-wrap justify-center gap-2">
+                  {faqs.map((g) => (
+                    <button
+                      key={g.group}
+                      type="button"
+                      onClick={() => showFaqGroup(g.group)}
+                      aria-current={g.group === openFaqGroup.group ? 'true' : undefined}
+                      className={filterBtn(g.group === openFaqGroup.group)}
+                    >
+                      {g.group}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {openFaqGroup.sections.length > 1 && (
+                <nav
+                  aria-label="FAQ sections"
+                  className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 border-0 border-t border-solid border-brand-navy/10 pt-6"
+                >
+                  {openFaqGroup.sections.map((s) => (
+                    <a
+                      key={s.section}
+                      href={`#faq-${slugify(s.section)}`}
+                      className="text-sm font-medium text-brand-slate no-underline transition-colors hover:text-brand-crimson"
+                    >
+                      {s.section}
+                    </a>
+                  ))}
+                </nav>
+              )}
+
+              <div className="mt-10 space-y-10">
+                {openFaqGroup.sections.map((s) => (
+                  // scroll-mt keeps the heading clear of the sticky header when
+                  // a chip above jumps to it.
+                  <div key={s.section} id={`faq-${slugify(s.section)}`} className="scroll-mt-28">
+                    <h3 className="mb-4 font-display text-lg font-bold text-brand-navy">{s.section}</h3>
+                    <FaqAccordion items={s.items} />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

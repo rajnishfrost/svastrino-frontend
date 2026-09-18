@@ -91,11 +91,18 @@ function PublicSite() {
           <Route path="/skill-build/psychometric-testing" element={<Psychometric />} />
           <Route path="/resources" element={<Resources view="all" />} />
           <Route path="/resources/career-library" element={<Resources view="career-library" />} />
+          {/* Page two onwards of a list gets an address, so pagination can be
+              links a crawler follows rather than buttons it cannot press. */}
+          <Route path="/resources/career-library/page/:pageNumber" element={<Resources view="career-library" />} />
           <Route path="/resources/faqs" element={<Resources view="faqs" />} />
           <Route path="/resources/success-stories" element={<Resources view="success-stories" />} />
           <Route path="/career-library/:slug" element={<ToRootSlug />} />
           <Route path="/legal/:slug" element={<LegalPage />} />
           <Route path="/blog" element={<Blog />} />
+          {/* Declared before /blog/:slug so "page" is never read as an article
+              slug — React Router ranks the static segment higher anyway, but
+              the order says so too. */}
+          <Route path="/blog/page/:pageNumber" element={<Blog />} />
           <Route path="/blog/:slug" element={<ToRootSlug />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/offers" element={<Offers />} />

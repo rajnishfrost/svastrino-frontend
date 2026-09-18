@@ -202,6 +202,7 @@ async function run() {
   let done = 0
   const failed = []
   const noMeta = []
+  const stillLoading = []
 
   try {
     for (const path of paths) {
@@ -229,6 +230,15 @@ async function run() {
             if (!document.title || document.title === shellTitle) return false
             const root = document.getElementById('root')
             if (!root) return false
+            // A page still showing placeholders has not finished, however much
+            // markup it carries — and a skeleton grid carries a lot. The career
+            // library's is fourteen cards plus a row of filter pills, well past
+            // the length checked below, so this test passed the instant the page
+            // mounted and the snapshot was taken before a single career had
+            // arrived. What shipped was fourteen grey rectangles and not one
+            // link to any of the 52 career pages, which is a large part of why
+            // they sat in "discovered, currently not indexed".
+            if (root.querySelector('.animate-skeleton')) return false
             const inner = root.innerHTML
               .replace(/<nav[\s\S]*?<\/nav>/g, '')
               .replace(/<footer[\s\S]*?<\/footer>/g, '')
@@ -239,6 +249,13 @@ async function run() {
         ).catch(() => {}) // written anyway, and named in the report below
 
         const title = await page.title()
+
+        // The wait above gives up after fifteen seconds and the page is written
+        // regardless, so a slow API can still put a skeleton in front of a
+        // crawler. Named in the report rather than silently shipped.
+        if (await page.evaluate(() => !!document.querySelector('.animate-skeleton'))) {
+          stillLoading.push(path)
+        }
 
         // A page that never applied its own title never finished loading, and
         // writing it would replace a working app route with a half-rendered
@@ -305,6 +322,10 @@ async function run() {
     console.log(`⚠ ${noMeta.length} left as app routes — no metadata of their own:`)
     noMeta.slice(0, 15).forEach((p) => console.log(`    ${p}`))
     if (noMeta.length > 15) console.log(`    …and ${noMeta.length - 15} more`)
+  }
+  if (stillLoading.length) {
+    console.log(`⚠ ${stillLoading.length} captured with placeholders still on screen:`)
+    stillLoading.slice(0, 10).forEach((p) => console.log(`    ${p}`))
   }
   if (failed.length) {
     console.log(`✗ ${failed.length} could not be rendered:`)
