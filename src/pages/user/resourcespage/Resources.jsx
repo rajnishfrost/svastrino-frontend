@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Plus, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
@@ -104,6 +104,51 @@ function CareerLibrarySkeleton() {
         ))}
       </div>
       <CoursesSkeleton count={6} />
+    </div>
+  )
+}
+
+// The FAQ page arrives as two group pills, a row of jump chips and a stack of
+// collapsed section headers. Standing all three in matches what lands, so the
+// page does not jump when it does — the header rows use the real row's height
+// (py-3 + a 34px chip) for the same reason.
+// How many rows to stand in is a guess: the group that lands first has two
+// sections, the other thirteen. Six sits between them, so neither arrival moves
+// the page much — a taller guess would drop the footer 450px when the short
+// group lands, which reads worse than a short wait.
+const FAQ_SKELETON_CHIPS = ['w-28', 'w-24', 'w-36', 'w-32', 'w-28', 'w-40', 'w-24', 'w-32']
+const FAQ_SKELETON_TITLES = ['w-36', 'w-28', 'w-44', 'w-40', 'w-32', 'w-48']
+
+function FaqsSkeleton() {
+  return (
+    <div className="mx-auto max-w-3xl">
+      <p className="sr-only" role="status">Loading FAQs…</p>
+
+      <div className="flex flex-wrap justify-center gap-2" aria-hidden>
+        <div className="h-9 w-28 animate-skeleton rounded-full bg-brand-navy/10" />
+        <div className="h-9 w-40 animate-skeleton rounded-full bg-brand-navy/10" />
+      </div>
+
+      <div
+        className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 border-0 border-t border-solid border-brand-navy/10 pt-6"
+        aria-hidden
+      >
+        {FAQ_SKELETON_CHIPS.map((w, i) => (
+          <div key={i} className={`h-4 animate-skeleton rounded bg-brand-navy/10 ${w}`} />
+        ))}
+      </div>
+
+      <div className="mt-10 space-y-4" aria-hidden>
+        {FAQ_SKELETON_TITLES.map((w, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between gap-4 border-0 border-b border-solid border-brand-navy/10 px-1 py-3"
+          >
+            <div className={`h-6 animate-skeleton rounded bg-brand-navy/15 ${w}`} />
+            <div className="size-[34px] shrink-0 animate-skeleton rounded-full bg-brand-crimson/15" />
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -247,6 +292,24 @@ export default function Resources({ view = 'all' }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Sections collapse too, one at a time. With 143 questions across fourteen
+  // sections, showing every heading's list at once buries the thing someone
+  // came for; closed by default, the page opens as a short menu of topics.
+  const [openFaqSection, setOpenFaqSection] = useState(null)
+  // Switching group leaves the old section name behind — checking it against
+  // the open group's sections closes it without a separate effect.
+  const shownFaqSection =
+    openFaqGroup?.sections.some((s) => s.section === openFaqSection) ? openFaqSection : null
+
+  // The chips above open their section as well as scroll to it — jumping to a
+  // collapsed heading would land on nothing.
+  const openFaqSectionAt = (section) => {
+    setOpenFaqSection(section)
+    requestAnimationFrame(() => {
+      document.getElementById(`faq-${slugify(section)}`)?.scrollIntoView({ behavior: 'smooth' })
+    })
+  }
+
   const filterBtn = (active) =>
     `cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
       active
@@ -315,7 +378,8 @@ export default function Resources({ view = 'all' }) {
           )}
 
           {loading && view === 'career-library' && <CareerLibrarySkeleton />}
-          {loading && view !== 'all' && view !== 'career-library' && (
+          {loading && view === 'faqs' && <FaqsSkeleton />}
+          {loading && view !== 'all' && view !== 'career-library' && view !== 'faqs' && (
             <p className="text-center text-brand-slate">Loading…</p>
           )}
           {error && !loading && <ConnectionState error={error} onRetry={retry} label="the resources" />}
@@ -470,26 +534,77 @@ export default function Resources({ view = 'all' }) {
                   className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 border-0 border-t border-solid border-brand-navy/10 pt-6"
                 >
                   {openFaqGroup.sections.map((s) => (
-                    <a
+                    <button
                       key={s.section}
-                      href={`#faq-${slugify(s.section)}`}
-                      className="text-sm font-medium text-brand-slate no-underline transition-colors hover:text-brand-crimson"
+                      type="button"
+                      onClick={() => openFaqSectionAt(s.section)}
+                      style={{ background: 'transparent', border: 'none', padding: 0 }}
+                      className={`cursor-pointer text-sm font-medium transition-colors hover:text-brand-crimson ${
+                        s.section === shownFaqSection ? 'text-brand-crimson' : 'text-brand-slate'
+                      }`}
                     >
                       {s.section}
-                    </a>
+                    </button>
                   ))}
                 </nav>
               )}
 
-              <div className="mt-10 space-y-10">
-                {openFaqGroup.sections.map((s) => (
-                  // scroll-mt keeps the heading clear of the sticky header when
-                  // a chip above jumps to it.
-                  <div key={s.section} id={`faq-${slugify(s.section)}`} className="scroll-mt-28">
-                    <h3 className="mb-4 font-display text-lg font-bold text-brand-navy">{s.section}</h3>
-                    <FaqAccordion items={s.items} />
-                  </div>
-                ))}
+              <div className="mt-10 space-y-4">
+                {openFaqGroup.sections.map((s) => {
+                  const isOpen = s.section === shownFaqSection
+                  return (
+                    // scroll-mt keeps the heading clear of the sticky header
+                    // when a chip above jumps to it.
+                    <div key={s.section} id={`faq-${slugify(s.section)}`} className="scroll-mt-28">
+                      {/* Same chip and reveal as the questions inside, one size
+                          up — a heading has to read as the heavier row. */}
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        onClick={() => setOpenFaqSection(isOpen ? null : s.section)}
+                        style={{ background: 'transparent', border: 'none' }}
+                        className={`flex w-full cursor-pointer items-center justify-between gap-4 border-0 border-b border-solid px-1 py-3 text-left transition-colors ${
+                          isOpen ? 'border-brand-crimson/40' : 'border-brand-navy/10 hover:border-brand-crimson/30'
+                        }`}
+                      >
+                        <span className="font-display text-lg font-bold text-brand-navy">
+                          {s.section}
+                          <span className="ml-2 text-sm font-medium text-brand-slate">{s.items.length}</span>
+                        </span>
+                        <span
+                          aria-hidden
+                          style={{
+                            display: 'grid',
+                            placeItems: 'center',
+                            width: 34,
+                            height: 34,
+                            flexShrink: 0,
+                            borderRadius: '50%',
+                            background: isOpen ? '#c8102e' : '#fdeef1',
+                            transition: 'transform .2s ease, background .2s ease',
+                            transform: isOpen ? 'rotate(45deg)' : 'none',
+                          }}
+                        >
+                          <Plus size={18} color={isOpen ? '#ffffff' : '#c8102e'} strokeWidth={2.5} />
+                        </span>
+                      </button>
+
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateRows: isOpen ? '1fr' : '0fr',
+                          transition: 'grid-template-rows .25s ease',
+                        }}
+                      >
+                        <div style={{ overflow: 'hidden' }}>
+                          <div className="pt-4">
+                            <FaqAccordion items={s.items} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}

@@ -84,3 +84,33 @@
   .markdown h2 { font-size: 24px; }
   .markdown h3 { font-size: 20px; }
 }
+
+/* Same rendering at UI scale rather than article scale — FAQ answers sit inside
+   an accordion, where 17px prose would tower over the question above it. */
+.markdown.markdown-compact {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.markdown.markdown-compact > * + * {
+  margin-top: var(--space-2);
+}
+
+.markdown.markdown-compact ul,
+.markdown.markdown-compact ol {
+  padding-left: 18px;
+}
+
+.markdown.markdown-compact li + li {
+  margin-top: 4px;
+}
+
+/* Skill-Build pages wear the Nirmaan palette, so answers rendered there take
+   its green for markers and links instead of the site-wide crimson. */
+.markdown.markdown-nirmaan { color: #5a3f33; }
+.markdown.markdown-nirmaan p,
+.markdown.markdown-nirmaan ul,
+.markdown.markdown-nirmaan ol { color: inherit; }
+.markdown.markdown-nirmaan li::marker { color: #3f7932; }
+.markdown.markdown-nirmaan strong { color: #3b2822; }
+.markdown.markdown-nirmaan a { color: #3f7932; }
