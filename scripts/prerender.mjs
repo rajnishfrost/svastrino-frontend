@@ -162,6 +162,24 @@ function outFile(path) {
   return join(DIST, path.replace(/^\//, '').replace(/\/$/, ''), 'index.html')
 }
 
+/**
+ * Put a robots tag — and, for the 404, its own title — into a finished page.
+ *
+ * The tag goes in the HTML rather than being set by the app, because the point
+ * of it is the crawler that reads the HTML and stops there. An existing tag is
+ * dropped first so this is the only one.
+ */
+function withHead(html, { robots, title }) {
+  let out = html
+  if (robots) {
+    out = out
+      .replace(/<meta\s+name="robots"[^>]*>/gi, '')
+      .replace(/<head>/i, `<head><meta name="robots" content="${robots}">`)
+  }
+  if (title) out = out.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`)
+  return out
+}
+
 async function run() {
   let paths = pathsFromSitemap()
   // Narrow the run to a few pages while working on this script itself:
@@ -241,6 +259,42 @@ async function run() {
 
       if (done % 25 === 0 && done) process.stdout.write(`  …${done}\n`)
     }
+
+    // The two pages that are not addresses.
+    //
+    // app.html is the pristine shell, for the addresses that have no file of
+    // their own — /dashboard, /login, everything behind a sign-in. CloudFront
+    // points those here explicitly, because the rule that used to catch them
+    // now answers a real 404.
+    writeFileSync(join(DIST, 'app.html'), withHead(SHELL, { robots: 'noindex, follow' }))
+    console.log('✓ app.html — shell for signed-in routes')
+
+    // 404.html is what an address that genuinely does not exist answers with,
+    // and the reason both of these exist: until now a typo, a retired
+    // WordPress address and every /?p=123 answered 200 with the home page, so
+    // Google saw a few hundred copies of it and indexed none of them.
+    //
+    // Rendered rather than assembled from the shell, so a visitor who lands on
+    // it gets the site's header, footer and wording. Two path segments on
+    // purpose: one would be read as an article slug, and this has to reach the
+    // catch-all route. Falls back to the plain shell if the render does not
+    // finish — a blank 404 is still a 404, and shipping none is what caused
+    // this.
+    let notFound = null
+    const probe = await browser.newPage()
+    try {
+      await probe.goto(`${ORIGIN}/__prerender-404__/x`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+      await probe.waitForSelector('.notfound', { timeout: 15000 })
+      notFound = await probe.content()
+    } catch {
+      console.log('⚠ 404 page did not render — writing the plain shell instead')
+    }
+    await probe.close()
+    writeFileSync(join(DIST, '404.html'), withHead(notFound || SHELL, {
+      robots: 'noindex, follow',
+      title: 'Page not found — Svastrino',
+    }))
+    console.log(`✓ 404.html — ${notFound ? 'rendered' : 'plain shell'}`)
   } finally {
     await browser.close()
     server.close()
