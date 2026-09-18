@@ -8,6 +8,9 @@ import './Markdown.css'
  * dangerouslySetInnerHTML), so untrusted content can't inject markup. Supports
  * the subset the migrated posts actually use: headings, bold/italic, links,
  * bullet + numbered lists, blockquotes, rules and paragraphs.
+ *
+ * `className` rides alongside `.markdown` for callers that need the same
+ * rendering at a different size — see `.markdown-compact` for FAQ answers.
  */
 
 // ---- inline: **bold**, *italic*, [text](url) --------------------------------
@@ -43,7 +46,7 @@ function renderInline(text, keyPrefix = '') {
 }
 
 // ---- block parsing ----------------------------------------------------------
-export default function Markdown({ children = '' }) {
+export default function Markdown({ children = '', className = '' }) {
   const lines = String(children).replace(/\r\n/g, '\n').split('\n')
   const blocks = []
 
@@ -127,5 +130,5 @@ export default function Markdown({ children = '' }) {
     }
   }
 
-  return <div className="markdown">{blocks}</div>
+  return <div className={`markdown ${className}`.trim()}>{blocks}</div>
 }

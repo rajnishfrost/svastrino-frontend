@@ -6,8 +6,13 @@ export const fetchPrograms = () => api('/user/content/programs')
 /** One program with journey/benefits. → { program } */
 export const fetchProgram = (slug) => api(`/user/content/programs/${encodeURIComponent(slug)}`)
 
-/** FAQs grouped into sections. → { faqs: [{ section, items }] } */
-export const fetchFaqs = () => api('/user/content/faqs')
+/**
+ * FAQs, as groups of sections. → { faqs: [{ group, sections: [{ section, items }] }] }
+ * Pass a group slug ('nirmaan') to fetch just that group — the Nirmaan page
+ * wants its own 28 questions, not all 143.
+ */
+export const fetchFaqs = (group) =>
+  api(`/user/content/faqs${group ? `?group=${encodeURIComponent(group)}` : ''}`)
 
 /** Success stories. Pass true for the homepage subset. → { testimonials } */
 export const fetchTestimonials = (featured = false) =>

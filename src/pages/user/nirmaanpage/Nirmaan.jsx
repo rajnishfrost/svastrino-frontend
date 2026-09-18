@@ -5,6 +5,7 @@ import Benefits from './sections/Benefits.jsx'
 import TryConcepts from './sections/TryConcepts.jsx'
 import FreeTrial from './sections/FreeTrial.jsx'
 import Packages from './sections/Packages.jsx'
+import Faqs from './sections/Faqs.jsx'
 import PsychometricStrip from './sections/PsychometricStrip.jsx'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 
@@ -15,8 +16,12 @@ import { usePageSeo } from '../../../seo/PageSeo.jsx'
  * On mount it adds `.theme-nirmaan` to <body> so the whole chrome flips to the
  * green/brown/cream palette; removed on unmount.
  *
- * NOTE: the Testimonials and FAQ sections are not in the approved content spec,
- * so they are not rendered (the components remain on disk for easy re-add).
+ * The FAQ block closes the page with the Skill-Build questions from the FAQs
+ * doc — the same set /resources/faqs shows under "Nirmaan", fetched rather than
+ * copied so the two can't drift.
+ *
+ * NOTE: Testimonials is not in the approved content spec, so it is not rendered
+ * (the component remains on disk for easy re-add).
  */
 export default function Nirmaan() {
   usePageSeo({
@@ -42,6 +47,7 @@ export default function Nirmaan() {
       <TryConcepts />
       <FreeTrial />
       <Packages />
+      <Faqs />
       {/* <PsychometricStrip /> */}
     </div>
   )

@@ -1,47 +1,48 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import FaqAccordion from '../../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
+import { fetchFaqs } from '../../../../api/content.js'
 
 /**
- * Psychometric · section 9 — the objections that stop a parent or student
- * from booking. One answer open at a time.
+ * Psychometric · the test's questions, straight from the FAQs doc — the
+ * "Psychometric Testing" section of the Skill-Build group, the same entries
+ * /resources/faqs and the Nirmaan page show.
+ *
+ * The whole Skill-Build group is fetched and the one section picked out of it:
+ * the Nirmaan page asks for the same URL, so a visitor arriving from there is
+ * served by the browser cache rather than a second round trip.
+ *
+ * Renders nothing if the fetch fails — the page sells fine without it.
  */
-const FAQS = [
-  { q: 'Is there a right or wrong answer?',
-    a: 'No. The test measures what you are like, not what you know. Answer honestly — that is what makes the report accurate.' },
-  { q: 'Which test should I take?',
-    a: 'Stream Selector if you are in Class 7th, 8th or 9th and choosing between Science, Commerce and Humanities/Arts. Career Selector if you are in Class 10th, 11th or 12th and looking for careers that match you.' },
-  { q: 'How much does it cost?',
-    a: 'INR 900 for each test. If you take it along with the Nirmaan course you get a flat 25% discount.' },
-  { q: 'What do I actually get at the end?',
-    a: 'A clear report with insights into your interests, strengths, personality and abilities, plus the careers and directions that suit you.' },
-]
+const SECTION = 'Psychometric Testing'
 
 export default function Faqs() {
-  const [open, setOpen] = useState(null)
+  const [items, setItems] = useState([])
 
+  useEffect(() => {
+    let cancelled = false
+    fetchFaqs('skill-build')
+      .then((res) => {
+        if (cancelled) return
+        const section = (res.faqs || [])
+          .flatMap((g) => g.sections)
+          .find((s) => s.section === SECTION)
+        setItems(section ? section.items : [])
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
+  if (!items.length) return null
+
+  // The bundle band above sits on cream, so this one takes white.
   return (
-    <section className="section">
+    <section id="faqs" className="bg-white py-16 md:py-20">
       <div className="container">
-        <div className="text-center">
-          <h2 className="section-title">FAQs</h2>
-        </div>
-        <div className="psy-faqs">
-          {FAQS.map((f, i) => {
-            const isOpen = open === i
-            return (
-              <div key={f.q} className={`psy-faq${isOpen ? ' open' : ''}`}>
-                <button
-                  type="button"
-                  className="psy-faq-q"
-                  aria-expanded={isOpen}
-                  onClick={() => setOpen(isOpen ? null : i)}
-                >
-                  <span>{f.q}</span>
-                  <span className="psy-faq-icon" aria-hidden>{isOpen ? '−' : '+'}</span>
-                </button>
-                {isOpen && <p className="psy-faq-a">{f.a}</p>}
-              </div>
-            )
-          })}
+        <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+          FAQs
+        </h2>
+        <div className="mx-auto mt-12 max-w-3xl">
+          <FaqAccordion items={items} tone="nirmaan" />
         </div>
       </div>
     </section>

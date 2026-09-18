@@ -1,47 +1,54 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import FaqAccordion from '../../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
+import { fetchFaqs } from '../../../../api/content.js'
 
 /**
- * Nirmaan · the questions that stop a parent or student from enrolling.
- * One answer open at a time.
+ * Nirmaan · the Skill-Build questions, straight from the FAQs doc — the same
+ * set /resources/faqs lists under "Skill-Build", so the two cannot drift. Both
+ * of the group's sections are shown (Nirmaan and Psychometric Testing), each
+ * under its own heading.
+ *
+ * Only this group is fetched (?group=skill-build): pulling all 143 to show 48
+ * would be most of a hundred kilobytes on a landing page.
+ *
+ * Renders nothing if the fetch fails — a FAQ block is not worth an error panel
+ * on a page that still sells fine without it.
  */
-const FAQS = [
-  { q: 'Who is Nirmaan for?',
-    a: 'Students from Grade 7 onwards, plus freshers and young professionals who want to understand themselves better and handle life and its choices with self-belief and confidence.' },
-  { q: 'How much time does it take?',
-    a: 'At most 15 minutes a day for 24 weeks — one video a week, then one short task on each of the next six days.' },
-  { q: 'Can I try it before paying?',
-    a: 'Yes. Watch the free preview lessons, and if you like them start the 1-week free trial to experience the real course.' },
-  { q: 'Do I have to pay for everything at once?',
-    a: 'No. You can pay once and save 25%, or use the pay-as-you-use plan and pay for one phase at a time — six equal payments, without interest.' },
-  { q: 'How long do I have access?',
-    a: 'The course is valid for one year from the date of enrolment. Each video can be played five times, and after the year is up your tasks stay viewable for three more years.' },
-  { q: 'Is the psychometric test included?',
-    a: 'Only on the plans that say so. Nirmaan + Psychometric Testing bundles the test with the course; on the other plans you can buy the test separately.' },
-]
-
 export default function Faqs() {
-  const [open, setOpen] = useState(null)
+  const [sections, setSections] = useState([])
 
+  useEffect(() => {
+    let cancelled = false
+    fetchFaqs('skill-build')
+      .then((res) => {
+        if (cancelled) return
+        setSections((res.faqs || []).flatMap((g) => g.sections))
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
+  if (!sections.length) return null
+
+  // Packages above sits on cream, so this one takes white — the page alternates
+  // the two the whole way down.
   return (
-    <section id="faqs" className="section">
+    <section id="faqs" className="bg-white py-16 md:py-20">
       <div className="container">
-        <div className="text-center">
-          <h2 className="section-title">FAQs</h2>
-        </div>
-        <div className="nirmaan-faqs">
-          {FAQS.map((f, i) => {
-            const isOpen = open === i
-            return (
-              <div key={f.q} className={`nirmaan-faq${isOpen ? ' open' : ''}`}>
-                <button type="button" className="nirmaan-faq-q" aria-expanded={isOpen}
-                        onClick={() => setOpen(isOpen ? null : i)}>
-                  <span>{f.q}</span>
-                  <span className="nirmaan-faq-icon" aria-hidden>{isOpen ? '−' : '+'}</span>
-                </button>
-                {isOpen && <p className="nirmaan-faq-a">{f.a}</p>}
-              </div>
-            )
-          })}
+        <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+          FAQs
+        </h2>
+
+        <div className="mx-auto mt-12 max-w-3xl space-y-10">
+          {sections.map((s) => (
+            <div key={s.section}>
+              {/* One section reads as a plain list; two need telling apart. */}
+              {sections.length > 1 && (
+                <h3 className="mb-4 font-display text-lg font-bold text-nirmaan-green">{s.section}</h3>
+              )}
+              <FaqAccordion items={s.items} tone="nirmaan" />
+            </div>
+          ))}
         </div>
       </div>
     </section>

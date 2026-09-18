@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Check, GraduationCap } from 'lucide-react'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 import StudentJourney from './sections/StudentJourney.jsx'
+import Faqs from './sections/Faqs.jsx'
 
 /**
  * Psychometric Testing — the second Skill-Build product, sold alongside Nirmaan.
@@ -267,6 +268,9 @@ export default function Psychometric() {
           </div>
         </div>
       </section>
+
+      {/* ---- Section 8 · FAQs (from the FAQs doc) ---- */}
+      <Faqs />
     </div>
   )
 }
