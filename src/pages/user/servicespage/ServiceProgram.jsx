@@ -69,10 +69,12 @@ export default function ServiceProgram() {
     exact: !!legacy?.title,
   })
 
-  // Breakthrough is not sold from a checkout page — the visitor asks for a call
-  // and the team sends a payment link afterwards. Every CTA on the page points
-  // at the call-back form instead of the booking wizard.
-  const expertCall = program?.buyMode === 'expert-call'
+  // Whether this page leads with the call-back form instead of a Book Now
+  // strip. Read from `expertEnquiry`, not from `buyMode`: Breakthrough takes a
+  // negotiated price through the form here AND sells at the listed price from
+  // /book-online. While this was derived from buyMode, opening that checkout
+  // took the form off the page with it.
+  const expertCall = !!program?.expertEnquiry
   const ctaLabel = expertCall ? 'Talk to an Expert' : 'Book Now'
 
   const trustLine = program?.trustLine || (expertCall

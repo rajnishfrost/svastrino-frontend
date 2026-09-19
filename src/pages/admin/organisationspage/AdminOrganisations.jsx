@@ -4,6 +4,7 @@ import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmMo
 import SponsoredCoursePicker from '../../../common_component/admin/SponsoredCoursePicker/SponsoredCoursePicker.jsx'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Partner organisations — the admin side of the organisation portal.
@@ -97,7 +98,7 @@ function Organisations() {
     <section>
       <div className="adm-toolbar">
         <input className="adm-input" style={{ maxWidth: 240 }} placeholder="Search name, city, code…"
-               value={q} onChange={(e) => { setQ(e.target.value); load(status, e.target.value) }} />
+               value={q} onChange={(e) => { setQ(e.target.value); load(status, e.target.value) }} maxLength={LIMITS.search} />
         <select className="adm-select" style={{ width: 180 }} value={status}
                 onChange={(e) => { setStatus(e.target.value); setRows(null); load(e.target.value, q) }}>
           <option value="">All statuses</option>

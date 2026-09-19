@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { PhoneInput, defaultCountries, guessCountryByPartialPhoneNumber } from 'react-international-phone'
 import 'react-international-phone/style.css'
+import {
+  LIMITS, MINIMUMS, checkEmail, checkLine, checkName, checkPhone, checkPlace, checkText,
+} from '../../../utils/validate.js'
 
 /**
  * The enquiry fields, shared by every form that asks a visitor how to reach them
@@ -27,7 +30,13 @@ import 'react-international-phone/style.css'
 /** Empty values for every shared field. */
 export const BLANK = { name: '', email: '', phone: '', city: '', message: '' }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+/**
+ * How long each field may be. Re-exported from the one place the whole site
+ * agrees on so a form can put the same number on its `maxLength` that the
+ * validator and the server will hold it to — three copies of "80" in three
+ * files is how they came to disagree in the first place.
+ */
+export { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Show the first three characters and hide the rest to the right. Enough for the
@@ -75,26 +84,48 @@ const maskEmail = (v) => {
  * first. A visitor who fixes one thing, resubmits and is told about the next one
  * gives up somewhere around the third round trip.
  *
+ * The rules themselves live in utils/validate.js, which the server mirrors — so
+ * a message this form accepts is one the API accepts, and a phone number this
+ * form passes is one with a country code on it.
+ *
  * `extra` names further required fields the caller adds (the expert-call form
  * asks when to ring). Their label is used in the message.
+ *
+ * `options` lets a form that asks for less say so, rather than forcing every
+ * form to ask for everything:
+ *   skip     — fields this form does not show at all (the Contact page has no city)
+ *   optional — fields it shows but does not insist on; a value that IS typed is
+ *              still checked, because half a phone number is worse than none
  */
-export function validateEnquiry(values, extra = {}) {
+export function validateEnquiry(values, extra = {}, { skip = [], optional = [] } = {}) {
   const errors = {}
-  const v = (k) => String(values[k] ?? '').trim()
+  const wanted = (k) => !skip.includes(k)
+  const need = (k) => !optional.includes(k)
+  const put = (k, error) => { if (error) errors[k] = error }
 
-  if (v('name').length < 2) errors.name = 'Please tell us your name.'
-  if (!v('email')) errors.email = 'Please add your email address.'
-  else if (!EMAIL_RE.test(v('email'))) errors.email = 'That email does not look right.'
-
-  const digits = v('phone').replace(/\D/g, '')
-  if (!digits) errors.phone = 'Please add a phone number.'
-  else if (digits.length < 8) errors.phone = 'That phone number looks too short.'
-
-  if (!v('city')) errors.city = 'Please tell us where you are based.'
-  if (v('message').length < 3) errors.message = 'A line or two is enough — tell us how we can help.'
+  if (wanted('name')) put('name', checkName(values.name))
+  if (wanted('email')) put('email', checkEmail(values.email, { required: need('email') }))
+  // A phone holding nothing but its dial code is PhoneInput seeding itself on
+  // mount, not a number someone entered — see the note on the prefill below.
+  // Passed through as-is it would tell a visitor who has typed nothing that
+  // their number is "too short", and on a form where the phone is optional it
+  // would refuse a submission over a field they never touched.
+  if (wanted('phone')) {
+    const national = splitPhone(values.phone).national
+    put('phone', checkPhone(national ? values.phone : '', { required: need('phone') }))
+  }
+  if (wanted('city')) put('city', checkPlace(values.city, { required: need('city'), label: 'city' }))
+  if (wanted('message')) {
+    put('message', checkText(values.message, {
+      required: need('message'),
+      min: MINIMUMS.message,
+      max: LIMITS.message,
+      label: 'your message',
+    }))
+  }
 
   for (const [key, label] of Object.entries(extra)) {
-    if (!v(key)) errors[key] = `Please fill in ${label.toLowerCase()}.`
+    put(key, checkLine(values[key], { label: label.toLowerCase(), max: LIMITS.shortText }))
   }
   return errors
 }
@@ -162,18 +193,39 @@ export function useEnquiryForm(user, initial = {}) {
    * Validate everything and, when something is wrong, put the cursor in the
    * first bad field. Returns true when the caller may submit.
    */
-  const check = (extra = {}) => {
+  const check = (extra = {}, options = {}) => {
     setSubmitted(true)
-    const found = validateEnquiry(values, extra)
+    const found = validateEnquiry(values, extra, options)
     setErrors(found)
-    const firstBad = Object.keys(found)[0]
-    if (firstBad) {
-      const el = formRef.current?.querySelector(`[name="${firstBad}"]`)
-      el?.focus?.()
-      el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-      return false
-    }
+    return !mark(Object.keys(found)[0])
+  }
+
+  /**
+   * Put a message on one field and the cursor in it. Returns true when there was
+   * a field to mark.
+   *
+   * Shared by `check` and `showServerError` so a rejection looks the same
+   * whichever side it came from. The two can differ legitimately — the browser
+   * cannot know an email is already registered — and when they do, the visitor
+   * should still see the message on the box it is about rather than as a line
+   * under the button.
+   */
+  const mark = (field, message) => {
+    if (!field) return false
+    if (message) setErrors((e) => ({ ...e, [field]: message }))
+    const el = formRef.current?.querySelector(`[name="${field}"]`)
+    el?.focus?.()
+    el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
     return true
+  }
+
+  /**
+   * Show a rejection the API sent. Returns true when it landed on a field, so the
+   * caller knows whether it still needs to show the message itself.
+   */
+  const showServerError = (err) => {
+    setSubmitted(true)
+    return mark(err?.field, err?.message)
   }
 
   const masked = useMemo(
@@ -192,7 +244,7 @@ export function useEnquiryForm(user, initial = {}) {
     [fromAccount]
   )
 
-  return { values, setValues, errors, set, check, masked, hideable, toggle, formRef }
+  return { values, setValues, errors, set, check, showServerError, masked, hideable, toggle, formRef }
 }
 
 // ---- presentation ----------------------------------------------------------
@@ -216,25 +268,45 @@ const phoneVars = (invalid) => ({
   '--react-international-phone-dropdown-item-font-size': '14px',
 })
 
-function FieldShell({ label, error, htmlFor, className = '', children }) {
+function FieldShell({ label, error, htmlFor, className = '', hint, children }) {
   return (
     <div className={`space-y-1.5 ${className}`}>
       <label className="block text-xs font-semibold text-brand-navy" htmlFor={htmlFor}>
         {label}
       </label>
       {children}
-      {error && (
+      {/* The error replaces the hint rather than stacking under it: two lines of
+          small print below a field is where people stop reading either. */}
+      {error ? (
         <p className="text-xs font-medium text-brand-crimson" role="alert">
           {error}
         </p>
+      ) : (
+        hint && <p className="text-xs text-brand-slate/70">{hint}</p>
       )}
     </div>
   )
 }
 
-/** A plain required text field (or textarea when `rows` is given). */
-export function EnquiryField({ id, name, label, value, onChange, error, placeholder, rows, autoComplete, maxLength, className }) {
+/**
+ * A plain required text field (or textarea when `rows` is given).
+ *
+ * A textarea with a cap gets a counter, and only once the visitor is near it.
+ * `maxLength` alone stops the typing dead at the limit with no explanation —
+ * which reads as a broken keyboard — so the remaining count appears in the last
+ * quarter and turns red at zero.
+ */
+export function EnquiryField({
+  id, name, label, value, onChange, error, placeholder, rows, autoComplete, maxLength, className,
+}) {
   const invalid = !!error
+  const used = String(value ?? '').length
+  // A cap by default, not only when the caller remembers one. A field is either a
+  // paragraph or a line, and each has a sensible ceiling — leaving `maxLength`
+  // undefined would quietly reintroduce the unbounded box this whole component
+  // exists to prevent.
+  const cap = maxLength ?? (rows ? LIMITS.message : LIMITS.shortText)
+  const near = rows ? used >= cap * 0.75 : false
   const shared = {
     id: id || name,
     name,
@@ -242,12 +314,18 @@ export function EnquiryField({ id, name, label, value, onChange, error, placehol
     onChange,
     placeholder,
     autoComplete,
-    maxLength,
+    maxLength: cap,
     'aria-invalid': invalid || undefined,
     'aria-describedby': invalid ? `${name}-error` : undefined,
   }
   return (
-    <FieldShell label={label} error={error} htmlFor={id || name} className={className}>
+    <FieldShell
+      label={label}
+      error={error}
+      htmlFor={id || name}
+      className={className}
+      hint={near ? `${cap - used} characters left of ${cap}` : undefined}
+    >
       {rows ? (
         <textarea {...shared} rows={rows} className={`${base} h-auto py-2.5 ${invalid ? bad : ok}`} />
       ) : (
@@ -310,8 +388,15 @@ export function EnquirySelect({ id, name, label, value, onChange, error, options
  * field you cannot safely change, so the eye does both at once. Pressing it
  * again puts the value back behind the dots.
  */
+/**
+ * `dropdownAlign` picks which edge of the field the country list hangs from.
+ * 'left' is the default and the one that reads right — the list opens under the
+ * flag that was clicked. A form in a column narrower than the 300px list has to
+ * pass 'right', or the list runs off the side of the screen.
+ */
 export function EnquiryContactField({
   kind, label, value, onChange, error, masked, hideable, onToggle, placeholder, className,
+  dropdownAlign = 'left',
 }) {
   const invalid = !!error
   const isPhone = kind === 'phone'
@@ -321,7 +406,7 @@ export function EnquiryContactField({
   const emailInput = (cls) => (
     <input
       id="email" name="email" type="email" value={value} onChange={onChange}
-      maxLength={160} autoComplete="email" placeholder={placeholder || 'you@example.com'}
+      maxLength={LIMITS.email} autoComplete="email" placeholder={placeholder || 'you@example.com'}
       aria-invalid={invalid || undefined} className={cls}
     />
   )
@@ -339,16 +424,18 @@ export function EnquiryContactField({
       // Pin the selector to its own width; the number absorbs what is left.
       countrySelectorStyleProps={{
         // position:static hands the dropdown's containing block to the row, so
-        // right:0 below lines the list up with the field's right edge. Left to
-        // the library the list starts at the flag and runs 300px right, which
-        // puts most of it outside the card.
+        // the offsets below are measured from the field rather than from the
+        // flag button. Left to the library the list starts at the flag and runs
+        // 300px right, which puts most of it outside the card.
         style: { flex: '0 0 auto', position: 'static' },
         buttonStyle: { flexShrink: 0 },
         flagStyle: { flexShrink: 0 },
         dropdownStyleProps: {
           style: {
-            left: 'auto',
-            right: 0,
+            // Hangs from whichever edge the caller asked for; see the note on
+            // `dropdownAlign` above.
+            left: dropdownAlign === 'right' ? 'auto' : 0,
+            right: dropdownAlign === 'right' ? 0 : 'auto',
             top: '48px',
             width: 'min(300px, calc(100vw - 24px))',
             border: '1px solid rgba(15, 44, 92, 0.15)',

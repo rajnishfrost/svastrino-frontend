@@ -5,7 +5,9 @@ import { dashboardTabFor } from '../dashboardpage/dashboardTab.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { classOptionsFor } from '../../../utils/studentClass.js'
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
+import { LIMITS, sanitiseCoupon } from '../../../utils/validate.js'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
+import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
 import './Checkout.css'
 
 /**
@@ -28,6 +30,13 @@ export default function Checkout() {
   const [coupon, setCoupon] = useState('')
   const [couponErr, setCouponErr] = useState('')
   const [busy, setBusy] = useState(false)
+  // Which part of a payment is in flight, or null. Drives PaymentGuard, which
+  // takes the page away from the customer until the money has landed — see the
+  // note there on why a click in this window is the expensive one.
+  //
+  // Deliberately separate from `busy`: `busy` is also true while a coupon is
+  // being priced, and blacking out the screen to apply a coupon would be absurd.
+  const [payPhase, setPayPhase] = useState(null)
   const [order, setOrder] = useState(null) // created order (paying step)
   // Set when the gateway refuses a payment, so the screen can explain instead
   // of showing a red line the customer has to hunt for.
@@ -106,6 +115,7 @@ export default function Checkout() {
   // Step 1 → create the order, then open Cashfree (or the mock panel in dev).
   const proceed = async () => {
     setBusy(true)
+    setPayPhase('preparing')
     setLoadErr('')
     try {
       const res = await api('/user/payments/order', {
@@ -115,11 +125,13 @@ export default function Checkout() {
       })
       setOrder(res)
       if (res.mock) {
+        setPayPhase(null)
         setStep('paying') // no keys → local test panel
       } else {
         await openCashfree(res)
       }
     } catch (e) {
+      setPayPhase(null)
       // These two the student can fix right here, so they belong on the class
       // row, not in the generic error line under the button.
       if (e.code === 'CLASS_REQUIRED' || e.code === 'PSYCHOMETRIC_CLASS_RANGE') {
@@ -155,6 +167,11 @@ export default function Checkout() {
     setBusy(true)
     setLoadErr('')
     try {
+      // Cashfree's modal owns the screen from here, so our own overlay stands
+      // down — two backdrops would put ours over the card form. The unload guard
+      // stays on, which is the half that still matters while they are typing a
+      // card number.
+      setPayPhase('gateway')
       const result = await openCashfreeCheckout(res)
       if (!result) {
         setLoadErr('Could not load the payment gateway. Check your connection and try again.')
@@ -163,6 +180,9 @@ export default function Checkout() {
       // An in-app browser cannot hold the popup, so Cashfree has taken the
       // customer away to pay. The webhook grants access; they land on their orders.
       if (result.redirect) return
+      // The modal has closed and the money has moved. Everything from here to the
+      // receipt is ours, and it is the stretch a refresh must not interrupt.
+      setPayPhase('confirming')
       await confirm({ orderId: res.orderId })
     } catch (e) {
       // A refusal replaces the screen. Closing the popup without paying only
@@ -172,18 +192,23 @@ export default function Checkout() {
       else if (e.code !== 'PAYMENT_NOT_COMPLETED') setLoadErr(e.message)
     } finally {
       setBusy(false)
+      setPayPhase(null)
     }
   }
 
   // Mock test panel only (dev, no keys): the server simulates a successful charge.
+  // Guarded exactly like a real one — it grants the same access, and a flow that
+  // is only protected in production is a flow nobody tests the protection of.
   const pay = async () => {
     setBusy(true)
+    setPayPhase('confirming')
     try {
       await confirm({ orderId: order.orderId })
     } catch (e) {
       setLoadErr(e.message)
     } finally {
       setBusy(false)
+      setPayPhase(null)
     }
   }
 
@@ -212,6 +237,11 @@ export default function Checkout() {
 
   return (
     <section className="section">
+      {/* Outside the content, because it covers the whole viewport rather than
+          this section — and first, so it is in the DOM before anything it is
+          meant to protect. */}
+      <PaymentGuard phase={payPhase} />
+
       <div className="container checkout-wrap">
         {step !== 'success' && (
           <Link to="/skill-build/nirmaan#packages" className="checkout-back-top">← Back to packages</Link>
@@ -287,8 +317,12 @@ export default function Checkout() {
                 </div>
               ) : (
                 <div className="checkout-coupon">
+                  {/* sanitiseCoupon, not toUpperCase: a coupon is letters, digits
+                      and dashes, so a pasted "  SAVE20 " or a stray comma is
+                      cleaned as it is typed rather than sent to be rejected. */}
                   <input className="checkout-input" placeholder="Coupon code"
-                         value={coupon} onChange={(e) => setCoupon(e.target.value.toUpperCase())} />
+                         maxLength={LIMITS.couponCode} inputMode="text" autoCapitalize="characters"
+                         value={coupon} onChange={(e) => setCoupon(sanitiseCoupon(e.target.value))} />
                   <button type="button" className="btn btn-secondary" onClick={applyCoupon} disabled={busy || !coupon.trim()}>Apply</button>
                 </div>
               )}

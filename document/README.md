@@ -5,6 +5,7 @@ platform. One unified user account powers Mentoring + Skill-Build; a separate
 `/admin` area has its own chrome and token.
 
 > New here? Read: **README → ARCHITECTURE → PAGES → COMPONENTS → AUTH_FLOW → OFFLINE_AND_PLAYER**.
+> Touching a form? **INPUT_VALIDATION.md** is the contract every input on the site obeys.
 > (Backend docs live in `../server/document/`.)
 
 ---
@@ -15,7 +16,7 @@ platform. One unified user account powers Mentoring + Skill-Build; a separate
 | Framework | React 18 |
 | Build tool | Vite 5 |
 | Routing | react-router-dom 6 |
-| Phone input | react-international-phone (country picker) |
+| Phone input | react-international-phone (country picker) — on **every** phone field; see INPUT_VALIDATION.md |
 | Google sign-in | Google Identity Services (loaded on demand) |
 | Styling | Plain CSS + CSS custom-property design tokens (no UI lib) |
 | State | React Context (auth) + local component state (no Redux) |

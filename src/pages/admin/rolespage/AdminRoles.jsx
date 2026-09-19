@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Roles (superadmin only). A role IS its module set. Every account has one role;
@@ -108,7 +109,7 @@ function RoleForm({ onCancel, onSaved, onError }) {
       <h2 style={{ fontSize: 16, marginBottom: 12 }}>New role</h2>
       <div className="adm-field" style={{ maxWidth: 420 }}>
         <label>Role name</label>
-        <input className="adm-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Manager" />
+        <input className="adm-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Content Manager" maxLength={LIMITS.title} />
       </div>
       <div className="adm-field">
         <label>Module access</label>
@@ -173,7 +174,7 @@ function RoleCard({ role, onSaved, onError, onDelete }) {
           {!role.system && (
             <div className="adm-field" style={{ maxWidth: 420 }}>
               <label>Role name</label>
-              <input className="adm-input" value={name} onChange={(e) => setName(e.target.value)} />
+              <input className="adm-input" value={name} onChange={(e) => setName(e.target.value)} maxLength={LIMITS.title} />
             </div>
           )}
           <div className="adm-field">

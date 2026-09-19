@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Skill Builds — the courses (level 2, e.g. Nirmaan) WITH their packages
@@ -187,11 +188,11 @@ function CourseEditForm({ sb, onCancel, onSaved }) {
     <div>
       <h2 style={{ fontSize: 16, marginBottom: 12 }}>Edit {sb.name}</h2>
       <div className="adm-row2">
-        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} /></div>
+        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} maxLength={LIMITS.title} /></div>
         <div className="adm-field"><label>Slug (fixed — payments &amp; URLs key off it)</label><input className="adm-input" value={sb.slug} disabled /></div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
+        <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
         <div className="adm-field"><label>Order</label><input className="adm-input adm-num" type="number" value={f.order} onChange={(e) => set('order', e.target.value)} /></div>
       </div>
       <div style={{ margin: '4px 0 14px', fontSize: 14 }}>
@@ -233,11 +234,11 @@ function NewCourseForm({ onCancel, onSaved }) {
         A new course — like Nirmaan. Add its packages right here after creating, and its sessions in Content.
       </p>
       <div className="adm-row2">
-        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="e.g. Udaan" /></div>
-        <div className="adm-field"><label>Slug (unique)</label><input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="e.g. Udaan" maxLength={LIMITS.title} /></div>
+        <div className="adm-field"><label>Slug (unique)</label><input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} maxLength={LIMITS.slug} /></div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
+        <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
         <div className="adm-field"><label>Order</label><input className="adm-input adm-num" type="number" value={f.order} onChange={(e) => set('order', e.target.value)} /></div>
       </div>
       {err && <p className="adm-error">{err}</p>}
@@ -257,10 +258,10 @@ function PackageFields({ f, set, isNew }) {
   return (
     <>
       <div className="adm-row2">
-        <div className="adm-field"><label>Name (tier)</label><input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. Clarity" /></div>
+        <div className="adm-field"><label>Name (tier)</label><input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. Clarity" maxLength={LIMITS.title} /></div>
         <div className="adm-field">
           <label>SKU {isNew ? '(unique — used by payments)' : '(fixed)'}</label>
-          <input className="adm-input" value={f.sku} disabled={!isNew} onChange={(e) => set('sku', slugify(e.target.value))} />
+          <input className="adm-input" value={f.sku} disabled={!isNew} onChange={(e) => set('sku', slugify(e.target.value))} maxLength={LIMITS.slug} />
         </div>
       </div>
       <div className="adm-row2">
@@ -268,7 +269,7 @@ function PackageFields({ f, set, isNew }) {
         <div className="adm-field"><label>Early bird (₹, blank = none)</label><input className="adm-input adm-num" type="number" value={f.earlyBirdInr} onChange={(e) => set('earlyBirdInr', e.target.value)} /></div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Period label</label><input className="adm-input" value={f.period} onChange={(e) => set('period', e.target.value)} placeholder="one-time / 6 months" /></div>
+        <div className="adm-field"><label>Period label</label><input className="adm-input" value={f.period} onChange={(e) => set('period', e.target.value)} placeholder="one-time / 6 months" maxLength={24 /* "one-time", "6 months" — a label, not a sentence */} /></div>
         <div className="adm-field"><label>Access days (blank = one-time)</label><input className="adm-input adm-num" type="number" value={f.durationDays} onChange={(e) => set('durationDays', e.target.value)} /></div>
       </div>
       <div className="adm-row2">
@@ -292,19 +293,19 @@ function PackageFields({ f, set, isNew }) {
       <div className="adm-row2">
         <div className="adm-field">
           <label>Payment-mode label (the toggle on the site)</label>
-          <input className="adm-input" value={f.modeLabel} onChange={(e) => set('modeLabel', e.target.value)} placeholder="Pay Once / Pay As You Use" />
+          <input className="adm-input" value={f.modeLabel} onChange={(e) => set('modeLabel', e.target.value)} placeholder="Pay Once / Pay As You Use" maxLength={LIMITS.name} />
         </div>
         <div className="adm-field">
           <label>Price note (green line under the costs)</label>
-          <input className="adm-input" value={f.priceNote} onChange={(e) => set('priceNote', e.target.value)} placeholder="e.g. Flat 25% Discount" />
+          <input className="adm-input" value={f.priceNote} onChange={(e) => set('priceNote', e.target.value)} placeholder="e.g. Flat 25% Discount" maxLength={LIMITS.shortText} />
         </div>
       </div>
-      <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
-      <div className="adm-field"><label>Inclusions — what the plan includes (one per line)</label><textarea className="adm-textarea" rows={5} value={f.features} onChange={(e) => set('features', e.target.value)} /></div>
-      <div className="adm-field"><label>Benefits — what the student gets out of it (one per line)</label><textarea className="adm-textarea" rows={4} value={f.benefits} onChange={(e) => set('benefits', e.target.value)} /></div>
+      <div className="adm-field"><label>Tagline</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
+      <div className="adm-field"><label>Inclusions — what the plan includes (one per line)</label><textarea className="adm-textarea" rows={5} value={f.features} onChange={(e) => set('features', e.target.value)} maxLength={LIMITS.longText} /></div>
+      <div className="adm-field"><label>Benefits — what the student gets out of it (one per line)</label><textarea className="adm-textarea" rows={4} value={f.benefits} onChange={(e) => set('benefits', e.target.value)} maxLength={LIMITS.longText} /></div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Button text {isNew ? '(blank = auto)' : ''}</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} /></div>
-        <div className="adm-field"><label>Badge (blank = none)</label><input className="adm-input" value={f.badge} onChange={(e) => set('badge', e.target.value)} placeholder="e.g. Most Popular" /></div>
+        <div className="adm-field"><label>Button text {isNew ? '(blank = auto)' : ''}</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} maxLength={LIMITS.name} /></div>
+        <div className="adm-field"><label>Badge (blank = none)</label><input className="adm-input" value={f.badge} onChange={(e) => set('badge', e.target.value)} placeholder="e.g. Most Popular" maxLength={LIMITS.name} /></div>
       </div>
       <div style={{ display: 'flex', gap: 18, margin: '4px 0 6px', fontSize: 14, flexWrap: 'wrap' }}>
         <label><input type="checkbox" checked={f.includesPsychometric} onChange={(e) => set('includesPsychometric', e.target.checked)} /> Includes the psychometric test</label>

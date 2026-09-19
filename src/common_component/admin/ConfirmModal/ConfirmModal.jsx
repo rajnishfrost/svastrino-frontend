@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * In-app confirm dialog for the admin panel (replaces window.confirm/prompt).
@@ -11,7 +12,7 @@ export default function ConfirmModal({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   danger = false,
-  input, // { label, placeholder, required } | undefined
+  input, // { label, placeholder, required, maxLength } | undefined
   busy = false,
   onConfirm,
   onCancel,
@@ -33,9 +34,13 @@ export default function ConfirmModal({
         {input && (
           <div className="adm-field" style={{ marginTop: 14 }}>
             {input.label && <label>{input.label}</label>}
+            {/* Every caller asks for a short reason, so the cap is a short
+                reason's worth unless one says otherwise. The dialog is the last
+                text box in the panel that had no limit at all. */}
             <input
               className="adm-input"
               autoFocus
+              maxLength={input.maxLength || LIMITS.shortText}
               value={value}
               placeholder={input.placeholder || ''}
               onChange={(e) => setValue(e.target.value)}

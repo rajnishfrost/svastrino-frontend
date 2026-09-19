@@ -5,10 +5,11 @@ import 'react-international-phone/style.css'
 import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { validatePassword } from '../../../utils/password.js'
+import { LIMITS, checkName, checkPhone, sanitisePhone } from '../../../utils/validate.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import AvatarEditor from './AvatarEditor.jsx'
 import { openInvoice } from '../../../utils/invoice.js'
-import { classOptionsFor } from '../../../utils/studentClass.js'
+import { CLASSES, classOptionsFor } from '../../../utils/studentClass.js'
 import './Settings.css'
 
 /**
@@ -160,7 +161,11 @@ function AccountPanel() {
     setNotice('')
     setName(user.name || '')
     setPhone(user.phone || '+91')
-    setStudentClass(user.studentClass || '')
+    // The Class picker has no blank choice any more, so an account without one
+    // opens on the first real option rather than on a value no <option> holds —
+    // a select like that shows the first entry but reports '', and Save would
+    // have written the class away as empty.
+    setStudentClass(user.studentClass || CLASSES[0])
     setCurPw('')
     setNewPw('')
     setConfPw('')
@@ -187,10 +192,21 @@ function AccountPanel() {
   }
 
   const saveName = () => {
-    if (!name.trim()) return setError('Name is required')
+    // The site's one name rule, not a blank check: the server applies the same
+    // one, so without this the only way to learn that "Raj 123" is not a name was
+    // to press Save and read a 400.
+    const bad = checkName(name)
+    if (bad) return setError(bad)
     patchProfile({ name: name.trim() }, 'Name updated.')
   }
-  const savePhone = () => patchProfile({ phone }, 'Phone updated — verify it when you get the option.')
+  const savePhone = () => {
+    // Clearing the number is allowed, and the picker's own dial code is not a
+    // number — it is what PhoneInput writes into an empty field on mount.
+    const typed = sanitisePhone(phone).replace(/^\+\d{1,4}$/, '')
+    const bad = checkPhone(typed, { required: false })
+    if (bad) return setError(bad)
+    patchProfile({ phone: typed }, 'Phone updated — verify it when you get the option.')
+  }
   const saveClass = () =>
     patchProfile({ studentClass }, studentClass ? 'Class updated.' : 'Class removed.')
 
@@ -260,7 +276,7 @@ function AccountPanel() {
         {/* Name */}
         {editing === 'name' ? (
           <EditField label="Name" onSave={saveName} onCancel={cancel} busy={busy}>
-            <input className="settings-input" value={name} maxLength={60}
+            <input className="settings-input" value={name} maxLength={LIMITS.name}
                    onChange={(e) => setName(e.target.value)} placeholder="Your full name" autoFocus />
           </EditField>
         ) : (
@@ -295,7 +311,10 @@ function AccountPanel() {
           <EditField label="Class" onSave={saveClass} onCancel={cancel} busy={busy}>
             <select className="settings-input" value={studentClass} autoFocus
                     onChange={(e) => setStudentClass(e.target.value)}>
-              <option value="">Not added</option>
+              {/* No blank choice: the picker is only opened to set a class,
+                  and "Not added" as an option let someone save their way back
+                  to having none. The row below still reads "Not added" until
+                  one is chosen. */}
               {classOptions.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <p className="settings-muted">
@@ -311,17 +330,23 @@ function AccountPanel() {
         {editing === 'password' ? (
           <EditField label={user.hasPassword ? 'Change password' : 'Set password'}
                      onSave={savePassword} onCancel={cancel} busy={busy}>
+            {/* Capped like every other password box on the site. bcrypt ignores
+                anything past 72 bytes anyway, so a longer string is not a
+                stronger password — it is only a bigger request to hash. */}
             {user.hasPassword && (
               <input className="settings-input" type="password" autoComplete="current-password"
+                     maxLength={LIMITS.password}
                      value={curPw} onChange={(e) => setCurPw(e.target.value)}
                      placeholder="Current password" autoFocus />
             )}
             <div>
               <input className="settings-input" type="password" autoComplete="new-password"
+                     maxLength={LIMITS.password}
                      value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="New password" />
               <StrengthMeter pw={newPw} name={user.name} />
             </div>
             <input className="settings-input" type="password" autoComplete="new-password"
+                   maxLength={LIMITS.password}
                    value={confPw} onChange={(e) => setConfPw(e.target.value)} placeholder="Confirm new password" />
           </EditField>
         ) : (

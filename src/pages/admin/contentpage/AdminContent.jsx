@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
 import { fetchUploadMode, uploadDirectToS3, uploadThroughServer, awaitTranscode } from '../../../api/videoUpload.js'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 const TIER_LABEL = { 1: 'Discover+', 2: 'Clarity+', 3: 'Launch' }
 
@@ -274,15 +275,15 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
             <option value={1}>1 — Discover+</option><option value={2}>2 — Clarity+</option><option value={3}>3 — Launch</option>
           </select></div>
       </div>
-      <div className="adm-field"><label>Title</label><input className="adm-input" value={f.title} onChange={(e) => set('title', e.target.value)} /></div>
-      <div className="adm-field"><label>Description</label><textarea className="adm-textarea" rows={2} value={f.description} onChange={(e) => set('description', e.target.value)} /></div>
+      <div className="adm-field"><label>Title</label><input className="adm-input" value={f.title} onChange={(e) => set('title', e.target.value)} maxLength={LIMITS.title} /></div>
+      <div className="adm-field"><label>Description</label><textarea className="adm-textarea" rows={2} value={f.description} onChange={(e) => set('description', e.target.value)} maxLength={LIMITS.description} /></div>
       <div className="adm-field">
         <label>Video — paste a URL or upload a file</label>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <input className="adm-input" style={{ flex: 1, minWidth: 240 }} value={f.videoUrl}
                  onChange={(e) => set('videoUrl', e.target.value)}
                  onBlur={() => { if (f.videoUrl && !f.durationMins) autofillDuration(f.videoUrl) }}
-                 placeholder="https://…/video.mp4" />
+                 placeholder="https://…/video.mp4" maxLength={LIMITS.url} />
           <label className="adm-btn adm-btn--ghost" style={{ cursor: uploading ? 'default' : 'pointer', margin: 0, whiteSpace: 'nowrap' }}>
             {uploading ? 'Processing…' : '⤒ Upload'}
             <input type="file" accept="video/*" hidden disabled={uploading} onChange={(e) => onFile(e.target.files?.[0])} />
@@ -305,11 +306,11 @@ function SessionForm({ slug, session, onCancel, onSaved }) {
         <label>Duration (mins) — auto-filled from the video</label>
         <input className="adm-input adm-num" type="number" value={f.durationMins} onChange={(e) => set('durationMins', e.target.value)} />
       </div>
-      <div className="adm-field"><label>Worksheet title</label><input className="adm-input" value={f.worksheetTitle} onChange={(e) => set('worksheetTitle', e.target.value)} /></div>
-      <div className="adm-field"><label>Worksheet tasks (one per line)</label><textarea className="adm-textarea" rows={3} value={f.tasks} onChange={(e) => set('tasks', e.target.value)} /></div>
+      <div className="adm-field"><label>Worksheet title</label><input className="adm-input" value={f.worksheetTitle} onChange={(e) => set('worksheetTitle', e.target.value)} maxLength={LIMITS.title} /></div>
+      <div className="adm-field"><label>Worksheet tasks (one per line)</label><textarea className="adm-textarea" rows={3} value={f.tasks} onChange={(e) => set('tasks', e.target.value)} maxLength={LIMITS.longText} /></div>
       <div className="adm-field">
         <label>Video notes — one per line as <code>M:SS note text</code> (e.g. <code>1:30 RIASEC explained</code>)</label>
-        <textarea className="adm-textarea" rows={4} value={f.notes} onChange={(e) => set('notes', e.target.value)} placeholder={'0:15 Intro\n1:30 Key concept\n3:05 Example'} />
+        <textarea className="adm-textarea" rows={4} value={f.notes} onChange={(e) => set('notes', e.target.value)} placeholder={'0:15 Intro\n1:30 Key concept\n3:05 Example'} maxLength={LIMITS.longText} />
       </div>
       {err && <p className="adm-error">{err}</p>}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -361,7 +362,7 @@ function QuestionsEditor({ session, onClose }) {
       {prompts.map((p, i) => (
         <div className="adm-field" key={i}>
           <label>Question {i + 1}</label>
-          <textarea className="adm-textarea" rows={2} value={p} onChange={(e) => setAt(i, e.target.value)} placeholder={`Question ${i + 1}…`} />
+          <textarea className="adm-textarea" rows={2} maxLength={LIMITS.subject * 2} value={p} onChange={(e) => setAt(i, e.target.value)} placeholder={`Question ${i + 1}…`} />
         </div>
       ))}
       {err && <p className="adm-error">{err}</p>}

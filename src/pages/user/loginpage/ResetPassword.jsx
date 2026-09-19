@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { validatePassword } from '../../../utils/password.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import './Login.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Password-reset completion page. Reached via the emailed link:
@@ -88,7 +89,7 @@ export default function ResetPassword() {
                 <input
                   type={show ? 'text' : 'password'}
                   autoComplete="new-password"
-                  maxLength={128}
+                  maxLength={LIMITS.password}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
@@ -105,7 +106,7 @@ export default function ResetPassword() {
               <input
                 type={show ? 'text' : 'password'}
                 autoComplete="new-password"
-                maxLength={128}
+                maxLength={LIMITS.password}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Re-enter your password"

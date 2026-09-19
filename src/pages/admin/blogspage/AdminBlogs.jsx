@@ -4,6 +4,7 @@ import { legacyRootSeo } from '../../../seo/legacyRootSeo.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Blog — write, edit, publish and delete posts. Drafts (`published: false`) are
@@ -115,8 +116,7 @@ export default function AdminBlogs() {
       <div className="adm-toolbar">
         <input
           className="adm-input" style={{ width: 240 }} value={q}
-          onChange={(e) => setQ(e.target.value)} placeholder="Search title, slug or author…"
-        />
+          onChange={(e) => setQ(e.target.value)} placeholder="Search title, slug or author…" maxLength={LIMITS.search} />
         <select className="adm-select" style={{ width: 150 }} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All statuses</option>
           <option value="published">Published</option>
@@ -273,9 +273,9 @@ function PostEditor({ post, onCancel, onSaved }) {
       <div className="adm-panel">
         <div className="adm-row2">
           <div className="adm-field"><label>Title</label>
-            <input className="adm-input" value={f.title} onChange={(e) => onTitle(e.target.value)} placeholder="How to choose a stream after 10th" /></div>
+            <input className="adm-input" value={f.title} onChange={(e) => onTitle(e.target.value)} placeholder="How to choose a stream after 10th" maxLength={LIMITS.title} /></div>
           <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
-            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} />
+            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} maxLength={LIMITS.slug} />
           {post?.slug && f.slug !== post?.slug && (
             <p className="adm-sub" style={{ margin: '4px 0 0', color: 'var(--color-warning, #a15c00)' }}>
               svastrino.com/{post?.slug} will redirect here once the redirects are
@@ -296,15 +296,15 @@ function PostEditor({ post, onCancel, onSaved }) {
           <div className="adm-field"><label>Search title</label>
             <input className="adm-input" value={f.seoTitle}
               onChange={(e) => set('seoTitle', e.target.value)}
-              placeholder={legacy?.title || 'Uses the title above'} /></div>
+              placeholder={legacy?.title || 'Uses the title above'} maxLength={LIMITS.title} /></div>
           <div className="adm-field"><label>Search description</label>
             <textarea className="adm-input" rows={2} value={f.seoDescription}
               onChange={(e) => set('seoDescription', e.target.value)}
-              placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
+              placeholder={legacy?.description || 'Uses the opening lines of the page'} maxLength={LIMITS.description} /></div>
           <div className="adm-field"><label>Same as another page (optional)</label>
             <input className="adm-input" value={f.canonicalSlug}
               onChange={(e) => set('canonicalSlug', slugify(e.target.value))}
-              placeholder="another-page-slug" />
+              placeholder="another-page-slug" maxLength={LIMITS.slug} />
             <p className="adm-sub" style={{ margin: '4px 0 0' }}>
               For two pages that say close to the same thing. Both keep working;
               search engines pool the ranking onto the one named here instead of
@@ -318,21 +318,21 @@ function PostEditor({ post, onCancel, onSaved }) {
               {OWNERS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select></div>
           <div className="adm-field"><label>Author</label>
-            <input className="adm-input" value={f.author} onChange={(e) => set('author', e.target.value)} /></div>
+            <input className="adm-input" value={f.author} onChange={(e) => set('author', e.target.value)} maxLength={LIMITS.name} /></div>
         </div>
 
         <div className="adm-field"><label>Categories (comma separated)</label>
           <input className="adm-input" value={f.categories} onChange={(e) => set('categories', e.target.value)}
-                 placeholder="Career Guidance, Parenting" /></div>
+                 placeholder="Career Guidance, Parenting" maxLength={LIMITS.longText} /></div>
 
         <div className="adm-field"><label>Excerpt — the summary shown on the listing card</label>
-          <textarea className="adm-textarea" rows={2} value={f.excerpt} onChange={(e) => set('excerpt', e.target.value)} /></div>
+          <textarea className="adm-textarea" rows={2} value={f.excerpt} onChange={(e) => set('excerpt', e.target.value)} maxLength={LIMITS.description} /></div>
 
         <div className="adm-field">
           <label>Cover image — paste a URL or upload</label>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <input className="adm-input" style={{ flex: 1, minWidth: 240 }} value={f.coverImage}
-                   onChange={(e) => set('coverImage', e.target.value)} placeholder="https://…/cover.jpg" />
+                   onChange={(e) => set('coverImage', e.target.value)} placeholder="https://…/cover.jpg" maxLength={LIMITS.url} />
             <label className="adm-btn adm-btn--ghost" style={{ cursor: uploading ? 'default' : 'pointer', margin: 0, whiteSpace: 'nowrap' }}>
               {uploading ? 'Uploading…' : '⤒ Upload'}
               <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={uploading}
@@ -354,7 +354,7 @@ function PostEditor({ post, onCancel, onSaved }) {
         <div className="adm-field"><label>Body (markdown)</label>
           <textarea className="adm-textarea" rows={18} style={{ fontFamily: 'var(--font-mono, ui-monospace, Menlo, monospace)', fontSize: 13.5 }}
                     value={f.body} onChange={(e) => set('body', e.target.value)}
-                    placeholder={'## Section heading\n\nYour paragraph…\n\n- point one\n- point two'} /></div>
+                    placeholder={'## Section heading\n\nYour paragraph…\n\n- point one\n- point two'} maxLength={LIMITS.article} /></div>
 
         <div className="adm-row2">
           <div className="adm-field"><label>Publish date</label>
@@ -365,7 +365,7 @@ function PostEditor({ post, onCancel, onSaved }) {
 
         <div className="adm-row2">
           <div className="adm-field"><label>Original URL (optional — for migrated posts)</label>
-            <input className="adm-input" value={f.sourceUrl} onChange={(e) => set('sourceUrl', e.target.value)} /></div>
+            <input className="adm-input" value={f.sourceUrl} onChange={(e) => set('sourceUrl', e.target.value)} maxLength={LIMITS.url} /></div>
           <div className="adm-field"><label>Order (tie-breaker when two posts share a date)</label>
             <input className="adm-input adm-num" type="number" value={f.order} onChange={(e) => set('order', e.target.value)} /></div>
         </div>

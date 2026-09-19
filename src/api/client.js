@@ -67,6 +67,10 @@ export async function api(path, { method = 'GET', body, auth = false, keepalive 
     const err = new Error(message)
     err.status = res.status
     if (data?.code) err.code = data.code // e.g. 'EMAIL_NOT_VERIFIED'
+    // Which input the message is about, when the server said. A form that knows
+    // this can mark the field rather than show one line under the button and
+    // leave the visitor to guess which of six boxes it means.
+    if (data?.field) err.field = data.field
     throw err
   }
   return data

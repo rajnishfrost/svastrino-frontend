@@ -3,6 +3,9 @@ import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import SponsoredCoursePicker from '../../../common_component/admin/SponsoredCoursePicker/SponsoredCoursePicker.jsx'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 // One account system: every person is one account with one role (managed on the
 // Roles page). Only superadmin, or a role that grants ≥1 module, can enter the panel.
@@ -151,7 +154,7 @@ function Accounts({ me }) {
     <section>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 4 }}>
         <input className="adm-input" style={{ maxWidth: 280 }} placeholder="Search name or email"
-               value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (setPage(1), loadList(q))} />
+               value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (setPage(1), loadList(q))} maxLength={LIMITS.search} />
         <button className="adm-btn adm-btn--ghost" onClick={() => { setPage(1); loadList(q) }}>Search</button>
         {isSuper && (
           <button className="adm-btn adm-btn--sm" style={{ marginLeft: 'auto' }}
@@ -399,19 +402,19 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
       <div className="adm-row2">
         <div className="adm-field">
           <label>Name</label>
-          <input className={inputCls(fieldErr('name'))} value={f.name} onChange={(e) => set('name', e.target.value)} />
+          <input className={inputCls(fieldErr('name'))} value={f.name} onChange={(e) => set('name', e.target.value)} maxLength={LIMITS.title} />
           <FieldError msg={fieldErr('name')} />
         </div>
         <div className="adm-field">
           <label>Email {isNew ? '' : '(fixed)'}</label>
-          <input className={inputCls(fieldErr('email'))} type="email" value={f.email} disabled={!isNew} onChange={(e) => set('email', e.target.value)} />
+          <input className={inputCls(fieldErr('email'))} type="email" value={f.email} disabled={!isNew} onChange={(e) => set('email', e.target.value)} maxLength={LIMITS.email} />
           <FieldError msg={fieldErr('email')} />
         </div>
       </div>
       <div className="adm-row2">
         <div className="adm-field">
           <label>{isNew ? 'Password (min 8 chars)' : 'New password (blank = unchanged)'}</label>
-          <input className={inputCls(fieldErr('password'))} type="password" value={f.password} onChange={(e) => set('password', e.target.value)} autoComplete="new-password" />
+          <input className={inputCls(fieldErr('password'))} type="password" value={f.password} onChange={(e) => set('password', e.target.value)} autoComplete="new-password" maxLength={LIMITS.password} />
           <FieldError msg={fieldErr('password')} />
         </div>
         <div className="adm-field">
@@ -505,7 +508,7 @@ function OrgFields({ org, set, loginEmail, nameErr }) {
 
       <div className="adm-row2">
         <div className="adm-field"><label>Organisation name *</label>
-          <input className={inputCls(nameErr)} value={org.name} maxLength={120}
+          <input className={inputCls(nameErr)} value={org.name} maxLength={LIMITS.title}
                  placeholder="e.g. Rampur Gram Panchayat"
                  onChange={(e) => set('name', e.target.value)} />
           <FieldError msg={nameErr} /></div>
@@ -516,42 +519,47 @@ function OrgFields({ org, set, loginEmail, nameErr }) {
       </div>
 
       <div className="adm-field"><label>About (shown in the public directory)</label>
-        <textarea className="adm-input" rows={3} value={org.description} maxLength={1200}
+        <textarea className="adm-input" rows={3} value={org.description} maxLength={LIMITS.description}
                   placeholder="e.g. Village panchayat sponsoring career guidance for students across the block."
                   onChange={(e) => set('description', e.target.value)} /></div>
 
       <div className="adm-row2">
         <div className="adm-field"><label>Branch / campus</label>
-          <input className="adm-input" value={org.branch} maxLength={120} onChange={(e) => set('branch', e.target.value)} /></div>
+          <input className="adm-input" value={org.branch} maxLength={LIMITS.title} onChange={(e) => set('branch', e.target.value)} /></div>
         <div className="adm-field"><label>Website</label>
-          <input className="adm-input" value={org.website} maxLength={200} placeholder="https://…"
+          <input className="adm-input" value={org.website} maxLength={LIMITS.url} placeholder="https://…"
                  onChange={(e) => set('website', e.target.value)} /></div>
       </div>
 
       <div className="adm-field"><label>Address</label>
-        <input className="adm-input" value={org.address} maxLength={240} onChange={(e) => set('address', e.target.value)} /></div>
+        <input className="adm-input" value={org.address} maxLength={LIMITS.address} onChange={(e) => set('address', e.target.value)} /></div>
 
       <div className="adm-row2">
         <div className="adm-field"><label>City</label>
-          <input className="adm-input" value={org.city} maxLength={80} onChange={(e) => set('city', e.target.value)} /></div>
+          <input className="adm-input" value={org.city} maxLength={LIMITS.city} onChange={(e) => set('city', e.target.value)} /></div>
         <div className="adm-field"><label>State</label>
-          <input className="adm-input" value={org.state} maxLength={80} onChange={(e) => set('state', e.target.value)} /></div>
+          <input className="adm-input" value={org.state} maxLength={LIMITS.state} onChange={(e) => set('state', e.target.value)} /></div>
       </div>
 
       <div className="adm-row2">
         <div className="adm-field"><label>Pincode</label>
-          <input className="adm-input" value={org.pincode} maxLength={12} onChange={(e) => set('pincode', e.target.value)} /></div>
+          <input className="adm-input" value={org.pincode} maxLength={LIMITS.pincode} onChange={(e) => set('pincode', e.target.value)} /></div>
+        {/* The same country picker the rest of the site uses. This number is how
+            a school is called back, and it was the last phone box on the site
+            still accepting a bare string. */}
         <div className="adm-field"><label>Contact number</label>
-          <input className="adm-input" value={org.phone} maxLength={20} onChange={(e) => set('phone', e.target.value)} /></div>
+          <PhoneInput defaultCountry="in" value={org.phone} onChange={(v) => set('phone', v)}
+                      className="phone-intl" inputClassName="phone-intl-input"
+                      countrySelectorStyleProps={{ buttonClassName: 'phone-intl-btn' }} /></div>
       </div>
 
       <div className="adm-row2">
         <div className="adm-field"><label>Contact person</label>
-          <input className="adm-input" value={org.contactPerson} maxLength={80}
+          <input className="adm-input" value={org.contactPerson} maxLength={LIMITS.name}
                  placeholder="Defaults to the account name"
                  onChange={(e) => set('contactPerson', e.target.value)} /></div>
         <div className="adm-field"><label>Organisation email</label>
-          <input className="adm-input" type="email" value={org.email || ''} maxLength={254}
+          <input className="adm-input" type="email" value={org.email || ''} maxLength={LIMITS.email}
                  placeholder={loginEmail || 'Defaults to the login email'}
                  onChange={(e) => set('email', e.target.value)} /></div>
       </div>

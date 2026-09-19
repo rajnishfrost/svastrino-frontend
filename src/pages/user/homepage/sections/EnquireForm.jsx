@@ -3,8 +3,11 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 import {
-  useEnquiryForm, EnquiryField, EnquiryContactField, EnquirySelect,
+  LIMITS, useEnquiryForm, EnquiryField, EnquiryContactField, EnquirySelect,
 } from '../../../../common_component/user/EnquiryFields/EnquiryFields.jsx'
+// The same list the account's own Class picker offers, so a visitor is not
+// asked to describe themselves one way here and another way after signing up.
+import { CLASSES } from '../../../../utils/studentClass.js'
 
 /**
  * Home · section 1 (inside the banner) — "Enquire With Us!".
@@ -28,8 +31,6 @@ import {
  * them and offers the form back on one click.
  */
 
-const CLASSES = ['1st Year Undergraduate', '2nd Year Undergraduate', '3rd Year Undergraduate', '4th Year Undergraduate', '5th Year Undergraduate', 'Other']
-
 // Class is not one of the shared fields — only this form asks for it — so it is
 // declared as an extra the same way the expert-call panel declares its calling
 // time. The wording completes "Please fill in ...".
@@ -37,7 +38,7 @@ const EXTRA = { studentClass: 'which class you are in' }
 
 export default function EnquireForm() {
   const { user } = useAuth()
-  const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user, {
+  const { values, errors, set, check, showServerError, masked, hideable, toggle, formRef } = useEnquiryForm(user, {
     studentClass: '',
   })
   const [sent, setSent] = useState(false)
@@ -70,7 +71,11 @@ export default function EnquireForm() {
       })
       setSent(true)
     } catch (ex) {
-      setErr(ex.message || 'Could not send that just now — please try again.')
+      // A field the server named is marked on that field; anything else — a rate
+      // limit, a network failure — goes under the button.
+      if (!showServerError(ex)) {
+        setErr(ex.message || 'Could not send that just now — please try again.')
+      }
     } finally {
       setBusy(false)
     }
@@ -125,7 +130,7 @@ export default function EnquireForm() {
       </div>
 
       <EnquiryField
-        name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={80}
+        name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={LIMITS.name}
         value={values.name} onChange={set('name')} error={errors.name}
       />
 
@@ -143,6 +148,10 @@ export default function EnquireForm() {
           kind="phone" label="Phone number" value={values.phone} onChange={set('phone')}
           error={errors.phone} masked={masked.phone}
           hideable={hideable.phone} onToggle={() => toggle('phone')}
+          // This form sits in a column narrower than the 300px country list, so
+          // the list hangs from the field's right edge — anchored left it would
+          // run off the side of the screen.
+          dropdownAlign="right"
         />
       </div>
 
@@ -155,14 +164,14 @@ export default function EnquireForm() {
         <EnquiryField
           className="min-w-0"
           name="city" label="Location" placeholder="City / Town / Village Name"
-          autoComplete="address-level2" maxLength={80}
+          autoComplete="address-level2" maxLength={LIMITS.city}
           value={values.city} onChange={set('city')} error={errors.city}
         />
       </div>
 
 
       <EnquiryField
-        name="message" label="What do you need help with?" rows={2} maxLength={2000}
+        name="message" label="What do you need help with?" rows={2} maxLength={LIMITS.message}
         placeholder="Tell us in a line or two"
         value={values.message} onChange={set('message')} error={errors.message}
       />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Reviews — the quotes that appear on the home page, the Services cards, each
@@ -39,10 +40,10 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
       <h3 style={{ fontSize: 15, marginBottom: 12 }}>{isNew ? 'New review' : `Edit ${initial.name}`}</h3>
       <div className="adm-row2">
         <div className="adm-field"><label>Name</label>
-          <input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Who said it" />
+          <input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Who said it" maxLength={LIMITS.title} />
         </div>
         <div className="adm-field"><label>Role (blank = none)</label>
-          <input className="adm-input" value={f.role} onChange={(e) => set('role', e.target.value)} placeholder="e.g. Parent · Class 10" />
+          <input className="adm-input" value={f.role} onChange={(e) => set('role', e.target.value)} placeholder="e.g. Parent · Class 10" maxLength={LIMITS.shortText} />
         </div>
       </div>
       {/* The photo is optional on purpose: the card drops the avatar and shows
@@ -60,7 +61,7 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
             />
           )}
           <input className="adm-input" style={{ flex: 1, minWidth: 220 }} value={f.photo}
-                 onChange={(e) => set('photo', e.target.value)} placeholder="https://…/photo.jpg" />
+                 onChange={(e) => set('photo', e.target.value)} placeholder="https://…/photo.jpg" maxLength={LIMITS.url} />
           <label className="adm-btn adm-btn--ghost" style={{ cursor: uploading ? 'default' : 'pointer', margin: 0, whiteSpace: 'nowrap' }}>
             {uploading ? 'Uploading…' : '⤒ Upload'}
             <input type="file" accept="image/jpeg,image/png,image/webp" hidden disabled={uploading}
@@ -80,7 +81,7 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
       </div>
 
       <div className="adm-field"><label>The review</label>
-        <textarea className="adm-textarea" rows={6} value={f.quote} onChange={(e) => set('quote', e.target.value)} />
+        <textarea className="adm-textarea" rows={6} value={f.quote} onChange={(e) => set('quote', e.target.value)} maxLength={LIMITS.description} />
       </div>
       <div className="adm-row2">
         <div className="adm-field"><label>Program (blank = none)</label>

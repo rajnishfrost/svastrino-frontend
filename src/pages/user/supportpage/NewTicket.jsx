@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import { api } from '../../../api/client.js'
 import { createTicket } from '../../../api/tickets.js'
+import { LIMITS, MINIMUMS, checkLine, checkText } from '../../../utils/validate.js'
 import { CATEGORY_LABEL, courseLabel } from './Support.jsx'
 import './Support.css'
 
@@ -17,8 +18,10 @@ import './Support.css'
  * editable; it is a starting point, not a script.
  */
 
-const MAX_SUBJECT = 120   // matches the server's own limit
-const MAX_MESSAGE = 4000
+// From the shared contract, which the server reads too — these were two numbers
+// written here by hand next to a comment saying they matched.
+const MAX_SUBJECT = LIMITS.subject
+const MAX_MESSAGE = LIMITS.ticketMessage
 
 /** The opening subject and message we write for a locked-out student. */
 function expiredCopy(product) {
@@ -85,11 +88,17 @@ export default function NewTicket() {
 
   // Asking for a course back only means something if we know which course.
   const needsCourse = form.category === 'course-expired' && !form.product && courseOptions.length > 0
-  const ready = form.subject.trim().length >= 3 && form.text.trim().length > 0 && !needsCourse
+  const ready = form.subject.trim().length >= MINIMUMS.subject && form.text.trim().length > 0 && !needsCourse
 
   const onSubmit = async (e) => {
     e.preventDefault()
     if (!ready) return
+    // The site's own rules, so a message with a script in it is refused here with
+    // an explanation rather than by the API with the same words a moment later.
+    const bad =
+      checkLine(form.subject, { label: 'a short title', min: MINIMUMS.subject, max: MAX_SUBJECT }) ||
+      checkText(form.text, { label: 'your message', max: MAX_MESSAGE })
+    if (bad) { setErr(bad); return }
     setErr(''); setBusy(true)
     try {
       const { ticket, message } = await createTicket({

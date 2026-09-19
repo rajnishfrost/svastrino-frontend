@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchTicket, replyToTicket } from '../../../api/tickets.js'
+import { LIMITS, checkText } from '../../../utils/validate.js'
 import { CATEGORY_LABEL, STATUS_NOTE, StatusBadge, courseLabel, fmtDate, fmtWhen } from './Support.jsx'
 import './Support.css'
 
@@ -44,6 +45,10 @@ export default function TicketThread() {
     e.preventDefault()
     const body = text.trim()
     if (!body || sending) return
+    // Same rule as the API applies, so a reply with a script in it is explained
+    // here rather than bounced back a moment later.
+    const bad = checkText(text, { label: 'your message', max: LIMITS.ticketMessage })
+    if (bad) { setSendError(bad); return }
     setSendError(''); setSending(true)
     try {
       const updated = await replyToTicket(id, body)
@@ -193,7 +198,7 @@ export default function TicketThread() {
                 Write back
                 <textarea
                   rows="5"
-                  maxLength={4000}
+                  maxLength={LIMITS.ticketMessage}
                   placeholder="Add anything else we should know."
                   value={text}
                   onChange={(e) => setText(e.target.value)}

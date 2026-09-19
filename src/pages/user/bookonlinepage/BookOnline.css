@@ -102,6 +102,31 @@
   box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.14);
 }
 .bo-input:disabled { background: var(--color-surface, #f5f2ec); color: var(--color-text-muted); }
+/* What is wrong with one field, under that field. Sits inside the <label>, so it
+   is read out with the field it belongs to rather than as a loose line. */
+.bo-field-err {
+  display: block; margin-top: 4px;
+  color: #b3261e; font-size: 0.8rem; font-weight: 500;
+}
+
+/* The country-code phone picker, skinned through the library's own CSS variables
+   to match .bo-input beside it. Same treatment as the Settings page. */
+.bo-card .phone-intl {
+  margin-top: 4px;
+  --react-international-phone-height: 42px;
+  --react-international-phone-font-size: 0.95rem;
+  --react-international-phone-border-radius: 8px;
+  --react-international-phone-border-color: var(--color-border, #ddd);
+  --react-international-phone-background-color: #fff;
+  --react-international-phone-text-color: var(--color-text, #1c1c1c);
+}
+.bo-card .phone-intl-input {
+  min-height: 42px;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  font: inherit; font-size: 0.95rem;
+}
+
 .bo-exists {
   margin-top: var(--space-3); padding: var(--space-3);
   background: #fdf3e0; border-radius: 8px; font-size: 0.9rem;
@@ -142,3 +167,27 @@
 /* Programs that are sold after a call, not from this page. */
 .bo-gate p { margin: var(--space-2) 0 var(--space-4); line-height: 1.65; }
 .bo-gate-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* The one Back that leaves the wizard. Sits above the step indicator on every
+   step, so its position never moves. Quiet by default — it is an escape hatch,
+   not the thing the page wants you to press. */
+.bo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-4);
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--color-surface-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease;
+}
+.bo-back:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}

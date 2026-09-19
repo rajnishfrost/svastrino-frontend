@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
 import { api } from '../../../api/client.js'
 import {
   fetchMentoringPrograms,
@@ -12,8 +14,12 @@ import {
 import { useAuth } from '../../../context/AuthContext.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
-import { ArrowRight, Check, GraduationCap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, GraduationCap } from 'lucide-react'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
+import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
+import {
+  LIMITS, checkEmail, checkName, checkPhone, sanitiseCoupon, sanitisePhone,
+} from '../../../utils/validate.js'
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import './BookOnline.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
@@ -75,6 +81,21 @@ export default function BookOnline() {
   const [date, setDate] = useState(params.get('date') || '')
   const [slot, setSlot] = useState(params.get('start') || '')
   const [details, setDetails] = useState({ name: '', email: '', phone: '' })
+  // Per-field messages, so someone with two things wrong is told both rather than
+  // being sent round the loop once per field.
+  const [detailErrs, setDetailErrs] = useState({})
+
+  /**
+   * Write one detail and forget whatever was wrong with it.
+   *
+   * Errors clear as a field is corrected rather than on the next attempt: being
+   * told the email is invalid while still typing the domain is noise, and leaving
+   * the message up after it has been fixed is worse.
+   */
+  const setField = (key, value) => {
+    setDetails((d) => ({ ...d, [key]: value }))
+    setDetailErrs((e) => (e[key] ? { ...e, [key]: undefined } : e))
+  }
   const [coupon, setCoupon] = useState('')
   const [couponErr, setCouponErr] = useState('')
   const [quote, setQuote] = useState(null)
@@ -85,6 +106,12 @@ export default function BookOnline() {
   const [booking, setBooking] = useState(null) // success payload
   const [receipt, setReceipt] = useState(null)
   const [busy, setBusy] = useState(false)
+  // Which part of a payment is in flight, or null. Drives PaymentGuard, which
+  // takes the page away from the customer until the money has landed and the
+  // session is booked — see the note there.
+  //
+  // Not `busy`, which is also true while slots load and coupons are priced.
+  const [payPhase, setPayPhase] = useState(null)
   const [err, setErr] = useState('')
   const [emailExists, setEmailExists] = useState(false)
   // Set when a visitor on an expert-call programme says they have already
@@ -157,10 +184,26 @@ export default function BookOnline() {
     return () => { alive = false }
   }, [date])
 
-  const syncParams = (patch) => {
+  /**
+   * Date and slot picks replace the history entry — they change several times
+   * on the way to a booking and each one would be a stop on the way back out.
+   * Choosing a program pushes instead (`push: true`), so browser Back returns
+   * to the program list rather than leaving the page, which is what it used to
+   * do: every change replaced, so the wizard never had a history entry of its
+   * own to go back to.
+   */
+  const syncParams = (patch, { push = false } = {}) => {
     const next = new URLSearchParams(params)
     Object.entries(patch).forEach(([k, v]) => (v ? next.set(k, v) : next.delete(k)))
-    setParams(next, { replace: true })
+    setParams(next, { replace: !push })
+  }
+
+  // Back to the program list. The wizard's later steps have their own "← Back"
+  // links between them; this is the one that leaves the wizard.
+  const backToPrograms = () => {
+    syncParams({ program: '', date: '', start: '' }, { push: true })
+    setDate(''); setSlot(''); setErr('')
+    setStep('program')
   }
 
   const pickDate = (d) => { setDate(d); setSlot(''); syncParams({ date: d, start: '' }) }
@@ -189,9 +232,22 @@ export default function BookOnline() {
   // ---- step 2 → 3: guest account (if needed) + final quote ----
   const continueToVerify = async () => {
     setErr(''); setEmailExists(false)
-    if (!details.name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim())) {
-      setErr('Please enter your name and a valid email.')
-      return
+    // A signed-in booker's details come from their account and the fields are
+    // disabled, so there is nothing of theirs to check here.
+    if (!user) {
+      // The phone is optional, but a number that WAS typed is checked in full:
+      // this is how we reach them about the session, and a half-typed one is
+      // worse than none. PhoneInput seeds its own dial code, so a phone with no
+      // national part counts as empty.
+      const typedPhone = sanitisePhone(details.phone).replace(/^\+\d{1,4}$/, '')
+      const found = {
+        name: checkName(details.name),
+        email: checkEmail(details.email),
+        phone: checkPhone(typedPhone, { required: false }),
+      }
+      const errs = Object.fromEntries(Object.entries(found).filter(([, v]) => v))
+      setDetailErrs(errs)
+      if (Object.keys(errs).length) return
     }
     setBusy(true)
     try {
@@ -199,8 +255,8 @@ export default function BookOnline() {
         try {
           const r = await guestStart({
             name: details.name.trim(),
-            email: details.email.trim(),
-            phone: details.phone.trim() || undefined,
+            email: details.email.trim().toLowerCase(),
+            phone: sanitisePhone(details.phone).replace(/^\+\d{1,4}$/, '') || undefined,
           })
           login(r.token, r.user) // seamless session for this tab
         } catch (e) {
@@ -242,6 +298,10 @@ export default function BookOnline() {
   // ---- step 3 confirm ----
   const confirm = async () => {
     setErr(''); setBusy(true)
+    // A free session takes no money but still writes a booking against a slot
+    // somebody else could take, so it is held the same way. "Any payment type"
+    // includes the one that costs nothing.
+    setPayPhase(isFree ? 'confirming' : 'preparing')
     try {
       if (isFree) {
         const b = await placeBooking()
@@ -266,6 +326,11 @@ export default function BookOnline() {
       else setErr(e.message)
     } finally {
       setBusy(false)
+      // openCashfree is awaited and carries its own phases through to the
+      // receipt, so by the time this runs the payment has finished one way or
+      // another — including the mock path, which hands back to the panel and
+      // waits for a press of Pay.
+      setPayPhase(null)
     }
   }
 
@@ -276,6 +341,9 @@ export default function BookOnline() {
   // would be charged and then see "Cannot read properties of null".
   const finalize = async (paymentFields = {}, placed = order) => {
     setErr(''); setBusy(true)
+    // The money has moved; what follows is our server confirming it and writing
+    // the booking. The longest and least interruptible stretch on this page.
+    setPayPhase('confirming')
     try {
       const { order: paid } = await api('/user/payments/verify', {
         method: 'POST',
@@ -301,6 +369,7 @@ export default function BookOnline() {
       else if (e.code !== 'PAYMENT_NOT_COMPLETED') setErr(e.message)
     } finally {
       setBusy(false)
+      setPayPhase(null)
     }
   }
 
@@ -312,16 +381,21 @@ export default function BookOnline() {
   // server asks Cashfree how the order stands before creating the booking.
   const openCashfree = async (res) => {
     setErr(''); setBusy(true)
+    // Cashfree's modal takes the screen from here, so our overlay stands down:
+    // a second backdrop on top of it would cover the card form. The unload guard
+    // stays on, which is the half that matters while a card is being typed.
+    setPayPhase('gateway')
     const result = await openCashfreeCheckout(res).catch(() => null)
     if (!result) {
       setBusy(false)
+      setPayPhase(null)
       setErr('Could not load the payment gateway. Check your connection and try again.')
       return
     }
     // An in-app browser cannot hold the popup, so Cashfree has taken the
     // customer away to pay. The webhook grants the program; they book from there.
-    if (result.redirect) return
-    await finalize({}, res)
+    if (result.redirect) { setPayPhase(null); return }
+    await finalize({}, res) // raises the block again for the confirming step
   }
 
   /* ================================ render ================================ */
@@ -345,6 +419,11 @@ export default function BookOnline() {
 
   return (
     <>
+      {/* First in the tree and outside the layout: it covers the whole viewport
+          rather than any one section, and it should be mounted before anything
+          it is meant to protect. */}
+      <PaymentGuard phase={payPhase} />
+
       <PageSeo />
       <PageHero
         eyebrow="Book Online"
@@ -355,6 +434,17 @@ export default function BookOnline() {
       />
       <section className="section">
         <div className="container bo-wrap">
+
+          {/* One Back out of the wizard, in the same place on every step, so
+              nobody has to find the "Change program" link in the strip below or
+              reach for the browser's Back button. Hidden while rescheduling —
+              that arrives from the dashboard with its session already chosen. */}
+          {step !== 'program' && step !== 'success' && !rescheduleId && (
+            <button type="button" className="bo-back" onClick={backToPrograms}>
+              <ArrowLeft className="size-4" aria-hidden />
+              Back to programs
+            </button>
+          )}
 
           {/* Step indicator */}
           {step !== 'program' && step !== 'success' && !gateByCall && (
@@ -432,7 +522,7 @@ export default function BookOnline() {
                     ) : ( */}
                       <button
                         type="button"
-                        onClick={() => syncParams({ program: p.sku })}
+                        onClick={() => syncParams({ program: p.sku }, { push: true })}
                         className="mt-6 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-brand-crimson px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
                       >
                         Book Now <ArrowRight className="size-4" />
@@ -455,7 +545,7 @@ export default function BookOnline() {
                   : <span className="bo-muted"> · {paiseInr(program.price)}</span>}
               </div>
               {!rescheduleId && (
-                <button type="button" className="bo-link" onClick={() => { syncParams({ program: '' }); setStep('program') }}>
+                <button type="button" className="bo-link" onClick={backToPrograms}>
                   Change program
                 </button>
               )}
@@ -548,16 +638,27 @@ export default function BookOnline() {
                 )}
                 <label className="bo-label">Full name
                   <input className="bo-input" value={details.name} disabled={!!user}
-                         onChange={(e) => setDetails({ ...details, name: e.target.value })} />
+                         maxLength={LIMITS.name} autoComplete="name"
+                         onChange={(e) => setField('name', e.target.value)} />
+                  {detailErrs.name && <span className="bo-field-err">{detailErrs.name}</span>}
                 </label>
                 <label className="bo-label">Email
                   <input className="bo-input" type="email" value={details.email} disabled={!!user}
-                         onChange={(e) => setDetails({ ...details, email: e.target.value })} />
+                         maxLength={LIMITS.email} autoComplete="email"
+                         onChange={(e) => setField('email', e.target.value)} />
+                  {detailErrs.email && <span className="bo-field-err">{detailErrs.email}</span>}
                 </label>
-                <label className="bo-label">Phone (optional)
-                  <input className="bo-input" value={details.phone}
-                         onChange={(e) => setDetails({ ...details, phone: e.target.value })} />
-                </label>
+                {/* The same country picker as sign-up and the enquiry forms. It
+                    was a bare text box, which is how a number with no country
+                    code — unusable for the call this page is booking — ended up
+                    on file. */}
+                <span className="bo-label">Phone (optional)
+                  <PhoneInput defaultCountry="in" value={details.phone}
+                              onChange={(v) => setField('phone', v)}
+                              className="phone-intl" inputClassName="phone-intl-input"
+                              countrySelectorStyleProps={{ buttonClassName: 'phone-intl-btn' }} />
+                  {detailErrs.phone && <span className="bo-field-err">{detailErrs.phone}</span>}
+                </span>
                 {emailExists && (
                   <div className="bo-exists">
                     An account with this email already exists.{' '}
@@ -582,7 +683,8 @@ export default function BookOnline() {
                   ) : (
                     <div className="bo-coupon">
                       <input className="bo-input" placeholder="Coupon code" value={coupon}
-                             onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponErr('') }} />
+                             maxLength={LIMITS.couponCode} autoCapitalize="characters"
+                             onChange={(e) => { setCoupon(sanitiseCoupon(e.target.value)); setCouponErr('') }} />
                       {user && (
                         <button type="button" className="btn btn-secondary" disabled={busy || !coupon.trim()}
                                 onClick={() => loadQuote(coupon.trim())}>Apply</button>

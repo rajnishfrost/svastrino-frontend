@@ -6,6 +6,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } from '../../../utils/offlineVideo.js'
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
 import { openResourceWindow, writeWeekResource, closeResourceWindow } from '../../../utils/weekResource.js'
+import { LIMITS, MINIMUMS } from '../../../utils/validate.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
@@ -830,13 +831,24 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
             still leaving the box empty. */}
         <textarea
           className="learn-q-input" rows={4}
+          maxLength={LIMITS.answer}
           placeholder={q.current.placeholder
             ? `For example — ${q.current.placeholder}`
             : 'Type your answer…'}
           value={answerText} onChange={(e) => setAnswerText(e.target.value)}
         />
+        {/* The count appears only near the limit. A running counter over an empty
+            box reads as a word target, which is the opposite of what this is —
+            and stopping dead at 4,000 characters with nothing on screen to
+            explain it reads as a broken keyboard. */}
+        {answerText.length >= LIMITS.answer * 0.75 && (
+          <p className="learn-q-left">
+            {LIMITS.answer - answerText.length} characters left of {LIMITS.answer}
+          </p>
+        )}
         <button type="button" className="btn btn-primary learn-q-submit"
-                onClick={() => onSubmit(q.current.id)} disabled={submitting || !answerText.trim()}>
+                onClick={() => onSubmit(q.current.id)}
+                disabled={submitting || answerText.trim().length < MINIMUMS.answer}>
           {submitting ? 'Submitting…' : 'Submit answer'}
         </button>
       </div>

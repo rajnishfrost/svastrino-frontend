@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CheckCircle2, Mail, MapPin, Phone } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { api } from '../../../api/client.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
+import {
+  BLANK, LIMITS, EnquiryContactField, EnquiryField, splitPhone, useEnquiryForm,
+} from '../../../common_component/user/EnquiryFields/EnquiryFields.jsx'
 
 // Real contact details from the Svastrino site. Static on purpose — offices and
 // handles change rarely, so there's no value in a DB round-trip for them.
@@ -33,39 +36,50 @@ const SOCIALS = [
   { label: 'Twitter', href: 'https://twitter.com/svastrino/' },
 ]
 
-const inputClass =
-  'h-11 w-full rounded-lg border border-brand-navy/15 bg-white px-3.5 font-sans text-sm text-brand-navy placeholder:text-brand-slate/60 focus:border-brand-crimson focus:outline-none focus:ring-2 focus:ring-brand-crimson/15'
+/**
+ * This page asks for less than the home banner does — no city, and the phone is
+ * still the visitor's choice, because someone writing in about a policy question
+ * does not need to hand over their number to get an answer.
+ *
+ * A number that IS given is checked in full, country code and all. A half-typed
+ * phone is worse than no phone: the team dials it, fails, and the person is left
+ * waiting for a call that was never going to come.
+ */
+const VALIDATION = { skip: ['city'], optional: ['phone'] }
 
 export default function Contact() {
   const { user } = useAuth()
+  // The same fields, prefill, masking and rules as the home banner and the
+  // "talk to an expert" panel. Before this the page had its own form with no
+  // length caps and a bare text box for the phone, so the one visitor who
+  // happened to land here was asked for their number in a different way — and
+  // could paste ten thousand words into the message.
+  const { values, setValues, errors, set, check, showServerError, masked, hideable, toggle, formRef } =
+    useEnquiryForm(user)
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
-
-  // Prefill from the signed-in account so a student never retypes what we
-  // already hold. Runs when the profile arrives (it loads a tick after mount)
-  // and only fills fields the visitor has not already typed into.
-  useEffect(() => {
-    if (!user) return
-    setForm((f) => ({
-      ...f,
-      name: f.name || user.name || '',
-      email: f.email || user.email || '',
-      phone: f.phone || user.phone || '',
-    }))
-  }, [user])
-
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    if (!check({}, VALIDATION)) return
     setErr(''); setBusy(true)
     try {
-      await api('/user/enquiry', { method: 'POST', body: { ...form, source: 'contact' } })
+      // PhoneInput seeds its own dial code, so an untouched optional phone holds
+      // "+91". Send that and the server would reject a number nobody typed.
+      const phone = splitPhone(values.phone).national ? values.phone : ''
+      await api('/user/enquiry', {
+        method: 'POST',
+        auth: user ? 'user' : false,
+        body: { ...values, phone, source: 'contact' },
+      })
       setSent(true)
     } catch (ex) {
-      setErr(ex.message || 'Could not send that just now — please try again.')
+      // When the server named a field, the message belongs on that box. Only the
+      // rest — a rate limit, a network failure — goes under the button.
+      if (!showServerError(ex)) {
+        setErr(ex.message || 'Could not send that just now — please try again.')
+      }
     } finally {
       setBusy(false)
     }
@@ -102,7 +116,7 @@ export default function Contact() {
                     <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-brand-slate">
                       Someone from our team will get back to you shortly. We have sent a
                       confirmation to{' '}
-                      <strong className="font-semibold text-brand-navy">{form.email}</strong>{' '}
+                      <strong className="font-semibold text-brand-navy">{values.email}</strong>{' '}
                       so you have it on record.
                     </p>
                   </div>
@@ -117,9 +131,10 @@ export default function Contact() {
                       type="button"
                       onClick={() => {
                         // A fresh sheet, minus what the account already tells us.
-                        setForm({
+                        setValues({
+                          ...BLANK,
                           name: user?.name || '', email: user?.email || '',
-                          phone: user?.phone || '', message: '',
+                          phone: user?.phone || '',
                         })
                         setErr('')
                         setSent(false)
@@ -131,58 +146,42 @@ export default function Contact() {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={onSubmit} className="space-y-5">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-navy">Name</label>
-                    <input
-                      className={inputClass}
-                      type="text"
-                      required
-                      placeholder="Full name"
-                      autoComplete="name"
-                      value={form.name}
-                      onChange={set('name')}
-                    />
-                  </div>
+                /* noValidate: the browser's own bubbles would pre-empt our
+                   messages, and it only ever complains about one field at a time. */
+                <form ref={formRef} onSubmit={onSubmit} noValidate className="space-y-5">
+                  <EnquiryField
+                    name="name" label="Name" placeholder="Full name" autoComplete="name"
+                    maxLength={LIMITS.name}
+                    value={values.name} onChange={set('name')} error={errors.name}
+                  />
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-navy">Email</label>
-                    <input
-                      className={inputClass}
-                      type="email"
-                      required
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                      value={form.email}
-                      onChange={set('email')}
-                    />
-                  </div>
+                  <EnquiryContactField
+                    kind="email" label="Email" value={values.email} onChange={set('email')}
+                    error={errors.email} masked={masked.email}
+                    hideable={hideable.email} onToggle={() => toggle('email')}
+                  />
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-navy">
-                      Phone number <span className="font-normal text-brand-slate">(optional)</span>
-                    </label>
-                    <input
-                      className={inputClass}
-                      type="tel"
-                      placeholder="+91 …"
-                      autoComplete="tel"
-                      value={form.phone}
-                      onChange={set('phone')}
-                    />
-                  </div>
+                  {/* The same country picker the sign-up page and the home banner
+                      use. It was a bare text box here, which is how we ended up
+                      with numbers on file that nobody could dial. */}
+                  <EnquiryContactField
+                    kind="phone"
+                    label={
+                      <>
+                        Phone number{' '}
+                        <span className="font-normal text-brand-slate">(optional)</span>
+                      </>
+                    }
+                    value={values.phone} onChange={set('phone')}
+                    error={errors.phone} masked={masked.phone}
+                    hideable={hideable.phone} onToggle={() => toggle('phone')}
+                  />
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-navy">Message</label>
-                    <textarea
-                      className={`${inputClass} h-auto py-2.5`}
-                      rows={5}
-                      required
-                      placeholder="How can we help?"
-                      value={form.message}
-                      onChange={set('message')}
-                    />
-                  </div>
+                  <EnquiryField
+                    name="message" label="Message" rows={5} maxLength={LIMITS.message}
+                    placeholder="How can we help?"
+                    value={values.message} onChange={set('message')} error={errors.message}
+                  />
 
                   <button
                     type="submit"

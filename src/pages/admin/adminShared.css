@@ -34,6 +34,30 @@
 }
 .adm-textarea { resize: vertical; min-height: 64px; }
 .adm-field { margin-bottom: 12px; }
+
+/* The country-code phone picker, wherever a panel or portal form asks for a
+   number. Skinned through the library's own CSS variables so it matches
+   .adm-input beside it instead of bringing its own look. */
+.adm-field .phone-intl {
+  --react-international-phone-height: 38px;
+  --react-international-phone-font-size: 14px;
+  --react-international-phone-border-radius: var(--radius-sm);
+  --react-international-phone-border-color: var(--gray-200);
+  --react-international-phone-background-color: #fff;
+  --react-international-phone-text-color: var(--color-text);
+}
+.adm-field .phone-intl-input {
+  min-height: 38px;
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-sans);
+}
+.adm-field .phone-intl-input:focus,
+.adm-field .phone-intl-btn:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
 .adm-field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 4px; }
 .adm-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
