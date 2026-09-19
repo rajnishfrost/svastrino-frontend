@@ -58,6 +58,33 @@ pulsing amber dot, driven purely by the browser `online`/`offline` events.
 Mounted once above the Navbar in `PublicSite`, so it appears site-wide the moment
 connectivity drops and disappears on reconnect.
 
+### PaymentGuard — `common_component/user/PaymentGuard/PaymentGuard.jsx`
+The screen that covers everything while money is moving. Mounted by **Checkout**
+and **Book Online**, driven by a `payPhase` state on each — never by their `busy`
+flag, which is also true while a coupon is priced.
+
+| `phase` | Draws | Why |
+|---|---|---|
+| `'preparing'` | full block | we are creating the order |
+| `'gateway'` | **nothing** | Cashfree's modal owns the screen; a second backdrop on top would cover the card form. The unload guard stays armed |
+| `'confirming'` | full block | the money has moved and the server is confirming it — the stretch that must not be interrupted |
+| `null` | nothing | not paying; no listeners |
+
+While it is up: pointer events are swallowed by the overlay, `Tab` and `Escape`
+are trapped so the focus ring cannot walk onto the buttons behind it, the body
+stops scrolling, and `beforeunload` makes the browser ask before a refresh or a
+tab close. Verified against the real checkout: six clicks and six `Enter`
+presses during confirmation produced exactly **one** `/payments/verify` call.
+
+The copy is fixed — *"Please do not refresh the page or close the window."* — and
+sits in its own amber box because it is the only thing on that screen the
+customer has to act on. Colours come from the semantic tokens, so it arrives
+navy-and-crimson on the main site and brown-and-green under `.theme-nirmaan`.
+
+Adding a third payment flow? Give it a `payPhase`, set the three phases around
+the same three moments, and render `<PaymentGuard phase={payPhase} />` at the top
+of its tree.
+
 ## Route guards
 | Component | Redirects when… | Wraps |
 |---|---|---|

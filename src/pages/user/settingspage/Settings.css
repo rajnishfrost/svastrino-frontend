@@ -492,7 +492,6 @@
 
 /* PhoneInput inside an edit field — skinned via the library's CSS variables. */
 .settings-edit .phone-intl {
-  width: 100%;
   --react-international-phone-height: 44px;
   --react-international-phone-font-size: 15px;
   --react-international-phone-border-radius: var(--radius-sm);
@@ -502,7 +501,6 @@
 }
 
 .settings-edit .phone-intl-input {
-  width: 100%;
   min-height: 44px;
   border-left: none;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;

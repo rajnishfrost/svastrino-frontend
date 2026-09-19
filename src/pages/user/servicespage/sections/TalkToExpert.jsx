@@ -4,7 +4,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 import {
-  useEnquiryForm, EnquiryField, EnquiryContactField,
+  LIMITS, useEnquiryForm, EnquiryField, EnquiryContactField,
 } from '../../../../common_component/user/EnquiryFields/EnquiryFields.jsx'
 
 /**
@@ -36,7 +36,7 @@ const onDate = (iso) =>
 
 export default function TalkToExpert({ program }) {
   const { user } = useAuth()
-  const { values, errors, set, check, masked, hideable, toggle, formRef } = useEnquiryForm(user, {
+  const { values, errors, set, check, showServerError, masked, hideable, toggle, formRef } = useEnquiryForm(user, {
     preferredTime: '',
   })
   const [sent, setSent] = useState(false)
@@ -68,7 +68,11 @@ export default function TalkToExpert({ program }) {
       })
       setSent(true)
     } catch (ex) {
-      setErr(ex.message || 'Could not send that just now — please try again.')
+      // A field the server named is marked on that field; anything else — a rate
+      // limit, a network failure — goes under the button.
+      if (!showServerError(ex)) {
+        setErr(ex.message || 'Could not send that just now — please try again.')
+      }
     } finally {
       setBusy(false)
     }
@@ -204,7 +208,7 @@ export default function TalkToExpert({ program }) {
         <form ref={formRef} onSubmit={submit} noValidate className="mt-6 grid gap-4 sm:grid-cols-2">
           <EnquiryField
             className="sm:col-span-2"
-            name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={80}
+            name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={LIMITS.name}
             value={values.name} onChange={set('name')} error={errors.name}
           />
 
@@ -226,20 +230,20 @@ export default function TalkToExpert({ program }) {
           <EnquiryField
             className="sm:col-span-2"
             name="city" label="Location" placeholder="City / Town / Village Name"
-            autoComplete="address-level2" maxLength={80}
+            autoComplete="address-level2" maxLength={LIMITS.city}
             value={values.city} onChange={set('city')} error={errors.city}
           />
 
           <EnquiryField
             className="sm:col-span-2"
-            name="preferredTime" label="Best time to call" maxLength={80}
+            name="preferredTime" label="Best time to call" maxLength={LIMITS.shortText}
             placeholder="e.g. weekdays after 6 pm"
             value={values.preferredTime} onChange={set('preferredTime')} error={errors.preferredTime}
           />
 
           <EnquiryField
             className="sm:col-span-2"
-            name="message" label="What would you like to discuss?" rows={3} maxLength={2000}
+            name="message" label="What would you like to discuss?" rows={3} maxLength={LIMITS.message}
             placeholder="Anything that would help us prepare for the call"
             value={values.message} onChange={set('message')} error={errors.message}
           />

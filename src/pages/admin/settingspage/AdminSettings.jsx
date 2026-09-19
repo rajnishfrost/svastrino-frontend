@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Site settings — the switches the team can change without a deploy.
@@ -63,10 +64,14 @@ export default function AdminSettings() {
         <form onSubmit={save}>
           <div className="adm-field">
             <label className="adm-label" htmlFor="enquiryTo">Send enquiries to</label>
+            {/* Ten addresses is what the server accepts on this list, and each
+                one is held to the site's email rule — so the cap here is ten of
+                the longest address there can be, plus the separators. */}
             <input
               id="enquiryTo"
               className="adm-input"
               type="text"
+              maxLength={(LIMITS.email + 2) * 10}
               value={enquiryTo}
               onChange={(e) => setEnquiryTo(e.target.value)}
               placeholder="enquiries@svastrino.com, rohit@svastrino.com"

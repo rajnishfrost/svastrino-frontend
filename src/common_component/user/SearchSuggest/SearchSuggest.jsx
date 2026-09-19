@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LIMITS, sanitiseTyping } from '../../../utils/validate.js'
 
 /**
  * A search box that offers the matches it already knows about.
@@ -138,7 +139,12 @@ export default function SearchSuggest({
       <input
         type="search"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        // Capped and stripped of markup on the way in. The term reaches a
+        // server-side regex over the blog and resource indexes, so an unbounded
+        // search box is an unbounded pattern — and nobody searches this site with
+        // eighty characters, let alone a thousand.
+        maxLength={LIMITS.search}
+        onChange={(e) => onChange(sanitiseTyping(e.target.value, LIMITS.search))}
         style={{ paddingLeft: Icon ? ICON_LEFT + ICON_SIZE + 8 : 14, paddingRight: Icon ? 12 : 14 }}
         onKeyDown={onKeyDown}
         onFocus={() => items.length && setOpen(true)}

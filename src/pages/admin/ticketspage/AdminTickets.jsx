@@ -3,6 +3,7 @@ import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminTickets.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Support conversations, and the one screen where a locked course is reopened.
@@ -238,8 +239,7 @@ export default function AdminTickets() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search by name, email, subject or course"
-          aria-label="Search conversations"
-        />
+          aria-label="Search conversations" maxLength={LIMITS.search} />
         <select className="adm-select tkt-filter" value={status}
                 onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
           {STATUS_FILTERS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
@@ -394,7 +394,7 @@ export default function AdminTickets() {
                                   id={`reply-${r.id}`}
                                   className="adm-textarea"
                                   rows={4}
-                                  maxLength={4000}
+                                  maxLength={LIMITS.ticketMessage}
                                   value={reply}
                                   onChange={(e) => setReply(e.target.value)}
                                   onKeyDown={(e) => {

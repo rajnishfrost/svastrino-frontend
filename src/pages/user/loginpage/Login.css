@@ -84,7 +84,6 @@
 /* ---- Phone (react-international-phone) — every country built in ----
    Skinned to match the form via the library's CSS variables. */
 .phone-intl {
-  width: 100%;
   --react-international-phone-height: 46px;
   --react-international-phone-font-size: 16px;
   --react-international-phone-border-radius: var(--radius-sm);
@@ -96,7 +95,6 @@
 /* The inner text input carries the generic .login-form input rules too, so
    pull off the left border/radius to keep it flush against the flag button. */
 .login-form .phone-intl-input {
-  width: 100%;
   min-height: 46px;
   border-left: none;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;

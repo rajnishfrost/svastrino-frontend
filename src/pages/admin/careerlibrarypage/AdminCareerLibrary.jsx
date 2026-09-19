@@ -5,6 +5,7 @@ import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmMo
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import BlockEditor from '../../../common_component/admin/BlockEditor/BlockEditor.jsx'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Career Library — the three things that make up /resources#career-library:
@@ -168,12 +169,12 @@ function StreamForm({ field, onCancel, onSaved }) {
       <h3 style={{ fontSize: 15, marginBottom: 12 }}>{field ? `Edit ${field.name}` : 'New stream'}</h3>
       <div className="adm-row2">
         <div className="adm-field"><label>Name</label>
-          <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Professional Commerce Courses" /></div>
+          <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Professional Commerce Courses" maxLength={LIMITS.title} /></div>
         <div className="adm-field"><label>Slug {field ? '(fixed — courses link to it)' : '(unique)'}</label>
-          <input className="adm-input" value={f.slug} disabled={!!field} onChange={(e) => set('slug', slugify(e.target.value))} /></div>
+          <input className="adm-input" value={f.slug} disabled={!!field} onChange={(e) => set('slug', slugify(e.target.value))} maxLength={LIMITS.slug} /></div>
       </div>
       <div className="adm-field"><label>Description</label>
-        <textarea className="adm-textarea" rows={2} value={f.description} onChange={(e) => set('description', e.target.value)} /></div>
+        <textarea className="adm-textarea" rows={2} value={f.description} onChange={(e) => set('description', e.target.value)} maxLength={LIMITS.description} /></div>
       <div className="adm-row2">
         <div className="adm-field"><label>Order</label>
           <input className="adm-input adm-num" type="number" value={f.order} onChange={(e) => set('order', e.target.value)} /></div>
@@ -255,7 +256,7 @@ function CoursesTab({ fields, onCourseSaved }) {
     <div>
       <div className="adm-toolbar">
         <input className="adm-input" style={{ width: 220 }} value={q}
-               onChange={(e) => setQ(e.target.value)} placeholder="Search course name or slug…" />
+               onChange={(e) => setQ(e.target.value)} placeholder="Search course name or slug…" maxLength={LIMITS.search} />
         <select className="adm-select" style={{ width: 220 }} value={field} onChange={(e) => setField(e.target.value)}>
           <option value="">All streams</option>
           {fields.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
@@ -398,9 +399,9 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
       <div className="adm-panel">
         <div className="adm-row2">
           <div className="adm-field"><label>Name</label>
-            <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Chartered Accountancy" /></div>
+            <input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="Chartered Accountancy" maxLength={LIMITS.title} /></div>
           <div className="adm-field"><label>Slug — the URL: svastrino.com/<em>{f.slug || '…'}</em></label>
-            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} />
+            <input className="adm-input" value={f.slug} onChange={(e) => set('slug', slugify(e.target.value))} maxLength={LIMITS.slug} />
           {course?.slug && f.slug !== course?.slug && (
             <p className="adm-sub" style={{ margin: '4px 0 0', color: 'var(--color-warning, #a15c00)' }}>
               svastrino.com/{course?.slug} will redirect here once the redirects are
@@ -421,15 +422,15 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
           <div className="adm-field"><label>Search title</label>
             <input className="adm-input" value={f.seoTitle}
               onChange={(e) => set('seoTitle', e.target.value)}
-              placeholder={legacy?.title || 'Uses the name above'} /></div>
+              placeholder={legacy?.title || 'Uses the name above'} maxLength={LIMITS.title} /></div>
           <div className="adm-field"><label>Search description</label>
             <textarea className="adm-input" rows={2} value={f.seoDescription}
               onChange={(e) => set('seoDescription', e.target.value)}
-              placeholder={legacy?.description || 'Uses the opening lines of the page'} /></div>
+              placeholder={legacy?.description || 'Uses the opening lines of the page'} maxLength={LIMITS.description} /></div>
           <div className="adm-field"><label>Same as another page (optional)</label>
             <input className="adm-input" value={f.canonicalSlug}
               onChange={(e) => set('canonicalSlug', slugify(e.target.value))}
-              placeholder="another-page-slug" />
+              placeholder="another-page-slug" maxLength={LIMITS.slug} />
             <p className="adm-sub" style={{ margin: '4px 0 0' }}>
               For two pages that say close to the same thing. Both keep working;
               search engines pool the ranking onto the one named here instead of
@@ -471,7 +472,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
 
         <div className="adm-row2">
           <div className="adm-field"><label>Original URL (optional — for migrated pages)</label>
-            <input className="adm-input" value={f.sourceUrl} onChange={(e) => set('sourceUrl', e.target.value)} /></div>
+            <input className="adm-input" value={f.sourceUrl} onChange={(e) => set('sourceUrl', e.target.value)} maxLength={LIMITS.url} /></div>
           <div className="adm-field" style={{ alignSelf: 'end', paddingBottom: 10 }}>
             <label style={{ display: 'inline', fontSize: 14, fontWeight: 400, color: 'inherit' }}>
               <input type="checkbox" checked={f.active} onChange={(e) => set('active', e.target.checked)} /> Visible on site

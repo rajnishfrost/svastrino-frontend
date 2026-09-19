@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
 import { api, apiText, downloadText } from '../../../api/client.js'
 import { useOrg } from '../../../common_component/org/OrgContext/OrgContext.jsx'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import '../../admin/adminShared.css'
+import {
+  LIMITS, checkEmail, checkName, checkPhone, sanitisePhone,
+} from '../../../utils/validate.js'
 
 /**
  * The organisation's student roster.
@@ -90,8 +95,7 @@ export default function OrgStudents() {
           style={{ maxWidth: 260 }}
           placeholder="Search name or email…"
           value={q}
-          onChange={(e) => { setQ(e.target.value); load(e.target.value) }}
-        />
+          onChange={(e) => { setQ(e.target.value); load(e.target.value) }} maxLength={LIMITS.search} />
         <button className="adm-btn" onClick={() => setShowImport(true)}>Bulk add from CSV</button>
         <button className="adm-btn adm-btn--ghost" onClick={() => setShowAdd(true)}>Add one student</button>
         <button className="adm-btn adm-btn--ghost" onClick={downloadSample}>Download sample CSV</button>
@@ -299,8 +303,18 @@ function AddStudentModal({ onClose, onDone }) {
 
   const submit = async (e) => {
     e.preventDefault()
+    // A dial code with no number after it is PhoneInput seeding itself, not
+    // something the office typed, so it is cleared rather than sent.
+    const phone = sanitisePhone(f.phone).replace(/^\+\d{1,4}$/, '')
+    // Checked here as well as on the server, because a bad row in this form ends
+    // with an invite email going to an address that cannot receive it.
+    const bad =
+      checkEmail(f.email) ||
+      checkName(f.name, { required: false }) ||
+      checkPhone(phone, { required: false })
+    if (bad) { setError(bad); return }
     setBusy(true); setError('')
-    try { await api('/org/students', { method: 'POST', auth: 'user', body: f }); onDone() }
+    try { await api('/org/students', { method: 'POST', auth: 'user', body: { ...f, phone } }); onDone() }
     catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
@@ -309,14 +323,20 @@ function AddStudentModal({ onClose, onDone }) {
       <form className="adm-modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <h3>Add a student</h3>
         <div className="adm-field"><label>Full name</label>
-          <input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} maxLength={80} /></div>
+          <input className="adm-input" value={f.name} onChange={(e) => set('name', e.target.value)} maxLength={LIMITS.name} /></div>
         <div className="adm-field"><label>Email (their login)</label>
-          <input className="adm-input" type="email" value={f.email} onChange={(e) => set('email', e.target.value)} required maxLength={254} /></div>
+          <input className="adm-input" type="email" value={f.email} onChange={(e) => set('email', e.target.value)} required maxLength={LIMITS.email} /></div>
         <div className="adm-row2">
+          {/* The same country picker as everywhere else. The CSV importer still
+              takes a bare ten-digit number, because that is what a school office
+              types into a spreadsheet — but a number added by hand here gets its
+              country chosen rather than guessed. */}
           <div className="adm-field"><label>Phone</label>
-            <input className="adm-input" value={f.phone} onChange={(e) => set('phone', e.target.value)} maxLength={20} /></div>
+            <PhoneInput defaultCountry="in" value={f.phone} onChange={(v) => set('phone', v)}
+                        className="phone-intl" inputClassName="phone-intl-input"
+                        countrySelectorStyleProps={{ buttonClassName: 'phone-intl-btn' }} /></div>
           <div className="adm-field"><label>Class</label>
-            <input className="adm-input" value={f.class} onChange={(e) => set('class', e.target.value)} maxLength={20} /></div>
+            <input className="adm-input" value={f.class} onChange={(e) => set('class', e.target.value)} maxLength={LIMITS.studentClass} /></div>
         </div>
         {error && <p className="adm-error">{error}</p>}
         <div className="adm-modal-actions">

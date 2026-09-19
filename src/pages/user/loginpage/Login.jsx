@@ -6,6 +6,9 @@ import { api } from '../../../api/client.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { useGoogleAuth } from '../../../hooks/useGoogleAuth.js'
 import { validatePassword } from '../../../utils/password.js'
+import {
+  EMAIL_RE, LIMITS, MINIMUMS, NAME_RE, sanitiseTyping,
+} from '../../../utils/validate.js'
 import { TRIAL_INTENT, LEARN_PATH } from '../nirmaanpage/trialIntent.js'
 import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
@@ -23,15 +26,21 @@ import './Login.css'
  */
 
 /* ---------- Input caps (belt-and-braces DoS + XSS surface) ---------- */
-const CAP = { name: 60, email: 254, phone: 15, password: 128 }
+// From utils/validate.js, which the server mirrors — this page used to carry its
+// own numbers, and its phone cap of 15 disagreed with the 20 the enquiry forms
+// used and the 20 the database holds.
+const CAP = LIMITS
 
 /* ---------- Validation helpers ---------- */
-const RE_EMAIL = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-const RE_NAME  = /^[a-zA-ZÀ-ſ][a-zA-ZÀ-ſ\s'.-]{1,59}$/
+// The site's one email rule and one name rule. The local copies these replace
+// were Latin-only, so a name in Devanagari was refused at sign-up and accepted
+// everywhere else.
+const RE_EMAIL = EMAIL_RE
+const RE_NAME = NAME_RE
 
 // Strip characters that can smuggle HTML or scripts. Real defence lives on the
 // server, but pruning at the input keeps the payload clean.
-const sanitise = (s) => (s ?? '').replace(/[<>]/g, '').slice(0, 500)
+const sanitise = (s) => sanitiseTyping(s, 500)
 const cleanDigits = (s) => (s ?? '').replace(/\D+/g, '')
 
 export default function Login() {
@@ -132,7 +141,8 @@ export default function Login() {
   const validateSignup = () => {
     const errs = {}
     if (!name) errs.name = 'Name required'
-    else if (!RE_NAME.test(name)) errs.name = 'Only letters, spaces, hyphens, apostrophes'
+    else if (name.trim().length < MINIMUMS.name) errs.name = 'Enter your full name'
+    else if (!RE_NAME.test(name.trim())) errs.name = 'Only letters, spaces, hyphens, apostrophes'
 
     if (!email) errs.email = 'Email required'
     else if (!RE_EMAIL.test(email)) errs.email = 'Enter a valid email address'

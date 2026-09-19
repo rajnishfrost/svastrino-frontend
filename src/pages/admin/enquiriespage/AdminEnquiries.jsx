@@ -3,6 +3,7 @@ import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminEnquiries.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Everyone who has written in — the Contact page, the home-page banner, and the
@@ -184,7 +185,7 @@ export default function AdminEnquiries() {
                           className="adm-textarea"
                           rows={3}
                           value={note}
-                          maxLength={2000}
+                          maxLength={LIMITS.notes}
                           onChange={(e) => setNote(e.target.value)}
                           placeholder="What happened on the call, what they need, what to do next…"
                         />

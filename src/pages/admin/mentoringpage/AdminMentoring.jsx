@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Services admin — two tabs:
@@ -140,12 +141,12 @@ function BookingsTab() {
                         <label className="adm-label">Session update (visible to the student)
                           <textarea className="adm-input" rows={3} value={form.update}
                                     onChange={(e) => setForm({ ...form, update: e.target.value })}
-                                    placeholder="What was covered, key takeaways…" />
+                                    placeholder="What was covered, key takeaways…" maxLength={LIMITS.longText} />
                         </label>
                         <label className="adm-label">Tasks — one per line
                           <textarea className="adm-input" rows={3} value={form.tasks}
                                     onChange={(e) => setForm({ ...form, tasks: e.target.value })}
-                                    placeholder={'Research 3 colleges\nDraft SOP outline'} />
+                                    placeholder={'Research 3 colleges\nDraft SOP outline'} maxLength={LIMITS.longText} />
                         </label>
                         <label className="adm-label">Status
                           <select className="adm-select" style={{ width: 160 }} value={form.status}
@@ -254,7 +255,7 @@ function ProgramsTab() {
                         {p.featured && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 6 }}>Featured</span>}
                         {/* Worth seeing at a glance: this decides whether the
                             site takes money for the program on the spot. */}
-                        {p.buyMode === 'expert-call' && (
+                        {(p.expertEnquiry ?? p.buyMode === 'expert-call') && (
                           <span className="adm-badge adm-badge--muted" style={{ marginLeft: 6 }}>Sold after a call</span>
                         )}
                       </h3>
@@ -298,6 +299,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
     summary: pkg?.summary || '', trustLine: pkg?.trustLine || '',
     durationLabel: pkg?.durationLabel || '', sessionsLabel: pkg?.sessionsLabel || '',
     deliveryMode: pkg?.deliveryMode || 'Online', buyMode: pkg?.buyMode || 'self-serve',
+    expertEnquiry: pkg?.expertEnquiry ?? pkg?.buyMode === 'expert-call',
     featured: pkg?.featured || false, active: pkg ? pkg.active : true, order: pkg?.order ?? '',
   })
   const [busy, setBusy] = useState(false)
@@ -321,7 +323,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         features: f.features.split('\n').map((s) => s.trim()).filter(Boolean),
         summary: f.summary, trustLine: f.trustLine,
         durationLabel: f.durationLabel, sessionsLabel: f.sessionsLabel,
-        deliveryMode: f.deliveryMode, buyMode: f.buyMode,
+        deliveryMode: f.deliveryMode, buyMode: f.buyMode, expertEnquiry: f.expertEnquiry,
         cta: f.cta || (isNew ? `Book ${f.name}` : undefined),
         badge: f.badge || null,
         featured: f.featured, active: f.active,
@@ -350,10 +352,10 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         </select>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="e.g. Bloom Plus" /></div>
+        <div className="adm-field"><label>Name</label><input className="adm-input" value={f.name} onChange={(e) => onName(e.target.value)} placeholder="e.g. Bloom Plus" maxLength={LIMITS.title} /></div>
         <div className="adm-field">
           <label>SKU {isNew ? '(unique — used by payments)' : '(fixed)'}</label>
-          <input className="adm-input" value={f.sku} disabled={!isNew} onChange={(e) => set('sku', slugify(e.target.value))} />
+          <input className="adm-input" value={f.sku} disabled={!isNew} onChange={(e) => set('sku', slugify(e.target.value))} maxLength={LIMITS.slug} />
         </div>
       </div>
       <div className="adm-row2">
@@ -364,16 +366,16 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         <div className="adm-field"><label>Sessions in the program</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
         <div className="adm-field"><label>Session length (mins)</label><input className="adm-input adm-num" type="number" value={f.sessionMins} onChange={(e) => set('sessionMins', e.target.value)} /></div>
       </div>
-      <div className="adm-field"><label>Tagline (red line on the card)</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} /></div>
-      <div className="adm-field"><label>Summary (the paragraph on the /services card)</label><textarea className="adm-textarea" rows={3} value={f.summary} onChange={(e) => set('summary', e.target.value)} /></div>
+      <div className="adm-field"><label>Tagline (red line on the card)</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
+      <div className="adm-field"><label>Summary (the paragraph on the /services card)</label><textarea className="adm-textarea" rows={3} value={f.summary} onChange={(e) => set('summary', e.target.value)} maxLength={LIMITS.description} /></div>
       {/* These three read out as "Duration: … / Sessions: … / Mode: …" on the
           card. They are the words a visitor reads — the numbers above are what
           the booking calendar and the enrollment actually count. */}
       <div className="adm-row2">
-        <div className="adm-field"><label>Duration (as written on the card)</label><input className="adm-input" value={f.durationLabel} onChange={(e) => set('durationLabel', e.target.value)} placeholder="e.g. 45 - 60 days" /></div>
-        <div className="adm-field"><label>Mode</label><input className="adm-input" value={f.deliveryMode} onChange={(e) => set('deliveryMode', e.target.value)} placeholder="Online" /></div>
+        <div className="adm-field"><label>Duration (as written on the card)</label><input className="adm-input" value={f.durationLabel} onChange={(e) => set('durationLabel', e.target.value)} placeholder="e.g. 45 - 60 days" maxLength={LIMITS.name} /></div>
+        <div className="adm-field"><label>Mode</label><input className="adm-input" value={f.deliveryMode} onChange={(e) => set('deliveryMode', e.target.value)} placeholder="Online" maxLength={LIMITS.name} /></div>
       </div>
-      <div className="adm-field"><label>Sessions (as written on the card)</label><textarea className="adm-textarea" rows={2} value={f.sessionsLabel} onChange={(e) => set('sessionsLabel', e.target.value)} placeholder="e.g. Pre-session 90 minutes + 3 sessions of ~2.5 hours each" /></div>
+      <div className="adm-field"><label>Sessions (as written on the card)</label><textarea className="adm-textarea" rows={2} value={f.sessionsLabel} onChange={(e) => set('sessionsLabel', e.target.value)} placeholder="e.g. Pre-session 90 minutes + 3 sessions of ~2.5 hours each" maxLength={LIMITS.name} /></div>
       <div className="adm-field">
         <label>How it is bought</label>
         <select className="adm-input" value={f.buyMode} onChange={(e) => set('buyMode', e.target.value)}>
@@ -383,13 +385,30 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
       </div>
       <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
         {f.buyMode === 'expert-call'
-          ? 'The card shows "Talk to an expert" and the server refuses a direct checkout for this SKU.'
-          : 'The card shows "Book now" and anyone can pay for it online.'}
+          ? 'The server refuses a direct checkout for this SKU until the team approves the caller.'
+          : 'Anyone can pay for this online, at the price on the card.'}
       </p>
-      <div className="adm-field"><label>Features (one per line)</label><textarea className="adm-textarea" rows={4} value={f.features} onChange={(e) => set('features', e.target.value)} /></div>
+      {/* Separate from "how it is bought" on purpose. Breakthrough is both:
+          bought outright from /book-online, and offered at a negotiated price
+          through the form on its own page. One setting could not say both, and
+          while it tried, opening the checkout took the form off the page. */}
+      <div className="adm-field">
+        <label>Programme page</label>
+        <select className="adm-input" value={f.expertEnquiry ? 'enquiry' : 'book'}
+                onChange={(e) => set('expertEnquiry', e.target.value === 'enquiry')}>
+          <option value="book">Book now strip — links to the checkout</option>
+          <option value="enquiry">Talk to an Expert — call-back form, team agrees a price</option>
+        </select>
+      </div>
+      <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
+        {f.expertEnquiry
+          ? 'The /services card and the programme page both read "Talk to an Expert" and lead to the form. Requests land in Enquiries.'
+          : 'The card and the page both read "Book Now" and lead to the booking wizard.'}
+      </p>
+      <div className="adm-field"><label>Features (one per line)</label><textarea className="adm-textarea" rows={4} value={f.features} onChange={(e) => set('features', e.target.value)} maxLength={LIMITS.longText} /></div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Button text (blank = auto)</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} /></div>
-        <div className="adm-field"><label>Badge (blank = none)</label><input className="adm-input" value={f.badge} onChange={(e) => set('badge', e.target.value)} placeholder="e.g. Most Popular" /></div>
+        <div className="adm-field"><label>Button text (blank = auto)</label><input className="adm-input" value={f.cta} onChange={(e) => set('cta', e.target.value)} maxLength={LIMITS.name} /></div>
+        <div className="adm-field"><label>Badge (blank = none)</label><input className="adm-input" value={f.badge} onChange={(e) => set('badge', e.target.value)} placeholder="e.g. Most Popular" maxLength={LIMITS.name} /></div>
       </div>
       <div style={{ display: 'flex', gap: 18, margin: '4px 0 14px', fontSize: 14 }}>
         <label><input type="checkbox" checked={f.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured</label>

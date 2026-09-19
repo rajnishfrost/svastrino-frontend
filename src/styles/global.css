@@ -259,3 +259,30 @@ main {
     width: 100%;
   }
 }
+
+/* ---- Country-code phone field (react-international-phone) ----
+   The flag button and the number are one control, so the row stays horizontal
+   everywhere it is used. The library ships `display: flex` on its own container
+   class, but every page also puts `.phone-intl` on it and a page rule wins on
+   specificity — one of them said `display: block`, which stacked the flag above
+   the number on the booking page. Layout lives here now; pages set only their
+   own height and colours, through the library's CSS variables. */
+.phone-intl {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* The number takes whatever the flag button leaves. `min-width: 0` lets it
+   shrink inside a narrow column rather than pushing the row wider than its
+   field; `width: auto` undoes the `width: 100%` a flex item does not want. */
+.phone-intl-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+/* The flag button keeps its natural width at every size. */
+.phone-intl-btn {
+  flex: 0 0 auto;
+}

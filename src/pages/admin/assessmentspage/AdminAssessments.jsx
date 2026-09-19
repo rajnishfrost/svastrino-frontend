@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api, apiUpload } from '../../../api/client.js'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { LIMITS } from '../../../utils/validate.js'
 
 const STATUS_CLS = { completed: 'ok', submitted: 'warn', in_progress: 'muted', not_started: 'muted' }
 const STATUS_LABEL = {
@@ -183,7 +184,7 @@ function CompleteModal({ assessment, onClose, onSaved }) {
             can break if the report is regenerated)
           </label>
           <input className="adm-input" value={reportUrl} onChange={(e) => setReportUrl(e.target.value)}
-                 placeholder="https://student-info.s3…amazonaws.com/…/report.pdf" />
+                 placeholder="https://student-info.s3…amazonaws.com/…/report.pdf" maxLength={LIMITS.url} />
           {reportUrl && uploadPct === null && (
             <p className="adm-ok">
               Report ready — <a href={reportUrl} target="_blank" rel="noopener noreferrer">preview</a>
@@ -192,11 +193,11 @@ function CompleteModal({ assessment, onClose, onSaved }) {
         </div>
         <div className="adm-field">
           <label>Top careers (comma-separated)</label>
-          <input className="adm-input" value={topCareers} onChange={(e) => setTopCareers(e.target.value)} placeholder="Software Engineer, Data Analyst, …" />
+          <input className="adm-input" value={topCareers} onChange={(e) => setTopCareers(e.target.value)} placeholder="Software Engineer, Data Analyst, …" maxLength={LIMITS.longText} />
         </div>
         <div className="adm-field">
           <label>Summary (optional)</label>
-          <textarea className="adm-input" rows={3} value={summary} onChange={(e) => setSummary(e.target.value)} />
+          <textarea className="adm-input" rows={3} value={summary} onChange={(e) => setSummary(e.target.value)} maxLength={LIMITS.description} />
         </div>
 
         {err && <p className="adm-error">{err}</p>}

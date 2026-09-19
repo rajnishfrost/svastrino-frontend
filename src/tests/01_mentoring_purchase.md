@@ -167,30 +167,27 @@ purchase really happened rather than just looking like it did.
 
 ---
 
-## G · Breakthrough — sold after a call
+## G · Breakthrough — bought like the other two
 
-Breakthrough carries `buyMode: 'expert-call'`. The checkout refuses it until an
-admin has approved that person's call request.
+Breakthrough was sold after a call until 2026-09-19: it carried
+`buyMode: 'expert-call'` and the checkout refused it until an admin approved
+that person's call request. It is `self-serve` now. Someone who has reached
+Book Online has already decided, and a call in front of the button is a
+negotiation they did not ask for.
 
-```
-/services/breakthrough  →  Talk to an expert  →  form
-                                                   │
-                                    Admin → Enquiries → Approve to pay
-                                                   │
-                              e-mail with a booking link → checkout opens
-```
+The expert-call mode itself still works — Admin → Services sets it per program,
+and the enquiry, approval and payment-link path is unchanged. Nothing uses it
+today, so the rows below test that Breakthrough behaves like Bloom; to test the
+mode, set a program to *Talk to an expert* in the admin panel first.
 
-| id      | Do this                                                               | Expect                                                                          |        |
-| ------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------ |
-| MENT-G1 | Look for a way to pay on`/services/breakthrough`                    | There is none. Every button says*Talk to an expert*                           | PASS   |
-| MENT-G2 | Send the call-back form with name and phone                           | Thank-you saying a mentor will call within one working day                      | PASS   |
-| MENT-G3 | Send it with no phone                                                 | `Please leave a phone number so we can reach you`                             | REFUSE |
-| MENT-G4 | Admin → Enquiries, filter*Expert call requests*                    | The request, with program and best time to call                               | PASS   |
-| MENT-G5 | Before approving, open`/book-online?program=mentoring-breakthrough` | The wizard steps aside and explains the program starts with a call            | REFUSE |
-| MENT-G6 | Before approving, call`POST /api/user/payments/order` with that SKU | Refused on the server too:`This program starts with a call from our team…`   | REFUSE |
-| MENT-G7 | As admin press*Approve to pay*                                      | Status becomes*Approved*; if the enquiry had an email, a booking link is sent | PASS   |
-| MENT-G8 | Now buy Breakthrough on that account                                  | Checkout opens and payment completes                                            | PASS   |
-| MENT-G9 | Approve an enquiry with a phone but no email                          | Still approves; the server log says plainly that no link could be sent          | PASS   |
+| id      | Do this                                                               | Expect                                                                    |      |
+| ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---- |
+| MENT-G1 | Press*Book Now* on Breakthrough at`/book-online`                  | The wizard opens at*Date & time*, same as Bloom — no call step         | PASS |
+| MENT-G2 | Open`/services/breakthrough`                                       | CTAs read*Book Now*; no*Talk to an Expert* button or form panel       | PASS |
+| MENT-G3 | Open`/services`                                                    | All three cards read*Book Now*                                           | PASS |
+| MENT-G4 | Book Breakthrough through to payment                                  | Checkout opens and payment completes, with no approval anywhere           | PASS |
+| MENT-G5 | `POST /api/user/payments/order` with`mentoring-breakthrough`      | Accepted — the server's expert-call gate does not fire for a self-serve SKU | PASS |
+| MENT-G6 | Admin → Services, set a program to*Talk to an expert*, then buy it | Refused:`This program starts with a call from our team…`                | REFUSE |
 
 ---
 

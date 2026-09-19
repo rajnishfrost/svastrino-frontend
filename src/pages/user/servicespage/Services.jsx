@@ -33,6 +33,10 @@ const toCard = (p, category) => ({
   sessions: p.sessionsLabel,
   mode: p.deliveryMode,
   buyMode: p.buyMode || 'self-serve',
+  // Whether this card offers the call-back form instead of the checkout. The
+  // server already folds in the old buyMode rule for rows that predate the
+  // field, so the card never has to know about that.
+  expertEnquiry: !!p.expertEnquiry,
   bookingSku: p.sku,
   category: { slug: category.slug, name: category.name },
 })
@@ -153,17 +157,18 @@ export default function Services() {
                       >
                         View Details
                       </Link>
-                      {/* Programs sold after a call (Breakthrough) send you to
-                          their own page's call-back form, not to the checkout. */}
+                      {/* A program that takes a negotiated price sends you to
+                          its own page's call-back form, not to the checkout —
+                          even though the checkout would take the money. */}
                       <Link
                         to={
-                          p.buyMode === 'expert-call'
+                          p.expertEnquiry
                             ? `/services/${p.slug}#talk-to-an-expert`
                             : p.bookingSku ? `/book-online?program=${p.bookingSku}` : '/book-online'
                         }
                         className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
                       >
-                        {p.buyMode === 'expert-call' ? 'Talk to an Expert' : 'Book Now'}
+                        {p.expertEnquiry ? 'Talk to an Expert' : 'Book Now'}
                       </Link>
                     </div>
                   </article>

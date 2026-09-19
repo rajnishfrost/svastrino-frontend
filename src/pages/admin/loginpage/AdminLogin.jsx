@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, adminTokenStore } from '../../../api/client.js'
 import './AdminLogin.css'
+import { LIMITS } from '../../../utils/validate.js'
 
 /**
  * Admin login — email + password. Talks to the admin credentials module:
@@ -41,15 +42,21 @@ export default function AdminLogin() {
 
         {error && <p className="admin-login-error">{error}</p>}
 
+        {/* Capped like every other credential box on the site. An uncapped login
+            form is the cheapest thing on a site to point a flood at: each attempt
+            costs us a bcrypt hash over whatever was sent. */}
         <label>
           Email
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" required maxLength={LIMITS.email} autoComplete="username"
+                 value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         <label>
           Password
           <input
             type="password"
             required
+            maxLength={LIMITS.password}
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
