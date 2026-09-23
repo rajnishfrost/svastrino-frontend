@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../../api/client.js'
+import PsychometricActions from '../../../../common_component/user/PsychometricTest/PsychometricActions.jsx'
 
 /**
  * What a student sees when their plan bundles the psychometric test and they
@@ -11,12 +12,20 @@ import { api } from '../../../../api/client.js'
  *
  * The block is enforced on the server (learn.service.js); this is the part that
  * tells them what to do about it, because a locked course with no explanation
- * is just a bug as far as the student is concerned.
+ * is just a bug as far as the student is concerned. The buttons themselves are
+ * PsychometricActions, shared with the psychometric page.
  */
+
+// With the test site's token login there is nothing to sign up for and no code
+// to copy — the old four steps described a journey that no longer exists.
+const API_STEPS = [
+  'Tap “Take the test” — you are signed in to the test automatically. No separate account or code is needed.',
+  'Complete every section of the test.',
+  'Come back here and tap “I’ve finished it” — your weekly videos open straight away.',
+]
+
 export default function PsychometricGate({ slug, status, onDone }) {
   const [assess, setAssess] = useState(null)
-  const [busy, setBusy] = useState(false)
-  const [err, setErr] = useState('')
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -26,23 +35,6 @@ export default function PsychometricGate({ slug, status, onDone }) {
       .catch(() => { if (live) setAssess(null) })
     return () => { live = false }
   }, [slug])
-
-  const openTest = async () => {
-    setErr(''); setBusy(true)
-    try {
-      const a = await api(`/user/assessment/${slug}/start`, { method: 'POST', auth: 'user' })
-      setAssess(a)
-      if (a.testUrl) window.open(a.testUrl, '_blank', 'noopener')
-    } catch (e) { setErr(e.message) } finally { setBusy(false) }
-  }
-
-  const markDone = async () => {
-    setErr(''); setBusy(true)
-    try {
-      await api(`/user/assessment/${slug}/submitted`, { method: 'POST', auth: 'user' })
-      await onDone()   // re-reads the course; the weeks open on this same visit
-    } catch (e) { setErr(e.message); setBusy(false) }
-  }
 
   const copyCode = async () => {
     try {
@@ -56,7 +48,10 @@ export default function PsychometricGate({ slug, status, onDone }) {
   // is only re-read when the gate lifts — so on its own it still says
   // "not_started" right after the student has opened the test, and the way to
   // say they have finished never appears.
-  const current = assess?.status || status
+  const current = assess ? assess : { status }
+  // Handoff mode still walks the student through signing up on the test site
+  // themselves, so its steps and coupon come from the server as before.
+  const steps = assess?.mode === 'api' ? API_STEPS : assess?.steps || []
 
   return (
     <div className="learn-psygate" role="note">
@@ -67,9 +62,9 @@ export default function PsychometricGate({ slug, status, onDone }) {
         already open, and it explains how to read what comes back.
       </p>
 
-      {assess?.steps?.length > 0 && (
+      {steps.length > 0 && (
         <ol className="learn-psygate-steps">
-          {assess.steps.map((step, i) => <li key={i}>{step}</li>)}
+          {steps.map((step, i) => <li key={i}>{step}</li>)}
         </ol>
       )}
 
@@ -82,18 +77,12 @@ export default function PsychometricGate({ slug, status, onDone }) {
         </p>
       )}
 
-      {err && <p className="learn-err">{err}</p>}
-
-      <div className="learn-psygate-actions">
-        <button type="button" className="btn btn-primary" onClick={openTest} disabled={busy}>
-          {current === 'not_started' ? 'Take the test' : 'Reopen the test'}
-        </button>
-        {current !== 'not_started' && (
-          <button type="button" className="settings-link" onClick={markDone} disabled={busy}>
-            {busy ? 'Checking…' : "I've finished it"}
-          </button>
-        )}
-      </div>
+      <PsychometricActions
+        product={slug}
+        assessment={current}
+        onChange={setAssess}
+        onFinished={onDone}   // re-reads the course; the weeks open on this same visit
+      />
     </div>
   )
 }
