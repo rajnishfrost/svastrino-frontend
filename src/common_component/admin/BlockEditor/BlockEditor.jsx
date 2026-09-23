@@ -3,7 +3,6 @@ import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import List from '@editorjs/list'
 import Checklist from '@editorjs/checklist'
-import Table from '@editorjs/table'
 import Quote from '@editorjs/quote'
 import Delimiter from '@editorjs/delimiter'
 import ImageTool from '@editorjs/image'
@@ -12,6 +11,7 @@ import Marker from '@editorjs/marker'
 import InlineCode from '@editorjs/inline-code'
 import Underline from '@editorjs/underline'
 import AlignmentTune from 'editorjs-text-alignment-blocktune'
+import TableWithBreaks from './TableWithBreaks.js'
 import { apiUpload } from '../../../api/client.js'
 import './BlockEditor.css'
 
@@ -55,6 +55,7 @@ const uploader = {
 
 const ALIGNABLE = ['paragraph', 'header', 'quote', 'image', 'table', 'list']
 
+
 const TOOLS = {
   header: {
     class: Header,
@@ -66,7 +67,7 @@ const TOOLS = {
   list: { class: List, inlineToolbar: true, tunes: ['alignment'], config: { defaultStyle: 'unordered' } },
   checklist: { class: Checklist, inlineToolbar: true },
   table: {
-    class: Table,
+    class: TableWithBreaks,
     inlineToolbar: true,
     tunes: ['alignment'],
     config: { rows: 3, cols: 3, withHeadings: true },
