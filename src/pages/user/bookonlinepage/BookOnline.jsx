@@ -23,6 +23,7 @@ import {
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import './BookOnline.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
+import { useNirmaanStanding } from '../../../hooks/useNirmaanStanding.js'
 
 /**
  * Counselling & mentoring booking wizard. Four steps (as per spec):
@@ -67,6 +68,10 @@ export default function BookOnline() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
+  // The Nirmaan strip at the foot of the page: a student already in the course
+  // is sent back into it rather than pitched it.
+  const nirmaan = useNirmaanStanding()
+  const inNirmaan = nirmaan === 'owned' || nirmaan === 'trial'
 
   const skuParam = params.get('program') || ''
   const rescheduleId = params.get('reschedule') || ''
@@ -836,21 +841,35 @@ export default function BookOnline() {
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-nirmaan-brown px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
                   <GraduationCap className="size-3.5" /> Skill Build
                 </span>
-                <h2 className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
-                  Want to build your mindset, confidence, and skills to succeed in life and career?
-                </h2>
-                <p className="mt-2 text-sm text-nirmaan-brown-soft">
-                  Explore{' '}
-                  <span className="font-semibold text-nirmaan-green">Nirmaan — Soch Se Vikas</span>, our
-                  youth-focused life &amp; career development course.
-                </p>
+                {inNirmaan ? (
+                  <>
+                    <h2 className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
+                      Keep building with Nirmaan
+                    </h2>
+                    <p className="mt-2 text-sm text-nirmaan-brown-soft">
+                      Pick up where you left off in{' '}
+                      <span className="font-semibold text-nirmaan-green">Nirmaan — Soch Se Vikas</span>.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="mt-3 font-display text-xl font-extrabold leading-snug tracking-tight text-nirmaan-brown sm:text-2xl">
+                      Want to build your mindset, confidence, and skills to succeed in life and career?
+                    </h2>
+                    <p className="mt-2 text-sm text-nirmaan-brown-soft">
+                      Explore{' '}
+                      <span className="font-semibold text-nirmaan-green">Nirmaan — Soch Se Vikas</span>, our
+                      youth-focused life &amp; career development course.
+                    </p>
+                  </>
+                )}
               </div>
 
               <Link
-                to="/skill-build/nirmaan"
+                to={inNirmaan ? '/learn/nirmaan' : '/skill-build/nirmaan'}
                 className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white no-underline transition-colors hover:bg-nirmaan-green-dark"
               >
-                Explore Nirmaan <ArrowRight className="size-4" />
+                {inNirmaan ? 'Continue Nirmaan' : 'Explore Nirmaan'} <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

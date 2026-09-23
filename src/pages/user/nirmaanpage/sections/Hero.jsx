@@ -1,9 +1,18 @@
+import { Link } from 'react-router-dom'
+import { useNirmaanStanding } from '../../../../hooks/useNirmaanStanding.js'
+import { LEARN_PATH } from '../trialIntent.js'
+
 /**
  * Nirmaan · Section 1 — the intro banner. Cream fading to white with a soft
- * green glow; words on the left, the Nirmaan logo on the right. Two buttons
- * jump further down the same page.
+ * green glow; words on the left, the Nirmaan logo on the right.
+ *
+ * The button answers to who is looking: someone taking the course (bought or
+ * on the free week) is sent back into it, and everyone else to the packages
+ * further down this page.
  */
 export default function Hero() {
+  const standing = useNirmaanStanding()
+  const learning = standing === 'owned' || standing === 'trial'
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white">
       {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/15 blur-3xl" /> */}
@@ -20,13 +29,32 @@ export default function Hero() {
             {/* Nirmaan is a personally crafted all-in-one resource to help you build yourself first and turn your dreams into reality, from Class 7th onwards. */}
             Nirmaan is a personally crafted all-in-one resource to help you build yourself first and turn your dreams into reality, from class 7 onwards.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row md:justify-start">
-            <a
-              href="#packages"
-              className="inline-flex h-12 items-center justify-center rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
-            >
-              View Packages
-            </a>
+          {/* Out of sight, not out of the layout, while the standing loads — so
+              a student in the course never sees "View Packages" flash first. */}
+          <div className={`mt-8 flex flex-col items-center gap-3 sm:flex-row md:justify-start ${standing === undefined ? 'invisible' : ''}`}>
+            {learning ? (
+              <>
+                <Link
+                  to={LEARN_PATH}
+                  className="inline-flex h-12 items-center justify-center rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
+                >
+                  {standing === 'trial' ? 'Continue your free trial' : 'Continue your course'}
+                </Link>
+                <a
+                  href="#packages"
+                  className="inline-flex h-12 items-center justify-center rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
+                >
+                  View Packages
+                </a>
+              </>
+            ) : (
+              <a
+                href="#packages"
+                className="inline-flex h-12 items-center justify-center rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
+              >
+                View Packages
+              </a>
+            )}
             {/* <a
               href="#journey"
               className="inline-flex h-12 items-center justify-center rounded-lg border border-nirmaan-green/40 bg-white px-7 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
