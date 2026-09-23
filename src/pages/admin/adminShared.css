@@ -298,3 +298,17 @@
   font-size: 12.5px;
   margin-top: 2px;
 }
+
+/* ---- Mindler Admin: their portal, framed inside ours ---- */
+.adm-mindler-bar { justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.adm-mindler-frame {
+  display: block;
+  width: 100%;
+  /* Most of the screen, so their tables are usable without a second scrollbar
+     fighting ours; never so short that their sidebar is cut off. */
+  height: calc(100vh - 240px);
+  min-height: 640px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
