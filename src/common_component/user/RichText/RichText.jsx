@@ -136,23 +136,109 @@ function Items({ items, style, k }) {
   )
 }
 
+/** The text of a cell, with its markup and entities resolved away. */
+const plain = (html) => decode(String(html ?? '').replace(/<[^>]*>/g, '')).trim()
+
+/**
+ * How wide a cell is asking to be, in characters: the longest of its lines. A
+ * cell broken over two lines wants the width of its longer half, not the sum of
+ * both. Capped, so one runaway sentence can't take the whole table.
+ */
+const demand = (cell) =>
+  Math.min(120, Math.max(0, ...String(cell ?? '').split(/<br\s*\/?>/i).map((line) => plain(line).length)))
+
+/**
+ * Column widths, in percent, for every table in a document.
+ *
+ * Letting each table size its own columns is what a browser does by default,
+ * and it leaves two tables on the same subject — institutes in India, then
+ * abroad — with columns that stop at different places, which reads as two
+ * unrelated tables. So tables that share a heading row are measured together
+ * and come out identical, while a table with headings of its own is free to fit
+ * its own text: a column of job titles has no business being as wide as the
+ * column of sentences describing them.
+ *
+ * Inside a table the columns divide the width by a damped average of their
+ * demand rather than by the demand itself. A column of one-word locations
+ * should be narrower than a column of sentences, but not nine times narrower —
+ * undamped, the short column ends up too thin to read.
+ */
+
+// Measured against the career-library tables rather than picked: a little below
+// a square root is where a two-line salary figure stops spilling onto a third
+// line while a column of job titles stays visibly narrower than the column of
+// sentences describing them.
+const DAMPING = 0.45
+
+function columnWidths(list) {
+  const groups = new Map()
+
+  list.forEach((b, i) => {
+    if (b?.type !== 'table') return
+    const rows = (Array.isArray(b.data?.content) ? b.data.content : []).filter(Array.isArray)
+    if (!rows.length) return
+
+    const cols = Math.max(...rows.map((row) => row.length))
+    // Same headings, same widths. A table without headings is measured alone —
+    // there is nothing to say it belongs with any other.
+    const key = b.data?.withHeadings ? `${cols}:${rows[0].map(plain).join('|').toLowerCase()}` : `alone:${i}`
+    const group = groups.get(key) || { blocks: [], cols, total: [], count: [] }
+    rows.forEach((row) =>
+      row.forEach((cell, c) => {
+        group.total[c] = (group.total[c] || 0) + demand(cell)
+        group.count[c] = (group.count[c] || 0) + 1
+      }),
+    )
+    group.blocks.push(i)
+    groups.set(key, group)
+  })
+
+  const widths = new Map()
+  groups.forEach((group) => {
+    // A floor per column: an empty one still needs somewhere to put a word.
+    const weights = Array.from({ length: group.cols }, (_, c) =>
+      Math.pow(Math.max(6, (group.total[c] || 0) / (group.count[c] || 1)), DAMPING),
+    )
+    const sum = weights.reduce((a, w) => a + w, 0)
+    const percents = weights.map((w) => `${((w / sum) * 100).toFixed(2)}%`)
+    group.blocks.forEach((i) => widths.set(i, percents))
+  })
+
+  return widths
+}
+
 /**
  * A table scrolls inside its own box rather than widening the page — salary
  * columns are wide, and a phone is narrow.
+ *
+ * Its columns are fixed rather than left to the browser, at the widths
+ * columnWidths worked out for the whole document.
  */
-function Table({ data, k }) {
+function Table({ data, widths, k }) {
   const rows = Array.isArray(data.content) ? data.content : []
   if (!rows.length) return null
   const [head, ...body] = data.withHeadings ? rows : [null, ...rows]
 
+  const cols = Math.max(...rows.map((row) => (Array.isArray(row) ? row.length : 0)))
+  if (!cols) return null
+  const sizes = widths?.length === cols ? widths : Array.from({ length: cols }, () => `${100 / cols}%`)
+
   return (
     <div className="mt-6 overflow-x-auto rounded-xl border border-brand-navy/10">
-      <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+      <table className="w-full min-w-[36rem] table-fixed border-collapse text-left text-sm">
+        <colgroup>
+          {sizes.map((w, i) => (
+            <col key={i} style={{ width: w }} />
+          ))}
+        </colgroup>
         {head && (
           <thead className="bg-brand-cream">
             <tr>
               {head.map((cell, i) => (
-                <th key={i} className="border-b border-brand-navy/10 px-4 py-3 font-display font-bold text-brand-navy">
+                <th
+                  key={i}
+                  className="break-words border-b border-brand-navy/10 px-4 py-3 font-display font-bold text-brand-navy"
+                >
                   <Inline html={cell} k={`${k}-h-${i}`} />
                 </th>
               ))}
@@ -163,7 +249,7 @@ function Table({ data, k }) {
           {body.map((row, r) => (
             <tr key={r} className="border-b border-brand-navy/5 last:border-0">
               {row.map((cell, c) => (
-                <td key={c} className="px-4 py-3 align-top leading-relaxed text-brand-slate">
+                <td key={c} className="break-words px-4 py-3 align-top leading-relaxed text-brand-slate">
                   <Inline html={cell} k={`${k}-${r}-${c}`} />
                 </td>
               ))}
@@ -197,6 +283,7 @@ function Checklist({ items, k }) {
 export default function RichText({ blocks = [], className = '' }) {
   const list = blocksOf(blocks)
   if (!list.length) return null
+  const widths = columnWidths(list)
 
   return (
     <div className={className}>
@@ -228,7 +315,7 @@ export default function RichText({ blocks = [], className = '' }) {
             return <Checklist key={k} items={data.items || []} k={k} />
 
           case 'table':
-            return <Table key={k} data={data} k={k} />
+            return <Table key={k} data={data} widths={widths.get(i)} k={k} />
 
           case 'quote':
             return (
