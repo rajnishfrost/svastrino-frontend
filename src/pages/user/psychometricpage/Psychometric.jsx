@@ -96,7 +96,9 @@ function OwnerPanel({ assessment, setAssessment, reload, yourTest }) {
           {yourTest
             ? <>Your test: <strong className="text-nirmaan-brown">{yourTest}</strong>, picked from your class.</>
             : 'We will ask which class you are in before the test opens — that decides your test.'}
-          {status === 'in_progress' && ' When you have answered every section, tap “I’ve finished it”.'}
+          {status === 'in_progress' && (assessment?.mode === 'api'
+            ? ' When you have answered every section, come back here and “See your report” appears by itself.'
+            : ' When you have answered every section, tap “I’ve finished it”.')}
         </p>
       )}
       {/* The report is on the test site, not here: the button signs them in

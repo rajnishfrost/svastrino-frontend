@@ -123,3 +123,57 @@
   line-height: 1.55;
   color: var(--color-text-muted, #5b6478);
 }
+
+/* ---- Guide video (before the test, before the report) ----
+   Wider than the details pop-up: it holds a 16:9 player. */
+.ptest-guide {
+  position: relative;
+  max-width: 760px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+.ptest-guide-player { margin: 4px 0 16px; }
+.ptest-guide-actions { flex-wrap: wrap; }
+.ptest-guide-steps {
+  margin: 4px 0 18px 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+/* ---- Test progress (from the test site's status) ---- */
+.ptest-progress {
+  width: 100%;
+  max-width: 420px;
+  margin: 4px 0 14px;
+}
+.ptest-progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted, #5b6478);
+}
+.ptest-progress-head strong {
+  font-size: 13.5px;
+  color: var(--color-heading, #1c2a4a);
+}
+.ptest-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-surface-border, #e7ebf1);
+  overflow: hidden;
+}
+.ptest-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary, #1c2a4a);
+  transition: width 400ms ease;
+}

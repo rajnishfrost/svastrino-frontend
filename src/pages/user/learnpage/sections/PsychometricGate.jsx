@@ -21,19 +21,28 @@ import PsychometricActions from '../../../../common_component/user/PsychometricT
 const API_STEPS = [
   'Tap “Take the test” — you are signed in to the test automatically. No separate account or code is needed.',
   'Complete every section of the test.',
-  'Come back here and tap “I’ve finished it” — your weekly videos open straight away.',
+  'Come back here when you are done. We see that the test is complete, and the course opens by itself.',
 ]
 
 export default function PsychometricGate({ slug, status, onDone }) {
   const [assess, setAssess] = useState(null)
   const [copied, setCopied] = useState(false)
 
+  // Reading the status is also what asks the test site whether the student has
+  // finished (API mode). If it says they have, the gate is already lifted on
+  // the server — re-read the course so the weeks open on this visit, without
+  // making them tap "I've finished it" for a test the site knows is done.
   useEffect(() => {
     let live = true
     api(`/user/assessment/${slug}`, { auth: 'user' })
-      .then((d) => { if (live) setAssess(d) })
+      .then((d) => {
+        if (!live) return
+        setAssess(d)
+        if (d?.status === 'completed' || d?.status === 'submitted') onDone?.()
+      })
       .catch(() => { if (live) setAssess(null) })
     return () => { live = false }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   const copyCode = async () => {
@@ -57,9 +66,9 @@ export default function PsychometricGate({ slug, status, onDone }) {
     <div className="learn-psygate" role="note">
       <p className="learn-psygate-title">Your psychometric test comes first</p>
       <p className="learn-psygate-sub">
-        Your plan includes the psychometric test, and the weekly videos and tasks are built to be
-        read against your report. Take the test, then everything opens — the introduction below is
-        already open, and it explains how to read what comes back.
+        Your plan includes the psychometric test, and the whole course is built to be read against
+        your report. Take the test first — the introduction and the weekly videos open as soon as it
+        is complete.
       </p>
 
       {steps.length > 0 && (
