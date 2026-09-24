@@ -3,6 +3,7 @@ import { Link, NavLink, Navigate, useParams } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import { fetchMyMentoring } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { usePsychometric } from '../../../hooks/usePsychometric.js'
 import Downloads from '../downloadspage/Downloads.jsx'
 import Settings from '../settingspage/Settings.jsx'
 
@@ -254,8 +255,45 @@ function ServicesPanel({ mentoring }) {
   )
 }
 
+/* ---------- Psychometric test (under the Nirmaan card) ----------
+   Where the test stands, with the way to the next step. The report itself is on
+   the test site (My Report / My Result); the psychometric page's "See your
+   report" signs the student in there, so every link here goes to that page. */
+const PSY_LINE = {
+  not_started: { text: 'Psychometric test: not taken yet', cta: 'Take your test →' },
+  in_progress: { text: 'Psychometric test: in progress', cta: 'Continue your test →' },
+  submitted: { text: 'Psychometric test: done', cta: 'See your report →' },
+  completed: { text: 'Psychometric test: done', cta: 'See your report →' },
+}
+
+function PsychometricLine() {
+  const { state, assessment } = usePsychometric('nirmaan')
+  if (state !== 'owned' || !assessment) return null
+  const line = PSY_LINE[assessment.status] || PSY_LINE.not_started
+  const reportUrl = assessment.status === 'completed' ? assessment.report?.url : null
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+      <span className="text-brand-slate">{line.text}</span>
+      {reportUrl ? (
+        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-nirmaan-green hover:underline">
+          View your report →
+        </a>
+      ) : line.cta ? (
+        <Link to="/skill-build/psychometric-testing" className="font-semibold text-nirmaan-green hover:underline">
+          {line.cta}
+        </Link>
+      ) : null}
+    </div>
+  )
+}
+
 /* ---------- Skill Build (courses) ---------- */
 function SkillBuildPanel({ courses }) {
+  // One psychometric line, under the first open Nirmaan card — an upgrade can
+  // leave more than one Nirmaan row, and the test belongs to the student.
+  const psyCardId = (courses || []).find(
+    (e) => (e.courseSlug || 'nirmaan') === 'nirmaan' && accessState(e) === 'active'
+  )?.id
   return (
     <div>
       <h2 className={PANEL_TITLE}>Skill-Build</h2>
@@ -306,6 +344,7 @@ function SkillBuildPanel({ courses }) {
                     <span className="shrink-0 rounded-full bg-brand-navy/10 px-2.5 py-0.5 text-xs font-semibold text-brand-slate">Course closed</span>
                   )}
                 </div>
+                {e.id === psyCardId && <PsychometricLine />}
                 <div className="mt-4">
                   {e.progress && e.progress.total > 0 ? (
                     <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>

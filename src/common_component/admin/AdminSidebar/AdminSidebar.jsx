@@ -52,7 +52,7 @@ const ICON = {
 const NAV = [
   { label: 'Dashboard', to: '/admin', end: true, icon: 'dashboard' }, // always visible
   // ---- A → Z ----
-  { label: 'Assessments', to: '/admin/assessments', icon: 'assessments', module: 'assessments' },
+  { label: 'Mindler Admin', to: '/admin/assessments', icon: 'assessments', module: 'assessments' },
   { label: 'Blog', to: '/admin/blogs', icon: 'blogs', module: 'blogs' },
   { label: 'Career Library', to: '/admin/career-library', icon: 'careerLibrary', module: 'career-library' },
   { label: 'Content', to: '/admin/content', icon: 'content', module: 'content' },

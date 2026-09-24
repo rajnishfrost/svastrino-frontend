@@ -10,6 +10,7 @@ import { LIMITS, MINIMUMS } from '../../../utils/validate.js'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
+import PsychometricReady from './sections/PsychometricReady.jsx'
 import './Learn.css'
 
 /**
@@ -546,7 +547,13 @@ export default function Learn() {
           <p className="learn-start-motiv">
             💪 Finish each task within its time — staying on schedule builds a strong track record on your journey.
           </p>
-          <button type="button" className="btn btn-primary" onClick={() => setConsent(true)}>Start course</button>
+          {/* Bought with the psychometric test: the course starts after it, so
+              the test card stands where the Start button would be. */}
+          {course.psychometric?.blocks ? (
+            <PsychometricGate slug={slug} status={course.psychometric.status} onDone={load} />
+          ) : (
+            <button type="button" className="btn btn-primary" onClick={() => setConsent(true)}>Start course</button>
+          )}
         </div>
 
         {consent && (
@@ -657,6 +664,11 @@ export default function Learn() {
 
         {course.psychometric?.blocks && (
           <PsychometricGate slug={slug} status={course.psychometric.status} onDone={load} />
+        )}
+        {/* Not blocking: the report once it is done, or — for a student who
+            added the test after buying the course — the test alongside it. */}
+        {course.psychometric?.included && !course.psychometric?.blocks && (
+          <PsychometricReady slug={slug} required={course.psychometric.required} onReopened={load} />
         )}
 
         {report && <ReportStrip report={report} />}

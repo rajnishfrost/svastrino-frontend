@@ -30,7 +30,7 @@ const ACTIONS = [
   { module: 'orders', to: '/admin/orders', label: 'Orders & revenue', desc: 'Transactions and refunds' },
   { module: 'coupons', to: '/admin/coupons', label: 'Coupons', desc: 'Discount codes' },
   { module: 'users', to: '/admin/users', label: 'Users', desc: 'Accounts and roles' },
-  { module: 'assessments', to: '/admin/assessments', label: 'Assessments', desc: 'Psychometric reports' },
+  { module: 'assessments', to: '/admin/assessments', label: 'Mindler Admin', desc: 'Mindler portal — students, tests and reports' },
 ]
 
 export default function AdminDashboard() {

@@ -12,7 +12,7 @@ import { LIMITS } from '../../../utils/validate.js'
  * (locked to everything — can't be edited or deleted).
  */
 const MODULES = [
-  { key: 'assessments', label: 'Assessments' },
+  { key: 'assessments', label: 'Mindler Admin' },
   { key: 'blogs', label: 'Blog' },
   { key: 'career-library', label: 'Career Library' },
   { key: 'content', label: 'Content' },

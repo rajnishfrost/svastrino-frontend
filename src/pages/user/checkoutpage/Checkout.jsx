@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import { dashboardTabFor } from '../dashboardpage/dashboardTab.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
-import { classOptionsFor } from '../../../utils/studentClass.js'
+import { PSYCHOMETRIC_CLASSES } from '../../../utils/studentClass.js'
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import { LIMITS, sanitiseCoupon } from '../../../utils/validate.js'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
@@ -76,7 +76,12 @@ export default function Checkout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageId])
 
-  useEffect(() => { setStudentClass(user?.studentClass || '') }, [user?.studentClass])
+  // Start on the profile's class only when it is one the test takes. The
+  // picker is shown for a class outside 7 to 12 too (the server refused it),
+  // and pre-selecting that would show a choice the list does not contain.
+  useEffect(() => {
+    setStudentClass(PSYCHOMETRIC_CLASSES.includes(user?.studentClass) ? user.studentClass : '')
+  }, [user?.studentClass])
 
   const applyCoupon = async () => {
     if (!coupon.trim()) return
@@ -359,7 +364,8 @@ export default function Checkout() {
                         <select id="checkout-class" className="checkout-input" value={studentClass}
                                 onChange={(e) => setStudentClass(e.target.value)} disabled={classBusy}>
                           <option value="">Select your class</option>
-                          {classOptionsFor(user?.studentClass).map((c) => (
+                          {/* Only the classes this plan can be sold to. */}
+                          {PSYCHOMETRIC_CLASSES.map((c) => (
                             <option key={c} value={c}>{c}</option>
                           ))}
                         </select>

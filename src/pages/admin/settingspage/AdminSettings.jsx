@@ -13,10 +13,20 @@ export default function AdminSettings() {
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
   const [busy, setBusy] = useState(false)
+  // The two psychometric guide videos (links to the uploaded video).
+  const [videos, setVideos] = useState({ psychometricTestVideo: '', psychometricReportVideo: '' })
+  const [videoMsg, setVideoMsg] = useState('')
+  const [videoErr, setVideoErr] = useState('')
+  const [videoBusy, setVideoBusy] = useState(false)
+
+  const takeVideos = (st) => setVideos({
+    psychometricTestVideo: st.psychometricTestVideo || '',
+    psychometricReportVideo: st.psychometricReportVideo || '',
+  })
 
   const load = () =>
     api('/admin/settings', { auth: 'admin' })
-      .then((d) => { setSettings(d.settings); setEnquiryTo(d.settings.enquiryTo || '') })
+      .then((d) => { setSettings(d.settings); setEnquiryTo(d.settings.enquiryTo || ''); takeVideos(d.settings) })
       .catch((e) => setError(e.message))
 
   useEffect(() => { load() }, [])
@@ -35,6 +45,27 @@ export default function AdminSettings() {
       setError(ex.message)
     } finally {
       setBusy(false)
+    }
+  }
+
+  const saveVideos = async (e) => {
+    e.preventDefault()
+    setVideoBusy(true); setVideoErr(''); setVideoMsg('')
+    try {
+      const d = await api('/admin/settings', {
+        method: 'PATCH', auth: 'admin',
+        body: {
+          psychometricTestVideo: videos.psychometricTestVideo.trim(),
+          psychometricReportVideo: videos.psychometricReportVideo.trim(),
+        },
+      })
+      setSettings(d.settings)
+      takeVideos(d.settings)
+      setVideoMsg('Saved. Students see the new videos the next time they open the test.')
+    } catch (ex) {
+      setVideoErr(ex.message)
+    } finally {
+      setVideoBusy(false)
     }
   }
 
@@ -95,6 +126,52 @@ export default function AdminSettings() {
           Every enquiry is also stored in the database, so nothing is lost even if an
           email fails to send.
         </p>
+      </section>
+
+      <section className="adm-panel" style={{ marginTop: 'var(--space-4)' }}>
+        <h2 className="adm-title">Psychometric test videos</h2>
+        <p className="adm-sub">
+          Short how-to videos that play in a pop-up just before a student leaves for the test
+          site. Paste the link to the uploaded video: the .m3u8 stream link, or an .mp4.
+          Students can skip or scrub them freely. Leave a box empty and that video is skipped.
+        </p>
+
+        {videoErr && <p className="adm-error">{videoErr}</p>}
+        {videoMsg && <p className="adm-ok">{videoMsg}</p>}
+
+        <form onSubmit={saveVideos}>
+          <div className="adm-field">
+            <label className="adm-label" htmlFor="psychometricTestVideo">
+              How to take the test (plays before “Take the test”)
+            </label>
+            <input
+              id="psychometricTestVideo"
+              className="adm-input"
+              type="text"
+              maxLength={LIMITS.url}
+              value={videos.psychometricTestVideo}
+              onChange={(e) => setVideos((v) => ({ ...v, psychometricTestVideo: e.target.value }))}
+              placeholder="https://…/psychometric/how-to-take/master.m3u8"
+            />
+          </div>
+          <div className="adm-field">
+            <label className="adm-label" htmlFor="psychometricReportVideo">
+              How to see your report (plays before “See your report”, once the test is done)
+            </label>
+            <input
+              id="psychometricReportVideo"
+              className="adm-input"
+              type="text"
+              maxLength={LIMITS.url}
+              value={videos.psychometricReportVideo}
+              onChange={(e) => setVideos((v) => ({ ...v, psychometricReportVideo: e.target.value }))}
+              placeholder="https://…/psychometric/how-to-read-report/master.m3u8"
+            />
+          </div>
+          <button className="adm-btn" disabled={videoBusy}>
+            {videoBusy ? 'Saving…' : 'Save videos'}
+          </button>
+        </form>
       </section>
     </>
   )

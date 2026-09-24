@@ -26,6 +26,16 @@ export const CLASSES = [
 ]
 
 /**
+ * The classes the psychometric test is written for, and the only ones a
+ * psychometric plan is sold to — the server refuses the rest at checkout
+ * (payments.service.js) and cannot place them in a Mindler test. Every class
+ * picker that sits in front of the test offers just these: showing the college
+ * years there would only let a student choose an answer that is refused a
+ * moment later.
+ */
+export const PSYCHOMETRIC_CLASSES = ['Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']
+
+/**
  * The dropdown for an account that may already carry wording we never offered.
  * Keeping that value at the top means opening the picker can never quietly
  * rewrite a class the student did not touch.

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, GraduationCap } from 'lucide-react'
+import { useNirmaanStanding } from '../../../../hooks/useNirmaanStanding.js'
 
 /**
  * Home · section 9 — highlight for the Nirmaan Skill-Build product. Uses the
@@ -15,7 +16,29 @@ const POINTS = [
   "Find a ‘New You’ Through the Course",
 ]
 
+/**
+ * The two buttons, by who is looking. "Start Your Free Trial" is only for
+ * someone who has never had one: a student in the course is sent back into it,
+ * and someone whose trial or year has run out is pointed at the packages —
+ * the free week is one per student, so offering it again would only disappoint.
+ */
+function ctasFor(standing) {
+  switch (standing) {
+    case 'owned':
+      return [{ to: '/learn/nirmaan', label: 'Continue your course' }, { to: '/skill-build/nirmaan', label: 'Explore Nirmaan' }]
+    case 'trial':
+      return [{ to: '/learn/nirmaan', label: 'Continue your free trial' }, { to: '/skill-build/nirmaan#packages', label: 'View Packages' }]
+    case 'used':
+    case 'expired':
+      return [{ to: '/skill-build/nirmaan', label: 'Explore Nirmaan' }, { to: '/skill-build/nirmaan#packages', label: 'View Packages' }]
+    default:
+      return [{ to: '/skill-build/nirmaan', label: 'Explore Nirmaan' }, { to: '/skill-build/nirmaan#free-trial', label: 'Start Your Free Trial' }]
+  }
+}
+
 export default function NirmaanHighlight() {
+  const standing = useNirmaanStanding()
+  const [primary, secondary] = ctasFor(standing)
   return (
     <section className="bg-white py-20 md:py-24">
       <div className="container">
@@ -45,18 +68,20 @@ export default function NirmaanHighlight() {
                 ))}
               </ul>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              {/* Hidden, not removed, while the standing loads — so the free-trial
+                  button never flashes up for a student who already has the course. */}
+              <div className={`mt-7 flex flex-col gap-3 sm:flex-row ${standing === undefined ? 'invisible' : ''}`}>
                 <Link
-                  to="/skill-build/nirmaan"
+                  to={primary.to}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
                 >
-                  Explore Nirmaan <ArrowRight className="size-4" />
+                  {primary.label} <ArrowRight className="size-4" />
                 </Link>
                 <Link
-                  to="/skill-build/nirmaan#free-trial"
+                  to={secondary.to}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-transparent px-8 text-base font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
                 >
-                  Start Your Free Trial <ArrowRight className="size-4" />
+                  {secondary.label} <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
