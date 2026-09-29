@@ -58,7 +58,7 @@ const PREVIEWS = [
     week: 23,
     title: 'Becoming Successful Anywhere',
     url: `${CDN}/nirmaan-w23/master.m3u8`,
-    start: mmss(3, 35), end: mmss(5, 15), fullSeconds: 421,
+    start: mmss(3, 35), end: mmss(5, 15.5), fullSeconds: 421,
   },
 ]
 
