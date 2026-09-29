@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
+import { openInvoice } from '../../../utils/invoice.js'
+import CopyLink from '../../../common_component/admin/CopyLink/CopyLink.jsx'
 
 /**
  * What each stored status means, in the words someone reading a table would
@@ -17,6 +19,11 @@ const STATUS = {
   created: { label: 'Not paid', tone: 'warn' },
 }
 const statusOf = (s) => STATUS[s] || { label: s || '—', tone: 'muted' }
+// Who the invoice is billed to: the institution for its orders, else the buyer.
+const invoiceCustomer = (o) => o.kind === 'institution' && o.organisation
+  ? { name: o.organisation.name, email: o.user?.email }
+  : { name: o.user?.name, email: o.user?.email }
+
 const inr = (paise) => '₹' + (Number(paise) / 100).toLocaleString('en-IN')
 const fmt = (iso) => (iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—')
 
@@ -63,16 +70,46 @@ export default function AdminOrders() {
       ) : (
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
-            <thead><tr><th>Receipt</th><th>Customer</th><th>Item</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+            <thead><tr><th>Receipt</th><th>Customer</th><th>Item</th><th>Amount</th><th>Paid by</th><th>Date</th><th>Status</th><th>Invoice</th></tr></thead>
             <tbody>
               {orders.map((o) => (
                 <tr key={o.id}>
                   <td>{o.receiptNo || '—'}</td>
-                  <td>{o.user ? <span title={o.user.email}>{o.user.name || o.user.email}</span> : '—'}</td>
-                  <td>{o.item}</td>
+                  <td>
+                    {/* An institution's order is the institution's, not its
+                        owner's: name it, and say what kind of buyer it is. */}
+                    {o.kind === 'institution' && o.organisation
+                      ? <div className="adm-badge-stack">
+                          <span title={o.user?.email}>{o.organisation.name}</span>
+                          <span className="adm-badge adm-badge--muted">Institution</span>
+                        </div>
+                      : o.user ? <span title={o.user.email}>{o.user.name || o.user.email}</span> : '—'}
+                  </td>
+                  <td>
+                    {o.item}
+                    {o.kind === 'institution' && o.quantity > 1 && (
+                      <div className="adm-sub" style={{ margin: 0 }}>{inr(o.amount / o.quantity)} per student</div>
+                    )}
+                  </td>
                   <td className="adm-num">{inr(o.amount)}</td>
+                  <td>
+                    {o.paymentMethod === 'cash' ? 'Cash' : 'Online'}
+                    {o.reference && <div className="adm-sub" style={{ margin: 0 }}>Ref: {o.reference}</div>}
+                    {o.gatewayPaymentId && o.paymentMethod !== 'cash' && (
+                      <div className="adm-sub" style={{ margin: 0 }} title="Cashfree payment ID">Txn: {o.gatewayPaymentId}</div>
+                    )}
+                    {/* Unpaid institution order: the link it was emailed. */}
+                    {o.payLink && <CopyLink url={o.payLink} compact />}
+                  </td>
                   <td>{fmt(o.paidAt || o.createdAt)}</td>
                   <td><span className={`adm-badge adm-badge--${statusOf(o.status).tone}`}>{statusOf(o.status).label}</span></td>
+                  <td>
+                    {/* The same invoice the customer downloads (utils/invoice.js),
+                        and only once money has moved — the same rule. */}
+                    {(o.status === 'paid' || o.status === 'refunded') ? (
+                      <button className="adm-link" style={{ padding: 0 }} onClick={() => openInvoice(o, invoiceCustomer(o))}>Download</button>
+                    ) : '—'}
+                  </td>
                 </tr>
               ))}
             </tbody>

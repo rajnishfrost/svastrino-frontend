@@ -56,7 +56,7 @@ var MOVED = {
 // is an article and not the /learn area.
 var APP_ROUTES = [
   '/admin', '/checkout', '/dashboard', '/downloads', '/learn', '/login',
-  '/organisation', '/reset-password', '/settings', '/support', '/verify-email',
+  '/organisation', '/pay', '/reset-password', '/settings', '/support', '/verify-email',
   '/welcome',
 ]
 

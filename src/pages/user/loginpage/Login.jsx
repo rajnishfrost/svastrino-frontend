@@ -10,7 +10,7 @@ import {
   EMAIL_RE, LIMITS, MINIMUMS, NAME_RE, sanitiseTyping,
 } from '../../../utils/validate.js'
 import { TRIAL_INTENT, LEARN_PATH } from '../nirmaanpage/trialIntent.js'
-import { hasPortalAccess } from '../../../utils/portalAccess.js'
+import { hasPortalAccess, homeFor } from '../../../utils/portalAccess.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import './Login.css'
 
@@ -101,7 +101,9 @@ export default function Login() {
    * tell them where they actually stand.
    */
   const landAfterLogin = async (user) => {
-    if (user?.panel) return navigate('/admin', { replace: true })
+    // Admin panel, or an institution's own portal — never the student side.
+    const home = homeFor(user)
+    if (home) return navigate(home, { replace: true })
 
     // A panel-only account cannot open anything inside the portal, so honouring
     // a `from` that points there — or starting a trial — would only walk them

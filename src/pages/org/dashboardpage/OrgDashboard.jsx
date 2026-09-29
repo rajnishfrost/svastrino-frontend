@@ -21,6 +21,11 @@ export default function OrgDashboard() {
 
       <div className="adm-stat-grid">
         <div className="adm-stat-card"><strong>{stats?.students ?? 0}</strong><span>Students added</span></div>
+        {/* Seats paid for: how many are still free. None for an institution
+            without a limit. */}
+        {stats?.seats && (
+          <div className="adm-stat-card"><strong>{stats.seats.left} of {stats.seats.total}</strong><span>Seats left</span></div>
+        )}
         {stats?.course && (
           <>
             <div className="adm-stat-card"><strong>{stats.course.enrolled}</strong><span>In {stats.course.name}</span></div>

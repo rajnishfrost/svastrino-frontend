@@ -11,6 +11,7 @@ import AvatarEditor from './AvatarEditor.jsx'
 import { openInvoice } from '../../../utils/invoice.js'
 import { CLASSES, classOptionsFor } from '../../../utils/studentClass.js'
 import './Settings.css'
+import PasswordField from '../../../common_component/PasswordField/PasswordField.jsx'
 
 /**
  * Account settings with URL-driven sections. Lives inside the dashboard now
@@ -334,18 +335,18 @@ function AccountPanel() {
                 anything past 72 bytes anyway, so a longer string is not a
                 stronger password — it is only a bigger request to hash. */}
             {user.hasPassword && (
-              <input className="settings-input" type="password" autoComplete="current-password"
+              <PasswordField className="settings-input" autoComplete="current-password"
                      maxLength={LIMITS.password}
                      value={curPw} onChange={(e) => setCurPw(e.target.value)}
                      placeholder="Current password" autoFocus />
             )}
             <div>
-              <input className="settings-input" type="password" autoComplete="new-password"
+              <PasswordField className="settings-input" autoComplete="new-password"
                      maxLength={LIMITS.password}
                      value={newPw} onChange={(e) => setNewPw(e.target.value)} placeholder="New password" />
               <StrengthMeter pw={newPw} name={user.name} />
             </div>
-            <input className="settings-input" type="password" autoComplete="new-password"
+            <PasswordField className="settings-input" autoComplete="new-password"
                    maxLength={LIMITS.password}
                    value={confPw} onChange={(e) => setConfPw(e.target.value)} placeholder="Confirm new password" />
           </EditField>
