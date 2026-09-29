@@ -170,6 +170,47 @@ const demand = (cell) =>
 // sentences describing them.
 const DAMPING = 0.45
 
+/**
+ * The longest run a cell can't wrap inside, in characters. Spaces and hyphens
+ * are break points ("Post-Graduation" may split at its hyphen), so a column
+ * only has to hold its longest word, not its longest phrase.
+ */
+const longestWord = (cell) =>
+  Math.max(0, ...plain(String(cell ?? '').replace(/<br\s*\/?>/gi, ' ')).split(/[\s-]+/).map((w) => w.length))
+
+// A column is never narrower than its longest word: dividing by demand alone
+// gave a column of one-word labels ("Graduation") so little room next to three
+// columns of sentences that the word broke mid-way. The floor is worked out at
+// the narrowest the table ever gets (its 36rem min-width — below that it
+// scrolls), so it holds at every width. 0.6em per character is generous for
+// Inter at text-sm, bold headings included; 2rem is the cell's side padding.
+// Words past 16 characters are URLs and the like, which are fine to break —
+// holding room for a whole link would squeeze every other column.
+const MIN_TABLE_PX = 576
+const floorPercent = (chars) => ((Math.min(chars, 16) * 14 * 0.6 + 32) / MIN_TABLE_PX) * 100
+
+/**
+ * Percent widths from weights, with every column held at or above its floor.
+ * A column that would fall short is pinned at its floor and the rest share
+ * what is left by weight — repeated, since pinning one can push another under.
+ */
+function withFloors(weights, floors) {
+  const pinned = weights.map(() => false)
+  for (;;) {
+    const free = 100 - floors.reduce((a, f, c) => a + (pinned[c] ? f : 0), 0)
+    const sum = weights.reduce((a, w, c) => a + (pinned[c] ? 0 : w), 0)
+    const percents = weights.map((w, c) => (pinned[c] ? floors[c] : (w / sum) * free))
+    const short = percents.findIndex((p, c) => !pinned[c] && p < floors[c])
+    if (short === -1) return percents
+    pinned[short] = true
+    // Floors alone overflow the table (never on real content): share it out.
+    if (pinned.every(Boolean)) {
+      const total = floors.reduce((a, f) => a + f, 0)
+      return floors.map((f) => (f / total) * 100)
+    }
+  }
+}
+
 function columnWidths(list) {
   const groups = new Map()
 
@@ -182,11 +223,12 @@ function columnWidths(list) {
     // Same headings, same widths. A table without headings is measured alone —
     // there is nothing to say it belongs with any other.
     const key = b.data?.withHeadings ? `${cols}:${rows[0].map(plain).join('|').toLowerCase()}` : `alone:${i}`
-    const group = groups.get(key) || { blocks: [], cols, total: [], count: [] }
+    const group = groups.get(key) || { blocks: [], cols, total: [], count: [], word: [] }
     rows.forEach((row) =>
       row.forEach((cell, c) => {
         group.total[c] = (group.total[c] || 0) + demand(cell)
         group.count[c] = (group.count[c] || 0) + 1
+        group.word[c] = Math.max(group.word[c] || 0, longestWord(cell))
       }),
     )
     group.blocks.push(i)
@@ -199,8 +241,8 @@ function columnWidths(list) {
     const weights = Array.from({ length: group.cols }, (_, c) =>
       Math.pow(Math.max(6, (group.total[c] || 0) / (group.count[c] || 1)), DAMPING),
     )
-    const sum = weights.reduce((a, w) => a + w, 0)
-    const percents = weights.map((w) => `${((w / sum) * 100).toFixed(2)}%`)
+    const floors = weights.map((_, c) => floorPercent(group.word[c] || 0))
+    const percents = withFloors(weights, floors).map((p) => `${p.toFixed(2)}%`)
     group.blocks.forEach((i) => widths.set(i, percents))
   })
 
