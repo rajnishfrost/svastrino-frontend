@@ -42,6 +42,7 @@ import Welcome from './pages/user/loginpage/Welcome.jsx'
 import Dashboard from './pages/user/dashboardpage/Dashboard.jsx'
 import { LegacySettingsRedirect } from './pages/user/settingspage/Settings.jsx'
 import Checkout from './pages/user/checkoutpage/Checkout.jsx'
+import PayLink from './pages/user/paylinkpage/PayLink.jsx'
 import Learn from './pages/user/learnpage/Learn.jsx'
 import Support from './pages/user/supportpage/Support.jsx'
 import NewTicket from './pages/user/supportpage/NewTicket.jsx'
@@ -113,6 +114,9 @@ function PublicSite() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           {/* Deliberately NOT a GuestRoute: the student arrives already signed in. */}
           <Route path="/welcome" element={<Welcome />} />
+          {/* An institution paying for its seats, from an emailed link. Public:
+              the token in the address is the key. */}
+          <Route path="/pay/:token" element={<PayLink />} />
           {/* The dashboard holds its sidebar tab in the path - services,
               skill-build, downloads, settings - and Settings keeps its own
               ?section=orders&order=ID inside that. */}

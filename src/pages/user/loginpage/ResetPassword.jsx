@@ -6,6 +6,7 @@ import { validatePassword } from '../../../utils/password.js'
 import StrengthMeter from '../../../common_component/user/StrengthMeter/StrengthMeter.jsx'
 import './Login.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { homeFor } from '../../../utils/portalAccess.js'
 
 /**
  * Password-reset completion page. Reached via the emailed link:
@@ -57,7 +58,9 @@ export default function ResetPassword() {
       })
       login(data.token, data.user)
       setDone(true)
-      setTimeout(() => navigate('/dashboard', { replace: true }), 1200)
+      // An institution's owner setting their password from the approval email
+      // goes to their portal, not the student dashboard.
+      setTimeout(() => navigate(homeFor(data.user) || '/dashboard', { replace: true }), 1200)
     } catch (err) {
       setError(err.message)
     } finally {

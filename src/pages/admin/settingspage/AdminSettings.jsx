@@ -7,22 +7,49 @@ import { LIMITS } from '../../../utils/validate.js'
  * Site settings — the switches the team can change without a deploy.
  * Superadmin only, matching the API.
  */
+// The psychometric guide links, in the order the screen lists them.
+const GUIDE_FIELDS = [
+  {
+    key: 'psychometricTestVideo',
+    label: 'How to take the test (plays before “Take the test” / “Continue your test”)',
+    placeholder: 'https://…/hls/psychometric-test-guide/master.m3u8',
+  },
+  {
+    key: 'psychometricReportVideoStream',
+    label: 'How to see your report — Stream Selector, classes 7 to 9',
+    placeholder: 'https://…/hls/psychometric-report-guide-stream/master.m3u8',
+  },
+  {
+    key: 'psychometricReportVideoCareer',
+    label: 'How to see your report — Career Selector, classes 10 to 12',
+    placeholder: 'https://…/hls/psychometric-report-guide-career/master.m3u8',
+  },
+  {
+    key: 'psychometricQuestionsPdf',
+    label: 'Test guide PDF (optional — adds a “Download as PDF” link above the pre-test guide)',
+    placeholder: 'https://…/psychometric-questions.pdf',
+  },
+  {
+    key: 'psychometricReportVideo',
+    label: 'Report video for any test without its own (fallback)',
+    placeholder: 'https://…/master.m3u8',
+  },
+]
+const emptyGuides = () => Object.fromEntries(GUIDE_FIELDS.map((f) => [f.key, '']))
+
 export default function AdminSettings() {
   const [settings, setSettings] = useState(null)
   const [enquiryTo, setEnquiryTo] = useState('')
   const [error, setError] = useState('')
   const [msg, setMsg] = useState('')
   const [busy, setBusy] = useState(false)
-  // The two psychometric guide videos (links to the uploaded video).
-  const [videos, setVideos] = useState({ psychometricTestVideo: '', psychometricReportVideo: '' })
+  // The psychometric guide links (videos and the Questions PDF).
+  const [videos, setVideos] = useState(emptyGuides)
   const [videoMsg, setVideoMsg] = useState('')
   const [videoErr, setVideoErr] = useState('')
   const [videoBusy, setVideoBusy] = useState(false)
 
-  const takeVideos = (st) => setVideos({
-    psychometricTestVideo: st.psychometricTestVideo || '',
-    psychometricReportVideo: st.psychometricReportVideo || '',
-  })
+  const takeVideos = (st) => setVideos(Object.fromEntries(GUIDE_FIELDS.map((f) => [f.key, st[f.key] || ''])))
 
   const load = () =>
     api('/admin/settings', { auth: 'admin' })
@@ -54,10 +81,7 @@ export default function AdminSettings() {
     try {
       const d = await api('/admin/settings', {
         method: 'PATCH', auth: 'admin',
-        body: {
-          psychometricTestVideo: videos.psychometricTestVideo.trim(),
-          psychometricReportVideo: videos.psychometricReportVideo.trim(),
-        },
+        body: Object.fromEntries(GUIDE_FIELDS.map((f) => [f.key, videos[f.key].trim()])),
       })
       setSettings(d.settings)
       takeVideos(d.settings)
@@ -129,45 +153,32 @@ export default function AdminSettings() {
       </section>
 
       <section className="adm-panel" style={{ marginTop: 'var(--space-4)' }}>
-        <h2 className="adm-title">Psychometric test videos</h2>
+        <h2 className="adm-title">Psychometric test guides</h2>
         <p className="adm-sub">
           Short how-to videos that play in a pop-up just before a student leaves for the test
-          site. Paste the link to the uploaded video: the .m3u8 stream link, or an .mp4.
-          Students can skip or scrub them freely. Leave a box empty and that video is skipped.
+          site. Paste the link to the uploaded video: the .m3u8 stream link, or an .mp4. The
+          report video is picked by the student’s class. Students can scrub freely. Leave a box
+          empty and the pop-up shows written steps in its place.
         </p>
 
         {videoErr && <p className="adm-error">{videoErr}</p>}
         {videoMsg && <p className="adm-ok">{videoMsg}</p>}
 
         <form onSubmit={saveVideos}>
-          <div className="adm-field">
-            <label className="adm-label" htmlFor="psychometricTestVideo">
-              How to take the test (plays before “Take the test”)
-            </label>
-            <input
-              id="psychometricTestVideo"
-              className="adm-input"
-              type="text"
-              maxLength={LIMITS.url}
-              value={videos.psychometricTestVideo}
-              onChange={(e) => setVideos((v) => ({ ...v, psychometricTestVideo: e.target.value }))}
-              placeholder="https://…/psychometric/how-to-take/master.m3u8"
-            />
-          </div>
-          <div className="adm-field">
-            <label className="adm-label" htmlFor="psychometricReportVideo">
-              How to see your report (plays before “See your report”, once the test is done)
-            </label>
-            <input
-              id="psychometricReportVideo"
-              className="adm-input"
-              type="text"
-              maxLength={LIMITS.url}
-              value={videos.psychometricReportVideo}
-              onChange={(e) => setVideos((v) => ({ ...v, psychometricReportVideo: e.target.value }))}
-              placeholder="https://…/psychometric/how-to-read-report/master.m3u8"
-            />
-          </div>
+          {GUIDE_FIELDS.map((f) => (
+            <div className="adm-field" key={f.key}>
+              <label className="adm-label" htmlFor={f.key}>{f.label}</label>
+              <input
+                id={f.key}
+                className="adm-input"
+                type="text"
+                maxLength={LIMITS.url}
+                value={videos[f.key]}
+                onChange={(e) => setVideos((v) => ({ ...v, [f.key]: e.target.value }))}
+                placeholder={f.placeholder}
+              />
+            </div>
+          ))}
           <button className="adm-btn" disabled={videoBusy}>
             {videoBusy ? 'Saving…' : 'Save videos'}
           </button>

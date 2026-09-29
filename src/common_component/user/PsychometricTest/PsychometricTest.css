@@ -20,7 +20,9 @@
 .ptest-modal {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  /* Above the sticky navbar (100), which otherwise covers the top of a tall
+     pop-up; below the sign-in loader (900), which can open from inside one. */
+  z-index: 800;
   background: rgba(15, 23, 42, 0.55);
   display: grid;
   place-items: center;
@@ -129,8 +131,11 @@
 .ptest-guide {
   position: relative;
   max-width: 760px;
+  /* dvh: on phones 100vh counts the space behind the browser's own bars. */
   max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .ptest-guide-player { margin: 4px 0 16px; }
 .ptest-guide-actions { flex-wrap: wrap; }
@@ -176,4 +181,246 @@
   border-radius: inherit;
   background: var(--color-primary, #1c2a4a);
   transition: width 400ms ease;
+}
+
+/* ---- Report pop-up: Video / Questions switch ----
+   A pill with a thumb that slides under the chosen side. Nirmaan green when on,
+   brown text when off, on the cream surface. */
+.ptest-guide--tabs { max-width: 860px; }
+.ptest-switch {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 4px;
+  margin: 2px 0 16px;
+  border-radius: 999px;
+  background: var(--color-surface, #faf6ec);
+  border: 1px solid var(--color-surface-border, #f1ead5);
+  box-shadow: inset 0 1px 2px rgba(59, 40, 34, 0.08);
+}
+.ptest-switch-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: var(--color-primary, #3f7932);
+  box-shadow: 0 4px 12px rgba(63, 121, 50, 0.32), 0 1px 2px rgba(45, 87, 35, 0.3);
+  transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.ptest-switch-thumb.is-right { transform: translateX(100%); }
+.ptest-switch-opt {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 128px;
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted, #5a3f33);
+  cursor: pointer;
+  transition: color 220ms ease;
+}
+.ptest-switch-opt svg { width: 16px; height: 16px; flex: none; }
+.ptest-switch-opt:hover:not(.is-on) { color: var(--color-heading, #2d5723); }
+.ptest-switch-opt.is-on { color: var(--color-on-primary, #fff); }
+.ptest-switch-opt:focus-visible { outline: 2px solid var(--color-primary, #3f7932); outline-offset: 3px; }
+
+.ptest-guide-panel { animation: ptest-panel-in 240ms ease-out; }
+.ptest-guide-panel[hidden] { display: none; }
+@keyframes ptest-panel-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.ptest-guide-pdf {
+  display: block;
+  width: 100%;
+  height: min(62vh, 560px);
+  border: 1px solid var(--color-surface-border, #f1ead5);
+  border-radius: 12px;
+  background: #fff;
+}
+.ptest-guide-pdf-link {
+  display: inline-block;
+  margin: 8px 0 14px;
+  font-size: 13px;
+  color: var(--color-heading, #2d5723);
+}
+@media (max-width: 520px) {
+  .ptest-switch { display: grid; width: 100%; }
+  .ptest-switch-opt { min-width: 0; padding: 9px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ptest-switch-thumb, .ptest-guide-panel { transition: none; animation: none; }
+}
+
+/* ---- Pre-test guide (test pop-up and the report pop-up's guide tab) ----
+   Fixed colours rather than theme tokens: the pop-up opens on pages with and
+   without the Nirmaan theme, and the tokens' cream is too close to white to
+   show. A cream well holds white cards, each with a border and a soft shadow,
+   so every part reads as its own box. */
+.ptg {
+  --ptg-green: #3f7932;
+  --ptg-green-dark: #2d5723;
+  --ptg-brown: #3b2822;
+  --ptg-brown-soft: #5a3f33;
+  --ptg-cream: #f5efe0;
+  --ptg-line: #e3d9c2;
+  --ptg-shadow: 0 1px 2px rgba(59, 40, 34, 0.06), 0 4px 14px rgba(59, 40, 34, 0.08);
+  max-height: min(58vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 2px 0 16px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--ptg-cream);
+  border: 1px solid var(--ptg-line);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ptg-brown);
+}
+.ptg p { color: var(--ptg-brown); }
+
+/* Hero: the test at a glance */
+.ptg-hero {
+  padding: 18px 18px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e6f2e2 0%, #f6faf3 100%);
+  border: 1px solid #c9e0c2;
+  box-shadow: var(--ptg-shadow);
+}
+.ptg-eyebrow {
+  margin: 0 0 2px !important;
+  font-size: 11.5px !important;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ptg-green) !important;
+}
+.ptg-name { margin: 0 0 10px; font-size: 21px; line-height: 1.25; color: var(--ptg-green-dark); }
+.ptg-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.ptg-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600;
+  background: #fff; border: 1px solid #c9e0c2;
+  color: var(--ptg-brown);
+  box-shadow: 0 1px 2px rgba(45, 87, 35, 0.08);
+}
+.ptg-pill--time { background: var(--ptg-green); border-color: var(--ptg-green); color: #fff; }
+.ptg-pill svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.ptg-lead { margin: 0 0 12px !important; font-size: 14px !important; }
+.ptg-dims { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ptg-dims li {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 13px 5px 5px; border-radius: 999px;
+  background: #fff; border: 1px solid #c9e0c2;
+  box-shadow: 0 1px 3px rgba(45, 87, 35, 0.1);
+  font-size: 13px; font-weight: 600; color: var(--ptg-green-dark);
+}
+.ptg-dims li span {
+  display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--ptg-green); color: #fff; font-size: 11.5px; font-weight: 700;
+}
+
+/* Each section is its own white card */
+.ptg-sec {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--ptg-line);
+  box-shadow: var(--ptg-shadow);
+}
+.ptg-sec h5 {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 10px; font-size: 15.5px; color: var(--ptg-green-dark);
+}
+.ptg-ico {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
+  background: #eef6ec; border: 1px solid #c9e0c2; font-size: 15px;
+}
+.ptg-note { margin: 0 0 10px !important; font-size: 13.5px !important; color: var(--ptg-brown-soft) !important; }
+.ptg-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ptg-list li {
+  position: relative; padding: 8px 12px 8px 34px;
+  border-radius: 10px; background: #f8f5ec; border: 1px solid #ece4d0;
+}
+.ptg-list li::before {
+  content: '✓'; position: absolute; left: 11px; top: 8px;
+  font-weight: 700; color: var(--ptg-green);
+}
+
+.ptg-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 10px; padding: 0; list-style: none; }
+.ptg-steps li {
+  display: flex; gap: 10px; padding: 12px;
+  border-radius: 12px; background: #f3f9f1; border: 1px solid #c9e0c2;
+  box-shadow: 0 1px 3px rgba(45, 87, 35, 0.08);
+}
+.ptg-steps li:nth-child(2) { background: #fdf6e3; border-color: #ecd9a8; }
+.ptg-steps li p { margin: 2px 0 0 !important; font-size: 13px !important; line-height: 1.5; }
+.ptg-steps strong { font-size: 13.5px; color: var(--ptg-green-dark); }
+.ptg-step-no {
+  flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ptg-green); color: #fff; font-size: 12.5px; font-weight: 700;
+  box-shadow: 0 2px 6px rgba(63, 121, 50, 0.35);
+}
+.ptg-steps li:nth-child(2) .ptg-step-no { background: #b7791f; box-shadow: 0 2px 6px rgba(183, 121, 31, 0.35); }
+
+/* Do's and don'ts */
+.ptg-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ptg-col { padding: 14px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); }
+.ptg-col h6 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; }
+.ptg-col h6 span {
+  display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  color: #fff; font-size: 12.5px; font-weight: 700;
+}
+.ptg-col ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.ptg-col li {
+  padding: 9px 11px; border-radius: 9px; background: #fff;
+  font-size: 13.5px; line-height: 1.5; color: var(--ptg-brown);
+}
+.ptg-col li strong { display: block; margin-bottom: 1px; font-size: 13.5px; }
+.ptg-col--do { background: #e6f2e2; border: 1px solid #b9d9b0; }
+.ptg-col--do h6 { color: var(--ptg-green-dark); }
+.ptg-col--do h6 span { background: var(--ptg-green); }
+.ptg-col--do li { border: 1px solid #cfe5c8; border-left: 3px solid var(--ptg-green); }
+.ptg-col--do li strong { color: var(--ptg-green-dark); }
+.ptg-col--dont { background: #fce9e5; border: 1px solid #f0c3b8; }
+.ptg-col--dont h6 { color: #9a3412; }
+.ptg-col--dont h6 span { background: #c2410c; }
+.ptg-col--dont li { border: 1px solid #f3d3cb; border-left: 3px solid #c2410c; }
+.ptg-col--dont li strong { color: #9a3412; }
+
+/* Closing word */
+.ptg-close {
+  margin-top: 12px; padding: 18px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fdf3d8 0%, #fffaf0 100%);
+  border: 1px solid #ecd9a8; border-left: 5px solid var(--ptg-green);
+  box-shadow: var(--ptg-shadow);
+}
+.ptg-close p { margin: 0 0 8px !important; font-size: 13.5px !important; }
+.ptg-close-label {
+  font-size: 11.5px !important; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ptg-green) !important;
+}
+.ptg-close-big { font-size: 17px !important; font-weight: 700; line-height: 1.4; color: var(--ptg-green-dark) !important; }
+.ptg-close-sign { margin: 0 !important; font-style: italic; color: var(--ptg-brown-soft) !important; }
+
+.ptg::-webkit-scrollbar { width: 8px; }
+.ptg::-webkit-scrollbar-thumb { background: #d9ccad; border-radius: 4px; }
+
+@media (max-width: 640px) {
+  .ptg { max-height: 55vh; padding: 10px; }
+  .ptg-steps, .ptg-cols { grid-template-columns: 1fr; }
 }

@@ -3,6 +3,11 @@
  * invoice for a paid order (no server/PDF dependency) and opens it in a new
  * window so the user can save it as a PDF. Falls back to an .html download if
  * the popup is blocked.
+ *
+ * THE one invoice: a student downloads it from Settings → Orders, and an admin
+ * downloads anyone's from the admin Orders page, both through openInvoice —
+ * so a change to the template shows in both places. Institution orders (seats
+ * bought for students) print their quantity and per-student price here too.
  */
 
 // Seller details shown on every invoice. Edit these to match the registered
@@ -43,7 +48,10 @@ const splitItem = (label = '') => {
 function summaryLines(order) {
   const lines = []
   const listPrice = order.listPrice ?? order.basePrice ?? order.amount
-  lines.push({ label: 'Package price', value: money(listPrice) })
+  lines.push({
+    label: order.quantity > 1 ? `Price (${order.quantity} students)` : 'Package price',
+    value: money(listPrice),
+  })
   if (order.earlyBirdApplied && order.basePrice != null && listPrice - order.basePrice > 0)
     lines.push({ label: 'Early-bird discount', value: '– ' + money(listPrice - order.basePrice), good: true })
   if (order.discount > 0)
@@ -130,7 +138,9 @@ function invoiceHtml(order, customer) {
         <p>Receipt&nbsp;No: <strong>${esc(order.receiptNo || '—')}</strong></p>
         <p>Date: ${esc(fmtDate(order.paidAt || order.createdAt))}</p>
         <p>Order&nbsp;ID: ${esc(order.id)}</p>
-        <p>Payment: ${esc(order.currency || 'INR')} · ${esc((order.status || '').toUpperCase())}</p>
+        <p>Payment: ${esc(order.currency || 'INR')} · ${esc((order.status || '').toUpperCase())}${order.paymentMethod === 'cash' ? ' · Cash' : ''}</p>
+        ${order.gatewayPaymentId && order.paymentMethod !== 'cash' ? `<p>Transaction&nbsp;ID: ${esc(order.gatewayPaymentId)}</p>` : ''}
+        ${order.reference ? `<p>Reference: ${esc(order.reference)}</p>` : ''}
       </div>
     </div>
 
@@ -140,7 +150,7 @@ function invoiceHtml(order, customer) {
         <tr>
           <td>
             <div class="item-name">${esc(product)}${pkg ? ' — ' + esc(pkg) + ' package' : ''}</div>
-            <div class="item-sub">Skill-Build career program${order.isUpgrade ? ' · upgrade' : ''}</div>
+            <div class="item-sub">Skill-Build career program${order.isUpgrade ? ' · upgrade' : ''}${order.quantity > 1 ? ` · ${order.quantity} students × ${money(order.amount / order.quantity)}` : ''}</div>
           </td>
           <td class="r">${money(order.listPrice ?? order.basePrice ?? order.amount)}</td>
         </tr>

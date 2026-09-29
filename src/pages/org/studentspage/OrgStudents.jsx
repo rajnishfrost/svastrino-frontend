@@ -74,7 +74,7 @@ export default function OrgStudents() {
 
   const downloadSample = async () => {
     try {
-      downloadText('svastrino-students-sample.csv', await apiText('/org/students/sample.csv', { auth: 'user' }))
+      downloadText('svastrino-student-sheet.csv', await apiText('/org/students/sample.csv', { auth: 'user' }))
     } catch (e) { setError(e.message) }
   }
 
@@ -96,15 +96,17 @@ export default function OrgStudents() {
           placeholder="Search name or email…"
           value={q}
           onChange={(e) => { setQ(e.target.value); load(e.target.value) }} maxLength={LIMITS.search} />
-        <button className="adm-btn" onClick={() => setShowImport(true)}>Bulk add from CSV</button>
+        {/* In the order they are used: get the sample, fill it in, upload it —
+            then adding one student at a time, right alongside. */}
+        <button className="adm-btn adm-btn--ghost" onClick={downloadSample}>Download sample sheet</button>
+        <button className="adm-btn" onClick={() => setShowImport(true)}>Bulk add from sheet</button>
         <button className="adm-btn adm-btn--ghost" onClick={() => setShowAdd(true)}>Add one student</button>
-        <button className="adm-btn adm-btn--ghost" onClick={downloadSample}>Download sample CSV</button>
       </div>
 
       {error && <p className="adm-error">{error}</p>}
 
       {!rows ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
-        <p className="adm-empty">No students yet — start with “Bulk add from CSV”.</p>
+        <p className="adm-empty">No students yet — download the sample sheet, fill it in, then use “Bulk add from sheet”.</p>
       ) : (
         <>
           <p className="adm-sub"><strong>{rows.length}</strong> student{rows.length === 1 ? '' : 's'}.</p>
@@ -198,7 +200,7 @@ function ImportModal({ onClose, onDone, onSample }) {
   const [error, setError] = useState('')
 
   const send = async (dryRun) => {
-    if (!file) { setError('Choose a .csv file first.'); return }
+    if (!file) { setError('Choose your filled-in student sheet first.'); return }
     setBusy(true); setError('')
     try {
       const fd = new FormData()
@@ -219,11 +221,12 @@ function ImportModal({ onClose, onDone, onSample }) {
         {!result && (
           <>
             <p className="adm-sub">
-              Your CSV needs these columns: <strong>name, email, phone, class</strong>.
+              Your student sheet needs these columns: <strong>name, email, phone, class</strong>.
               Email is the one that must be filled in — it’s how each student signs in.
+              Filling it in Excel or Google Sheets? Save or download it as <strong>CSV</strong> before uploading.
             </p>
             <button className="adm-btn adm-btn--ghost adm-btn--sm" onClick={onSample} style={{ marginBottom: 14 }}>
-              Download the sample CSV
+              Download the sample sheet
             </button>
             <input
               ref={fileRef}

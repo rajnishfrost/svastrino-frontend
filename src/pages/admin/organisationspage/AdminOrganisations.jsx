@@ -5,6 +5,7 @@ import SponsoredCoursePicker from '../../../common_component/admin/SponsoredCour
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
+import CopyLink from '../../../common_component/admin/CopyLink/CopyLink.jsx'
 
 /**
  * Partner organisations — the admin side of the organisation portal.
@@ -26,7 +27,7 @@ const ALL_MODULES = [
 export default function AdminOrganisations() {
   return (
     <div className="adm-page">
-      <h1 className="adm-title">Organisations</h1>
+      <h1 className="adm-title">Institutions</h1>
       <p className="adm-sub">
         Review partner applications, decide what each one can reach in its portal, and see the students they have added.
       </p>
@@ -109,11 +110,11 @@ function Organisations() {
       </div>
       {error && <p className="adm-error">{error}</p>}
       {!rows ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
-        <p className="adm-empty">No organisations.</p>
+        <p className="adm-empty">No institutions.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
-            <thead><tr><th>Organisation</th><th>Location</th><th>Contact</th><th>Access</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Institution</th><th>Location</th><th>Contact</th><th>Access</th><th>Status</th><th></th></tr></thead>
             <tbody>
               {rows.map((o) => (
                 <tr key={o.id}>
@@ -134,6 +135,7 @@ function Organisations() {
                     <div className="adm-sub" style={{ margin: 0 }}>{o.modules?.length ? o.modules.join(', ') : 'none'}</div>
                     {!o.publicListed && <span className="adm-badge adm-badge--muted">unlisted</span>}
                     {!o.active && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 4 }}>suspended</span>}
+                    {o.awaitingPayment && <span className="adm-badge adm-badge--warn" style={{ marginLeft: 4 }}>payment pending</span>}
                   </td>
                   <td>
                     <span className={`adm-badge adm-badge--${o.status === 'approved' ? 'ok' : o.status === 'rejected' ? 'warn' : 'muted'}`}>{o.status}</span>
@@ -155,13 +157,13 @@ function Organisations() {
           </table>
         </div>
       )}
-      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="organisation" />
+      <Pager page={pg.page} pages={pg.pages} total={pg.total} onChange={setPage} unit="institution" />
 
       {review && (
         <ConfirmModal
           title={review.action === 'approved' ? `Approve “${review.org.name}”?` : `Reject “${review.org.name}”?`}
           message={review.action === 'approved'
-            ? 'This creates their organisation login and emails a set-password link to their portal, where they can add and manage their students.'
+            ? 'This creates their institution login and emails a set-password link to their portal, where they can add and manage their students.'
             : 'They will not get a portal login. Nothing is emailed.'}
           confirmLabel={review.action === 'approved' ? 'Approve' : 'Reject'}
           danger={review.action === 'rejected'}
@@ -177,7 +179,7 @@ function Organisations() {
 
 // ---- One organisation, in full ----------------------------------------------
 function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
-  const { organisation: o, stats } = detail
+  const { organisation: o, stats, pendingPayment } = detail
   const [students, setStudents] = useState(null)
   const [showStudents, setShowStudents] = useState(false)
   const [error, setError] = useState('')
@@ -193,7 +195,19 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
 
   return (
     <section>
-      <button className="adm-link" style={{ padding: 0, marginBottom: 10 }} onClick={onBack}>← All organisations</button>
+      <button className="adm-link" style={{ padding: 0, marginBottom: 10 }} onClick={onBack}>← All institutions</button>
+
+      {/* Waiting on its online payment: nothing opens for it until then. */}
+      {o.awaitingPayment && (
+        <div className="adm-panel" role="status" style={{ borderLeft: '4px solid #d39a1e' }}>
+          <strong>Payment pending.</strong>{' '}
+          {pendingPayment
+            ? <>₹{Number(pendingPayment.amountInr).toLocaleString('en-IN')} for {pendingPayment.students} student{pendingPayment.students === 1 ? '' : 's'}. </>
+            : null}
+          The institution cannot sign in or use its portal until this is paid. This link was emailed to it:
+          <CopyLink url={pendingPayment?.payLink} />
+        </div>
+      )}
 
       <div className="adm-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
@@ -209,6 +223,7 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
             <span className={`adm-badge adm-badge--${o.status === 'approved' ? 'ok' : o.status === 'rejected' ? 'warn' : 'muted'}`}>{o.status}</span>
             {!o.active && <span className="adm-badge adm-badge--warn">suspended</span>}
+            {o.awaitingPayment && <span className="adm-badge adm-badge--warn">payment pending</span>}
             <button className="adm-btn adm-btn--sm" onClick={onConfigure}>Configure access</button>
           </div>
         </div>
@@ -221,6 +236,11 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
 
       <div className="adm-stat-grid">
         <div className="adm-stat-card"><strong>{stats.students}</strong><span>Students added</span></div>
+        {/* Seats paid for: how many are still free. None for an institution
+            without a limit. */}
+        {stats?.seats && (
+          <div className="adm-stat-card"><strong>{stats.seats.left} of {stats.seats.total}</strong><span>Seats left</span></div>
+        )}
       </div>
 
       {error && <p className="adm-error">{error}</p>}
@@ -288,7 +308,7 @@ function ConfigureModal({ org, onClose }) {
     <div className="adm-modal-overlay" onClick={() => !busy && onClose(false)}>
       <div className="adm-modal" onClick={(e) => e.stopPropagation()}>
         <h3>{org.name} — access</h3>
-        <p className="adm-sub">Which sections of their portal this organisation can use. Takes effect on their next request.</p>
+        <p className="adm-sub">Which sections of their portal this institution can use. Takes effect on their next request.</p>
 
         {ALL_MODULES.map((m) => (
           <label key={m.key} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12, fontSize: 14 }}>
@@ -310,7 +330,7 @@ function ConfigureModal({ org, onClose }) {
 
         <label style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10, fontSize: 14 }}>
           <input type="checkbox" checked={publicListed} onChange={(e) => setPublicListed(e.target.checked)} />
-          Show in the public /organisations directory
+          Show in the public institutions directory (/organisations)
         </label>
         <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 14 }}>
           <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />

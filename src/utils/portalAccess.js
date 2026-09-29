@@ -20,6 +20,18 @@ export function hasPortalAccess(user) {
   return user.siteAccess !== false
 }
 
+/**
+ * Where an account belongs the moment it signs in, when that is not the
+ * student side: the admin panel for a panel account, the institution portal
+ * for an institution's owner (approved and active — `portal` says so, so this
+ * never lands on a 403). Null for everyone else, who go where they were headed.
+ */
+export function homeFor(user) {
+  if (user?.panel) return '/admin'
+  if (user?.organisation?.portal) return '/organisation'
+  return null
+}
+
 /** Signed in, but not into the student side of the site. */
 export function isPanelOnly(user) {
   return !!user && !hasPortalAccess(user)

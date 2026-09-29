@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api, adminTokenStore } from '../../../api/client.js'
 import './AdminLogin.css'
 import { LIMITS } from '../../../utils/validate.js'
+import PasswordField from '../../../common_component/PasswordField/PasswordField.jsx'
 
 /**
  * Admin login — email + password. Talks to the admin credentials module:
@@ -52,8 +53,7 @@ export default function AdminLogin() {
         </label>
         <label>
           Password
-          <input
-            type="password"
+          <PasswordField
             required
             maxLength={LIMITS.password}
             autoComplete="current-password"

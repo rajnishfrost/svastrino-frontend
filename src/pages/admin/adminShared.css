@@ -92,6 +92,7 @@
 .adm-badge--ok { color: #1b7a43; background: #e9f7ef; }
 .adm-badge--warn { color: #b45309; background: #fef3e2; }
 .adm-badge--muted { color: var(--color-text-muted); background: var(--gray-100); }
+.adm-badge-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 
 /* Stats */
 .adm-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: var(--space-4); }
@@ -312,3 +313,16 @@
   border-radius: var(--radius-sm);
   background: #fff;
 }
+
+/* A sub-heading that groups a long form into parts (Account, Contact, Address…). */
+.adm-form-section {
+  margin: 18px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.adm-panel > h3 + .adm-sub + .adm-form-section { margin-top: 8px; }

@@ -185,7 +185,11 @@ export default function PsychometricActions({ product, assessment, onChange, onF
           title={guide === 'report' ? 'How to open your report' : 'How to take the test'}
           sub={guide === 'report'
             ? 'A quick walk-through of where your report is and how to read it.'
-            : 'A quick walk-through before you start.'}
+            : 'Please read this before you start — it helps you get a result that is truly yours.'}
+          firstLabel={guide === 'report' ? 'Result' : 'Video'}
+          alwaysTabs={guide === 'report'}
+          testType={guides.testType || null}
+          pdf={guides.questionsPdf || null}
           onContinue={proceed}
           onClose={() => setGuide(null)}
         />

@@ -19,7 +19,7 @@ const MODULES = [
   { key: 'coupons', label: 'Coupons' },
   { key: 'mentoring', label: 'Mentoring' },
   { key: 'orders', label: 'Orders' },
-  { key: 'organisations', label: 'Organisations' },
+  { key: 'organisations', label: 'Institutions' },
   { key: 'skill-builds', label: 'Skill Builds' },
   { key: 'testimonials', label: 'Reviews' },
   { key: 'users', label: 'Users' },
