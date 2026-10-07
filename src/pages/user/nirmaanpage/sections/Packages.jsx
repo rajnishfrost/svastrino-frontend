@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthLink } from '../../../../common_component/user/AuthPrompt/AuthPrompt.jsx'
 import { ArrowRight, Check } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
@@ -89,16 +90,16 @@ function PlanAction({ pkg, standing }) {
       )
     case 'next-phase':
       return (
-        <Link to={`/checkout?pkg=${pkg.sku}`} className={BTN_PRIMARY}>
+        <AuthLink reason="to buy Nirmaan" to={`/checkout?pkg=${pkg.sku}`} className={BTN_PRIMARY}>
           Pay for phase {standing.nextPhase} · ₹{Number(standing.rupees).toLocaleString('en-IN')}{' '}
           <ArrowRight className="size-4" />
-        </Link>
+        </AuthLink>
       )
     case 'upgrade':
       return (
-        <Link to={`/checkout?pkg=${pkg.sku}`} className={cls}>
+        <AuthLink reason="to buy Nirmaan" to={`/checkout?pkg=${pkg.sku}`} className={cls}>
           Upgrade for ₹{Number(standing.rupees).toLocaleString('en-IN')} <ArrowRight className="size-4" />
-        </Link>
+        </AuthLink>
       )
     case 'blocked':
       return (
@@ -109,9 +110,9 @@ function PlanAction({ pkg, standing }) {
       )
     default:
       return (
-        <Link to={`/checkout?pkg=${pkg.sku}`} className={cls}>
+        <AuthLink reason="to buy Nirmaan" to={`/checkout?pkg=${pkg.sku}`} className={cls}>
           {pkg.cta} <ArrowRight className="size-4" />
-        </Link>
+        </AuthLink>
       )
   }
 }

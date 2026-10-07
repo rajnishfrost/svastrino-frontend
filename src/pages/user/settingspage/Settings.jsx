@@ -332,8 +332,12 @@ function AccountPanel() {
                    action={user.studentClass ? 'Edit' : 'Add'} onAction={() => open('class')} />
         )}
 
-        {/* Password */}
-        {editing === 'password' ? (
+        {/* Password. An account that signs in with Google and has never set a
+            password has nothing to change or reset here — say how it signs in
+            instead of offering "Set". */}
+        {user.googleLinked && !user.hasPassword ? (
+          <ViewRow label="Sign-in" value="With your Google account" />
+        ) : editing === 'password' ? (
           <EditField label={user.hasPassword ? 'Change password' : 'Set password'}
                      onSave={savePassword} onCancel={cancel} busy={busy}>
             {/* Capped like every other password box on the site. bcrypt ignores

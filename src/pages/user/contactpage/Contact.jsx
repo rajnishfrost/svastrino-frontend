@@ -99,7 +99,7 @@ export default function Contact() {
         <div className="container">
           <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.6fr_1fr]">
             {/* Enquiry form (wider, left) */}
-            <div className="min-w-0 rounded-2xl border border-brand-navy/5 bg-white p-5 shadow-xl shadow-brand-navy/5 sm:p-6 md:p-8">
+            <div className="min-w-0 rounded-2xl border border-solid border-brand-navy/15 bg-white p-5 shadow-[0_2px_6px_rgba(15,44,92,0.08),0_10px_28px_-4px_rgba(15,44,92,0.2)] sm:p-6 md:p-8">
               {sent ? (
                 /* The same shape the other forms use when they are done: a mark,
                    a heading, and what happens next — not one green line in an

@@ -65,6 +65,32 @@ function PostsSkeleton({ count }) {
  */
 const pathForPage = (n) => (n <= 1 ? '/blog' : `/blog/page/${n}`)
 
+/**
+ * A post's cover, or a branded stand-in when there is none or it fails to load
+ * (an old link to an image that has since moved), so no card ever shows a
+ * broken-image icon over a blank box.
+ */
+function CoverImage({ src, title }) {
+  const [failed, setFailed] = useState(false)
+  if (src && !failed) {
+    return (
+      <img
+        src={src}
+        alt=""
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    )
+  }
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-brand-blue-light via-white to-brand-rose p-6 text-center" aria-hidden>
+      <img src="/logo-256.png" alt="" className="h-10 w-auto opacity-80" />
+      <span className="line-clamp-2 max-w-[85%] font-display text-sm font-bold text-brand-navy/70">{title}</span>
+    </div>
+  )
+}
+
 export default function Blog() {
   // URL is the source of truth so filters/pages are shareable and survive a refresh.
   const [params, setParams] = useSearchParams()
@@ -207,7 +233,7 @@ export default function Blog() {
               {categories.map((c) => (
                 <button
                   key={c.name}
-                  className={filterBtn(category === c.name)}
+                  className={filterBtn(category.toLowerCase() === c.name.toLowerCase())}
                   onClick={() => update({ category: c.name })}
                 >
                   {c.name} ({c.count})
@@ -237,7 +263,7 @@ export default function Blog() {
           {(category || q) && (
             <p className="mt-5 text-sm text-brand-slate">
               {pagination.total} {pagination.total === 1 ? 'post' : 'posts'}
-              {category && <> in <strong className="text-brand-navy">{category}</strong></>}
+              {category && <> in <strong className="text-brand-navy">{categories.find((c) => c.name.toLowerCase() === category.toLowerCase())?.name || category}</strong></>}
               {q && <> matching <strong className="text-brand-navy">“{q}”</strong></>}
               {' · '}
               {/* Back to an unfiltered page one, wherever the page number is
@@ -261,16 +287,9 @@ export default function Blog() {
                   key={p.slug}
                   className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                 >
-                  {p.coverImage && (
-                    <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
-                      <img
-                        src={p.coverImage}
-                        alt=""
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </Link>
-                  )}
+                  <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
+                    <CoverImage src={p.coverImage} title={p.title} />
+                  </Link>
                   <div className="flex flex-1 flex-col p-6">
                     <OwnerBadge owner={p.owner} />
                     <h3 className="mt-3 font-display text-lg font-bold leading-snug text-brand-navy">
