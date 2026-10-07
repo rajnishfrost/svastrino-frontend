@@ -38,7 +38,7 @@ function Waiting() {
         <span className="h-7 w-32 rounded-full bg-nirmaan-cream" />
         <span className="h-7 w-28 rounded-full bg-nirmaan-cream" />
       </div>
-      <div className="mx-auto mt-7 h-12 w-64 rounded-lg bg-nirmaan-cream" />
+      <div className="mx-auto mt-8 h-[52px] w-64 rounded-xl bg-nirmaan-cream" />
     </div>
   )
 }
@@ -198,13 +198,13 @@ export default function FreeTrial() {
               type="button"
               onClick={copy.onClick}
               disabled={busy}
-              className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark disabled:cursor-wait disabled:opacity-70 border-0"
+              className="mt-8 inline-flex min-h-[50px] max-w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-nirmaan-green px-3.5 py-3 text-xs min-[340px]:px-4 min-[340px]:text-[13px] font-semibold leading-none text-white shadow-md shadow-nirmaan-green/25 transition-colors hover:bg-nirmaan-green-dark disabled:cursor-wait disabled:opacity-70 border-0 min-[380px]:px-5 min-[380px]:text-sm sm:gap-2 sm:px-8 sm:text-base"
             >
-              {copy.cta} <ArrowRight className="size-4" />
+              {copy.cta} <ArrowRight className="size-4 shrink-0" />
             </button>
             {error && <p className="mt-3 text-sm font-medium text-red-600" role="alert">{error}</p>}
             {!user && (
-              <p className="mt-3 text-sm text-nirmaan-brown-soft">
+              <p className="mt-4 text-sm text-nirmaan-brown-soft">
                 You’ll create your account first — the trial starts straight after.
               </p>
             )}

@@ -1,0 +1,72 @@
+/* Sign-in pop-up (AuthPrompt). The form inside is AuthForm, styled by Login.css. */
+.authp {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 31, 67, 0.55);
+  backdrop-filter: blur(2px);
+  animation: authp-in 0.18s ease-out both;
+}
+@keyframes authp-in { from { opacity: 0; } to { opacity: 1; } }
+
+.authp-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 26px 22px 20px;
+  border-radius: 18px;
+  background: var(--white, #fff);
+  box-shadow: 0 24px 60px rgba(10, 31, 67, 0.35);
+  text-align: center;
+  animation: authp-up 0.22s ease-out both;
+}
+@keyframes authp-up { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.authp-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--gray-100, #f3f4f6);
+  color: var(--navy, #0f2c5c);
+  cursor: pointer;
+}
+.authp-close:hover { background: var(--gray-200, #e5e7eb); }
+
+.authp-reason {
+  margin: 0 40px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-accent, #c8102e);
+}
+
+/* Phones: a sheet from the bottom, the easy place for a thumb. */
+@media (max-width: 520px) {
+  .authp { align-items: flex-end; padding: 0; }
+  .authp-card {
+    max-width: none;
+    max-height: 92dvh;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 18px calc(18px + env(safe-area-inset-bottom));
+    animation-name: authp-sheet;
+  }
+}
+@keyframes authp-sheet { from { transform: translateY(40px); } to { transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .authp, .authp-card { animation: none; }
+}

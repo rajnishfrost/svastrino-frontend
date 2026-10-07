@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
@@ -12,9 +12,10 @@ import {
   guestStart,
 } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { useAuthPrompt } from '../../../common_component/user/AuthPrompt/AuthPrompt.jsx'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
-import { ArrowLeft, ArrowRight, Check, GraduationCap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, GraduationCap, LogIn } from 'lucide-react'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
 import {
@@ -205,6 +206,44 @@ export default function BookOnline() {
     Object.entries(patch).forEach(([k, v]) => (v ? next.set(k, v) : next.delete(k)))
     setParams(next, { replace: !push })
   }
+
+  /**
+   * Booking needs an account. Someone signed out gets the sign-in pop-up right
+   * here and, once in, carries on to "Your details" with the programme, date
+   * and time still picked. An email sign-up waits for its verification link;
+   * the address (with step=details) is remembered for the sign-in after it.
+   */
+  const promptAuth = useAuthPrompt()
+  const goToLogin = (mode = 'signup') => {
+    const back = new URLSearchParams(params)
+    back.set('step', 'details')
+    promptAuth({
+      mode,
+      reason: program ? `to book ${program.name}` : 'to book',
+      returnTo: `/book-online?${back.toString()}`,
+      onDone: () => { setErr(''); setStep('details') },
+    })
+  }
+
+  // Back from signing in: open on "Your details" again, then drop the marker
+  // from the address so a refresh later behaves normally.
+  useEffect(() => {
+    if (params.get('step') !== 'details' || !user) return
+    if (skuParam && params.get('date') && params.get('start')) setStep('details')
+    syncParams({ step: '' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  // Phones: each new step starts at the top of the wizard ("Back to
+  // programmes"), not wherever the last step was scrolled to.
+  const wizardTop = useRef(null)
+  const firstStep = useRef(true)
+  useEffect(() => {
+    if (firstStep.current) { firstStep.current = false; return }
+    if (window.matchMedia?.('(max-width: 899px)').matches) {
+      wizardTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [step])
 
   // Back to the program list. The wizard's later steps have their own "← Back"
   // links between them; this is the one that leaves the wizard.
@@ -441,7 +480,7 @@ export default function BookOnline() {
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section bo-section">
-        <div className="container bo-wrap">
+        <div className="container bo-wrap" ref={wizardTop}>
 
           {/* One Back out of the wizard, in the same place on every step, so
               nobody has to find the "Change program" link in the strip below or
@@ -625,7 +664,11 @@ export default function BookOnline() {
                 )}
                 {err && <p className="bo-error">{err}</p>}
                 <button className="btn btn-primary bo-full" disabled={!date || !slot}
-                        onClick={() => { setErr(''); setStep(rescheduleId ? 'verify' : 'details') }}>
+                        onClick={() => {
+                          setErr('')
+                          if (!user && !rescheduleId) return goToLogin()
+                          setStep(rescheduleId ? 'verify' : 'details')
+                        }}>
                   Continue
                 </button>
               </div>
@@ -633,7 +676,24 @@ export default function BookOnline() {
           )}
 
           {/* ---- Step 2 · details + coupon + fees ---- */}
-          {step === 'details' && program && (
+          {step === 'details' && program && !user && (
+            <div className="card bo-card bo-signin">
+              <span className="bo-signin-ico" aria-hidden><LogIn className="size-6" /></span>
+              <h2 className="bo-h2">Sign in to book</h2>
+              <p className="bo-muted">
+                Your sessions, reminders and receipts live in your account. Sign in, or create
+                an account in a minute, and you will come straight back here with your
+                programme, date and time still picked.
+              </p>
+              <div className="bo-signin-acts">
+                <button type="button" className="btn btn-primary" onClick={() => goToLogin('login')}>Log in</button>
+                <button type="button" className="btn btn-secondary" onClick={() => goToLogin('signup')}>Create an account</button>
+              </div>
+              <button type="button" className="bo-link" onClick={() => setStep('schedule')}>← Back</button>
+            </div>
+          )}
+
+          {step === 'details' && program && user && (
             <div className="bo-grid">
               <div className="card bo-card">
                 <h2 className="bo-h2">Your details</h2>

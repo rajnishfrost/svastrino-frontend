@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthLink } from '../../../common_component/user/AuthPrompt/AuthPrompt.jsx'
 import { ArrowRight, Check, GraduationCap } from 'lucide-react'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
@@ -196,12 +197,12 @@ export default function Psychometric() {
                   Take the test on its own for ₹900, or upgrade to Nirmaan + Psychometric Testing and pay only the difference — everything you have done in the course stays as it is.
                 </p>
                 <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                  <Link
+                  <AuthLink reason="to buy the psychometric test"
                     to={`/checkout?pkg=${TEST_SKU}`}
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-6 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
                   >
                     Buy the test · ₹900 <ArrowRight className="size-4" />
-                  </Link>
+                  </AuthLink>
                   <Link
                     to="/skill-build/nirmaan#packages"
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border-2 border-solid border-nirmaan-green/40 bg-white px-6 text-sm font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
@@ -375,12 +376,12 @@ export default function Psychometric() {
                   <div className="mt-6 border-t border-nirmaan-sand pt-4">
                     <div className="flex items-center justify-between gap-3">
                       <span className="font-display text-lg font-bold text-nirmaan-brown">₹900 Only</span>
-                      <Link
+                      <AuthLink reason="to buy the psychometric test"
                         to={`/checkout?pkg=${TEST_SKU}`}
                         className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
                       >
                         {t.name} <ArrowRight className="size-4" />
-                      </Link>
+                      </AuthLink>
                     </div>
                     {noTest && (
                       <p className="mt-3 text-xs text-nirmaan-brown-soft">

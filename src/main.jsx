@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { AuthPromptProvider } from './common_component/user/AuthPrompt/AuthPrompt.jsx'
 import { startOutboxSync } from './utils/outbox.js'
 import './styles/global.css'
 import './styles/tailwind.css' // opt-in Tailwind utilities (Home page + Footer); Preflight disabled
@@ -26,7 +27,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <AuthPromptProvider>
+          <App />
+        </AuthPromptProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

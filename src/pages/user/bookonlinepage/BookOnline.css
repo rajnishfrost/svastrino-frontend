@@ -118,6 +118,19 @@
 }
 .bo-paid-tag { color: var(--color-primary, #2e5d3f); font-weight: 600; font-size: 0.88rem; margin-left: 6px; }
 
+/* Signed out at "Your details": sign in first, then straight back. */
+.bo-signin { max-width: 520px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.bo-signin .bo-h2 { margin: 0; }
+.bo-signin .bo-muted { font-size: 0.95rem; line-height: 1.6; }
+.bo-signin-ico {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(47, 122, 229, 0.1); color: var(--color-primary, #0f2c5c);
+}
+.bo-signin-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 4px 0; }
+@media (max-width: 480px) { .bo-signin-acts, .bo-signin-acts .btn { width: 100%; } }
+.bo-wrap { scroll-margin-top: calc(var(--nav-height, 68px) + 12px); }
+
 /* Two-column step layout */
 .bo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
 @media (max-width: 760px) { .bo-grid { grid-template-columns: 1fr; } }

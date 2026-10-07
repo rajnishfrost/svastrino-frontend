@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PreviewPlayer from './PreviewPlayer.jsx'
 
 /**
@@ -70,6 +70,16 @@ export default function TryConcepts() {
   // Which lesson is playing big, if any. Held here rather than in the player
   // because it is a fact about the SECTION's layout, not about one video.
   const [theatre, setTheatre] = useState(null)
+  // Theatre mode is for big screens (about 10 inches and up). On a phone or a
+  // small tablet the grid is already one column, so "theatre" only moved the
+  // video up the page and made it jump. The button is not offered there.
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const on = () => { setWide(mq.matches); if (!mq.matches) setTheatre(null) }
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
   const cards = useRef([])
 
   /**
@@ -125,7 +135,7 @@ export default function TryConcepts() {
                   <PreviewPlayer
                     src={v.url} poster={v.poster} start={v.start} end={v.end} fullSeconds={v.fullSeconds}
                     theatre={big}
-                    onTheatre={() => setTheatre(big ? null : i)}
+                    onTheatre={wide ? () => setTheatre(big ? null : i) : null}
                     onPlayStart={() => promote(i)}
                   />
                   <figcaption className="p-4">
