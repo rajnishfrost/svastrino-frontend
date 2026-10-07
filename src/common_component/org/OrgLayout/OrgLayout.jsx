@@ -4,6 +4,7 @@ import OrgSidebar from '../OrgSidebar/OrgSidebar.jsx'
 import { OrgProvider, useOrg } from '../OrgContext/OrgContext.jsx'
 // Same shell as the admin panel — sidebar + top bar + content slot.
 import '../../admin/AdminLayout/AdminLayout.css'
+import { SkeletonTable } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * Shell + guard for the organisation portal.
@@ -17,7 +18,7 @@ function Shell({ children }) {
   const { state, organisation } = useOrg()
 
   if (state === 'loading') {
-    return <div style={{ padding: 40, fontSize: 15, color: '#5b6677' }}>Loading…</div>
+    return <div style={{ padding: 40 }}><SkeletonTable rows={6} cols={4} /></div>
   }
   if (state === 'denied') return <Navigate to="/" replace />
 

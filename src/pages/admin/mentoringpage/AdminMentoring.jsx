@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Services admin — two tabs:
@@ -29,7 +30,7 @@ export default function AdminMentoring() {
     <div>
       <h1 className="adm-title">Services</h1>
       <p className="adm-sub">
-        Bookings and session notes, plus the Services catalog grouped by sub-category
+        Bookings and session notes, plus the Services catalogue grouped by sub-category
         (Career Counselling, Personalised Mentoring).
       </p>
 
@@ -38,7 +39,7 @@ export default function AdminMentoring() {
           Bookings
         </button>
         <button className={`adm-btn adm-btn--sm ${tab === 'programs' ? '' : 'adm-btn--ghost'}`} onClick={() => setTab('programs')}>
-          Programs
+          Programmes
         </button>
       </div>
 
@@ -104,7 +105,7 @@ function BookingsTab() {
     <div>
       <div className="adm-toolbar">
         <select className="adm-select" style={{ width: 200 }} value={sku} onChange={(e) => setSku(e.target.value)}>
-          <option value="">All programs</option>
+          <option value="">All programmes</option>
           {programs.map((p) => <option key={p.sku} value={p.sku}>{p.name}</option>)}
         </select>
         <select className="adm-select" style={{ width: 160 }} value={when} onChange={(e) => setWhen(e.target.value)}>
@@ -121,13 +122,13 @@ function BookingsTab() {
       </div>
 
       {error && <p className="adm-error">{error}</p>}
-      {!bookings ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
+      {!bookings ? <SkeletonTable /> : rows.length === 0 ? (
         <p className="adm-empty">No bookings.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
             <thead>
-              <tr><th>Student</th><th>Program</th><th>Session</th><th>Appointment (IST)</th><th>Status</th><th>Update / tasks</th><th></th></tr>
+              <tr><th>Student</th><th>Programme</th><th>Session</th><th>Appointment (IST)</th><th>Status</th><th>Update / tasks</th><th></th></tr>
             </thead>
             <tbody>
               {rows.map((b) => (
@@ -222,7 +223,7 @@ function ProgramsTab() {
   return (
     <div>
       <div className="adm-toolbar">
-        <button className="adm-btn adm-btn--sm" onClick={() => setAdding(!adding)}>+ New program</button>
+        <button className="adm-btn adm-btn--sm" onClick={() => setAdding(!adding)}>+ New programme</button>
       </div>
 
       {adding && (
@@ -232,7 +233,7 @@ function ProgramsTab() {
       )}
 
       {error && <p className="adm-error">{error}</p>}
-      {!programs && !error && <p className="adm-empty">Loading…</p>}
+      {!programs && !error && <SkeletonTable />}
 
       {/* Grouped by Services sub-category */}
       {programs && subcats.map((sc) => {
@@ -297,7 +298,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
     sessionsCount: pkg?.sessionsCount ?? '', sessionMins: pkg?.sessionMins ?? '120',
     features: (pkg?.features || []).join('\n'), cta: pkg?.cta || '', badge: pkg?.badge || '',
     summary: pkg?.summary || '', trustLine: pkg?.trustLine || '',
-    durationLabel: pkg?.durationLabel || '', sessionsLabel: pkg?.sessionsLabel || '',
+    durationLabel: pkg?.durationLabel || '', sessionsLabel: pkg?.sessionsLabel || '', sessionsShort: pkg?.sessionsShort || '',
     deliveryMode: pkg?.deliveryMode || 'Online', buyMode: pkg?.buyMode || 'self-serve',
     expertEnquiry: pkg?.expertEnquiry ?? pkg?.buyMode === 'expert-call',
     featured: pkg?.featured || false, active: pkg ? pkg.active : true, order: pkg?.order ?? '',
@@ -322,7 +323,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         sessionMins: f.sessionMins === '' ? null : Number(f.sessionMins),
         features: f.features.split('\n').map((s) => s.trim()).filter(Boolean),
         summary: f.summary, trustLine: f.trustLine,
-        durationLabel: f.durationLabel, sessionsLabel: f.sessionsLabel,
+        durationLabel: f.durationLabel, sessionsLabel: f.sessionsLabel, sessionsShort: f.sessionsShort,
         deliveryMode: f.deliveryMode, buyMode: f.buyMode, expertEnquiry: f.expertEnquiry,
         cta: f.cta || (isNew ? `Book ${f.name}` : undefined),
         badge: f.badge || null,
@@ -343,7 +344,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
 
   return (
     <div>
-      <h2 style={{ fontSize: 16, marginBottom: 12 }}>{isNew ? 'New program' : `Edit ${pkg.name}`}</h2>
+      <h2 style={{ fontSize: 16, marginBottom: 12 }}>{isNew ? 'New programme' : `Edit ${pkg.name}`}</h2>
       <div className="adm-field">
         <label>Sub-category</label>
         <select className="adm-select" value={f.skillBuildSlug} disabled={!isNew}
@@ -359,11 +360,11 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         </div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Price (₹, whole program)</label><input className="adm-input adm-num" type="number" value={f.priceInr} onChange={(e) => set('priceInr', e.target.value)} /></div>
+        <div className="adm-field"><label>Price (₹, whole programme)</label><input className="adm-input adm-num" type="number" value={f.priceInr} onChange={(e) => set('priceInr', e.target.value)} /></div>
         <div className="adm-field"><label>Early bird (₹, blank = none)</label><input className="adm-input adm-num" type="number" value={f.earlyBirdInr} onChange={(e) => set('earlyBirdInr', e.target.value)} /></div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Sessions in the program</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
+        <div className="adm-field"><label>Sessions in the programme</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
         <div className="adm-field"><label>Session length (mins)</label><input className="adm-input adm-num" type="number" value={f.sessionMins} onChange={(e) => set('sessionMins', e.target.value)} /></div>
       </div>
       <div className="adm-field"><label>Tagline (red line on the card)</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
@@ -376,6 +377,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         <div className="adm-field"><label>Mode</label><input className="adm-input" value={f.deliveryMode} onChange={(e) => set('deliveryMode', e.target.value)} placeholder="Online" maxLength={LIMITS.name} /></div>
       </div>
       <div className="adm-field"><label>Sessions (as written on the card)</label><textarea className="adm-textarea" rows={2} value={f.sessionsLabel} onChange={(e) => set('sessionsLabel', e.target.value)} placeholder="e.g. Pre-session 90 minutes + 3 sessions of ~2.5 hours each" maxLength={LIMITS.name} /></div>
+      <div className="adm-field"><label>Sessions on the booking page (optional)</label><input className="adm-input" value={f.sessionsShort} onChange={(e) => set('sessionsShort', e.target.value)} placeholder="Blank = e.g. “2 sessions × 2.5 hrs”" maxLength={LIMITS.name} /></div>
       <div className="adm-field">
         <label>How it is bought</label>
         <select className="adm-input" value={f.buyMode} onChange={(e) => set('buyMode', e.target.value)}>
@@ -418,7 +420,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
       <div style={{ display: 'flex', gap: 10 }}>
         <button className="adm-btn" onClick={save}
                 disabled={busy || !f.name || (isNew && !f.sku) || f.priceInr === '' || f.sessionsCount === ''}>
-          {busy ? (isNew ? 'Creating…' : 'Saving…') : (isNew ? 'Create program' : 'Save changes')}
+          {busy ? (isNew ? 'Creating…' : 'Saving…') : (isNew ? 'Create programme' : 'Save changes')}
         </button>
         <button className="adm-btn adm-btn--ghost" onClick={onCancel} disabled={busy}>Cancel</button>
       </div>

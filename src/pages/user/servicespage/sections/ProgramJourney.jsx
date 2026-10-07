@@ -138,7 +138,7 @@ function Points({ points, className = '' }) {
  */
 function StepCard({ step }) {
   return (
-    <div className="w-full rounded-2xl bg-white p-5 shadow-xl shadow-brand-navy/5 ring-1 ring-brand-navy/10">
+    <div className="w-full rounded-2xl bg-white p-4 sm:p-5 shadow-xl shadow-brand-navy/5 ring-1 ring-brand-navy/10">
       {step.title && (
         <h4 className="font-display text-[15px] font-bold text-brand-navy md:text-base">{step.title}</h4>
       )}
@@ -157,7 +157,10 @@ function StageHeading({ title, range, note }) {
   const noteLines = note ? note.split('\n').map((l) => l.trim()).filter(Boolean) : []
   return (
     <div className="lg:pr-16">
-      <div className="inline-flex flex-wrap items-center justify-start gap-x-4 gap-y-2 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
+      {/* Phones/tablets: the time chip always sits under the stage name, so
+          Pre-, Actual and Post-session line up the same way (it used to sit
+          beside a short name and under a long one). Side by side from 900px. */}
+      <div className="flex flex-col items-start gap-2 lg:inline-flex lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
         <h3 className="font-display text-xl font-bold text-brand-navy lg:text-white">{title}</h3>
         {range && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 lg:bg-brand-crimson px-3 py-1 text-[13px] font-semibold text-brand-crimson lg:text-white">
@@ -231,7 +234,7 @@ export default function ProgramJourney({ program }) {
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">The journey</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-            Your Program Journey
+            Your Programme Journey
           </h2>
           {data.subtitle && (
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-brand-slate">{data.subtitle}</p>
@@ -298,7 +301,7 @@ export default function ProgramJourney({ program }) {
                 <StageHeading title={row.title} range={row.range} note={row.note} />
               </li>
             ) : (
-              <li key={i} className="relative flex gap-4">
+              <li key={i} className="relative flex gap-3 sm:gap-4">
                 <div className="flex flex-col items-center">
                   <Node Icon={PALETTE[row.ci % PALETTE.length]} i={row.ci} size={44} />
                   {/* Continue the rail only while the next row is another card. */}
@@ -310,7 +313,7 @@ export default function ProgramJourney({ program }) {
                     />
                   )}
                 </div>
-                <div className="flex-1 pb-1">
+                <div className="min-w-0 flex-1 pb-1">
                   <StepCard step={row.step} />
                 </div>
               </li>
@@ -329,9 +332,9 @@ export default function ProgramJourney({ program }) {
         {(data.duration || inclusions.length > 0 || program.duration) && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-brand-navy">
             <div className="border-b border-white/10 bg-white/5 px-6 py-4 md:px-8">
-              <h3 className="font-display text-lg font-bold text-white">What the Program Includes</h3>
+              <h3 className="font-display text-lg font-bold text-white">What the Programme Includes</h3>
             </div>
-            <div className="grid items-start gap-6 p-6 sm:grid-cols-[200px_1fr] sm:gap-8 md:p-8">
+            <div className="grid grid-cols-1 items-start gap-6 p-6 sm:grid-cols-[200px_1fr] sm:gap-8 md:p-8">
               {/* Duration — a bordered stat card so the column reads as a deliberate
                   headline figure rather than a stray line with empty space beside it. */}
               {(data.duration || program.duration) && (

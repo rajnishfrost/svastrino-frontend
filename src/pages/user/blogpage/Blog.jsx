@@ -37,7 +37,7 @@ function PostsSkeleton({ count }) {
   return (
     <>
       <p className="sr-only" role="status">Loading posts…</p>
-      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
         {Array.from({ length: count }, (_, i) => (
           <div key={i} className="animate-skeleton overflow-hidden rounded-xl border border-brand-navy/10 bg-white shadow-sm">
             <div className="aspect-[16/9] bg-brand-navy/10" />
@@ -255,7 +255,7 @@ export default function Blog() {
           )}
 
           {!loading && !error && posts.length > 0 && (
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((p) => (
                 <article
                   key={p.slug}

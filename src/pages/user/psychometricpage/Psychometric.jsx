@@ -6,6 +6,7 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { usePsychometric } from '../../../hooks/usePsychometric.js'
 import PsychometricActions from '../../../common_component/user/PsychometricTest/PsychometricActions.jsx'
 import StudentJourney from './sections/StudentJourney.jsx'
+import WhatYouGet from './sections/WhatYouGet.jsx'
 import Faqs from './sections/Faqs.jsx'
 
 /**
@@ -17,7 +18,7 @@ import Faqs from './sections/Faqs.jsx'
 const UNCOVERS = ['Interests', 'Preferences', 'Strengths', 'Weaknesses', 'Personality', 'Abilities', 'Natural Potential']
 
 const HOW_IT_WORKS = [
-  { title: 'Take the Test', text: 'Answer simple questions about your abilities, aptitude, personality, and behaviors.' },
+  { title: 'Take the Test', text: 'Answer simple questions about your abilities, aptitude, personality, and behaviours.' },
   { title: 'Verification', text: "Your responses get analysed across different parameters & style (There's no right or wrong here, so just be yourself)." },
   { title: 'Integrating', text: 'The algorithm identifies industries, jobs, and careers that match you & your needs.' },
   { title: 'Scientific Report', text: "You'll receive a clear report with insights and career recommendations, tailored just for you." },
@@ -37,6 +38,10 @@ const PARENTS = [
   'Avoid choices driven by trends, society, or peer pressure',
   'Start career conversations from a place of clarity, not confusion',
 ]
+
+// The test on its own, ₹900 (product 'psychometric-testing'). One SKU for
+// both cards: the student's class picks Stream (7–9) or Career (10–12).
+const TEST_SKU = 'psychometric-test'
 
 const TESTS = [
   {
@@ -134,7 +139,7 @@ function OwnerPanel({ assessment, setAssessment, reload, yourTest }) {
 export default function Psychometric() {
   usePageSeo({
     title: 'Psychometric testing — know your strengths before you choose',
-    description: 'A RIASEC-based psychometric assessment with a report of up to 40 pages covering your strengths, personality, interests and top five suitable careers.',
+    description: 'A RIASEC-based psychometric assessment with a report of 20 - 40 pages covering your strengths, personality, interests and top five suitable careers.',
   })
   useEffect(() => {
     document.body.classList.add('theme-nirmaan')
@@ -159,8 +164,8 @@ export default function Psychometric() {
           Two-column split (copy left, flat illustration right) to match the
           hero treatment on the other public pages. Stacks and re-centres on
           narrow screens. */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-14">
-        <div className="container relative grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
+      <section className="relative overflow-hidden bg-white py-14">
+        <div className="container relative grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12">
           {/* Copy */}
           <div className="text-center lg:text-left">
             <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
@@ -168,7 +173,7 @@ export default function Psychometric() {
             </p>
             {/* The pitch is for someone deciding whether to buy; an owner is told
                 what the test is for instead. */}
-            <h1 className="capitalize mx-auto mt-4 max-w-3xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-5xl lg:mx-0">
+            <h1 className="capitalize mx-auto mt-4 max-w-3xl font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-nirmaan-brown sm:text-4xl md:text-5xl lg:mx-0">
               {owned ? 'Your psychometric test' : 'Not sure which stream or career actually fits you?'}
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-nirmaan-brown-soft lg:mx-0">
@@ -188,26 +193,34 @@ export default function Psychometric() {
               <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-nirmaan-sand bg-white p-6 text-left shadow-sm lg:mx-0">
                 <p className="font-display text-lg font-bold text-nirmaan-brown">Your Nirmaan plan does not include the test yet</p>
                 <p className="mt-2 text-sm text-nirmaan-brown-soft">
-                  Upgrade to Nirmaan + Psychometric Testing and pay only the difference — everything you have done in the course stays as it is.
+                  Take the test on its own for ₹900, or upgrade to Nirmaan + Psychometric Testing and pay only the difference — everything you have done in the course stays as it is.
                 </p>
-                <Link
-                  to="/skill-build/nirmaan#packages"
-                  className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-6 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
-                >
-                  See upgrade options <ArrowRight className="size-4" />
-                </Link>
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                  <Link
+                    to={`/checkout?pkg=${TEST_SKU}`}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-6 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+                  >
+                    Buy the test · ₹900 <ArrowRight className="size-4" />
+                  </Link>
+                  <Link
+                    to="/skill-build/nirmaan#packages"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border-2 border-solid border-nirmaan-green/40 bg-white px-6 text-sm font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white"
+                  >
+                    See upgrade options
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:items-start">
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark sm:w-auto sm:flex-row sm:gap-2"
                 >
                   Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
                 </a>
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white sm:w-auto sm:flex-row sm:gap-2"
                 >
                   Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
                 </a>
@@ -230,7 +243,7 @@ export default function Psychometric() {
       </section>
 
       {/* ---- Section 2 · What is Psychometric Testing? ---- */}
-      <section className="bg-white py-16 ">
+      <section className="bg-white py-16">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             What is Psychometric Testing?
@@ -257,12 +270,12 @@ export default function Psychometric() {
       </section>
 
       {/* ---- Section 3 · How It Works ---- */}
-      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             How It Works
           </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {HOW_IT_WORKS.map((s, i) => (
               <div key={s.title} className="rounded-xl border border-nirmaan-sand bg-white p-6 shadow-sm">
                 <span className="flex size-10 items-center justify-center rounded-full bg-nirmaan-green font-display text-base font-bold text-white">
@@ -279,13 +292,16 @@ export default function Psychometric() {
       {/* ---- Section 4 · Student Journey (serpentine road timeline) ---- */}
       <StudentJourney />
 
+      {/* ---- What You'll Get — the report for each test ---- */}
+      <WhatYouGet yourTest={user?.studentClass ? yourTest : null} />
+
       {/* ---- Section 5 · How Can This Test Help You? ---- */}
-      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             How Can This Test Help You?
           </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
             {[
               { title: 'For Students', points: STUDENTS },
               { title: 'For Parents', points: PARENTS },
@@ -308,14 +324,19 @@ export default function Psychometric() {
         </div>
       </section>
 
-      {/* ---- Section 6 · Find Which Test Is Right for You ---- */}
+      {/* ---- Section 6 · Find Which Test Is Right for You ----
+          Its own soft green band (10% Nirmaan green over the page cream), so it
+          reads as a separate step (choose your test); the white cards sit on it. */}
       <section id="which-test" className="bg-white py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             Find Which Test Is Right for You
           </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-nirmaan-brown-soft">
+            Two tests, one for each stage of school. Pick the one for your class.
+          </p>
 
-          <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
+          <div className="mx-auto mt-12 grid grid-cols-1 max-w-4xl gap-6 md:grid-cols-2">
             {TESTS.map((t) => (
               <div
                 key={t.name}
@@ -338,33 +359,38 @@ export default function Psychometric() {
                     </li>
                   ))}
                 </ul>
-                {/* Price and buy button for someone who does not have the test;
-                    an owner already paid for it, and a Nirmaan student without
-                    it gets there through the upgrade. */}
+                {/* Price and buy button for anyone without the test. One ₹900
+                    test either way — the student's class decides whether it
+                    is the Stream or the Career Selector. A Nirmaan student
+                    without it may buy it here OR upgrade their plan; someone
+                    who already has it (on its own or in their plan) is not
+                    sold it again. */}
                 {checking ? null : owned ? (
                   t.name === yourTest && (
                     <p className="mt-6 border-t border-nirmaan-sand pt-4 text-sm font-semibold text-nirmaan-green">
-                      Included in your plan
+                      You already have this test
                     </p>
                   )
-                ) : noTest ? (
-                  <div className="mt-6 border-t border-nirmaan-sand pt-4">
-                    <Link
-                      to="/skill-build/nirmaan#packages"
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
-                    >
-                      Add it to your plan <ArrowRight className="size-4" />
-                    </Link>
-                  </div>
                 ) : (
-                  <div className="mt-6 flex items-center justify-between border-t border-nirmaan-sand pt-4">
-                    <span className="font-display text-lg font-bold text-nirmaan-brown">₹900 Only</span>
-                    <Link
-                      to="/contact"
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
-                    >
-                      {t.name} <ArrowRight className="size-4" />
-                    </Link>
+                  <div className="mt-6 border-t border-nirmaan-sand pt-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-display text-lg font-bold text-nirmaan-brown">₹900 Only</span>
+                      <Link
+                        to={`/checkout?pkg=${TEST_SKU}`}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark"
+                      >
+                        {t.name} <ArrowRight className="size-4" />
+                      </Link>
+                    </div>
+                    {noTest && (
+                      <p className="mt-3 text-xs text-nirmaan-brown-soft">
+                        Already on Nirmaan? You can also{' '}
+                        <Link to="/skill-build/nirmaan#packages" className="font-semibold text-nirmaan-green hover:underline">
+                          upgrade your plan
+                        </Link>{' '}
+                        to one that includes the test.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -377,7 +403,7 @@ export default function Psychometric() {
           Selling the bundle to someone who owns the test is noise, so owners do
           not see it; a Nirmaan student without the test sees it as an upgrade. */}
       {!checking && !owned && (
-      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="container">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
             {/* Branded accent ribbon + soft glow, matching the Nirmaan cards elsewhere. */}

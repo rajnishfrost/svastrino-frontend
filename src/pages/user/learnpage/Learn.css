@@ -249,6 +249,9 @@
 /* Warm cream page behind so the white card clearly reads as a card. */
 .learn-start-section { background: var(--nirmaan-cream, var(--color-surface)); }
 .learn-start {
+  /* Not clickable, so it does not lift on hover like other .card elements —
+     and a hover transform here would trap the test pop-ups opened from it. */
+  transform: none !important;
   max-width: 560px;
   text-align: center;
   margin: 24px auto;
@@ -430,7 +433,7 @@
 .theme-nirmaan .learn-gate h1 {
   color: var(--nirmaan-brown);
 }
-@media (max-width: 820px) {
+@media (max-width: 899px) {
   .learn-grid { grid-template-columns: 1fr; }
   .learn-sidebar { position: static; max-height: none; order: 2; }
   .learn-main { order: 1; }

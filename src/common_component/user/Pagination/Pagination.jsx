@@ -82,15 +82,21 @@ export default function Pagination({ page, pages, onChange, hrefFor, ariaLabel =
 
       <ul className="flex items-center flex-wrap gap-2">
         <li>{nav(page - 1, page <= 1, 'Previous page', <ChevronLeft className="size-5" aria-hidden />)}</li>
+        {/* Phones: "Page 3 of 19" between the arrows — nine numbered circles
+            don't fit a 300px screen. The numbered links stay in the page
+            (hidden), so crawlers still follow every page. */}
+        <li className="px-2 text-sm font-semibold text-brand-navy sm:hidden" aria-current="page">
+          Page {page} of {pages}
+        </li>
         {items.map((it) =>
           typeof it === 'string' ? (
-            <li key={it}>
+            <li key={it} className="hidden sm:list-item">
               <span className="inline-flex h-10 select-none items-center justify-center text-brand-slate" aria-hidden>
                 …
               </span>
             </li>
           ) : (
-            <li key={it}>{cell(it)}</li>
+            <li key={it} className="hidden sm:list-item">{cell(it)}</li>
           )
         )}
         <li>{nav(page + 1, page >= pages, 'Next page', <ChevronRight className="size-5" aria-hidden />)}</li>

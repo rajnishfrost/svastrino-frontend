@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { api, adminTokenStore } from '../../../api/client.js'
+import { SkeletonTable } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * Guards the /admin area. There's one shared session now, so simply having a
@@ -21,7 +22,7 @@ export default function AdminProtectedRoute({ children }) {
   }, [])
 
   if (state === 'checking') {
-    return <div style={{ padding: 40, fontSize: 15, color: '#5b6677' }}>Loading…</div>
+    return <div style={{ padding: 40 }}><SkeletonTable rows={6} cols={4} /></div>
   }
   if (state === 'denied') return <Navigate to="/login" replace />
   return children

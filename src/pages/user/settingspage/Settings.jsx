@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useSearchParams, Link, Navigate } from 'react-router-dom'
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
@@ -12,6 +13,7 @@ import { openInvoice } from '../../../utils/invoice.js'
 import { CLASSES, classOptionsFor } from '../../../utils/studentClass.js'
 import './Settings.css'
 import PasswordField from '../../../common_component/PasswordField/PasswordField.jsx'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Account settings with URL-driven sections. Lives inside the dashboard now
@@ -261,13 +263,16 @@ function AccountPanel() {
         </div>
       </div>
 
-      {editorFile && (
+      {/* Into <body>: this sits inside a .card, which lifts on hover, and a
+          transformed parent traps a fixed pop-up inside itself (it flickered). */}
+      {editorFile && createPortal(
         <div className="avatar-modal" role="dialog" aria-modal="true" aria-label="Crop profile photo">
           <div className="avatar-modal-card">
             <h3 className="avatar-modal-title">Adjust your photo</h3>
             <AvatarEditor file={editorFile} busy={photoBusy} onSave={savePhoto} onCancel={() => setEditorFile(null)} />
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
 
       {error && <p className="settings-alert settings-alert--error" role="alert">{error}</p>}
@@ -406,7 +411,7 @@ function OrdersPanel({ orderId, onOpen, onBack }) {
     <div className="card settings-card">
       {error && <p className="settings-alert settings-alert--error">{error}</p>}
       {orders == null ? (
-        <p className="settings-muted">Loading…</p>
+        <SkeletonTable rows={3} cols={4} label="Loading your orders" />
       ) : orderId ? (
         <OrderDetail order={orders.find((o) => o.id === orderId)} onBack={onBack} />
       ) : (

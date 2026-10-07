@@ -111,7 +111,7 @@
   font-size: 15px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
   .about-approach {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -219,7 +219,7 @@
 .about-route-need { color: var(--color-text); }
 .about-route-link { font-weight: 600; color: var(--color-accent); white-space: nowrap; }
 
-@media (max-width: 800px) {
+@media (max-width: 899px) {
   .about-founder-wrap { grid-template-columns: 1fr; }
   .about-founder-photo img { max-width: 240px; }
 }

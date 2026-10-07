@@ -3,6 +3,7 @@ import { api } from '../../../api/client.js'
 import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmModal.jsx'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Roles (superadmin only). A role IS its module set. Every account has one role;
@@ -68,7 +69,7 @@ export default function AdminRoles() {
       )}
 
       {error && <p className="adm-error">{error}</p>}
-      {!roles && !error && <p className="adm-empty">Loading…</p>}
+      {!roles && !error && <SkeletonTable />}
 
       {roles && roles.map((r) => (
         <RoleCard key={r.id} role={r} onSaved={load} onError={setError} onDelete={() => setDel(r)} />

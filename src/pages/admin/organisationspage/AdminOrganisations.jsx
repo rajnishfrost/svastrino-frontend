@@ -6,6 +6,7 @@ import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
 import CopyLink from '../../../common_component/admin/CopyLink/CopyLink.jsx'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Partner organisations — the admin side of the organisation portal.
@@ -109,7 +110,7 @@ function Organisations() {
         </select>
       </div>
       {error && <p className="adm-error">{error}</p>}
-      {!rows ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
+      {!rows ? <SkeletonTable /> : rows.length === 0 ? (
         <p className="adm-empty">No institutions.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
@@ -252,7 +253,7 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
       </div>
 
       {showStudents && (
-        !students ? <p className="adm-empty">Loading students…</p> : students.length === 0 ? (
+        !students ? <SkeletonTable rows={4} /> : students.length === 0 ? (
           <p className="adm-empty">No students added yet.</p>
         ) : (
           <div className="adm-panel adm-table-wrap">

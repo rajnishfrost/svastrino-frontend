@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
+import { SkeletonHero, SkeletonBody } from '../../../common_component/Skeleton/Skeleton.jsx'
 import { useSeo, excerptFor } from '../../../seo/useSeo.js'
 import { seoFor } from '../../../seo/legacySeo.js'
 import { fetchProgram } from '../../../api/content.js'
@@ -95,19 +96,47 @@ export default function ServiceProgram() {
   if (error) {
     return (
       <>
-        <PageHero eyebrow="Services" title="Program" />
+        <PageHero eyebrow="Services" title="Programme" />
         <section className="py-16"><div className="container">
-          <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="this program" />
+          <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="this programme" />
         </div></section>
       </>
     )
   }
 
+  // The hero copy and art are known from the address alone, so a hero is on
+  // screen from the first frame and only the body waits on the API.
+  const heroStatic = PROGRAM_HERO[slug]
+  const heroEl = program ? (
+    <PageHero
+      eyebrow={program.category?.name || 'Services'}
+      title={heroStatic?.title || program.name}
+      subtitle={heroStatic?.tagline || program.tagline}
+      bgImage={HERO_IMG[slug]}
+      illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
+    >
+      <Cta className="btn btn-accent btn-large" />
+      <Link to="/services" className="btn btn-secondary btn-large">All Services</Link>
+      {/* The trust line the visitor needs before reading anything else. */}
+      <p className="svc-hero-trust">{trustLine}</p>
+    </PageHero>
+  ) : heroStatic ? (
+    <PageHero
+      eyebrow="Services"
+      title={heroStatic.title}
+      subtitle={heroStatic.tagline}
+      bgImage={HERO_IMG[slug]}
+      illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
+    />
+  ) : (
+    <SkeletonHero />
+  )
+
   if (!program) {
     return (
       <>
-        <PageHero eyebrow="Services" title="Loading…" />
-        <section className="py-16"><div className="container"><p className="text-center text-brand-slate">Loading…</p></div></section>
+        {heroEl}
+        <SkeletonBody label="Loading the programme" />
       </>
     )
   }
@@ -116,18 +145,7 @@ export default function ServiceProgram() {
     <>
       {/* Hero title + tagline use the static PROGRAM_HERO copy (client's latest
           wording); any program not listed there falls back to the API response. */}
-      <PageHero
-        eyebrow={program.category?.name || 'Services'}
-        title={PROGRAM_HERO[slug]?.title || program.name}
-        subtitle={PROGRAM_HERO[slug]?.tagline || program.tagline}
-        bgImage={HERO_IMG[slug]}
-        illustration={HERO_ILLUS[slug] ? <ProgramHeroArt src={HERO_ILLUS[slug]} /> : null}
-      >
-        <Cta className="btn btn-accent btn-large" />
-        <Link to="/services" className="btn btn-secondary btn-large">All Services</Link>
-        {/* The trust line the visitor needs before reading anything else. */}
-        <p className="svc-hero-trust">{trustLine}</p>
-      </PageHero>
+      {heroEl}
 
       {/* Each section below is its own full-width band with its own background
           tone, so the page reads with rhythm (like the home page) rather than as
@@ -143,7 +161,7 @@ export default function ServiceProgram() {
         ? <TalkToExpert program={program} />
         : <BookNowStrip program={program} bookHref={bookHref} />}
       <ProgramTestimonials slug={program.slug} programName={program.name} />
-      <ProgramFaqs faqs={program.faqs} />
+      <ProgramFaqs faqs={program.faqs} name={heroStatic?.title || program.name} />
 
       {/* Closing CTA — a dark navy band to finish on, for anyone who read all the
           way down. */}
@@ -167,7 +185,7 @@ export default function ServiceProgram() {
             to={"/services/compare"}
             className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
           >
-            Compare Programs <ArrowRight className="size-4" />
+            Compare Programmes <ArrowRight className="size-4" />
           </Link>
         </div>
       </section>

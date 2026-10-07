@@ -4,6 +4,7 @@ import '../adminShared.css'
 import './AdminEnquiries.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Everyone who has written in — the Contact page, the home-page banner, and the
@@ -88,7 +89,7 @@ export default function AdminEnquiries() {
       <h1 className="adm-title">Enquiries</h1>
       <p className="adm-sub">
         Everyone who has written in. Approving an expert-call request is what
-        opens the checkout for that program.
+        opens the checkout for that programme.
       </p>
 
       <div className="adm-toolbar">
@@ -105,7 +106,7 @@ export default function AdminEnquiries() {
       {error && <p className="adm-error">{error}</p>}
 
       {rows == null ? (
-        <p className="adm-empty">Loading…</p>
+        <SkeletonTable />
       ) : rows.length === 0 ? (
         <p className="adm-empty">Nothing here yet.</p>
       ) : (
@@ -165,7 +166,7 @@ export default function AdminEnquiries() {
                           className="adm-btn adm-btn--sm"
                           disabled={busyId === r.id}
                           onClick={() => patch(r.id, { status: 'approved' })}
-                          title="Opens the checkout for this program and emails them the booking link"
+                          title="Opens the checkout for this programme and emails them the booking link"
                         >
                           Approve to pay
                         </button>

@@ -6,6 +6,7 @@ import { fetchTicket, replyToTicket } from '../../../api/tickets.js'
 import { LIMITS, checkText } from '../../../utils/validate.js'
 import { CATEGORY_LABEL, STATUS_NOTE, StatusBadge, courseLabel, fmtDate, fmtWhen } from './Support.jsx'
 import './Support.css'
+import { SkeletonList } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * One conversation, read top to bottom: what was asked, what we answered, and
@@ -108,7 +109,7 @@ export default function TicketThread() {
       <>
         <PageHero eyebrow="Support" title="Your conversation" />
         <section className="section">
-          <div className="container sup-wrap"><p className="sup-state">Loading…</p></div>
+          <div className="container sup-wrap"><SkeletonList rows={3} avatar label="Loading the conversation" /></div>
         </section>
       </>
     )

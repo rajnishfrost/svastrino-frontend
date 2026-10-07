@@ -28,7 +28,7 @@ import { api, tokenStore } from '../../../../api/client.js'
  */
 function Waiting() {
   return (
-    <div className="animate-pulse" aria-hidden>
+    <div className="animate-skeleton" aria-hidden>
       <span className="mt-5 inline-block h-6 w-40 rounded-full bg-nirmaan-cream" />
       <div className="mx-auto mt-4 h-9 w-4/5 max-w-md rounded-lg bg-nirmaan-cream sm:h-10" />
       <div className="mx-auto mt-4 h-4 w-full max-w-xl rounded bg-nirmaan-cream/80" />
@@ -153,7 +153,7 @@ export default function FreeTrial() {
   // Dark-green band (a second tonal anchor for the page) — the white trial card
   // floats on it as a highlighted, "featured" call to action.
   return (
-    <section id="free-trial" className="bg-nirmaan-green py-16 md:py-20">
+    <section id="free-trial" className="bg-nirmaan-green py-10 sm:py-16 md:py-20">
       <div className="container">
         <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
           {/* Two flat tinted circles, hung off the edges so the card's

@@ -75,11 +75,10 @@ export default function Login() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { ready: googleReady, configured: googleConfigured, signIn: googleSignIn } = useGoogleAuth()
   // Where to land afterwards. Somewhere specific if they were sent here from
-  // it — /checkout?pkg=…, a course — otherwise the home page rather than the
-  // dashboard: signing in is not the same as asking to see your dashboard, and
-  // /dashboard immediately redirects on to its default tab, so a plain login
-  // used to end on /dashboard/skill-build without anyone having asked for it.
-  const from = location.state?.from || '/'
+  // it — /checkout?pkg=…, a course — otherwise the dashboard, which opens on
+  // the section for what they own (Skill-Build for Nirmaan or a free trial,
+  // Services for a Svastrino programme). See the no-tab rule in Dashboard.jsx.
+  const from = location.state?.from || '/dashboard'
 
   // The flag the Nirmaan page leaves behind when a visitor pressed "Start the
   // free trial" before they had an account.

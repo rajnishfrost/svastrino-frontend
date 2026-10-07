@@ -6,6 +6,7 @@ import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import BlockEditor from '../../../common_component/admin/BlockEditor/BlockEditor.jsx'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonForm, SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Career Library — the three things that make up /resources#career-library:
@@ -92,7 +93,7 @@ function StreamsTab({ fields, reload }) {
         </div>
       )}
 
-      {!fields ? <p className="adm-empty">Loading…</p> : fields.length === 0 ? (
+      {!fields ? <SkeletonTable /> : fields.length === 0 ? (
         <p className="adm-empty">No streams yet. Add the first one above.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
@@ -271,7 +272,7 @@ function CoursesTab({ fields, onCourseSaved }) {
 
       {error && <p className="adm-error">{error}</p>}
 
-      {!courses ? <p className="adm-empty">Loading…</p> : courses.length === 0 ? (
+      {!courses ? <SkeletonTable /> : courses.length === 0 ? (
         <p className="adm-empty">No courses match these filters.</p>
       ) : (
         <>
@@ -388,7 +389,7 @@ function CourseEditor({ course, fields, onCancel, onSaved }) {
     } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
 
-  if (loading) return <p className="adm-empty">Loading course…</p>
+  if (loading) return <SkeletonForm fields={5} />
 
   return (
     <div>

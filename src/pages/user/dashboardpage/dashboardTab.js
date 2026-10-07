@@ -14,5 +14,8 @@ export function dashboardTabFor(sku) {
   const s = String(sku || '')
   if (s.startsWith('mentoring-')) return '/dashboard/services'
   if (s.startsWith('nirmaan-')) return '/dashboard/skill-build'
+  // The stand-alone test is taken on its own page, so that is where "go on"
+  // leads after buying it.
+  if (s === 'psychometric-test') return '/skill-build/psychometric-testing'
   return '/dashboard'
 }

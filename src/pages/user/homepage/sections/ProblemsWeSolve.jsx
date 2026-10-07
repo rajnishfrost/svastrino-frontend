@@ -16,10 +16,10 @@ const POINTS = [
   },
   {
     icon: AlertTriangle,
-    stat: '86% of Indian students lack career clarity or regret their choices',
+    stat: '90% of Indian students lack career clarity or regret their choices',
     answer:
       'We help you Explore Diverse Careers early, Build Confidence, and make Informed Choices beyond peer pressure and expectations.',
-    sourceLink: "https://www.linkedin.com/posts/khushbuchopda_careerawareness-careerexploration-careercounseling-activity-7358823695131299840-gsvG"
+    sourceLink: "https://www.indiatoday.in/education-today/jobs-and-careers/story/90-of-indian-students-choose-careers-blindly-sparking-a-crisis-2794690-2025-09-28"
   },
   {
     icon: Lightbulb,
@@ -36,19 +36,19 @@ export default function ProblemsWeSolve() {
       <div className="container">
         <SectionHeading title="Problems We Solve" />
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* {POINTS.map((p) => (
             <div
               key={p.stat}
-              className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+              className="flex flex-col rounded-xl border border-solid border-brand-crimson/40 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
             >
-              <span className="flex size-12 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
+              <span className="flex size-12 items-center justify-center rounded-xl bg-brand-crimson/15 text-brand-crimson">
                 <p.icon className="size-6" />
               </span>
               <h3 className="mt-5 font-display text-base font-bold leading-snug text-brand-navy">
                 {p.stat}
               </h3>
-              <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-rose p-3.5">
+              <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-crimson/15 p-3.5">
                 <p className="text-sm font-medium leading-relaxed text-brand-navy">{p.answer}</p>
               </div>
               {p.sourceLink && (
@@ -64,16 +64,16 @@ export default function ProblemsWeSolve() {
             </div>
           ))} */}
           <div
-            className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+            className="flex flex-col rounded-xl border border-solid border-brand-crimson/40 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
           >
-            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-crimson/15 text-brand-crimson">
               <HelpCircle className="size-6" />
             </span>
             <h3 className="mt-5 font-display text-base font-bold leading-snug text-brand-navy">
               Only 10.4% of Indian students receive professional career guidance
             </h3>
             <span className="mt-auto inline-flex items-center gap-1 self-start pt-4 text-sm font-medium text-brand-crimson underline-offset-2 transition-colors hover:text-brand-crimson hover:underline">Our Solution</span>
-            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-rose p-3.5">
+            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-crimson/15 p-3.5">
               <p className="text-sm font-medium leading-relaxed text-brand-navy">We help you <span className={`text-brand-crimson`}>Understand Yourself</span> by identifying your natural <span className={`text-brand-crimson`}>Strengths, Talents, and Values</span> so you can make choices that feel right for you.</p>
             </div>
             <a
@@ -86,20 +86,20 @@ export default function ProblemsWeSolve() {
             </a>
           </div>
           <div
-            className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+            className="flex flex-col rounded-xl border border-solid border-brand-crimson/40 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
           >
-            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-crimson/15 text-brand-crimson">
               <AlertTriangle className="size-6" />
             </span>
             <h3 className="mt-5 font-display text-base font-bold leading-snug text-brand-navy">
-              86% of Indian students lack career clarity or regret their choices
+              90% of Indian students lack career clarity or regret their choices
             </h3>
             <span className="mt-auto inline-flex items-center gap-1 self-start pt-4 text-sm font-medium text-brand-crimson underline-offset-2 transition-colors hover:text-brand-crimson hover:underline">Our Solution</span>
-            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-rose p-3.5">
+            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-crimson/15 p-3.5">
               <p className="text-sm font-medium leading-relaxed text-brand-navy">We help you <span className={`text-brand-crimson`}>Explore Diverse Careers</span> early, <span className={`text-brand-crimson`}>Build Confidence</span>, and make <span className={`text-brand-crimson`}>Informed Choices</span> beyond peer pressure and expectations.</p>
             </div>
             <a
-              href={"https://www.linkedin.com/posts/khushbuchopda_careerawareness-careerexploration-careercounseling-activity-7358823695131299840-gsvG"}
+              href={"https://www.indiatoday.in/education-today/jobs-and-careers/story/90-of-indian-students-choose-careers-blindly-sparking-a-crisis-2794690-2025-09-28"}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-auto inline-flex items-center gap-1 self-start pt-4 text-xs font-medium text-brand-crimson underline-offset-2 transition-colors hover:text-brand-crimson hover:underline"
@@ -108,16 +108,16 @@ export default function ProblemsWeSolve() {
             </a>
           </div>
           <div
-            className="flex flex-col rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+            className="flex flex-col rounded-xl border border-solid border-brand-crimson/40 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
           >
-            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-rose text-brand-crimson">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-brand-crimson/15 text-brand-crimson">
               <Lightbulb className="size-6" />
             </span>
             <h3 className="mt-5 font-display text-base font-bold leading-snug text-brand-navy">
               77% of students admit they'd engage more in education if they understood career options
             </h3>
             <span className="mt-auto inline-flex items-center gap-1 self-start pt-4 text-sm font-medium text-brand-crimson underline-offset-2 transition-colors hover:text-brand-crimson hover:underline">Our Solution</span>
-            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-rose p-3.5">
+            <div className="mt-4 rounded-lg border-l-[3px] border-brand-crimson bg-brand-crimson/15 p-3.5">
               <p className="text-sm font-medium leading-relaxed text-brand-navy">We provide Regular <span className={`text-brand-crimson`}>Personal and Professional Development</span> support to turn career awareness into practical skills and action.</p>
             </div>
             <a

@@ -41,7 +41,7 @@ Rules live in `server/src/modules/user/mentoring/slots.js`. All of them are IST.
 | ------------------------------ | ------------------------------------- |
 | Earliest bookable date         | today + 3 days                        |
 | Latest bookable date           | today + 2 months                      |
-| Slot length                    | 2 hours                               |
+| Slot length                    | 2.5 hours                             |
 | Start times                    | 9:00 to 16:00, every 30 minutes       |
 | Gap around an existing booking | 30 minutes each side                  |
 | Sunday                         | only slots that**end** by 13:00 |
@@ -147,7 +147,7 @@ purchase really happened rather than just looking like it did.
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `orders`                    | One row,`status: 'paid'`, with a receipt number and the amount                                              |
 | `enrollments`               | **One** row, `product: 'mentoring-bullseye'`, `status: 'active'`. Two rows for one payment is a bug |
-| `mentoringbookings`         | One row,`sessionNumber: 1`, with `startAt` and `endAt` two hours apart                                  |
+| `mentoringbookings`         | One row,`sessionNumber: 1`, with `startAt` and `endAt` two and a half hours apart                                  |
 | `/dashboard` → Mentoring   | The program, with a row per session. Session 1 shows the appointment; the rest say*Not booked yet*        |
 | `/dashboard` → Skill Build | The mentoring program must**not** appear here                                                         |
 | Admin → Services → Bookings | The booking, with the student's name**and** email, program, session number, time in IST               |

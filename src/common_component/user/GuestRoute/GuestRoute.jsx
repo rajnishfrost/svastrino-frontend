@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { homeFor } from '../../../utils/portalAccess.js'
+import { SkeletonSection, SkeletonForm } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * Guards guest-only pages (e.g. /login). A signed-in user has no business on the
@@ -13,7 +14,7 @@ export default function GuestRoute({ children }) {
   const location = useLocation()
 
   if (loading) {
-    return <div className="container" style={{ padding: '80px 0' }}>Loading…</div>
+    return <SkeletonSection><SkeletonForm fields={2} /></SkeletonSection>
   }
 
   if (user) {

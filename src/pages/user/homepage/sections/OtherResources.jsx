@@ -32,14 +32,14 @@ export default function OtherResources() {
           subtitle="​There are other ways we can help. Explore career details, courses and practical guidance at your own pace."
         />
 
-        <div className="mx-auto mt-14 grid max-w-4xl gap-6 md:grid-cols-2">
+        <div className="mx-auto mt-14 grid grid-cols-1 max-w-4xl gap-6 md:grid-cols-2">
           {WAYS.map((w) => (
             <Link key={w.to} to={w.to} className="group">
-              <div className="flex h-full items-stretch gap-5 rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
+              <div className="flex h-full flex-col items-start gap-4 rounded-xl border border-brand-navy/5 bg-white p-5 shadow-sm sm:flex-row sm:items-stretch sm:gap-5 sm:p-7 transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5">
                 <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-rose text-brand-crimson">
                   <w.icon className="size-7" />
                 </span>
-                <div className={`flex flex-col`}>
+                <div className={`flex min-w-0 flex-col`}>
                   <h3 className="font-display text-xl font-bold text-brand-navy">{w.need}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-brand-slate flex-1">{w.text}</p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-crimson">

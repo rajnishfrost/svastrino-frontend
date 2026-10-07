@@ -62,8 +62,6 @@ const classNumber = (raw) => {
 // --- shared Tailwind button styles (Nirmaan green) ---
 const BTN_PRIMARY =
   'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border-0 bg-nirmaan-green px-5 text-sm font-semibold text-white transition-colors hover:bg-nirmaan-green-dark'
-const BTN_OUTLINE =
-  'mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-nirmaan-green/40 bg-white px-5 text-sm font-semibold text-nirmaan-green transition-colors hover:bg-nirmaan-green hover:text-white'
 const BTN_DISABLED =
   'mt-6 inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-lg border border-nirmaan-sand bg-nirmaan-cream px-5 text-sm font-semibold text-nirmaan-brown-soft'
 
@@ -74,8 +72,9 @@ const BTN_DISABLED =
  * is that answer for this plan; with none (a visitor, or someone who owns no
  * plan yet) the card sells as normal.
  */
-function PlanAction({ pkg, standing, featured }) {
-  const cls = featured ? BTN_PRIMARY : BTN_OUTLINE
+function PlanAction({ pkg, standing }) {
+  // Every plan gets the same solid button — none is pushed over another.
+  const cls = BTN_PRIMARY
   switch (standing?.state) {
     case 'owned':
       return (
@@ -214,14 +213,13 @@ export default function Packages() {
   const twinWithoutTest = (pkg) =>
     list.find((p) => !p.includesPsychometric && p.paymentMode === pkg.paymentMode)
 
-  // Which card is highlighted is a catalogue decision now (admin can move the
-  // badge); the old rule stays as the answer when nothing is marked.
-  const anyFeatured = list.some((p) => p.featured)
-  const isFeatured = (pkg) =>
-    anyFeatured ? pkg.featured : pkg.paymentMode === 'one-time' && !pkg.includesPsychometric
+  // No card is singled out: both plans carry the same pay-once saving, so a
+  // "Best value" badge, a heavier border or a solid-vs-outline button on one of
+  // them steered visitors towards it for no real reason. Both look the same.
+  const isFeatured = () => false
 
   return (
-    <section id="packages" className="bg-nirmaan-cream py-16 md:py-20">
+    <section id="packages" className="bg-white py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Packages</p>
@@ -237,9 +235,9 @@ export default function Packages() {
         {loading && (
           // Two card-shaped blocks so the section keeps its height and the page
           // below does not jump when the prices land.
-          <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-2" aria-hidden>
+          <div className="mx-auto mt-10 grid grid-cols-1 max-w-4xl gap-6 sm:grid-cols-2" aria-hidden>
             {[0, 1].map((i) => (
-              <div key={i} className="animate-pulse rounded-xl border border-nirmaan-sand bg-white p-6">
+              <div key={i} className="animate-skeleton rounded-xl border border-solid border-nirmaan-sand bg-white p-6 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
                 <div className="h-5 w-40 rounded bg-nirmaan-cream" />
                 <div className="mt-4 h-24 rounded-lg bg-nirmaan-cream/70" />
                 <div className="mt-5 space-y-2.5">
@@ -298,14 +296,14 @@ export default function Packages() {
         )}
 
         {shown.length > 0 && (
-          <div className="mx-auto mt-10 grid max-w-4xl items-start gap-6 sm:grid-cols-2">
+          <div className="mx-auto mt-10 grid grid-cols-1 max-w-4xl items-start gap-6 sm:grid-cols-2">
             {shown.map((pkg) => {
               const featured = isFeatured(pkg)
               const saving = savingPercentOf(pkg)
               return (
                 <div
                   key={pkg.sku}
-                  className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm ${
+                  className={`relative flex flex-col rounded-xl border border-solid bg-white p-6 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)] ${
                     featured ? 'border-nirmaan-green/40 ring-2 ring-nirmaan-green/15' : 'border-nirmaan-sand'
                   }`}
                 >
@@ -368,7 +366,7 @@ export default function Packages() {
                     </div>
                   )}
 
-                  <PlanAction pkg={pkg} standing={standing[pkg.sku]} featured={featured} />
+                  <PlanAction pkg={pkg} standing={standing[pkg.sku]} />
                 </div>
               )
             })}
@@ -376,7 +374,7 @@ export default function Packages() {
         )}
 
         {list.some((p) => p.includesPsychometric) && (
-          <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
+          <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-solid border-nirmaan-sand bg-white p-8 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
             <h3 className="font-display text-xl font-bold text-nirmaan-brown">About the Psychometric Test</h3>
             <p className="mt-3 text-sm leading-relaxed text-nirmaan-brown-soft">
               Some of the plans above include a psychometric test. It is a set of simple questions
@@ -390,7 +388,7 @@ export default function Packages() {
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-2 size-1.5 shrink-0 rounded-full bg-nirmaan-green" />
-                You get a report of up to 40 pages — strengths, weaker areas, personality, interests and preferences, in plain language.
+                You get a report of 20 - 40 pages — strengths, weaker areas, personality, interests and preferences, in plain language.
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-2 size-1.5 shrink-0 rounded-full bg-nirmaan-green" />

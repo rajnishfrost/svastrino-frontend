@@ -142,7 +142,7 @@ export default function Journey() {
             return (
               <div
                 key={p.n}
-                className={`rounded-xl border bg-white shadow-sm transition-colors ${
+                className={`rounded-xl border border-solid bg-white shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)] transition-colors ${
                   isOpen ? 'border-nirmaan-green/40' : 'border-nirmaan-sand'
                 }`}
               >
@@ -150,7 +150,7 @@ export default function Journey() {
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : p.n)}
-                  className="flex w-full cursor-pointer items-center gap-3 p-4 text-left sm:gap-4 sm:p-5"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-xl border-0 bg-transparent p-4 text-left font-sans sm:gap-4 sm:p-5"
                 >
                   <span className="shrink-0 rounded-full bg-nirmaan-green/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-nirmaan-green">
                     Phase {p.n}
@@ -171,8 +171,11 @@ export default function Journey() {
                   >
                     {p.weeks.map((w, j) => (
                       <li key={w} className="pl-0 flex justify-start items-start gap-2">
-                        <div className={`text-nirmaan-green font-semibold whitespace-nowrap w-16`}>Week {p.n*4-4+j+1}</div>:
-                        <div className={``}>
+                        {/* Fixed label column (no shrinking), so every colon and
+                            title lines up down the list, phone included. */}
+                        <div className={`w-16 shrink-0 whitespace-nowrap font-semibold text-nirmaan-green`}>Week {p.n*4-4+j+1}</div>
+                        <span className="shrink-0">:</span>
+                        <div className={`min-w-0 flex-1`}>
                           <span className={`font-semibold`}>{w.text}</span><br/>
                           <span>{w.subText}</span>
                           {/* {w} */}

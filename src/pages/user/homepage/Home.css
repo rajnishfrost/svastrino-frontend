@@ -601,7 +601,7 @@
 
 /* ---- Why ---- */
 /* ---- Responsive ---- */
-@media (max-width: 900px) {
+@media (max-width: 899px) {
   .home-hero-inner {
     grid-template-columns: 1fr;
   }
@@ -1041,7 +1041,7 @@
   margin-top: var(--space-4);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
   .home-hero-inner { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {

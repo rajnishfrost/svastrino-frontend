@@ -154,7 +154,7 @@ export default function MediaRecognition() {
           Reflections of our impact through National Newspapers
         </h2>
 
-        <div className="mx-auto mt-10 grid max-w-5xl gap-6 sm:grid-cols-2 md:grid-cols-3">
+        <div className="mx-auto mt-10 grid grid-cols-1 max-w-5xl gap-6 sm:grid-cols-2 md:grid-cols-3">
           {NEWSPAPERS.map((paper, i) => (
             <button
               key={paper.src}

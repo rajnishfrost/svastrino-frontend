@@ -3,6 +3,7 @@ import { api, apiUpload } from '../../../api/client.js'
 import { fetchUploadMode, uploadDirectToS3, uploadThroughServer, awaitTranscode } from '../../../api/videoUpload.js'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 const TIER_LABEL = { 1: 'Discover+', 2: 'Clarity+', 3: 'Launch' }
 
@@ -78,7 +79,7 @@ export default function AdminContent() {
         </div>
       )}
 
-      {!sessions ? <p className="adm-empty">Loading…</p> : sessions.length === 0 ? (
+      {!sessions ? <SkeletonTable /> : sessions.length === 0 ? (
         <p className="adm-empty">No sessions yet. Add one above.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
@@ -395,7 +396,7 @@ function AnswersViewer({ session, onClose }) {
       <h3 style={{ fontSize: 15, marginBottom: 4 }}>Answers — {session.title}</h3>
       {err && <p className="adm-error">{err}</p>}
       {!data ? (
-        <p className="adm-empty">Loading…</p>
+        <SkeletonTable />
       ) : data.totalAnswers === 0 ? (
         <p className="adm-empty">No answers submitted yet for this session.</p>
       ) : (

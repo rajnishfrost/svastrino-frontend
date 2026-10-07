@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import './AdminDashboard.css'
+import { SkeletonCards } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 const inr = (n) => '₹' + Number(n).toLocaleString('en-IN')
 const num = (n) => Number(n || 0).toLocaleString('en-IN')
@@ -26,7 +27,7 @@ const Ico = ({ d }) => (
 const ACTIONS = [
   { module: 'skill-builds', to: '/admin/skill-builds', label: 'Skill Builds & pricing', desc: 'Courses, tiers and prices' },
   { module: 'content', to: '/admin/content', label: 'Course content', desc: 'Videos, sessions & questions' },
-  { module: 'mentoring', to: '/admin/mentoring', label: 'Mentoring', desc: 'Bookings, notes & programs' },
+  { module: 'mentoring', to: '/admin/mentoring', label: 'Mentoring', desc: 'Bookings, notes & programmes' },
   { module: 'orders', to: '/admin/orders', label: 'Orders & revenue', desc: 'Transactions and refunds' },
   { module: 'coupons', to: '/admin/coupons', label: 'Coupons', desc: 'Discount codes' },
   { module: 'users', to: '/admin/users', label: 'Users', desc: 'Accounts and roles' },
@@ -72,7 +73,7 @@ export default function AdminDashboard() {
       <p className="adm-sub">Here’s how Svastrino is doing today.</p>
 
       {error && <p className="adm-error">{error}</p>}
-      {!stats && !error && <p className="adm-empty">Loading…</p>}
+      {!stats && !error && <SkeletonCards count={4} media={false} minWidth={200} />}
 
       {stats && (
         <>

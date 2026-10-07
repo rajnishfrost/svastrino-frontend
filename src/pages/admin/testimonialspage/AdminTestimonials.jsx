@@ -3,6 +3,7 @@ import { api, apiUpload } from '../../../api/client.js'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Reviews — the quotes that appear on the home page, the Services cards, each
@@ -84,9 +85,9 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
         <textarea className="adm-textarea" rows={6} value={f.quote} onChange={(e) => set('quote', e.target.value)} maxLength={LIMITS.description} />
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Program (blank = none)</label>
+        <div className="adm-field"><label>Programme (blank = none)</label>
           <select className="adm-input" value={f.program} onChange={(e) => set('program', e.target.value)}>
-            <option value="">— not tied to a program —</option>
+            <option value="">— not tied to a programme —</option>
             <option value="bulls-eye">Bull's Eye</option>
             <option value="bloom">Bloom</option>
             <option value="breakthrough">Breakthrough</option>
@@ -98,10 +99,10 @@ function Form({ initial, isNew, onSave, onCancel, busy }) {
         </div>
       </div>
       <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
-        A program is only a filter: that program's own page leads with its own reviews and falls back to the rest.
+        A programme is only a filter: that programme's own page leads with its own reviews and falls back to the rest.
       </p>
       <div style={{ display: 'flex', gap: 18, margin: '4px 0 14px', fontSize: 14 }}>
-        <label><input type="checkbox" checked={f.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured (home page + program pages)</label>
+        <label><input type="checkbox" checked={f.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured (home page + programme pages)</label>
         <label><input type="checkbox" checked={f.active} onChange={(e) => set('active', e.target.checked)} /> Active (shows on the site)</label>
       </div>
       <div style={{ display: 'flex', gap: 10 }}>
@@ -168,7 +169,7 @@ export default function AdminTestimonials() {
     <div className="adm-page">
       <h1 className="adm-title">Reviews</h1>
       <p className="adm-sub">
-        Shown on the home page, the Services cards, each program page and Resources → Success Stories.
+        Shown on the home page, the Services cards, each programme page and Resources → Success Stories.
         {rows && ` · ${rows.filter((r) => r.active).length} live of ${rows.length}`}
       </p>
 
@@ -182,7 +183,7 @@ export default function AdminTestimonials() {
         <Form initial={BLANK} isNew busy={busy} onCancel={() => setAdding(false)} onSave={(f) => save(f)} />
       )}
 
-      {rows == null && !error && <p className="adm-empty">Loading…</p>}
+      {rows == null && !error && <SkeletonTable />}
       {rows?.length === 0 && <p className="adm-empty">No reviews yet — add the first one.</p>}
 
       {rows?.map((t) => (

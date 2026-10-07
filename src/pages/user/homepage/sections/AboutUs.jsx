@@ -24,7 +24,7 @@ export default function AboutUs() {
             are, choose the right path, and build the confidence to lead their future.
           </p>
           <p className="text-balance leading-relaxed">
-            Through personalized guidance, expert mentoring, and skill-building, we equip students
+            Through personalised guidance, expert mentoring, and skill-building, we equip students
             with the support and tools they need to make informed decisions and reach their potential.
           </p>
         </div>

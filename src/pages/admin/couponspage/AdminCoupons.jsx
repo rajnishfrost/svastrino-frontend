@@ -3,6 +3,7 @@ import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 // Coupon endpoints live under the payments admin module.
 export default function AdminCoupons() {
@@ -95,7 +96,7 @@ export default function AdminCoupons() {
         </form>
       </div>
 
-      {!coupons ? <p className="adm-empty">Loading…</p> : coupons.length === 0 ? (
+      {!coupons ? <SkeletonTable /> : coupons.length === 0 ? (
         <p className="adm-empty">No coupons yet.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">

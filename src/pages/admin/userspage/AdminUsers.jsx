@@ -8,6 +8,7 @@ import 'react-international-phone/style.css'
 import { LIMITS, sanitisePhone } from '../../../utils/validate.js'
 import PasswordField from '../../../common_component/PasswordField/PasswordField.jsx'
 import CopyLink from '../../../common_component/admin/CopyLink/CopyLink.jsx'
+import { SkeletonForm, SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 // One account system: every person is one account with one role (managed on the
 // Roles page). Only superadmin, or a role that grants ≥1 module, can enter the panel.
@@ -245,7 +246,7 @@ function Accounts({ me }) {
       )}
 
       {error && <p className="adm-error">{error}</p>}
-      {!users ? <p className="adm-empty">Loading…</p> : users.length === 0 ? (
+      {!users ? <SkeletonTable /> : users.length === 0 ? (
         <p className="adm-empty">No accounts found.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">
@@ -536,9 +537,9 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
         ? <OrgFields org={org} set={setOrgField} loginEmail={f.email} nameErr={fieldErr('orgName')} editing />
         : (
           <div className="adm-panel" style={{ marginTop: 12, background: 'var(--gray-50)' }}>
-            <p className={ownedErr ? 'adm-error' : 'adm-sub'} style={{ margin: 0 }}>
-              {ownedErr || 'Loading the institution’s details…'}
-            </p>
+            {ownedErr
+              ? <p className="adm-error" style={{ margin: 0 }}>{ownedErr}</p>
+              : <SkeletonForm fields={3} label="Loading the institution’s details" />}
           </div>
         ))}
 

@@ -238,7 +238,7 @@ async function run() {
             // arrived. What shipped was fourteen grey rectangles and not one
             // link to any of the 52 career pages, which is a large part of why
             // they sat in "discovered, currently not indexed".
-            if (root.querySelector('.animate-skeleton')) return false
+            if (root.querySelector('.animate-skeleton, .skel')) return false
             const inner = root.innerHTML
               .replace(/<nav[\s\S]*?<\/nav>/g, '')
               .replace(/<footer[\s\S]*?<\/footer>/g, '')
@@ -253,7 +253,7 @@ async function run() {
         // The wait above gives up after fifteen seconds and the page is written
         // regardless, so a slow API can still put a skeleton in front of a
         // crawler. Named in the report rather than silently shipped.
-        if (await page.evaluate(() => !!document.querySelector('.animate-skeleton'))) {
+        if (await page.evaluate(() => !!document.querySelector('.animate-skeleton, .skel'))) {
           stillLoading.push(path)
         }
 

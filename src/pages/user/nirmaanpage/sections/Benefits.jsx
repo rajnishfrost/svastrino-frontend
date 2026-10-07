@@ -91,7 +91,7 @@ const DEVELOPMENTS = [
 
 export default function Benefits() {
   return (
-    <section className="bg-nirmaan-cream py-16 md:py-20">
+    <section className="bg-white py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">What you get</p>
@@ -101,9 +101,9 @@ export default function Benefits() {
           <p className="mt-4 text-lg text-nirmaan-brown-soft">Overall benefits of the process.</p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map(({ Icon, title, text }) => (
-            <div key={title} className="rounded-xl border border-nirmaan-sand bg-white p-7 shadow-sm">
+            <div key={title} className="rounded-xl border border-solid border-nirmaan-sand bg-white p-7 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
               <span className="flex size-12 items-center justify-center rounded-xl bg-nirmaan-green/10 text-nirmaan-green">
                 <Icon />
               </span>
@@ -113,11 +113,11 @@ export default function Benefits() {
           ))}
         </div>
 
-        <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-nirmaan-sand bg-white p-8">
+        <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-solid border-nirmaan-sand bg-white p-8 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
           <h3 className="font-display text-xl font-bold text-nirmaan-brown text-center">
             Specific Developments of the Course
           </h3>
-          <ul className="mt-5 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+          <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2">
             {DEVELOPMENTS.map((d) => (
               <li key={d} className="flex items-start gap-2.5 text-sm text-nirmaan-brown">
                 <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-nirmaan-green">

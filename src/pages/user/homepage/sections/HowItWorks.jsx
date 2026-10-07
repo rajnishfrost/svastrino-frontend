@@ -4,7 +4,7 @@
  * under each. Collapses to a vertical list on mobile.
  */
 const STEPS = [
-  { title: 'Book a session', desc: 'Start with a 15-min Model Session or pick a program that fits your stage.' },
+  { title: 'Book a session', desc: 'Start with a 15-min Model Session or pick a programme that fits your stage.' },
   { title: 'Discover yourself', desc: 'Psychometric assessment maps your interests, aptitude and personality.' },
   { title: 'Get your roadmap', desc: 'A personalised report with career matches and a step-by-step plan.' },
   { title: 'Grow with mentoring', desc: 'Ongoing guidance, worksheets and courses to act on the plan.' },

@@ -109,7 +109,7 @@
   text-decoration: none;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 899px) {
   .contact-grid {
     grid-template-columns: 1fr;
   }

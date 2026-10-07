@@ -5,6 +5,7 @@ import ConnectionState from '../../../common_component/user/ConnectionState/Conn
 import { fetchOffers } from '../../../api/notifications.js'
 import './Offers.css'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
+import { SkeletonCards } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * "New offers" — the discounts and new batches the team has running right now.
@@ -19,7 +20,7 @@ const fmtDate = (iso) =>
 export default function Offers() {
   usePageSeo({
     title: 'Offers — what is running right now',
-    description: 'Current offers on Svastrino mentoring programs and the Nirmaan course.',
+    description: 'Current offers on Svastrino mentoring programmes and the Nirmaan course.',
   })
   const [offers, setOffers] = useState(null)
   const [error, setError] = useState(null)
@@ -51,7 +52,7 @@ export default function Offers() {
               label="our current offers"
             />
           ) : !offers ? (
-            <p className="off-state">Loading…</p>
+            <SkeletonCards count={3} media={false} label="Loading offers" />
           ) : offers.length === 0 ? (
             <EmptyOffers />
           ) : (
@@ -146,7 +147,7 @@ function EmptyOffers() {
       <h2 className="off-empty-title">No offers running right now</h2>
       <p className="off-empty-text">
         We only list an offer while it is genuinely live, and there is nothing on today.
-        Our programs and the Nirmaan course are open in the meantime — this page is the
+        Our programmes and the Nirmaan course are open in the meantime — this page is the
         first place a new offer appears.
       </p>
       <div className="off-empty-actions">

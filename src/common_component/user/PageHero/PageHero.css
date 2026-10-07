@@ -63,11 +63,13 @@
 .page-hero--split {
   position: relative;
   text-align: left;
-  /* Mirrors the home hero's .bg-hero wash: white fading to soft blue + rose glow. */
+  /* Mirrors the home hero's .bg-hero wash: soft blue with a rose glow. Tinted
+     enough to read on a bright screen — the old white-to-#eef4fb wash only
+     showed up in screenshots. Keep the two in step. */
   background:
-    radial-gradient(1200px 600px at 80% -10%, #fdeef1 0%, transparent 55%),
-    radial-gradient(1000px 500px at 10% 0%, #eef4ff 0%, transparent 50%),
-    linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+    radial-gradient(1200px 600px at 80% -10%, #f9dde3 0%, transparent 55%),
+    radial-gradient(1000px 500px at 10% 0%, #dce8fb 0%, transparent 50%),
+    linear-gradient(180deg, #eef4fd 0%, #dde8f8 100%);
   color: var(--color-text);
   padding-top: var(--space-6);
   padding-bottom: calc(var(--space-7) + 70px); /* clear room for the wave */
@@ -131,7 +133,7 @@
   height: 70px;
 }
 
-@media (min-width: 861px) {
+@media (min-width: 900px) {
   .page-hero--split .container {
     grid-template-columns: 1.05fr 0.95fr;
   }
@@ -140,7 +142,7 @@
   }
 }
 /* On narrow screens the split stacks and re-centres (illustration below copy). */
-@media (max-width: 860px) {
+@media (max-width: 899px) {
   .page-hero--split {
     text-align: center;
   }
@@ -156,5 +158,25 @@
   }
   .page-hero-figure > * {
     max-width: 360px;
+  }
+}
+
+/* Phones: a smaller illustration, so the first screen shows the start of the
+   page's content instead of a near full-screen picture under the heading. */
+@media (max-width: 600px) {
+  .page-hero-figure > * {
+    max-width: 260px;
+  }
+  /* The art sets its own height (max-h-[325px]); cap that too, or the cap
+     above changes nothing. */
+  .page-hero-figure .hero-art-img {
+    max-height: 165px;
+  }
+  .page-hero-figure {
+    margin-top: 0;
+  }
+  .page-hero--split {
+    padding-top: var(--space-5);
+    padding-bottom: 72px; /* just clears the wave */
   }
 }

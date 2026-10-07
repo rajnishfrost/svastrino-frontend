@@ -35,9 +35,20 @@ export default {
     './src/common_component/user/SearchSuggest/SearchSuggest.jsx',
     './src/common_component/user/Footer/Footer.jsx',
     './src/common_component/user/FaqAccordion/FaqAccordion.jsx',
+    './src/common_component/user/FaqAccordion/FaqSection.jsx',
     './src/common_component/user/Testimonials/Testimonials.jsx',
   ],
   theme: {
+    // One desktop cut-off for the whole site: from 900px wide (a 9-10" tablet
+    // in landscape and up) pages use their desktop layout. Plain-CSS files use
+    // the same line - max-width: 899px for the phone/tablet layout.
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '900px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         // --- Svastrino brand palette (mirrors svastrino-proto) ---
@@ -62,8 +73,11 @@ export default {
           'green-light': '#5a9a4d',
           olive: '#90743c',
           'olive-light': '#b09462',
-          cream: '#faf6ec',
-          'cream-dark': '#f1ead5',
+          // Deep enough that white cards stand out on it (was #faf6ec, ~2% off white).
+          // A little deeper than the original #faf6ec (~2% off white), so white
+          // cards stand out on it while it still reads as a light cream.
+          cream: '#f5eedc',
+          'cream-dark': '#eadfc3',
           sand: '#e5e0d4',
           'gray-500': '#786c5b',
         },
@@ -88,11 +102,18 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.72' },
         },
+        // Placeholders stay invisible for the first 200ms, then fade in, so a
+        // response that lands quickly never flashes a skeleton (same rule as
+        // common_component/Skeleton).
+        'skeleton-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
       },
       animation: {
         'fade-up': 'fade-up 0.5s ease-out both',
         marquee: 'marquee 32s linear infinite',
-        skeleton: 'skeleton 1.6s ease-in-out infinite',
+        skeleton: 'skeleton-in 0.25s ease-out 0.2s both, skeleton 1.6s ease-in-out 0.45s infinite',
       },
     },
   },

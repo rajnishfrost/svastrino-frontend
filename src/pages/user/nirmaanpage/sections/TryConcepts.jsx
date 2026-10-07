@@ -40,24 +40,28 @@ const PREVIEWS = [
     week: 5,
     title: 'Confidence Is Built, Not Born',
     url: `${CDN}/nirmaan-w05/master.m3u8`,
+    poster: '/assets/images/nirmaan-previews/week-05.jpg',
     start: mmss(4, 57), end: mmss(6, 13), fullSeconds: 458,
   },
   {
     week: 4,
     title: 'Design Your Personal Success Story',
     url: `${CDN}/nirmaan-w04/master.m3u8`,
+    poster: '/assets/images/nirmaan-previews/week-04.jpg',
     start: mmss(7, 5), end: mmss(8, 12), fullSeconds: 651,
   },
   {
     week: 21,
     title: 'Designing Your Career Roadmap',
     url: `${CDN}/nirmaan-w21/master.m3u8`,
+    poster: '/assets/images/nirmaan-previews/week-21.jpg',
     start: mmss(4, 57), end: mmss(6, 2), fullSeconds: 574,
   },
   {
     week: 23,
     title: 'Becoming Successful Anywhere',
     url: `${CDN}/nirmaan-w23/master.m3u8`,
+    poster: '/assets/images/nirmaan-previews/week-23.jpg',
     start: mmss(3, 35), end: mmss(5, 15.5), fullSeconds: 421,
   },
 ]
@@ -104,7 +108,7 @@ export default function TryConcepts() {
         </div>
         {/* Three across once one is playing big, so the remaining lessons fill
             their row instead of leaving a hole where the fourth used to be. */}
-        <div className={`mt-12 grid gap-6 sm:grid-cols-2 ${theatre === null ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        <div className={`mt-12 grid gap-6 sm:grid-cols-2 ${theatre === null ? 'xl:grid-cols-4' : 'lg:grid-cols-3'}`}>
           {PREVIEWS.map((v, i) => {
             const big = theatre === i
             return (
@@ -119,7 +123,7 @@ export default function TryConcepts() {
                     full container is taller than most screens. */}
                 <div className={big ? 'mx-auto w-full max-w-3xl overflow-hidden rounded-xl border border-nirmaan-sand bg-white shadow-sm' : ''}>
                   <PreviewPlayer
-                    src={v.url} start={v.start} end={v.end} fullSeconds={v.fullSeconds}
+                    src={v.url} poster={v.poster} start={v.start} end={v.end} fullSeconds={v.fullSeconds}
                     theatre={big}
                     onTheatre={() => setTheatre(big ? null : i)}
                     onPlayStart={() => promote(i)}

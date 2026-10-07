@@ -34,7 +34,7 @@ export default function WhatIsIt() {
               into six broad types.
             </li>
             <li>
-              A report of up to 40 pages — your strengths, your weaker areas, your
+              A report of 20 - 40 pages — your strengths, your weaker areas, your
               personality, your interests and your preferences, in plain language.
             </li>
             <li>The top 5 careers that suit you best, named and explained.</li>

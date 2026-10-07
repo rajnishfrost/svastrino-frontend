@@ -33,9 +33,9 @@ const PILLARS = [
 ]
 
 const SERVICES = [
-  { need: 'For Immediate Career Counselling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
-  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
-  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
+  { need: 'For Immediate Career Counselling', label: "Bull's Eye Programme", to: '/services/bulls-eye' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Programme', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Programme', to: '/services/breakthrough' },
   { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
   { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
@@ -63,9 +63,9 @@ export default function Ideology() {
             </p>
           </div>
 
-          {/* Desktop: a straight horizontal timeline — numbered nodes left→right
+          {/* Wide desktop (1280px+): a straight horizontal timeline — numbered nodes left→right
               on one line, each pillar's title + text below its node. */}
-          <div className="relative mx-auto mt-16 hidden max-w-5xl lg:block">
+          <div className="relative mx-auto mt-16 hidden max-w-5xl xl:block">
             <div
               className="absolute left-[10%] right-[10%] top-6 h-1 -translate-y-1/2 rounded-full bg-brand-crimson/25"
               aria-hidden
@@ -84,7 +84,7 @@ export default function Ideology() {
           </div>
 
           {/* Mobile / tablet: a single left-rail timeline. */}
-          <ol className="mx-auto mt-12 max-w-md lg:hidden">
+          <ol className="mx-auto mt-12 max-w-md xl:hidden">
             {PILLARS.map((p, i) => (
               <li key={p.title} className="relative flex gap-4">
                 <div className="flex flex-col items-center">
@@ -115,7 +115,7 @@ export default function Ideology() {
               // read as a distinct sub-brand from the crimson Svastrino services.
               const isNirmaan = r.to.startsWith('/skill-build')
               return (
-                <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
+                <li key={r.to} className="flex flex-col items-start gap-2 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <span className={isNirmaan ? 'text-nirmaan-brown' : 'text-brand-navy'}>{r.need}</span>
                   <Link
                     to={r.to}

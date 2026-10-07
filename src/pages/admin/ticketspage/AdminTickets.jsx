@@ -4,6 +4,7 @@ import '../adminShared.css'
 import './AdminTickets.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Support conversations, and the one screen where a locked course is reopened.
@@ -259,7 +260,7 @@ export default function AdminTickets() {
       {error && <p className="adm-error">{error}</p>}
 
       {visible == null ? (
-        <p className="adm-empty">Loading…</p>
+        <SkeletonTable />
       ) : visible.length === 0 ? (
         <p className="adm-empty">
           {term || status
