@@ -95,7 +95,7 @@
 /* ---- The "ask for help" form ---- */
 .sup-new-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
 }
@@ -299,11 +299,12 @@
 .sup-reply label { width: 100%; }
 
 /* ---- Tablet & phone ---- */
-@media (max-width: 900px) {
-  .sup-new-grid { grid-template-columns: 1fr; }
+@media (max-width: 899px) {
+  .sup-new-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 600px) {
+  .sup-form-actions > * { flex: 1 1 100%; justify-content: center; text-align: center; }
   .sup-item {
     flex-direction: column;
     align-items: flex-start;

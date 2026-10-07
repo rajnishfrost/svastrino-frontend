@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import './PayLink.css'
+import { SkeletonForm } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * /pay/<token> — where an institution pays for its seats, from the link an
@@ -61,7 +62,7 @@ export default function PayLink() {
     <section className="section paylink">
       <div className="container paylink-wrap">
         <div className="paylink-card">
-          {!data && !err && <p className="paylink-muted">Loading…</p>}
+          {!data && !err && <SkeletonForm fields={2} label="Loading the payment" />}
 
           {!data && err && (
             <>

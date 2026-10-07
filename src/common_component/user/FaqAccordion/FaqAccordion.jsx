@@ -60,7 +60,7 @@ export default function FaqAccordion({ items = [], tone = 'brand' }) {
               aria-expanded={isOpen}
               onClick={() => setOpenId(isOpen ? null : item.id)}
               style={{ background: 'transparent', border: 'none' }}
-              className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left"
+              className="flex w-full cursor-pointer items-center justify-between gap-3 px-4 py-4 text-left sm:gap-4 sm:px-5"
             >
               <span className={`font-display text-base font-semibold ${t.question}`}>{item.question}</span>
               <span
@@ -92,7 +92,7 @@ export default function FaqAccordion({ items = [], tone = 'brand' }) {
               <div style={{ overflow: 'hidden' }}>
                 {/* Answers come from the FAQs doc, so several carry bullet
                     lists and bold runs — rendered rather than printed raw. */}
-                <div className="px-5 pb-5">
+                <div className="px-4 pb-5 sm:px-5">
                   <Markdown className={t.markdown}>{item.answer}</Markdown>
                 </div>
               </div>

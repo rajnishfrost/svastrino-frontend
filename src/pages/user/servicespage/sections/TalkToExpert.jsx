@@ -100,9 +100,9 @@ export default function TalkToExpert({ program }) {
     const done = [true, status === 'contacted' || status === 'approved', status === 'approved']
     const labels = ['Request sent', 'Mentor calls you', 'Enrol']
     return (
-      <ol className="mt-4 flex items-center gap-2">
+      <ol className="mt-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center">
         {labels.map((label, i) => (
-          <li key={label} className={`flex items-center gap-2 ${i < labels.length - 1 ? 'flex-1' : ''}`}>
+          <li key={label} className={`flex items-center gap-2 ${i < labels.length - 1 ? 'sm:flex-1' : ''}`}>
             <span
               className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
                 done[i] ? 'bg-brand-crimson text-white' : 'border border-brand-navy/20 bg-white text-brand-slate'
@@ -114,7 +114,7 @@ export default function TalkToExpert({ program }) {
               {label}
             </span>
             {i < labels.length - 1 && (
-              <span className={`h-px flex-1 ${done[i + 1] ? 'bg-brand-crimson' : 'bg-brand-navy/15'}`} />
+              <span className={`hidden h-px flex-1 sm:block ${done[i + 1] ? 'bg-brand-crimson' : 'bg-brand-navy/15'}`} />
             )}
           </li>
         ))}
@@ -143,7 +143,7 @@ export default function TalkToExpert({ program }) {
       className="bg-soft py-14 md:py-16"
     >
       <div className="container mx-auto max-w-4xl">
-        <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+        <div className="rounded-2xl border border-brand-navy/5 bg-white p-5 shadow-sm sm:p-7">
       <h2 className="font-display text-xl font-bold text-brand-navy">
         {approved ? `You're Cleared to Start ${program.name}` : 'Talk to an Expert First'}
       </h2>
@@ -205,7 +205,7 @@ export default function TalkToExpert({ program }) {
       {/* Nothing on file → the form. */}
       {!sent && standing === null && (
         // noValidate: our own per-field messages, not the browser's one-at-a-time bubbles.
-        <form ref={formRef} onSubmit={submit} noValidate className="mt-6 grid gap-4 sm:grid-cols-2">
+        <form ref={formRef} onSubmit={submit} noValidate className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EnquiryField
             className="sm:col-span-2"
             name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={LIMITS.name}

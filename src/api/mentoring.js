@@ -6,7 +6,7 @@ import { api } from './client.js'
 export const fetchMentoringPrograms = () =>
   api('/user/mentoring/programs').then((d) => d.programs || [])
 
-/** Available 2-hour slots for one IST date. → { date, window, closed, slots } */
+/** Available 2.5-hour slots for one IST date. → { date, window, closed, slots } */
 export const fetchSlots = (date) =>
   api(`/user/mentoring/slots?date=${encodeURIComponent(date)}`)
 

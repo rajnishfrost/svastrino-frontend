@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import AdminSidebar from '../AdminSidebar/AdminSidebar.jsx'
+import { usePageFade } from '../../Skeleton/usePageFade.js'
 import './AdminLayout.css'
 
 /** Shell for every admin page: sidebar + top bar + content slot. */
 export default function AdminLayout({ children }) {
   const [navOpen, setNavOpen] = useState(false)
+  const contentRef = usePageFade()
 
   return (
     <div className="admin-shell">
@@ -27,7 +29,7 @@ export default function AdminLayout({ children }) {
           </a>
         </header>
 
-        <div className="admin-content">{children}</div>
+        <div className="admin-content" ref={contentRef}>{children}</div>
       </div>
     </div>
   )

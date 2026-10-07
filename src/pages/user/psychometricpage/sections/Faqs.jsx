@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import FaqAccordion from '../../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
 import { fetchFaqs } from '../../../../api/content.js'
+import FaqSection from '../../../../common_component/user/FaqAccordion/FaqSection.jsx'
 
 /**
  * Psychometric · the test's questions, straight from the FAQs doc — the
@@ -32,19 +32,5 @@ export default function Faqs() {
     return () => { cancelled = true }
   }, [])
 
-  if (!items.length) return null
-
-  // The bundle band above sits on cream, so this one takes white.
-  return (
-    <section id="faqs" className="bg-white py-16 md:py-20">
-      <div className="container">
-        <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
-          FAQs
-        </h2>
-        <div className="mx-auto mt-12 max-w-3xl">
-          <FaqAccordion items={items} tone="nirmaan" />
-        </div>
-      </div>
-    </section>
-  )
+  return <FaqSection items={items} title={SECTION} about="psychometric testing" tone="nirmaan" className="bg-white" />
 }

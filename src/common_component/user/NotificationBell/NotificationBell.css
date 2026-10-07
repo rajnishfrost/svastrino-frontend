@@ -197,33 +197,33 @@
 /* The drawer scrolls, so a floating panel would be clipped and awkward. The
    bell becomes a full-width row and its panel opens inline underneath it,
    the same way the profile menu does. */
-@media (max-width: 940px) {
+@media (max-width: 899px) {
   /* In the drawer the panel belongs UNDER the bell, not beside it. */
-  .nav-notif {
+  .nav-links .nav-notif {
     width: 100%;
     flex-direction: column;
     align-items: stretch;
   }
 
-  .nav-notif-btn {
+  .nav-links .nav-notif-btn {
     width: 100%;
     justify-content: flex-start;
     padding: 12px 0;
     border-top: 1px solid var(--color-surface-border);
   }
 
-  .nav-notif-label {
+  .nav-links .nav-notif-label {
     display: inline;
     font-size: 14px;
     font-weight: 500;
   }
 
-  .nav-notif-badge {
+  .nav-links .nav-notif-badge {
     position: static;
     margin-left: auto;
   }
 
-  .nav-notif-panel {
+  .nav-links .nav-notif-panel {
     position: static;
     width: auto;
     padding: 0 0 8px;
@@ -232,7 +232,7 @@
     box-shadow: none;
   }
 
-  .nav-notif-list {
+  .nav-links .nav-notif-list {
     max-height: 44vh;
   }
 }

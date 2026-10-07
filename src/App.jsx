@@ -7,6 +7,8 @@ import OfflineBanner from './common_component/user/OfflineBanner/OfflineBanner.j
 import ScrollToTop from './common_component/user/ScrollToTop/ScrollToTop.jsx'
 import ProtectedRoute from './common_component/user/ProtectedRoute/ProtectedRoute.jsx'
 import GuestRoute from './common_component/user/GuestRoute/GuestRoute.jsx'
+import { usePageFade } from './common_component/Skeleton/usePageFade.js'
+import RouteHold from './common_component/Skeleton/RouteHold.jsx'
 
 // ---- Shared admin components ----
 import AdminLayout from './common_component/admin/AdminLayout/AdminLayout.jsx'
@@ -73,11 +75,13 @@ import AdminOrganisations from './pages/admin/organisationspage/AdminOrganisatio
  * The /admin area uses its own AdminLayout (sidebar) and is guarded.
  */
 function PublicSite() {
+  const mainRef = usePageFade()
   return (
     <>
       <OfflineBanner />
       <Navbar />
-      <main>
+      <main ref={mainRef}>
+        <RouteHold>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -183,6 +187,7 @@ function PublicSite() {
 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </RouteHold>
       </main>
       <Footer />
     </>

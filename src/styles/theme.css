@@ -73,8 +73,8 @@
   --nirmaan-green-light: #5a9a4d;  /* subtle green highlights */
   --nirmaan-olive: #90743c;        /* eyebrows / small accents */
   --nirmaan-olive-light: #b09462;  /* footer headings / muted accents */
-  --nirmaan-cream: #faf6ec;        /* warm cream surface (A-natural reference) */
-  --nirmaan-cream-dark: #f1ead5;   /* cream borders / chips */
+  --nirmaan-cream: #f5eedc;        /* warm cream surface — deep enough for white cards to stand out */        /* warm cream surface — deep enough for white cards to stand out */
+  --nirmaan-cream-dark: #eadfc3;   /* cream borders / chips */
   --nirmaan-gray-200: #e5e0d4;     /* warm hairline borders */
   --nirmaan-gray-500: #786c5b;     /* muted text */
 

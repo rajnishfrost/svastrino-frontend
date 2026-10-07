@@ -91,15 +91,15 @@ export default function Contact() {
       <PageHero
         eyebrow="Contact us"
         title="Get in Touch"
-        subtitle="Questions about a program, the psychometric test, or booking a session? Reach out — we're happy to help."
+        subtitle="Questions about a programme, the psychometric test, or booking a session? Reach out — we're happy to help."
         illustration={<ProgramHeroArt src="/assets/images/contact-us-t.png" alt="" />}
       />
 
       <section className="bg-white py-16 md:py-20">
         <div className="container">
-          <div className="grid items-start gap-10 lg:grid-cols-[1.6fr_1fr]">
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.6fr_1fr]">
             {/* Enquiry form (wider, left) */}
-            <div className="rounded-2xl border border-brand-navy/5 bg-white p-6 shadow-xl shadow-brand-navy/5 md:p-8">
+            <div className="min-w-0 rounded-2xl border border-brand-navy/5 bg-white p-5 shadow-xl shadow-brand-navy/5 sm:p-6 md:p-8">
               {sent ? (
                 /* The same shape the other forms use when they are done: a mark,
                    a heading, and what happens next — not one green line in an
@@ -201,7 +201,7 @@ export default function Contact() {
             </div>
 
             {/* Contact details (narrower, right) */}
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8 [overflow-wrap:anywhere]">
               <div>
                 <h2 className="font-display text-lg font-bold text-brand-navy">Reach Us</h2>
                 <div className="mt-3 space-y-2 text-sm">

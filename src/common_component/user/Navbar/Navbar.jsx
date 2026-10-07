@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { Compass, CalendarCheck, BookOpen, Phone, Layers, Sprout, Brain } from 'lucide-react'
 import { hasPortalAccess } from '../../../utils/portalAccess.js'
 import NotificationBell from '../NotificationBell/NotificationBell.jsx'
 import './Navbar.css'
@@ -20,14 +21,14 @@ const MENTORING_LINKS = [
   {
     label: 'Career Counselling',
     children: [
-      { label: "Bull's Eye Program", to: '/services/bulls-eye' },
+      { label: "Bull's Eye Programme", to: '/services/bulls-eye' },
     ],
   },
   {
     label: 'Personalised Mentoring',
     children: [
-      { label: 'Bloom Program', to: '/services/bloom' },
-      { label: 'Breakthrough Program', to: '/services/breakthrough' },
+      { label: 'Bloom Programme', to: '/services/bloom' },
+      { label: 'Breakthrough Programme', to: '/services/breakthrough' },
     ],
   },
 ]
@@ -43,14 +44,53 @@ const RESOURCES_LINKS = [
   { label: 'Success Stories', to: '/resources/success-stories' },
 ]
 
+/** True below the desktop cut-off (900px), kept in step with the window. */
+function useCompact() {
+  const query = '(max-width: 899px)'
+  const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia?.(query).matches)
+  useEffect(() => {
+    const mq = window.matchMedia?.(query)
+    if (!mq) return undefined
+    const on = () => setCompact(mq.matches)
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  return compact
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { user } = useAuth()
   const { pathname } = useLocation()
   const isNirmaan = pathname.startsWith('/skill-build/')
   const close = () => setOpen(false)
+  // Phones/tablets: the bell lives in the top bar beside the menu button (icon
+  // only), not as a row inside the menu. One bell is ever mounted, so its
+  // unread count is fetched once.
+  const compact = useCompact()
+
+  // The phone menu closes itself whenever the page changes — including links
+  // that only change the #section — so it never sits open over the new page.
+  const { hash } = useLocation()
+  useEffect(() => { setOpen(false) }, [pathname, hash])
+
+  // While it is open: the page behind stays still (no scrolling under the
+  // menu), and Escape closes it.
+  useEffect(() => {
+    if (!open) return undefined
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey) }
+  }, [open])
 
   return (
+    <>
+    {/* Tapping anywhere outside the open phone menu closes it. A sibling of
+        <nav>, not a child: the nav's backdrop-filter would trap a fixed child
+        inside the nav's own box. */}
+    {open && <div className="nav-backdrop" onClick={close} aria-hidden />}
     <nav className="nav">
       <div className="nav-inner container">
         {/* Brand is always Svastrino — even on the Nirmaan page — so users can
@@ -59,9 +99,11 @@ export default function Navbar() {
           <img src="/logo.png" alt="Svastrino Consultancy Services" />
         </Link>
 
+        <div className="nav-end">
+        {user && compact && <NotificationBell onNavigate={close} onOpen={close} />}
         <button
           className="nav-toggle"
-          aria-label="Toggle menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
@@ -69,6 +111,7 @@ export default function Navbar() {
           <span />
           <span />
         </button>
+        </div>
 
         <div className={`nav-links${open ? ' is-open' : ''}`}>
           {/* On Svastrino: "Skill Build" green pill with hover dropdown (Nirmaan inside).
@@ -82,21 +125,23 @@ export default function Navbar() {
           {/* )} */}
 
           {/* <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} /> */}
-          <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} />
+          <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} icon={Compass} />
 
           <NavLink to="/book-online" onClick={close} className={navClass}>
-            Book Online
+            <span className="nav-ico" aria-hidden><CalendarCheck /></span>
+            <span className="nav-label">Book Online</span>
           </NavLink>
 
-          <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} />
+          <Dropdown label="Resources" to="/resources" items={RESOURCES_LINKS} onNavigate={close} icon={BookOpen} />
 
           <NavLink to="/contact" onClick={close} className={navClass}>
-            Contact
+            <span className="nav-ico" aria-hidden><Phone /></span>
+            <span className="nav-label">Contact</span>
           </NavLink>
 
           {user ? (
             <>
-              <NotificationBell onNavigate={close} />
+              {!compact && <NotificationBell onNavigate={close} />}
               <ProfileMenu user={user} onNavigate={close} />
             </>
           ) : (
@@ -107,6 +152,7 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+    </>
   )
 }
 
@@ -127,9 +173,30 @@ const canHover = () =>
  * what made the Services dropdown feel over-sensitive. Touch devices get no
  * hover handlers at all (see canHover); their click handler drives the menu.
  */
-function useHoverMenu(delay = 180) {
-  const [open, setOpen] = useState(false)
+// Top-level menus are an accordion: opening one closes the others, so the
+// phone menu never has Services and Resources (and Skill-Build) all open at
+// once. Submenus inside Services are not part of it — opening one must not
+// close the menu it sits in.
+const MENU_OPENED = 'svastrino:nav-menu-opened'
+
+function useHoverMenu(delay = 180, { exclusive = false } = {}) {
+  const [open, setOpenRaw] = useState(false)
   const closeTimer = useRef(null)
+  const id = useRef(Math.random().toString(36).slice(2))
+  // Called from click/hover handlers, so `open` here is current.
+  const setOpen = (next) => {
+    const value = typeof next === 'function' ? next(open) : next
+    if (exclusive && value && !open) {
+      window.dispatchEvent(new CustomEvent(MENU_OPENED, { detail: id.current }))
+    }
+    setOpenRaw(value)
+  }
+  useEffect(() => {
+    if (!exclusive) return undefined
+    const onOther = (e) => { if (e.detail !== id.current) setOpenRaw(false) }
+    window.addEventListener(MENU_OPENED, onOther)
+    return () => window.removeEventListener(MENU_OPENED, onOther)
+  }, [exclusive])
   const cancelClose = () => {
     if (closeTimer.current) {
       clearTimeout(closeTimer.current)
@@ -158,10 +225,10 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
 /** Green pill with a hover dropdown. Currently exposes only "Nirmaan" inside;
  *  add more items to the array as new skill-build courses launch. */
 function SkillBuildDropdown({ onNavigate }) {
-  const { open, setOpen, hoverProps } = useHoverMenu()
+  const { open, setOpen, hoverProps } = useHoverMenu(180, { exclusive: true })
   const items = [
-    { label: 'Nirmaan', to: '/skill-build/nirmaan' },
-    { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+    { label: 'Nirmaan', desc: '24-week mindset & skills course', to: '/skill-build/nirmaan', Icon: Sprout },
+    { label: 'Psychometric Testing', desc: 'Stream & Career Selector · from ₹900', to: '/skill-build/psychometric-testing', Icon: Brain },
   ]
 
   return (
@@ -176,13 +243,22 @@ function SkillBuildDropdown({ onNavigate }) {
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
       >
-        Skill-Build
+        {/* Icon and sub-line show in the phone menu only. */}
+        <span className="nav-ico" aria-hidden><Layers /></span>
+        <span className="nav-label">
+          Skill-Build
+          <span className="nav-sb-sub">Courses &amp; tests to build yourself</span>
+        </span>
       </button>
 
       <div className="nav-dropdown-menu nav-dropdown-menu--skill-build" role="menu">
-        {items.map((item) => (
-          <Link key={item.to} to={item.to} onClick={onNavigate}>
-            {item.label}
+        {items.map(({ label, desc, to, Icon }) => (
+          <Link key={to} to={to} onClick={onNavigate}>
+            <span className="nav-sb-ico" aria-hidden><Icon /></span>
+            <span className="nav-sb-text">
+              <span className="nav-sb-name">{label}</span>
+              <span className="nav-sb-desc">{desc}</span>
+            </span>
           </Link>
         ))}
       </div>
@@ -191,8 +267,8 @@ function SkillBuildDropdown({ onNavigate }) {
 }
 
 /** A hover/click dropdown that is still tappable on mobile (renders inline). */
-function Dropdown({ label, to, items, onNavigate }) {
-  const { open, setOpen, hoverProps } = useHoverMenu()
+function Dropdown({ label, to, items, onNavigate, icon: Icon }) {
+  const { open, setOpen, hoverProps } = useHoverMenu(180, { exclusive: true })
 
   return (
     <div
@@ -205,7 +281,9 @@ function Dropdown({ label, to, items, onNavigate }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        {label}
+        {/* Icon shows in the phone menu only (hidden on desktop). */}
+        {Icon && <span className="nav-ico" aria-hidden><Icon /></span>}
+        <span className="nav-label">{label}</span>
         <span className="nav-caret" aria-hidden>▾</span>
       </button>
 
@@ -277,10 +355,14 @@ function ProfileMenu({ user, onNavigate }) {
     onNavigate?.()
   }
 
+  // Signing out keeps the visitor where they are — the page they were reading
+  // is still there for them. Only pages that need an account (they would just
+  // bounce to the login screen) send them to the home page instead.
+  const { pathname } = useLocation()
   const handleSignOut = () => {
     closeAll()
     logout()
-    navigate('/')
+    if (/^\/(dashboard|learn|checkout|support|settings|welcome|downloads)(\/|$)/.test(pathname)) navigate('/')
   }
 
   const initial = (user.name || user.email || '?').trim().charAt(0).toUpperCase()
@@ -306,7 +388,8 @@ function ProfileMenu({ user, onNavigate }) {
         ) : (
           <span className="nav-avatar-initial">{initial}</span>
         )}
-        <span className="nav-avatar-name">{user.name || 'Account'}</span>
+        {/* Shown in the phone menu only — first name, beside the photo. */}
+        <span className="nav-avatar-name">{(user.name || 'Account').trim().split(/\s+/)[0]}</span>
       </button>
 
       <div className="nav-profile-menu" role="menu">

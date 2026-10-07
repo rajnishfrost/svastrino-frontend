@@ -2,7 +2,7 @@ The receiver can cancel any of their services or courses that they enrolled for 
    
 Cancelling a slot: To cancel any of the pre booked/ allotted appointments the Receiver has to call us at least 24 hours before the session. We levy processing fees of 15% + taxes on all cancellations paid on the Total amount received. Any cancellation of appointments that happen within the 24 hour limit that is mentioned above shall attract a 25% processing fees + taxes. The amount shall be deducted and the balance shall be refunded within a period of maximum 14 working days from the day of intimation of the cancellation.
 
-Cancelling a service: To cancel a service totally, the receiver has to send a mail or has to cancel the service from their dashboard. The refunds will be initiated immediately and will take at least 14 working days to calculate and provide the refund. Refunds for cancellation of service will be calculated based on the service utilised, (Whatever is higher from sessions exhausted or days completed) of the service enrolled by the receiver. A processing fee of 15% of the total course fees + taxes will be implied on the receiver and the same shall be adjusted from the balance fees before refunding. For Programs like Bloom and Breakthrough as we initially give a demo and then we confirm the receiver to enrol for the program we request the receiver to verify all their queries and concerns before they enrol as then the cancellations of these services would be difficult. Also if the receiver plans to cancel the services after exhausting 50% of the service (Whatever is higher from sessions exhausted or days completed) then there would be no refunds provided to the receiver as they would have received the demo and then they would have exhausted the services to 50% capacity. Also during the same time the provider is not able to take any additional commitments and as the receiver would cancel the service in between, the provider’s slot for the next few months would be empath as committed which may not get fulfilled. And so the cancellations would be accepted but the refunds of the balance would not be possible in this specific situation.
+Cancelling a service: To cancel a service totally, the receiver has to send a mail or has to cancel the service from their dashboard. The refunds will be initiated immediately and will take at least 14 working days to calculate and provide the refund. Refunds for cancellation of service will be calculated based on the service utilised, (Whatever is higher from sessions exhausted or days completed) of the service enrolled by the receiver. A processing fee of 15% of the total course fees + taxes will be implied on the receiver and the same shall be adjusted from the balance fees before refunding. For Programmes like Bloom and Breakthrough as we initially give a demo and then we confirm the receiver to enrol for the programme we request the receiver to verify all their queries and concerns before they enrol as then the cancellations of these services would be difficult. Also if the receiver plans to cancel the services after exhausting 50% of the service (Whatever is higher from sessions exhausted or days completed) then there would be no refunds provided to the receiver as they would have received the demo and then they would have exhausted the services to 50% capacity. Also during the same time the provider is not able to take any additional commitments and as the receiver would cancel the service in between, the provider’s slot for the next few months would be empath as committed which may not get fulfilled. And so the cancellations would be accepted but the refunds of the balance would not be possible in this specific situation.
 
 Cancelling a course: Every course that the provider is launching on its website has 2 ways to be verified before a receiver enrols for the same. The receiver can verify the same, 1st by the glimpse provided on the course page and then by the 1 week free trial they can do to have a feel of the course. And finally when they are convinced that they like the course they should enrol. If a receiver cancels a course after enrolling, the same can be done immediately by sending a mail or by cancelling the course from their dashboard. The refunds for the same will attract a 15% processing fee (of the total course fees) + taxes and the same shall be adjusted from the balance amount before refunding. The refunds for this will take a maximum of 14 working days
 
@@ -10,11 +10,11 @@ Cancelling a course: Every course that the provider is launching on its website 
 
 Rescheduling varies as per the service that the receiver has enrolled for. The details of the rescheduling that is permitted to the receiver is guided below:
 
-- **Bull’s Eye Program** — Total no. of Rescheduling allowed for Free: Only 1 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 2,500+ taxes
-- **Bloom Program** — Total no. of Rescheduling allowed for Free: Only 2 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 3,500+ taxes
-- **Breakthrough Program** — Total no. of Rescheduling allowed for Free: Only 7 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 4,500+ taxes
+- **Bull’s Eye Programme** — Total no. of Rescheduling allowed for Free: Only 1 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 2,500+ taxes
+- **Bloom Programme** — Total no. of Rescheduling allowed for Free: Only 2 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 3,500+ taxes
+- **Breakthrough Programme** — Total no. of Rescheduling allowed for Free: Only 7 per receiver; Additional Charges for each Rescheduling after free limit is exhausted: INR 4,500+ taxes
 
-These reschedulings will be allowed for the receiver to be utilised throughout the program duration. Post which no further free reschedulings as per the service inclusions will be allowed to the receiver and the remaining sessions will be planned and serviced as per the slots guided & confirmed by the providers team.  
+These reschedulings will be allowed for the receiver to be utilised throughout the programme duration. Post which no further free reschedulings as per the service inclusions will be allowed to the receiver and the remaining sessions will be planned and serviced as per the slots guided & confirmed by the providers team.  
 Post exhaustion of the rescheduling limits as per the service booked by the receiver if the receiver yet requires any further reschedulings then the receiver will have to pay additional charges for each rescheduling as per section ‘Additional Charges for each Rescheduling after free limit is exhausted’ the table guided above. These charges have to be paid by the receiver in advance. The receiver has to accept that this rescheduled slot wouldn’t be cancelled, rescheduled, or transferred and that  these additional charges would not be refundable in any case.
 
 ## TRANSFER POLICY:
@@ -25,7 +25,7 @@ We do not allow, accept or permit any transfer of service from one receiver to a
 
 For Services: Refunds for simple cancellations (without rescheduling) will be processed within 14 working days after the cancellations have been initiated. The provider shall calculate the sessions exhausted by the receiver and then the Receiver shall get the amount after balancing the remaining session + after deducting the processing fees of 15%+ taxes mentioned for the Direct Cancellations.
 
-Refunds for cancellations after rescheduling will be processed within 30 working days after the cancellations have been initiated. The provider shall calculate the sessions exhausted by the receiver, total reschedules made and if there are any pending payments from the receiver's end. The Receiver shall get the amount after deducting the pending payment + processing fees of 15% mentioned for the cancellations with reschedulings. As this refund might be initiated after rescheduling and finally a cancellation the refunds shall only happen on the actual counseling amount that is paid by the receiver and not the rescheduling amount paid by the Receiver (Counseling + Rescheduling). The Rescheduling amount shall be exempted from refunds and the refund will only happen as per the cancellation terms mentioned above for the 1st counselling fees paid by the Receiver.
+Refunds for cancellations after rescheduling will be processed within 30 working days after the cancellations have been initiated. The provider shall calculate the sessions exhausted by the receiver, total reschedules made and if there are any pending payments from the receiver's end. The Receiver shall get the amount after deducting the pending payment + processing fees of 15% mentioned for the cancellations with reschedulings. As this refund might be initiated after rescheduling and finally a cancellation the refunds shall only happen on the actual counselling amount that is paid by the receiver and not the rescheduling amount paid by the Receiver (Counselling + Rescheduling). The Rescheduling amount shall be exempted from refunds and the refund will only happen as per the cancellation terms mentioned above for the 1st counselling fees paid by the Receiver.
 
 For Courses: Refunds for any course that is enrolled by the receiver will only happen after calculating the total days of the course utilised + a processing fees of 15% + taxes which will be adjusted from the fees paid and then the balance shall be refunded to the receiver within 14 working days from the date of cancellation of the course.
 
@@ -71,15 +71,15 @@ The refund, where applicable, shall be calculated after considering:
 
 For service/program utilisation, the Provider shall consider **whichever is higher between the number of sessions exhausted and the number of days elapsed**, as applicable to the particular service.
 
-## Cancellation of Bloom and Breakthrough Programs
+## Cancellation of Bloom and Breakthrough Programmes
 
-For **Bloom** and **Breakthrough**, the Receiver is provided an opportunity to understand the program through the applicable introductory/demo process before enrolment. The Receiver is therefore expected to review and clarify their requirements, queries and concerns before confirming enrolment.
+For **Bloom** and **Breakthrough**, the Receiver is provided an opportunity to understand the programme through the applicable introductory/demo process before enrolment. The Receiver is therefore expected to review and clarify their requirements, queries and concerns before confirming enrolment.
 
 Cancellation may still be requested after enrolment; however:
 
-* a refund shall be available only where the utilised portion of the program is **less than 50%**, calculated using the higher of sessions exhausted or days elapsed;  
-* once **50% or more of the program** has been utilised, **no refund shall be payable**, irrespective of the remaining sessions or period;  
-* this restriction recognises that the Provider reserves counselling capacity and availability for the Receiver for the committed program period and may be unable to commercially replace that reserved capacity after mid-program cancellation.
+* a refund shall be available only where the utilised portion of the programme is **less than 50%**, calculated using the higher of sessions exhausted or days elapsed;  
+* once **50% or more of the programme** has been utilised, **no refund shall be payable**, irrespective of the remaining sessions or period;  
+* this restriction recognises that the Provider reserves counselling capacity and availability for the Receiver for the committed programme period and may be unable to commercially replace that reserved capacity after mid-programme cancellation.
 
 The applicable **15% + taxes processing fee** shall apply to eligible refunds.
 
@@ -107,11 +107,11 @@ The Provider shall not be required to extend the session beyond its scheduled du
 
 Rescheduling shall be permitted according to the service/program enrolled for by the Receiver:
 
-- **Bull's Eye Program** — Free Reschedulings: 1; Charge after Free Limit: ₹2,500 + applicable taxes
-- **Bloom Program** — Free Reschedulings: 2; Charge after Free Limit: ₹3,500 + applicable taxes
-- **Breakthrough Program** — Free Reschedulings: 7; Charge after Free Limit: ₹4,500 + applicable taxes
+- **Bull's Eye Programme** — Free Reschedulings: 1; Charge after Free Limit: ₹2,500 + applicable taxes
+- **Bloom Programme** — Free Reschedulings: 2; Charge after Free Limit: ₹3,500 + applicable taxes
+- **Breakthrough Programme** — Free Reschedulings: 7; Charge after Free Limit: ₹4,500 + applicable taxes
 
-The free rescheduling entitlement shall be available throughout the applicable program validity period.
+The free rescheduling entitlement shall be available throughout the applicable programme validity period.
 
 ## Additional Rescheduling
 
@@ -129,7 +129,7 @@ The Provider shall offer a reasonable alternative slot. Any additional reschedul
 
 ## Non-Transferability
 
-All services, programs, appointments, courses, accounts, enrolments and related benefits are **personal to the Receiver and so are non-transferable in nature**.
+All services, programmes, appointments, courses, accounts, enrolments and related benefits are **personal to the Receiver and so are non-transferable in nature**.
 
 The Receiver shall not sell, assign, gift, exchange, share or otherwise transfer an enrolled service, unused session, course access or paid benefit to another person.
 

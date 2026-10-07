@@ -6,6 +6,10 @@
    viewport, so the media query at the foot of this file turns the wrap back into
    a sideways-scrolling box — the page still never scrolls sideways. */
 .cmp-wrap {
+  /* Positioned, so the visually-hidden labels in the cells (position:
+     absolute) are clipped by this box on phones instead of escaping it and
+     stretching the page sideways. */
+  position: relative;
   overflow: visible;
   border: 1px solid var(--color-surface-border);
   border-radius: var(--radius-lg);
@@ -109,20 +113,41 @@
   color: var(--color-text-muted);
 }
 
-/* Narrow screens: the table (min-width 720px) is wider than the viewport, so it
-   has to scroll sideways inside its own box again — the page must never scroll
-   sideways. A scroll container can't also pin its header to the page, so on
-   phones the header returns to sticking at the top of the box while you scroll
-   the comparison. (Desktop keeps the page-level pin above.) */
+/* ---- Phones: one card per program instead of the table ---- */
+.cmp-cards { display: none; }
+
 @media (max-width: 767px) {
-  .cmp-wrap {
-    overflow: auto;
-    max-height: 80vh;
-  }
-  .cmp-table thead th {
-    top: 0;
-  }
+  .cmp-wrap { display: none; }
+  .cmp-cards { display: grid; gap: var(--space-4); }
 }
+
+.cmp-card {
+  border: 1px solid var(--color-surface-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: 20px 18px;
+}
+.cmp-card .cmp-cat { margin: 0; }
+.cmp-card-name { margin: 4px 0 12px; font-size: 20px; }
+.cmp-card-name a { color: var(--color-heading); }
+.cmp-card-details { margin: 0; display: grid; gap: 10px; }
+.cmp-card-details div { display: grid; gap: 2px; }
+.cmp-card-details dt { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); }
+.cmp-card-details dd { margin: 0; font-size: 14.5px; color: var(--color-text); }
+.cmp-card-sub {
+  margin: 18px 0 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-surface-border);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+.cmp-card-list { margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+.cmp-card-list li { display: flex; gap: 8px; align-items: baseline; }
+.cmp-card-yes span[aria-hidden] { color: #16a34a; font-weight: 700; }
+.cmp-card-no { color: var(--color-text-muted); }
+.cmp-card-no span[aria-hidden] { color: var(--crimson); font-weight: 700; }
+.cmp-card-cta { margin-top: 18px; width: 100%; justify-content: center; }
 
 /* Visually hidden but read out — the tick/dash columns need a real word. */
 .sr-only {

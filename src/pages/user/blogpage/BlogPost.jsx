@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react'
 import Markdown from '../../../common_component/user/Markdown/Markdown.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchBlog } from '../../../api/blogs.js'
+import { SkeletonArticle } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -90,7 +91,7 @@ export default function BlogPost() {
   if (loading) {
     return (
       <section className="py-20">
-        <div className="container"><p className="text-center text-brand-slate">Loading article…</p></div>
+        <div className="container"><SkeletonArticle label="Loading the article" /></div>
       </section>
     )
   }
@@ -184,7 +185,7 @@ export default function BlogPost() {
           </h3>
           <p className="mx-auto mt-2 max-w-xl text-brand-slate">
             Start with a 15-minute Model Session — we’ll help you identify what you need and which
-            program fits you.
+            programme fits you.
           </p>
           <Link
             to="/book-online"
@@ -201,7 +202,7 @@ export default function BlogPost() {
             <h2 className="font-display text-2xl font-extrabold tracking-tight text-brand-navy">
               Related reading
             </h2>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
                 <article
                   key={r.slug}

@@ -1,6 +1,9 @@
 /* Booking wizard (/book-online) */
 
 .bo-wrap { max-width: 900px; }
+/* The hero above ends in a wave that already separates the two, so the
+   booking steps start close under it instead of a screen-height gap below. */
+.section.bo-section { padding-top: var(--space-4); padding-bottom: var(--space-5); }
 .bo-card { padding: var(--space-6); }
 .bo-h2 { font-size: 1.15rem; margin-bottom: var(--space-4); }
 .bo-h3 { font-size: 1rem; margin: var(--space-4) 0 var(--space-2); }
@@ -53,7 +56,11 @@
   display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
   flex-wrap: wrap; margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface, #faf7f2); border-radius: 10px;
+  /* A tint strong enough to read on any screen — the old near-white grey
+     showed in screenshots but vanished on a bright display. */
+  background: rgba(47, 122, 229, 0.1);
+  border: 1px solid rgba(47, 122, 229, 0.28);
+  border-radius: 10px;
 }
 .bo-paid-tag { color: var(--color-primary, #2e5d3f); font-weight: 600; font-size: 0.88rem; margin-left: 6px; }
 

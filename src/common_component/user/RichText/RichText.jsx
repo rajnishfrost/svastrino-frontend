@@ -251,7 +251,8 @@ function columnWidths(list) {
 
 /**
  * A table scrolls inside its own box rather than widening the page — salary
- * columns are wide, and a phone is narrow.
+ * columns are wide, and a phone is narrow. Below 640px it stops being a grid
+ * at all: each row becomes a little card of labelled values (.rt-table).
  *
  * Its columns are fixed rather than left to the browser, at the widths
  * columnWidths worked out for the whole document.
@@ -266,7 +267,7 @@ function Table({ data, widths, k }) {
   const sizes = widths?.length === cols ? widths : Array.from({ length: cols }, () => `${100 / cols}%`)
 
   return (
-    <div className="mt-6 overflow-x-auto rounded-xl border border-brand-navy/10">
+    <div className="rt-table mt-6 overflow-x-auto rounded-xl border border-brand-navy/10">
       <table className="w-full min-w-[36rem] table-fixed border-collapse text-left text-sm">
         <colgroup>
           {sizes.map((w, i) => (
@@ -291,7 +292,13 @@ function Table({ data, widths, k }) {
           {body.map((row, r) => (
             <tr key={r} className="border-b border-brand-navy/5 last:border-0">
               {row.map((cell, c) => (
-                <td key={c} className="break-words px-4 py-3 align-top leading-relaxed text-brand-slate">
+                <td
+                  key={c}
+                  // Phones show each row as a stack of "heading / value" pairs
+                  // (see .rt-table in tailwind.css); this is the heading.
+                  data-label={head ? plain(String(head[c] ?? '')) : undefined}
+                  className="break-words px-4 py-3 align-top leading-relaxed text-brand-slate"
+                >
                   <Inline html={cell} k={`${k}-${r}-${c}`} />
                 </td>
               ))}

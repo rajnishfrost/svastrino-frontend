@@ -25,14 +25,14 @@ export default function Welcome() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const offered = !!state?.offerTrial
-  const from = state?.from || '/'
+  const from = state?.from || '/dashboard' // the dashboard opens on what they own
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (loading) return
     if (!user) navigate('/login', { replace: true })
-    else if (!offered) navigate('/', { replace: true })
+    else if (!offered) navigate('/dashboard', { replace: true })
   }, [loading, user, offered, navigate])
 
   const startTrial = async () => {

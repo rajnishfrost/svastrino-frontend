@@ -13,7 +13,7 @@ const FOUNDER_IMG = '/assets/images/founder-rohit-gala.jpg'
 
 const MILESTONES = [
   { year: '2009', title: 'Where It All Began', text: 'Founded by Rohit M. Gala, Svastrino began with 20 students in Mumbai.' },
-  { year: '2014', title: 'Built Long-Term Mentoring', text: "Realised that just career counselling isn't enough, and so crafted the Breakthrough Program." },
+  { year: '2014', title: 'Built Long-Term Mentoring', text: "Realised that just career counselling isn't enough, and so crafted the Breakthrough Programme." },
   { year: '2016', title: 'Our Strongest Media Recognition', text: 'Got featured in The Economic Times 3 times; online services began.' },
   { year: '2017', title: 'Expanded to the Middle East and Africa', text: 'Provided counselling & mentoring across the Asian & African continents.' },
   { year: '2021', title: 'Global Reach', text: 'Provided services to 10,000+ clients in over 22 countries & 4 continents.' },
@@ -22,7 +22,7 @@ const MILESTONES = [
 
 const MEET_ROHIT = [
   'Rohit Gala knows what it feels like to choose a career without guidance. Like many students, he spent years trying different paths before finding the one that fit. He didn’t let that experience go to waste. It became the reason he started Svastrino, with one clear mission — no student should have to struggle the way he did.',
-  'Rohit trained properly for this work. He holds a Diploma in Counselling Psychology and a Master’s in Sociology, which made him one of the few licensed career and education counsellors in India. Within four years, he had built a personalised career mentoring program running across the country.',
+  'Rohit trained properly for this work. He holds a Diploma in Counselling Psychology and a Master’s in Sociology, which made him one of the few licensed career and education counsellors in India. Within four years, he had built a personalised career mentoring programme running across the country.',
   'His understanding of careers didn’t come from books alone. He has spent years talking to professors, corporate leaders, entrepreneurs, and consultants, building a real picture of what different fields actually demand.',
   'He hasn’t stopped learning either. He later completed a Diploma in Introduction to Psychology from Yale University, scoring 97.05%.',
   'Rohit still works the same way he did on day one — understand the student first, and let the career plan follow from that. What drives him now is bigger than one student at a time. He wants a generation that chooses its own path, instead of settling for whatever was expected of them.',
@@ -39,9 +39,9 @@ const TEAM = [
 ]
 
 const SERVICES = [
-  { need: 'For Immediate Career Counselling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
-  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
-  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
+  { need: 'For Immediate Career Counselling', label: "Bull's Eye Programme", to: '/services/bulls-eye' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Programme', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Programme', to: '/services/breakthrough' },
   { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
   { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
@@ -61,7 +61,7 @@ export default function About() {
 
       {/* ---- Our story ---- */}
       <section className="bg-white py-16">
-        <div className="container grid items-start gap-10 lg:grid-cols-[1.5fr_1fr]">
+        <div className="container grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.5fr_1fr]">
           <div>
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
               Our Story
@@ -93,7 +93,7 @@ export default function About() {
       {/* ---- Vision & mission ---- */}
       <section className="bg-soft py-16 md:py-20">
         <div className="container">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="rounded-xl border border-brand-navy/5 bg-white p-7 shadow-sm">
               <h3 className="font-display text-xl font-bold text-brand-navy">Our Mission</h3>
               <p className="mt-3 leading-relaxed text-brand-slate">
@@ -120,11 +120,11 @@ export default function About() {
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy capitalize">
               How we got here!
             </h2>
-            <ul className="mt-8 space-y-6 border-l-2 border-brand-crimson/20">
+            <ul className="mt-8 ml-2 space-y-6 border-0 border-l-2 border-solid border-brand-crimson/20 pl-6">
               {MILESTONES.map((m) => (
                 <li key={m.year} className="relative">
-                  <span className="absolute -left-[1.95rem] top-1 flex size-4 items-center justify-center rounded-full border-2 border-brand-crimson bg-white" />
-                  <div className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="absolute -left-[33px] top-1 flex size-4 border-solid items-center justify-center rounded-full border-2 border-brand-crimson bg-white" />
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-3">
                     <span className="font-display text-lg font-bold text-brand-crimson">{m.year}</span>
                     <span className="font-display text-base font-bold text-brand-navy">{m.title}</span>
                   </div>
@@ -156,7 +156,7 @@ export default function About() {
 
       {/* ---- Meet Rohit Gala ---- */}
       <section className="bg-soft py-16 md:py-20">
-        <div className="container grid items-start gap-10 md:grid-cols-[320px_1fr]">
+        <div className="container grid grid-cols-1 items-start gap-10 md:grid-cols-[320px_1fr]">
           <div>
             <img
               src={FOUNDER_IMG}
@@ -191,13 +191,13 @@ export default function About() {
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-brand-navy">
             Our Team
           </h2>
-          <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:grid-cols-2 md:grid-cols-3">
+          <div className="mx-auto mt-12 grid grid-cols-1 max-w-4xl gap-6 sm:grid-cols-2 md:grid-cols-3">
             {TEAM.map((m) => (
               <div
                 key={m.name}
                 className="flex flex-col items-center rounded-xl border border-brand-navy/5 bg-white p-6 text-center shadow-sm"
               >
-                <div className="flex size-60 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
+                <div className="flex aspect-square w-full max-w-60 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
                   {m.photo ? (
                     <img src={m.photo} alt={m.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
@@ -233,7 +233,7 @@ export default function About() {
               // read as a distinct sub-brand from the crimson Svastrino services.
               const isNirmaan = r.to.startsWith('/skill-build')
               return (
-                <li key={r.to} className="flex flex-wrap items-center justify-between gap-3 py-4">
+                <li key={r.to} className="flex flex-col items-start gap-2 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <span className={isNirmaan ? 'text-nirmaan-brown' : 'text-brand-navy'}>{r.need}</span>
                   <Link
                     to={r.to}

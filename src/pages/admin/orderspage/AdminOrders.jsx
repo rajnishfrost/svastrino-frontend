@@ -4,6 +4,7 @@ import '../adminShared.css'
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import { openInvoice } from '../../../utils/invoice.js'
 import CopyLink from '../../../common_component/admin/CopyLink/CopyLink.jsx'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * What each stored status means, in the words someone reading a table would
@@ -65,7 +66,7 @@ export default function AdminOrders() {
       </div>
 
       {error && <p className="adm-error">{error}</p>}
-      {!orders ? <p className="adm-empty">Loading…</p> : orders.length === 0 ? (
+      {!orders ? <SkeletonTable /> : orders.length === 0 ? (
         <p className="adm-empty">No orders.</p>
       ) : (
         <div className="adm-panel adm-table-wrap">

@@ -4,6 +4,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchPrograms, fetchProgram, fetchTestimonials } from '../../../api/content.js'
 import './Mentoring.css'
+import { SkeletonCards, SkeletonLines } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 export default function Mentoring() {
   const [programs, setPrograms] = useState([])
@@ -61,16 +62,16 @@ export default function Mentoring() {
       <PageHero
         eyebrow="Mentoring"
         title="1-on-1 Career Mentoring"
-        subtitle="Personalised career mentoring programs — choose the depth of guidance that fits your moment."
+        subtitle="Personalised career mentoring programmes — choose the depth of guidance that fits your moment."
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
       </PageHero>
 
       <section className="section">
         <div className="container mentoring-list">
-          {loading && <p className="mentoring-state">Loading programs…</p>}
+          {loading && <SkeletonCards count={3} media={false} label="Loading programmes" />}
           {error && !loading && (
-            <ConnectionState error={error} onRetry={retry} label="the programs" />
+            <ConnectionState error={error} onRetry={retry} label="the programmes" />
           )}
 
           {!loading && !error && programs.map((p) => {
@@ -106,13 +107,13 @@ export default function Mentoring() {
 
                   {open && (
                     <div className="mentoring-detail">
-                      {!detail && <p className="mentoring-state">Loading details…</p>}
+                      {!detail && <div className="skel"><SkeletonLines lines={4} /></div>}
 
                       {detail && (
                         <>
                           {detail.chooseIf?.length > 0 && (
                             <div className="mentoring-detail-block">
-                              <h4>Choose this program if…</h4>
+                              <h4>Choose this programme if…</h4>
                               <ul>
                                 {detail.chooseIf.map((c, i) => <li key={i}>{c}</li>)}
                               </ul>
@@ -121,7 +122,7 @@ export default function Mentoring() {
 
                           {detail.journey?.length > 0 && (
                             <div className="mentoring-detail-block">
-                              <h4>Program journey</h4>
+                              <h4>Programme journey</h4>
                               <ol className="mentoring-journey">
                                 {detail.journey.map((s, i) => (
                                   <li key={i}>
@@ -166,7 +167,7 @@ export default function Mentoring() {
             <h3>Not sure which to pick?</h3>
             <p>
               Start with the 15-minute <strong>Model Session</strong> — we’ll identify what you need
-              and point you to the right program.
+              and point you to the right programme.
             </p>
             <Link to="/book-online" className="btn btn-primary">Book a Model Session</Link>
           </div>

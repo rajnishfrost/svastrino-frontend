@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
+import { SkeletonList } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * Which Skill-Build courses an organisation sponsors for every student it
@@ -49,7 +50,7 @@ export default function SponsoredCoursePicker({
       {error && <p className="adm-error">{error}</p>}
       {fieldError && <p className="adm-error">{fieldError}</p>}
       {!catalog ? (
-        <p className="adm-sub" style={{ margin: 0 }}>Loading courses…</p>
+        <SkeletonList rows={3} label="Loading courses" />
       ) : catalog.length === 0 ? (
         <p className="adm-sub" style={{ margin: 0 }}>No live course packages to offer.</p>
       ) : (

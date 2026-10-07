@@ -11,7 +11,7 @@ const POINTS = [
   "Youth-Focused Life & Career Development Course",
   "24 Videos with Real-Life Concepts & Examples",
   "Weekly Resource PDF with Extra Depth on Each Topic",
-  "Daily 10-Minute Tasks to Build Habits, Mindsets & Skills",
+  "Daily 15-Minute Tasks to Build Habits, Mindsets & Skills",
   "Learn at Your Own Pace ",
   "Find a ‘New You’ Through the Course",
 ]
@@ -43,7 +43,7 @@ export default function NirmaanHighlight() {
     <section className="bg-white py-20 md:py-24">
       <div className="container">
         <div className="relative overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-nirmaan-cream">
-          <div className="relative grid items-center gap-8 p-8 md:grid-cols-[1.6fr_0.9fr] md:p-12">
+          <div className="relative grid grid-cols-1 items-center gap-8 p-8 md:grid-cols-[1.6fr_0.9fr] md:p-12">
             {/* Body — on mobile it sits BELOW the art (column-reverse); on md+ it
                 takes the left column of the normal row. */}
             <div className="order-2 md:order-1">
@@ -70,7 +70,7 @@ export default function NirmaanHighlight() {
 
               {/* Hidden, not removed, while the standing loads — so the free-trial
                   button never flashes up for a student who already has the course. */}
-              <div className={`mt-7 flex flex-col gap-3 sm:flex-row ${standing === undefined ? 'invisible' : ''}`}>
+              <div className={`mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap [&>a]:whitespace-nowrap ${standing === undefined ? 'invisible' : ''}`}>
                 <Link
                   to={primary.to}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-nirmaan-green px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark"

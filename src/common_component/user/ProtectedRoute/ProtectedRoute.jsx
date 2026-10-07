@@ -1,6 +1,7 @@
 import { Navigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
 import { isPanelOnly, NO_PORTAL_MESSAGE } from '../../../utils/portalAccess.js'
+import { SkeletonSection, SkeletonCards } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * The gate on the student portal — the dashboard, a course, a checkout.
@@ -26,7 +27,7 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation()
 
   if (loading) {
-    return <div className="container" style={{ padding: '80px 0' }}>Loading…</div>
+    return <SkeletonSection><SkeletonCards count={3} media={false} /></SkeletonSection>
   }
 
   if (!user) {

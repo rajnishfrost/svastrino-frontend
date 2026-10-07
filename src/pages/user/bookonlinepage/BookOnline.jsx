@@ -24,10 +24,11 @@ import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import './BookOnline.css'
 import PageSeo from '../../../seo/PageSeo.jsx'
 import { useNirmaanStanding } from '../../../hooks/useNirmaanStanding.js'
+import { Bone, SkeletonCards } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Counselling & mentoring booking wizard. Four steps (as per spec):
- *   1 Date & time  → month calendar (T+3 … +2 months) + 2-hour slot picker
+ *   1 Date & time  → month calendar (T+3 … +2 months) + 2.5-hour slot picker
  *   2 Your details → account (guest auto-account) + coupon + fees
  *   3 Verify       → full summary before committing
  *   4 Payment      → existing payments stack (quote → order → verify), then the
@@ -165,9 +166,11 @@ export default function BookOnline() {
     fetchMyMentoring().then(setMine).catch(() => setMine([]))
   }, [user])
 
-  // Prefill details from the account.
+  // Prefill details from the account — and empty them again on sign-out, so
+  // the next person at this computer doesn't see them.
   useEffect(() => {
     if (user) setDetails({ name: user.name || '', email: user.email || '', phone: user.phone || '' })
+    else setDetails({ name: '', email: '', phone: '' })
   }, [user])
 
   // No program chosen yet → program picker first.
@@ -432,12 +435,12 @@ export default function BookOnline() {
       <PageSeo />
       <PageHero
         eyebrow="Book Online"
-        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
+        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Programme, Now!'}
         // subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
-        subtitle="Select the program that you would want to book a personalised session for"
+        subtitle="Select the programme that you would want to book a personalised session for"
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
-      <section className="section">
+      <section className="section bo-section">
         <div className="container bo-wrap">
 
           {/* One Back out of the wizard, in the same place on every step, so
@@ -447,7 +450,7 @@ export default function BookOnline() {
           {step !== 'program' && step !== 'success' && !rescheduleId && (
             <button type="button" className="bo-back" onClick={backToPrograms}>
               <ArrowLeft className="size-4" aria-hidden />
-              Back to programs
+              Back to programmes
             </button>
           )}
 
@@ -475,8 +478,8 @@ export default function BookOnline() {
               another — which is the worst kind of bug to find out about at a
               payment screen. */}
           {step === 'program' && (
-            <div className="grid items-stretch gap-6 md:grid-cols-3">
-              {programs == null ? <p>Loading programs…</p> : programs.map((p) => {
+            <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+              {programs == null ? <div style={{ gridColumn: '1 / -1' }}><SkeletonCards count={3} media={false} minWidth={240} label="Loading programmes" /></div> : programs.map((p) => {
                 const byCall = p.buyMode === 'expert-call'
                 return (
                   <div
@@ -500,7 +503,7 @@ export default function BookOnline() {
                     <div className="mt-5 border-y border-brand-navy/10 py-4">
                       <span className="font-display text-3xl font-extrabold text-brand-navy">{paiseInr(p.price)}</span>
                       {/* <span className="ml-1 text-sm text-brand-slate">
-                        one-time · {p.sessions} session{p.sessions > 1 ? 's' : ''} × 2 hrs
+                        one-time · {p.sessions} session{p.sessions > 1 ? 's' : ''} × {fmtHrs(p.sessionMins)}
                       </span> */}
                     </div>
 
@@ -544,14 +547,14 @@ export default function BookOnline() {
             <div className="bo-selected">
               <div>
                 <strong>{program.name}</strong>
-                <span className="bo-muted"> · {program.sessions} sessions × 2 hrs</span>
+                <span className="bo-muted"> · {program.sessionsShort || `${program.sessions} ${program.sessions === 1 ? 'session' : 'sessions'} × ${fmtHrs(program.sessionMins)}`}</span>
                 {isFree
-                  ? <span className="bo-paid-tag">Program purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
+                  ? <span className="bo-paid-tag">Programme purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
                   : <span className="bo-muted"> · {paiseInr(program.price)}</span>}
               </div>
               {!rescheduleId && (
                 <button type="button" className="bo-link" onClick={backToPrograms}>
-                  Change program
+                  Change programme
                 </button>
               )}
             </div>
@@ -591,7 +594,7 @@ export default function BookOnline() {
                 <h2 className="bo-h2">Pick a date</h2>
                 {win && month
                   ? <Calendar win={win} month={month} setMonth={setMonth} selected={date} onPick={pickDate} />
-                  : <p>Loading calendar…</p>}
+                  : <div className="skel" style={{ padding: '8px 0' }}><Bone h={300} style={{ borderRadius: 12 }} /></div>}
                 <p className="bo-hint">
                   Bookings open 3 days ahead · Sundays till 1 PM only · Mondays closed.
                 </p>
@@ -717,10 +720,10 @@ export default function BookOnline() {
             <div className="card bo-card bo-verify">
               <h2 className="bo-h2">Verify your booking</h2>
               <div className="bo-lines">
-                <Line label="Program" value={program.name} />
+                <Line label="Programme" value={program.name} />
                 {sessionNo && <Line label="Session" value={`${sessionNo} of ${program.sessions}`} />}
                 <Line label="Date" value={fmtLong(date)} />
-                <Line label="Time" value={`${fmt12(slot)} – ${fmt12(addHM(slot, 120))} (2 hrs)`} />
+                <Line label="Time" value={`${fmt12(slot)} – ${fmt12(addHM(slot, program.sessionMins || 150))} (${fmtHrs(program.sessionMins)})`} />
                 <Line label="Name" value={details.name} />
                 <Line label="Email" value={details.email} />
                 {details.phone && <Line label="Phone" value={details.phone} />}
@@ -751,7 +754,7 @@ export default function BookOnline() {
               amount={inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}
               onRetry={() => { setPayFailed(''); openCashfree(order) }}
               backTo={`/services/${program.slug}`}
-              backLabel="Back to the program"
+              backLabel="Back to the programme"
             />
           )}
 
@@ -795,7 +798,7 @@ export default function BookOnline() {
               <div className="bo-tick" aria-hidden>✓</div>
               <h2>{rescheduleId ? 'Session rescheduled' : 'Session booked'}</h2>
               <div className="bo-lines">
-                <Line label="Program" value={program?.name || booking.programSku} />
+                <Line label="Programme" value={program?.name || booking.programSku} />
                 <Line label="Session" value={`${booking.sessionNumber} of ${program?.sessions ?? '—'}`} />
                 <Line label="When" value={`${fmtLong(date)} · ${fmt12(slot)} – ${fmt12(addHM(slot, 120))}`} />
                 {receipt && <Line label="Payment" value={`${inr(receipt.amountInr)} · receipt ${receipt.receiptNo}`} />}
@@ -822,7 +825,7 @@ export default function BookOnline() {
       {/* Cross-sell to the Nirmaan skill-build course — kept in its own green
           Nirmaan theme so it reads as a distinct, related offering rather than
           another mentoring program. */}
-      <section className="bg-white py-14 md:py-16">
+      <section className="bg-white pb-14 pt-6 md:pb-16">
         <div className="container">
           <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] bg-nirmaan-cream p-8 md:p-10">
             {/* A flat tinted circle hung off the corner, cropped by the card.
@@ -882,6 +885,12 @@ export default function BookOnline() {
 /* ---------- small pieces ---------- */
 
 // 'HH:MM' + minutes → 'HH:MM'
+/** A session length for people: 150 → "2.5 hrs", 120 → "2 hrs". */
+function fmtHrs(mins = 150) {
+  const h = mins / 60
+  return `${Number.isInteger(h) ? h : h.toFixed(1)} hrs`
+}
+
 function addHM(hm, mins) {
   const [h, m] = String(hm).split(':').map(Number)
   const t = h * 60 + m + mins
@@ -897,7 +906,7 @@ function FeeLines({ program, quote, isFree }) {
   if (isFree) {
     return (
       <div className="bo-lines">
-        <div className="bo-line"><span>Program fee</span><span>Already paid ✓</span></div>
+        <div className="bo-line"><span>Programme fee</span><span>Already paid ✓</span></div>
         <div className="bo-total"><span>Payable now</span><span>{inr(0)}</span></div>
       </div>
     )
@@ -905,7 +914,7 @@ function FeeLines({ program, quote, isFree }) {
   if (quote) {
     return (
       <div className="bo-lines">
-        <div className="bo-line"><span>Program fee</span>
+        <div className="bo-line"><span>Programme fee</span>
           <span className={quote.earlyBirdApplied ? 'bo-strike' : ''}>{inr(quote.rupees.listPrice)}</span></div>
         {quote.earlyBirdApplied && (
           <div className="bo-line"><span>Early bird</span>
@@ -922,7 +931,7 @@ function FeeLines({ program, quote, isFree }) {
   }
   return (
     <div className="bo-lines">
-      <div className="bo-line"><span>Program fee</span><span>{paiseInr(program.price)}</span></div>
+      <div className="bo-line"><span>Programme fee</span><span>{paiseInr(program.price)}</span></div>
       <div className="bo-total"><span>Payable now</span><span>{paiseInr(program.price)}</span></div>
       <p className="bo-hint">One payment covers all {program.sessions} sessions — later sessions are booked free.</p>
     </div>

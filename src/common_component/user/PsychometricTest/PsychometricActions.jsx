@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { api } from '../../../api/client.js'
 import TestDetailsModal from './TestDetailsModal.jsx'
 import GuideVideoModal from './GuideVideoModal.jsx'
@@ -175,9 +176,18 @@ export default function PsychometricActions({ product, assessment, onChange, onF
     } finally { setBusy(false) }
   }
 
+  // The pop-ups and the loader are full-screen layers (position: fixed), but
+  // this component is drawn inside cards — and a card that lifts on hover
+  // (.card:hover { transform }) turns into the box a fixed child is measured
+  // against. The overlay then shrank into the card, the mouse left it, the
+  // card dropped, the overlay filled the screen again under the mouse… a
+  // flicker that only stopped when the mouse moved. Rendering them straight
+  // into <body> means no card can ever trap them.
+  const toBody = (node) => createPortal(node, document.body)
+
   return (
     <>
-      {guide && (
+      {guide && toBody(
         <GuideVideoModal
           src={guides[guide] || null}
           steps={GUIDE_STEPS[guide]}
@@ -195,7 +205,7 @@ export default function PsychometricActions({ product, assessment, onChange, onF
         />
       )}
 
-      {askDetails && (
+      {askDetails && toBody(
         <TestDetailsModal
           needs={assessment?.needs || []}
           onSaved={detailsSaved}
@@ -206,7 +216,7 @@ export default function PsychometricActions({ product, assessment, onChange, onF
       {/* Only in API mode, where the click waits on the test site and then
           leaves this one. In handoff mode the click is instant and opens a new
           tab, so a loader would only flash. */}
-      {opening && apiMode && (
+      {opening && apiMode && toBody(
         <div className="ptest-load" role="status" aria-live="polite">
           <div className="ptest-load-panel">
             <div className="ptest-load-spinner" aria-hidden />

@@ -1,0 +1,154 @@
+/* =====================================================================
+   Skeleton loaders — one look for every "waiting for data" state on the
+   site, user pages and admin alike. Plain CSS on purpose: Tailwind is only
+   compiled for some folders, and these have to work everywhere.
+
+   Two rules make a load feel smooth rather than glitchy:
+   1. The skeleton is laid out at once (so nothing below it jumps) but stays
+      invisible for the first ~200ms. A fast response swaps straight to the
+      real page and the visitor never sees a placeholder flash.
+   2. When it does show, it fades in, and bones shimmer gently instead of
+      blinking.
+   ===================================================================== */
+
+.skel {
+  --skel-base: rgba(15, 44, 92, 0.13);
+  --skel-shine: rgba(15, 44, 92, 0.05);
+  animation: skel-in 0.25s ease-out 0.2s both;
+}
+/* On a dark band (the navy page hero) bones are light instead. */
+.skel--on-dark {
+  --skel-base: rgba(255, 255, 255, 0.16);
+  --skel-shine: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes skel-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.skel-bone {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--skel-base, rgba(15, 44, 92, 0.13)) 25%, var(--skel-shine, rgba(15, 44, 92, 0.05)) 50%, var(--skel-base, rgba(15, 44, 92, 0.13)) 75%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+}
+.skel-bone--round { border-radius: 999px; }
+.skel-bone--circle { border-radius: 50%; flex: none; }
+
+@keyframes skel-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+/* ---- text ---- */
+.skel-text { display: flex; flex-direction: column; gap: 10px; }
+.skel-text .skel-bone { height: 12px; }
+
+/* ---- page hero: sits inside the real .page-hero band so height matches ---- */
+.skel-hero { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.skel-hero .skel-bone { max-width: 100%; }
+
+/* ---- card grid ---- */
+.skel-cards {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--skel-card-min, 280px)), 1fr));
+}
+.skel-card {
+  border: 1px solid rgba(15, 44, 92, 0.14);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 44, 92, 0.04);
+}
+.skel-card-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ---- list rows ---- */
+.skel-list { display: flex; flex-direction: column; gap: 12px; }
+.skel-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(15, 44, 92, 0.08);
+  border-radius: 12px;
+  background: #fff;
+}
+.skel-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* ---- table ---- */
+.skel-table {
+  border: 1px solid rgba(15, 44, 92, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.skel-table-row {
+  display: grid;
+  grid-template-columns: repeat(var(--skel-cols, 4), minmax(0, 1fr));
+  gap: 16px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(15, 44, 92, 0.06);
+}
+.skel-table-row:first-child { border-top: 0; background: rgba(15, 44, 92, 0.03); }
+.skel-table-row .skel-bone { height: 12px; }
+/* Phones: a table becomes a stack of two-column rows, like the real ones. */
+@media (max-width: 640px) {
+  .skel-table-row { grid-template-columns: 1fr 1fr; }
+  .skel-table-row > :nth-child(n + 3) { display: none; }
+}
+
+/* ---- article / detail page ---- */
+.skel-article { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+/* ---- form ---- */
+.skel-form { display: flex; flex-direction: column; gap: 18px; max-width: 560px; }
+.skel-field { display: flex; flex-direction: column; gap: 8px; }
+
+/* ---- page section wrapper (vertical rhythm like a real section) ---- */
+.skel-section { padding: 48px 0; }
+@media (max-width: 640px) { .skel-section { padding: 32px 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
+  .skel-bone { animation: none; }
+}
+
+/* Visually hidden "Loading…" for screen readers (own copy: Tailwind's
+   sr-only isn't compiled for every folder). */
+.skel-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* A deliberate hold (RouteHold, page changes): the skeleton is meant to be seen, so it
+   shows at once instead of waiting out the anti-flash delay. */
+.skel--now { animation: skel-in 0.15s ease-out both; }
+.skel--now .skel { animation: none; }
+
+/* ---- split hero (light band, copy left + figure right) ---- */
+.skel-split-copy { display: flex; flex-direction: column; gap: 14px; }
+.skel-split-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.skel-split-figure { display: flex; justify-content: center; }
+@media (max-width: 899px) {
+  .skel-split-copy { align-items: center; }
+  .skel-split-actions { justify-content: center; }
+}
+
+/* ---- dashboard (title + sidebar + panel), mirrors Dashboard.jsx's grid (lg = 900px) ---- */
+.skel-dash-head { padding-bottom: 24px; border-bottom: 1px solid rgba(15, 44, 92, 0.1); }
+.skel-dash-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin-top: 32px; }
+.skel-dash-nav { display: flex; gap: 6px; overflow: hidden; }
+@media (min-width: 900px) {
+  .skel-dash-grid { grid-template-columns: 224px minmax(0, 1fr); }
+  .skel-dash-nav { flex-direction: column; }
+}

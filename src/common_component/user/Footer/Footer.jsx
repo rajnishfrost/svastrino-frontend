@@ -13,10 +13,17 @@ const COLUMNS = [
       { label: "Bull's Eye", to: '/services/bulls-eye' },
       { label: 'Bloom', to: '/services/bloom' },
       { label: 'Breakthrough', to: '/services/breakthrough' },
-      { label: 'Nirmaan', to: '/skill-build/nirmaan' },
-      { label: 'Compare programs', to: '/services/compare' },
+      { label: 'Compare programmes', to: '/services/compare' },
       { label: 'Book Online', to: '/book-online' },
     ],
+    // A second list stacked under Services in the same column.
+    below: {
+      title: 'Skill-Build',
+      links: [
+        { label: 'Nirmaan', to: '/skill-build/nirmaan' },
+        { label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
+      ],
+    },
   },
   {
     title: 'Explore',
@@ -84,9 +91,9 @@ export default function Footer() {
   return (
     <footer className="mt-auto bg-brand-navy-dark text-white/70">
       <div className="container py-14">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
-          {/* Brand */}
-          <div>
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+          {/* Brand — its own row on phones and tablets, a column from 900px */}
+          <div className="sm:col-span-2 md:col-span-4 lg:col-span-1">
             <Link to="/" className="inline-flex rounded-[5px] bg-white p-2">
               <img src="/logo.png" alt="Svastrino Consultancy Services" className="w-full h-auto" />
               {/* <img src="/svastrino-icon-t.png" alt="Svastrino Consultancy Services" className="w-full" /> */}
@@ -98,26 +105,30 @@ export default function Footer() {
           </div>
 
           {columns.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-sm font-semibold uppercase tracking-wide text-white">
-                {col.title}
-              </h4>
-              <ul className="mt-4 space-y-2.5 text-sm">
-                {col.links.map((l) => (
-                  <li key={l.to + l.label}>
-                    <Link to={l.to} className="transition-colors hover:text-white">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <div key={col.title} className="space-y-8">
+              {[col, col.below].filter(Boolean).map((group) => (
+                <div key={group.title}>
+                  <h4 className="text-sm font-semibold uppercase tracking-wide text-white">
+                    {group.title}
+                  </h4>
+                  <ul className="mt-4 space-y-2.5 text-sm">
+                    {group.links.map((l) => (
+                      <li key={l.to + l.label}>
+                        <Link to={l.to} className="transition-colors hover:text-white">
+                          {l.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           ))}
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs sm:flex-row">
           <span>© {year} Svastrino. All rights reserved.</span>
-          <span className="flex gap-5">
+          <span className="flex flex-wrap justify-center gap-x-5 gap-y-2 whitespace-nowrap">
             <Link to="/legal/terms-of-use" className="hover:text-white">
               Terms of Use
             </Link>

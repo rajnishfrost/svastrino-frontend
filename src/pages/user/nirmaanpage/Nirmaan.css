@@ -372,7 +372,7 @@
 #how .nirmaan-step-n,
 
 /* ---- Responsive ---- */
-@media (max-width: 900px) {
+@media (max-width: 899px) {
   .nirmaan-hero-inner {
     grid-template-columns: 1fr;
     text-align: center;

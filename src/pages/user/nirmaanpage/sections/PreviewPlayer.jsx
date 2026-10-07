@@ -48,6 +48,8 @@ const fmt = (s) => {
 
 export default function PreviewPlayer({
   src, start, end, fullSeconds = 0, ctaHref = '#free-trial',
+  // A still from the lesson, shown on the card before it is played.
+  poster = null,
   // Theatre mode is the SECTION's to arrange — it is a change of layout, not
   // of this player. Passing a handler is what puts the button in the bar.
   theatre = false, onTheatre = null,
@@ -196,7 +198,8 @@ export default function PreviewPlayer({
     >
       <video
         ref={videoRef}
-        className="h-full w-full"
+        className="h-full w-full object-cover"
+        poster={poster || undefined}
         playsInline
         // MSE path: hls.js attaches a MediaSource and `autoStartLoad: false` is what
         // keeps the network quiet, so preload can stay default — "none" can stop the
@@ -232,12 +235,19 @@ export default function PreviewPlayer({
           type="button"
           onClick={togglePlay}
           className={`${BARE} absolute inset-0 flex flex-col items-center justify-center gap-3 bg-nirmaan-brown text-white transition-colors hover:bg-nirmaan-brown-soft`}
+          // The lesson's own still under a soft brown wash, so the card shows
+          // what the video is while the play button and label stay readable.
+          style={poster ? {
+            backgroundImage: `linear-gradient(rgba(59, 40, 34, 0.30), rgba(59, 40, 34, 0.60)), url(${poster})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : undefined}
           aria-label="Play the free preview"
         >
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/30">
+          <span className={`flex h-14 w-14 items-center justify-center rounded-full text-white ring-1 ring-white/40 ${poster ? 'bg-black/45' : 'bg-white/15'}`}>
             <IconPlay className="h-6 w-6" />
           </span>
-          <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
+          <span className={`text-xs font-semibold uppercase tracking-wide ${poster ? 'rounded-full bg-black/45 px-3 py-1 text-white' : 'text-white/80'}`}>
             Free preview · {fmt(end - start)} of {fmt(fullSeconds)}
           </span>
         </button>

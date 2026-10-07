@@ -12,6 +12,7 @@ import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
 import PsychometricReady from './sections/PsychometricReady.jsx'
 import './Learn.css'
+import { SkeletonArticle } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Course player (SRS §4.3). Drip-scheduled: the student clicks Start (consent),
@@ -523,7 +524,7 @@ export default function Learn() {
     return <CourseExpired course={course} user={user} slug={slug} />
   }
   if (err) return <section className="section"><div className="container learn-wrap"><p className="learn-err">{err.message}</p></div></section>
-  if (!course) return <section className="section"><div className="container learn-wrap"><p>Loading course…</p></div></section>
+  if (!course) return <section className="section"><div className="container learn-wrap"><SkeletonArticle label="Loading the course" /></div></section>
 
   // ---- The year is up → their record, not the player ----
   // The server has already shut the videos and the tasks by this point, so

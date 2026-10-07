@@ -19,7 +19,7 @@
  */
 export const PROGRAM_JOURNEYS = {
   'bulls-eye': {
-    subtitle: "Our Bull's Eye Program provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
+    subtitle: "Our Bull's Eye Programme provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
     stages: [
       {
         title: 'Pre-session',
@@ -95,7 +95,7 @@ export const PROGRAM_JOURNEYS = {
           {
             points: [
               'Analysis of your background, academics, and personal development so far',
-              'Organising all details for the planned personalised mentoring program',
+              'Organising all details for the planned personalised mentoring programme',
             ],
           },
         ],
@@ -160,7 +160,7 @@ export const PROGRAM_JOURNEYS = {
   },
 
   breakthrough: {
-    subtitle: "Our Breakthrough Program is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
+    subtitle: "Our Breakthrough Programme is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
     stages: [
       {
         title: 'Pre-session',
@@ -169,7 +169,7 @@ export const PROGRAM_JOURNEYS = {
           {
             points: [
               'Knowing your background, academics, and personal development so far',
-              'Organising all details for the planned personalised mentoring program',
+              'Organising all details for the planned personalised mentoring programme',
             ],
           },
         ],
@@ -311,15 +311,15 @@ export const PROGRAM_JOURNEYS = {
 
 export const PROGRAM_HERO = {
   'bulls-eye': {
-    title: "Bull's Eye Program",
+    title: "Bull's Eye Programme",
     tagline: "Get a quick yet accurate solution for your career confusion.\n\rTrusted by 14k students over 17+ years."
   },
   'bloom': {
-    title: "Bloom Program",
+    title: "Bloom Programme",
     tagline: "Cultivate a visionary mindset and set goals for a bright future.\n\rTrusted by 500+ students."
   },
   'breakthrough': {
-    title: "Breakthrough Program",
+    title: "Breakthrough Programme",
     tagline: "Ace the art of self-discipline and evolve into an enterprising leader.\n\rTrusted by 290+ students."
   }
 }
@@ -367,7 +367,7 @@ export const PROGRAM_BENEFITS = {
  */
 export const PROGRAM_JOURNEYS_2 = {
   'bulls-eye': {
-    subtitle: "Our Bull's Eye Program provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
+    subtitle: "Our Bull's Eye Programme provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
     stages: [
       {
         title: 'Pre-Session - Stage 1',
@@ -402,7 +402,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             title: "Streamlining Your Goals",
             points: [
-              "Clarifying and prioritizing your ideas and ambitions",
+              "Clarifying and prioritising your ideas and ambitions",
               "Building a long-term vision for career success",
             ],
           },
@@ -451,7 +451,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             points: [
               "Analysis of your background, academics, and personal development so far",
-              "Organising all details for the planned personalised mentoring program",
+              "Organising all details for the planned personalised mentoring programme",
             ],
           },
         ],
@@ -515,12 +515,12 @@ export const PROGRAM_JOURNEYS_2 = {
       // "+ Weekly follow-ups & support throughout the program",
       "Pre-session of 90 minutes",
       "3 sessions of about 2.5 hours each",
-      "Weekly follow-ups and support throughout the program"
+      "Weekly follow-ups and support throughout the programme"
     ],
   },
 
   breakthrough: {
-    subtitle: "Our Breakthrough Program is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
+    subtitle: "Our Breakthrough Programme is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
     stages: [
       {
         title: 'Pre-Session - Stage 1',
@@ -529,7 +529,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             points: [
               "Understanding your background, academics, and personal development so far",
-              "Organising all the details for the planned personalised mentoring program",
+              "Organising all the details for the planned personalised mentoring programme",
             ],
           },
         ],
@@ -580,7 +580,7 @@ export const PROGRAM_JOURNEYS_2 = {
               "Reflecting changes in your attitude, thinking, and purpose",
               "Driving final clarity and alignment to your life and career goals",
               "Blueprint connecting your core to your future life and career needs",
-              "Personalized 5-year mentoring plan to guide your journey ahead",
+              "Personalised 5-year mentoring plan to guide your journey ahead",
             ],
           },
         ],

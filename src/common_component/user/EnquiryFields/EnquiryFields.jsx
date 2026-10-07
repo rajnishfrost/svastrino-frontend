@@ -159,6 +159,22 @@ export function useEnquiryForm(user, initial = {}) {
   // Keyed on the values rather than the user object: the object is replaced on
   // every profile refresh while what it carries usually has not changed.
   const touched = useRef({})
+  // Signing out empties the form. Everything in it came from, or was typed
+  // under, the account that just left — on a shared computer the next person
+  // must not find the last one's name, email and number waiting for them.
+  const hadUser = useRef(!!user)
+  useEffect(() => {
+    if (user) { hadUser.current = true; return }
+    if (!hadUser.current) return // never signed in: nothing of theirs to clear
+    hadUser.current = false
+    touched.current = {}
+    setValues({ ...BLANK, ...initial })
+    setFromAccount({})
+    setRevealed({})
+    setErrors({})
+    setSubmitted(false)
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (!user) return
     const mine = (key, fromUser) => (touched.current[key] ? null : fromUser || null)

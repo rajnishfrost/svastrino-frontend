@@ -16,8 +16,8 @@ import { ClipboardCheck, MessageSquare, Compass, Rocket } from 'lucide-react'
  */
 const STEPS = [
   { title: 'Choose Your Test', text: 'Select the assessment based on your class and career stage.', Icon: ClipboardCheck },
-  { title: 'Take the Assessment', text: 'Answer each question honestly; there are no right or wrong answers.', Icon: MessageSquare },
-  { title: 'Understand Your Profile', text: 'Get clear insights into your interests, strengths, and suitable directions.', Icon: Compass },
+  { title: 'Take the Assessment', text: 'Read the PDF guide on how to take the test, then answer each question honestly.', Icon: MessageSquare },
+  { title: 'Understand Your Profile', text: 'Get clear insights into your interests & suitable directions through your report.', Icon: Compass },
   { title: 'Explore Your Options', text: 'Use your results to explore streams, subjects, and career paths with confidence.', Icon: Rocket },
 ]
 

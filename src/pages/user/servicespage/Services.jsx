@@ -84,17 +84,17 @@ export default function Services() {
         illustration={<ProgramHeroArt src="/assets/images/all-services-t.png" alt="" />}
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
-        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programs</Link>
+        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programmes</Link>
       </PageHero>
 
-      <section className="bg-white py-16">
+      <section className="bg-white pb-16 pt-4 sm:pt-16">
         <div className="container">
           {loading && (
             // Three card-shaped blocks, so the page keeps its height and the
             // testimonials below it do not jump when the programs land.
-            <div className="grid gap-6 md:grid-cols-3" aria-hidden>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" aria-hidden>
               {[0, 1, 2].map((i) => (
-                <div key={i} className="animate-pulse rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+                <div key={i} className="animate-skeleton rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
                   <div className="size-12 rounded-xl bg-brand-navy/5" />
                   <div className="mt-4 h-3 w-28 rounded bg-brand-navy/5" />
                   <div className="mt-2 h-5 w-44 rounded bg-brand-navy/10" />
@@ -110,7 +110,7 @@ export default function Services() {
 
           {!loading && list.length === 0 && (
             <p className="text-center text-sm text-brand-slate">
-              The programs could not be loaded just now.{' '}
+              The programmes could not be loaded just now.{' '}
               <button
                 type="button"
                 onClick={() => window.location.reload()}
@@ -121,7 +121,7 @@ export default function Services() {
             </p>
           )}
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {groups.flatMap((g) => g.programs).map((p) => {
                 // Breakthrough is the flagship long-term program — give it a
                 // crimson frame + elevated, scaled-up card so it stands out
@@ -153,7 +153,7 @@ export default function Services() {
                     <div className="mt-6 flex flex-col justify-end gap-2.5 sm:flex-row">
                       <Link
                         to={`/services/${p.slug}`}
-                        className="inline-flex h-10 flex-1 items-center justify-center rounded-lg bg-brand-crimson px-4 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
+                        className="inline-flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-brand-crimson px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark"
                       >
                         View Details
                       </Link>
@@ -166,7 +166,7 @@ export default function Services() {
                             ? `/services/${p.slug}#talk-to-an-expert`
                             : p.bookingSku ? `/book-online?program=${p.bookingSku}` : '/book-online'
                         }
-                        className="inline-flex h-10 flex-1 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-4 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
+                        className="inline-flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-full border-2 border-solid border-brand-navy/20 bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                       >
                         {p.expertEnquiry ? 'Talk to an Expert' : 'Book Now'}
                       </Link>

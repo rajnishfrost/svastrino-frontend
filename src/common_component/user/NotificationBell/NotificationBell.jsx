@@ -51,7 +51,7 @@ function timeAgo(iso) {
  * a student on a train with no signal still gets a working navbar and a bell
  * that simply shows whatever it last managed to load.
  */
-export default function NotificationBell({ onNavigate }) {
+export default function NotificationBell({ onNavigate, onOpen }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
   const [unread, setUnread] = useState(0)
@@ -140,7 +140,12 @@ export default function NotificationBell({ onNavigate }) {
         aria-expanded={open}
         aria-controls="nav-notif-panel"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications, none unread'}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          // Opening the list closes the phone menu, which would otherwise be
+          // drawn over it (the bell sits beside the menu button there).
+          if (!open) onOpen?.()
+          setOpen((v) => !v)
+        }}
       >
         <BellIcon />
         <span className="nav-notif-label">Notifications</span>

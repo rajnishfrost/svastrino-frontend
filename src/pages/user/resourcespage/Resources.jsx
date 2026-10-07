@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Plus, Search } from 'lucide-react'
+import { ArrowRight, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import SearchSuggest from '../../../common_component/user/SearchSuggest/SearchSuggest.jsx'
-import FaqAccordion from '../../../common_component/user/FaqAccordion/FaqAccordion.jsx'
+import FaqGroups from '../../../common_component/user/FaqAccordion/FaqGroups.jsx'
 import Pagination from '../../../common_component/user/Pagination/Pagination.jsx'
 import { fetchFaqs, fetchTestimonials, fetchCareerLibrary, fetchCourses } from '../../../api/content.js'
 import { fetchLatestBlogs } from '../../../api/blogs.js'
 import PageSeo from '../../../seo/PageSeo.jsx'
+import { SkeletonCards } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Resources hub. Each sub-category is now its OWN page:
@@ -50,7 +51,7 @@ const VIEW_SEO = {
   faqs: {
     title: "FAQs — how Svastrino's mentoring and courses work",
     description:
-      'Answers to what people ask before starting: how sessions are booked, what each program covers, how the course is paced, and how payments and refunds work.',
+      'Answers to what people ask before starting: how sessions are booked, what each programme covers, how the course is paced, and how payments and refunds work.',
   },
   'success-stories': {
     title: 'Success stories — students we have guided, in their words',
@@ -69,7 +70,7 @@ function CoursesSkeleton({ count }) {
   return (
     <>
       <p className="sr-only" role="status">Loading careers…</p>
-      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
         {Array.from({ length: count }, (_, i) => (
           <div key={i} className="animate-skeleton rounded-[10px] border border-brand-navy/10 bg-white p-6 shadow-sm">
             <div className="h-5 w-3/4 rounded bg-brand-navy/20" />
@@ -292,24 +293,6 @@ export default function Resources({ view = 'all' }) {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Sections collapse too, one at a time. With 143 questions across fourteen
-  // sections, showing every heading's list at once buries the thing someone
-  // came for; closed by default, the page opens as a short menu of topics.
-  const [openFaqSection, setOpenFaqSection] = useState(null)
-  // Switching group leaves the old section name behind — checking it against
-  // the open group's sections closes it without a separate effect.
-  const shownFaqSection =
-    openFaqGroup?.sections.some((s) => s.section === openFaqSection) ? openFaqSection : null
-
-  // The chips above open their section as well as scroll to it — jumping to a
-  // collapsed heading would land on nothing.
-  const openFaqSectionAt = (section) => {
-    setOpenFaqSection(section)
-    requestAnimationFrame(() => {
-      document.getElementById(`faq-${slugify(section)}`)?.scrollIntoView({ behavior: 'smooth' })
-    })
-  }
-
   const filterBtn = (active) =>
     `cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
       active
@@ -360,7 +343,7 @@ export default function Resources({ view = 'all' }) {
         <div className="container">
           {/* ---- Landing ---- */}
           {view === 'all' && (
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {SUBPAGES.map((s) => (
                 <Link
                   key={s.key}
@@ -380,7 +363,7 @@ export default function Resources({ view = 'all' }) {
           {loading && view === 'career-library' && <CareerLibrarySkeleton />}
           {loading && view === 'faqs' && <FaqsSkeleton />}
           {loading && view !== 'all' && view !== 'career-library' && view !== 'faqs' && (
-            <p className="text-center text-brand-slate">Loading…</p>
+            <SkeletonCards count={3} />
           )}
           {error && !loading && <ConnectionState error={error} onRetry={retry} label="the resources" />}
 
@@ -388,7 +371,9 @@ export default function Resources({ view = 'all' }) {
           {!loading && !error && view === 'career-library' && (
             <div id="career-library">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div className="flex flex-wrap gap-2">
+                {/* Phones: the stream chips are one row you swipe (the next chip
+                    peeks in at the edge), not twelve rows before any career. */}
+                <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap">
                   <button className={filterBtn(!field)} onClick={() => update({ field: '' })}>
                     {/* The total belongs to the page that has landed — while one
                         is on its way the chip would otherwise read "All (0)"
@@ -406,7 +391,7 @@ export default function Resources({ view = 'all' }) {
                   ))}
                 </div>
 
-                <form className="flex shrink-0 items-center gap-2" onSubmit={onSearch}>
+                <form className="order-first flex shrink-0 items-center gap-2 md:order-none" onSubmit={onSearch}>
                   <SearchSuggest
                     className="flex-1 md:w-56"
                     value={search}
@@ -455,7 +440,7 @@ export default function Resources({ view = 'all' }) {
               )}
 
               {!coursesLoading && courses.length > 0 && (
-                <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {courses.map((c) => (
                     <article
                       key={c.slug}
@@ -508,8 +493,7 @@ export default function Resources({ view = 'all' }) {
 
           {/* ---- FAQs ---- */}
           {/* Two groups: the Nirmaan course, and everything about the mentoring
-              services. Services alone runs to fourteen sections, so the chips
-              under the tabs jump down rather than making people scroll. */}
+              services. Sections start collapsed, so the list reads as a menu. */}
           {!loading && !error && view === 'faqs' && openFaqGroup && (
             <div id="faqs" className="mx-auto max-w-3xl">
               {faqs.length > 1 && (
@@ -528,90 +512,17 @@ export default function Resources({ view = 'all' }) {
                 </div>
               )}
 
-              {openFaqGroup.sections.length > 1 && (
-                <nav
-                  aria-label="FAQ sections"
-                  className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 border-0 border-t border-solid border-brand-navy/10 pt-6"
-                >
-                  {openFaqGroup.sections.map((s) => (
-                    <button
-                      key={s.section}
-                      type="button"
-                      onClick={() => openFaqSectionAt(s.section)}
-                      style={{ background: 'transparent', border: 'none', padding: 0 }}
-                      className={`cursor-pointer text-sm font-medium transition-colors hover:text-brand-crimson ${
-                        s.section === shownFaqSection ? 'text-brand-crimson' : 'text-brand-slate'
-                      }`}
-                    >
-                      {s.section}
-                    </button>
-                  ))}
-                </nav>
-              )}
-
-              <div className="mt-10 space-y-4">
-                {openFaqGroup.sections.map((s) => {
-                  const isOpen = s.section === shownFaqSection
-                  return (
-                    // scroll-mt keeps the heading clear of the sticky header
-                    // when a chip above jumps to it.
-                    <div key={s.section} id={`faq-${slugify(s.section)}`} className="scroll-mt-28">
-                      {/* Same chip and reveal as the questions inside, one size
-                          up — a heading has to read as the heavier row. */}
-                      <button
-                        type="button"
-                        aria-expanded={isOpen}
-                        onClick={() => setOpenFaqSection(isOpen ? null : s.section)}
-                        style={{ background: 'transparent', border: 'none' }}
-                        className={`flex w-full cursor-pointer items-center justify-between gap-4 border-0 border-b border-solid px-1 py-3 text-left transition-colors ${
-                          isOpen ? 'border-brand-crimson/40' : 'border-brand-navy/10 hover:border-brand-crimson/30'
-                        }`}
-                      >
-                        <span className="font-display text-lg font-bold text-brand-navy">
-                          {s.section}
-                          <span className="ml-2 text-sm font-medium text-brand-slate">{s.items.length}</span>
-                        </span>
-                        <span
-                          aria-hidden
-                          style={{
-                            display: 'grid',
-                            placeItems: 'center',
-                            width: 34,
-                            height: 34,
-                            flexShrink: 0,
-                            borderRadius: '50%',
-                            background: isOpen ? '#c8102e' : '#fdeef1',
-                            transition: 'transform .2s ease, background .2s ease',
-                            transform: isOpen ? 'rotate(45deg)' : 'none',
-                          }}
-                        >
-                          <Plus size={18} color={isOpen ? '#ffffff' : '#c8102e'} strokeWidth={2.5} />
-                        </span>
-                      </button>
-
-                      <div
-                        style={{
-                          display: 'grid',
-                          gridTemplateRows: isOpen ? '1fr' : '0fr',
-                          transition: 'grid-template-rows .25s ease',
-                        }}
-                      >
-                        <div style={{ overflow: 'hidden' }}>
-                          <div className="pt-4">
-                            <FaqAccordion items={s.items} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
+              {/* Each section is a collapsible heading over its questions;
+                  keyed by group so switching tabs starts all closed. */}
+              <div className="mt-6 border-0 border-t border-solid border-brand-navy/10 pt-6">
+                <FaqGroups key={openFaqGroup.group} sections={openFaqGroup.sections} />
               </div>
             </div>
           )}
 
           {/* ---- Success stories ---- */}
           {!loading && !error && view === 'success-stories' && (
-            <div id="success-stories" className="grid gap-6 md:grid-cols-2">
+            <div id="success-stories" className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {stories.map((s) => (
                 <figure key={s.id} className={`flex flex-col ${cardClass}`}>
                   <blockquote className="flex-1 leading-relaxed text-brand-navy/80">“{s.quote}”</blockquote>
@@ -638,7 +549,7 @@ export default function Resources({ view = 'all' }) {
                 Latest reading
               </h2>
             </div>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {latest.map((p) => (
                 <article
                   key={p.slug}

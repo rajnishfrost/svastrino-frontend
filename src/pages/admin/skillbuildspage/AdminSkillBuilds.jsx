@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Skill Builds — the courses (level 2, e.g. Nirmaan) WITH their packages
@@ -41,8 +42,8 @@ export default function AdminSkillBuilds() {
       <h1 className="adm-title">Skill Builds</h1>
       <p className="adm-sub">
         Courses and their packages, together. Course videos are managed in{' '}
-        <Link to="/admin/content">Content</Link>; mentoring programs in{' '}
-        <Link to="/admin/mentoring">Mentoring → Programs</Link>.
+        <Link to="/admin/content">Content</Link>; mentoring programmes in{' '}
+        <Link to="/admin/mentoring">Mentoring → Programmes</Link>.
       </p>
 
       <div className="adm-toolbar">
@@ -56,7 +57,7 @@ export default function AdminSkillBuilds() {
       )}
 
       {error && <p className="adm-error">{error}</p>}
-      {!builds && !error && <p className="adm-empty">Loading…</p>}
+      {!builds && !error && <SkeletonTable />}
 
       {builds && builds.map((b) => {
         const all = packages.filter((p) => p.skillBuild?.slug === b.slug)

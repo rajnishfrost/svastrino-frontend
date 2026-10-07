@@ -15,6 +15,17 @@
   min-height: var(--nav-height);
 }
 
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Desktop: the bell lives with the links and the menu button is hidden, so
+   this group is empty — keep it out of the row or the links drift inward. */
+@media (min-width: 900px) {
+  .nav-end { display: none; }
+}
+
 .nav-brand {
   display: inline-flex;
   align-items: center;
@@ -413,10 +424,19 @@
   height: 2px;
   background: var(--navy);
   border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
+/* Open: the three bars fold into an ✕, so the button says what it will do. */
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+@media (prefers-reduced-motion: reduce) { .nav-toggle span { transition: none; } }
+
+/* Dims the page under the open phone menu; a tap on it closes the menu. */
+.nav-backdrop { display: none; }
 
 /* ---- Tablet / mobile ---- */
-@media (max-width: 940px) {
+@media (max-width: 899px) {
   .nav-toggle {
     display: flex;
   }
@@ -440,6 +460,14 @@
 
   .nav-links.is-open {
     display: flex;
+  }
+
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 31, 67, 0.35);
+    z-index: 99; /* under the sticky nav (100), over the page */
   }
 
   .nav-item {
@@ -532,13 +560,87 @@
     padding: 13px 8px;
   }
 
-  /* Nirmaan capsule in the mobile/tablet drawer — keep it a centered pill */
+  /* Skill-Build in the mobile/tablet drawer: one full-width green block. Closed,
+     it is a green bar (label left, chevron right) with the same shine sweeping
+     across it. Open, the block grows to hold its two items, each its own
+     lighter row, so the two sub-sections read as separate inside the green. */
+  .nav-skill-build {
+    width: 100%;
+    margin: 12px 0 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      var(--nirmaan-green-light) 0%,
+      var(--nirmaan-green) 50%,
+      var(--nirmaan-green-dark) 100%
+    );
+  }
+
   .nav-courses-btn {
-    align-self: center;
-    width: auto;
-    margin: 14px 0 6px;
-    padding: 8px 20px;
-    animation: none;            /* no bob inside the stacked menu */
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-self: stretch;
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 0;
+    font-size: 14px;            /* same size and weight as the other menu items */
+    font-weight: 500;
+    letter-spacing: 0;
+    background: transparent;     /* the block's own green shows through */
+    animation: none;
+  }
+
+  /* Chevron at the right edge; turns when the block is open. */
+  .nav-courses-btn::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .nav-skill-build.is-open .nav-courses-btn::after {
+    transform: rotate(-135deg) translateY(-2px);
+  }
+
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build {
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    min-width: 0;
+    padding: 2px 12px 12px;
+    background: transparent;
+  }
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build::before {
+    display: none;               /* the desktop hover bridge has no job here */
+  }
+
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build a::after {
+    content: '→';
+    opacity: 0.85;
+  }
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build a:hover,
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build a:active {
+    background: rgba(255, 255, 255, 0.24);
+    color: #fff;
   }
 }
 
@@ -551,4 +653,278 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
+}
+
+/* =====================================================================
+   Phone / tablet menu — designed as a panel, not a plain list.
+   (Desktop is untouched: the icons are hidden there.)
+   ===================================================================== */
+.nav-ico { display: none; }
+
+@media (max-width: 899px) {
+  /* The panel: drops in, rounded bottom, real depth over the page. */
+  .nav-links {
+    padding: 12px 16px 20px;
+    border-bottom: 0;
+    border-radius: 0 0 22px 22px;
+    box-shadow: 0 28px 48px -16px rgba(10, 31, 67, 0.35);
+    max-height: calc(100vh - var(--nav-height) - 8px);
+  }
+  .nav-links.is-open { animation: nav-panel-in 0.22s ease-out; }
+  @keyframes nav-panel-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Rows: taller, icon tile on the left, chevron on the right. */
+  .nav-links .nav-item {
+    min-height: 52px;
+    padding: 0 4px;
+    gap: 12px;
+    justify-content: flex-start;
+    color: var(--navy);
+    border-bottom: 1px solid var(--gray-100);
+    background: none;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    font-family: var(--font-sans);
+    text-align: left;
+  }
+  .nav-links .nav-label { flex: 1; }
+  .nav-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(15, 44, 92, 0.06);
+    color: var(--navy);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .nav-ico svg { width: 18px; height: 18px; }
+
+  /* The row you're on, and an open section, take the accent. */
+  .nav-links .nav-item.active,
+  .nav-links .nav-dropdown.is-open > .nav-item { color: var(--color-accent); }
+  .nav-links .nav-item.active .nav-ico,
+  .nav-links .nav-dropdown.is-open > .nav-item .nav-ico {
+    background: rgba(200, 16, 46, 0.1);
+    color: var(--color-accent);
+  }
+
+  /* A proper chevron instead of the tiny ▾. */
+  .nav-links .nav-caret {
+    font-size: 0;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+    opacity: 0.6;
+  }
+  .nav-links .nav-dropdown.is-open .nav-caret { transform: rotate(-135deg) translateY(-2px); opacity: 1; }
+
+  /* An open section: a soft inner panel under its icon. */
+  .nav-links .nav-dropdown:not(.nav-skill-build) .nav-dropdown-menu {
+    margin: 6px 0 12px 46px;
+    padding: 6px;
+    gap: 2px;
+    border-radius: 12px;
+    background: rgba(15, 44, 92, 0.04);
+  }
+  .nav-links .nav-dropdown:not(.nav-skill-build) .nav-dropdown-menu a,
+  .nav-links .nav-sub-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+  .nav-links .nav-dropdown:not(.nav-skill-build) .nav-dropdown-menu a:hover,
+  .nav-links .nav-sub-trigger:hover { background: rgba(15, 44, 92, 0.06); color: var(--color-accent); }
+  .nav-links .nav-dropdown-head {
+    border-bottom: 0;
+    margin-bottom: 0;
+    color: var(--color-accent) !important;
+    font-weight: 600 !important;
+  }
+  .nav-links .nav-dropdown-head::after { content: '→'; }
+  .nav-links .nav-sub-trigger {
+    width: 100%;
+    background: none;
+    border: 0;
+    font-family: var(--font-sans);
+    cursor: pointer;
+  }
+  .nav-links .nav-sub-menu {
+    margin-left: 12px;
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    border-left: 2px solid rgba(200, 16, 46, 0.25);
+    border-radius: 0;
+    padding: 2px 0 4px;
+  }
+  .nav-links .nav-sub-menu a { padding: 9px 12px; font-size: 13.5px; color: var(--color-text); }
+
+  /* Sign-in button: a touch more presence at the foot of the panel. */
+  .nav-links > .btn { margin-top: 18px; min-height: 48px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-links.is-open { animation: none; }
+  }
+}
+
+/* ---- Skill-Build: extra detail for the phone menu (hidden on desktop) ---- */
+.nav-sb-sub,
+.nav-sb-ico,
+.nav-sb-desc { display: none; }
+
+@media (max-width: 899px) {
+  /* The bar: white-tinted icon tile, label with a sub-line, chevron. */
+  .nav-skill-build .nav-courses-btn {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    text-align: left;
+  }
+  .nav-skill-build .nav-courses-btn .nav-ico {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+  .nav-skill-build .nav-courses-btn .nav-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  .nav-sb-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  /* The two items: icon, name + one-line description, arrow. */
+  .nav-links .nav-skill-build .nav-dropdown-menu--skill-build a {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .nav-sb-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  .nav-sb-ico svg { width: 17px; height: 17px; }
+  .nav-sb-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+    min-width: 0;
+  }
+  .nav-sb-desc {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.82);
+  }
+}
+
+@media (max-width: 899px) {
+  /* The panel scrolls when it is taller than the screen; its items never
+     shrink to fit — that squashed (and cut) the Skill-Build block. */
+  .nav-links > * { flex-shrink: 0; }
+  /* The bell beside the ✕: icon only, its badge on the bell's shoulder. */
+  .nav-end .nav-notif-btn { padding: 8px; }
+  /* Its list drops from the top bar across the screen (12px in from each
+     edge) and above everything — anchored to the bell's own edge it hung off
+     the left of the screen, and the open menu was drawn over it. */
+  .nav-end .nav-notif { position: static; }
+  .nav-end .nav-notif-panel {
+    top: 100%;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    z-index: 5;
+    border-radius: 14px;
+    box-shadow: 0 24px 48px -16px rgba(10, 31, 67, 0.35);
+  }
+}
+
+/* ---- Account block at the foot of the phone menu ----
+   Row 1: Dashboard · Downloads · Settings as three tiles.
+   Row 2: photo + first name, and Sign out on the right. */
+@media (max-width: 899px) {
+  .nav-links .nav-profile {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--gray-100);
+  }
+  /* The menu's items join the block's own row layout. */
+  .nav-links .nav-profile-menu { display: contents; }
+
+  /* Row 1 — the three (or more, for panel accounts) links as tiles. */
+  .nav-links .nav-profile-item:not(.nav-profile-signout) {
+    order: 1;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 6px;
+    border-radius: 12px;
+    background: rgba(15, 44, 92, 0.04);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--navy);
+  }
+  .nav-links .nav-profile-item:not(.nav-profile-signout):hover {
+    background: rgba(15, 44, 92, 0.08);
+    color: var(--color-accent);
+  }
+
+  /* Row 2 — who you are, then Sign out. */
+  .nav-links .nav-avatar {
+    order: 2;
+    grid-column: span 2;
+    width: auto;
+    margin-top: 6px;
+    padding: 0;
+    border-top: 0;
+    gap: 10px;
+    pointer-events: none;       /* the menu is already open; nothing to toggle */
+  }
+  .nav-links .nav-avatar-name { font-size: 15px; }
+  .nav-links .nav-profile-signout {
+    order: 3;
+    justify-self: end;
+    white-space: nowrap;        /* "Sign out" always on one line */
+    margin-top: 6px;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid rgba(200, 16, 46, 0.3);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
 }

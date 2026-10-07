@@ -9,6 +9,7 @@ import { LIMITS, sanitiseCoupon } from '../../../utils/validate.js'
 import PaymentFailed from '../../../common_component/user/PaymentFailed/PaymentFailed.jsx'
 import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
 import './Checkout.css'
+import { SkeletonForm } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Checkout for a Skill-Build package. Protected route (login required).
@@ -23,6 +24,11 @@ export default function Checkout() {
   const navigate = useNavigate()
   const { user, refresh } = useAuth()
   const packageId = params.get('pkg') || ''
+  // Where "back" goes: the stand-alone test is sold on the Psychometric page,
+  // every other plan here on the Nirmaan packages.
+  const isTest = packageId === 'psychometric-test'
+  const backTo = isTest ? '/skill-build/psychometric-testing#which-test' : '/skill-build/nirmaan#packages'
+  const backLabel = isTest ? 'Back to the test' : 'Back to packages'
 
   const [step, setStep] = useState('summary') // 'summary' | 'paying' | 'success'
   const [quote, setQuote] = useState(null)
@@ -61,6 +67,14 @@ export default function Checkout() {
       const qs = new URLSearchParams({ packageId })
       if (code) qs.set('coupon', code)
       const q = await api(`/user/payments/quote?${qs.toString()}`, { auth: 'user' })
+      // Already has the test (bought on its own or in their Nirmaan plan) —
+      // e.g. a signed-out visitor picked a test, signed in, and landed here.
+      // There is nothing to pay for: take them to the test itself instead of
+      // showing a payment page.
+      if (isTest && q.standing?.state === 'owned') {
+        navigate('/skill-build/psychometric-testing', { replace: true })
+        return true
+      }
       setQuote(q)
       return true
     } catch (e) {
@@ -223,13 +237,13 @@ export default function Checkout() {
         <div className="card checkout-card">
           <h1>Checkout</h1>
           <p className="checkout-error">{loadErr}</p>
-          <Link to="/skill-build/nirmaan#packages" className="btn btn-primary">Back to packages</Link>
+          <Link to={backTo} className="btn btn-primary">{backLabel}</Link>
         </div>
       </div></section>
     )
   }
   if (!quote) {
-    return <section className="section"><div className="container checkout-wrap"><p>Loading…</p></div></section>
+    return <section className="section"><div className="container checkout-wrap"><SkeletonForm fields={3} label="Loading your order" /></div></section>
   }
 
   // A plan this student cannot buy — the one they are on, or one their plan
@@ -249,7 +263,7 @@ export default function Checkout() {
 
       <div className="container checkout-wrap">
         {step !== 'success' && (
-          <Link to="/skill-build/nirmaan#packages" className="checkout-back-top">← Back to packages</Link>
+          <Link to={backTo} className="checkout-back-top">← {backLabel}</Link>
         )}
         <h1 className="checkout-title">Checkout</h1>
 
@@ -260,7 +274,7 @@ export default function Checkout() {
             item={order?.packageLabel || quote?.packageLabel}
             amount={quote?.rupees?.amount != null ? `₹${Number(quote.rupees.amount).toLocaleString('en-IN')}` : ''}
             onRetry={() => { setPayFailed(''); if (order) openCashfree(order) }}
-            backTo="/skill-build/nirmaan#packages"
+            backTo={backTo}
             backLabel="Back to packages"
           />
         ) : null}
@@ -277,7 +291,7 @@ export default function Checkout() {
               <Row label="Amount paid" value={inr(receipt.amountInr)} />
             </div>
             <div className="checkout-actions">
-              <button className="btn btn-primary" onClick={() => navigate(dashboardTabFor(packageId))}>Go to dashboard</button>
+              <button className="btn btn-primary" onClick={() => navigate(dashboardTabFor(packageId))}>{isTest ? 'Take your test' : 'Go to dashboard'}</button>
               <Link to="/dashboard/settings?section=orders" className="btn btn-secondary">View orders</Link>
             </div>
             <p className="checkout-muted checkout-note">A receipt has been emailed to you.</p>

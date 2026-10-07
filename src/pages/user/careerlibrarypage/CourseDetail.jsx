@@ -8,6 +8,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchCourse } from '../../../api/content.js'
 import RichText from '../../../common_component/user/RichText/RichText.jsx'
+import { SkeletonArticle } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 export default function CourseDetail() {
   const { slug } = useParams()
@@ -73,7 +74,7 @@ export default function CourseDetail() {
   if (loading) {
     return (
       <section className="py-20">
-        <div className="container"><p className="text-center text-brand-slate">Loading course…</p></div>
+        <div className="container"><SkeletonArticle label="Loading the course" /></div>
       </section>
     )
   }

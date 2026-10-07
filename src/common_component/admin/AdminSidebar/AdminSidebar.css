@@ -142,7 +142,7 @@
 }
 
 /* ---- Tablet / mobile: slide-in drawer ---- */
-@media (max-width: 860px) {
+@media (max-width: 899px) {
   .admin-sidebar {
     position: fixed;
     left: 0;

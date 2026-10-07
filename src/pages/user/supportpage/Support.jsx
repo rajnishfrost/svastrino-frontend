@@ -4,6 +4,7 @@ import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
 import { fetchMyTickets } from '../../../api/tickets.js'
 import './Support.css'
+import { SkeletonList } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * "Help & support" — every conversation this student has had with our team,
@@ -120,7 +121,7 @@ export default function Support() {
               label="your conversations"
             />
           ) : tickets == null ? (
-            <p className="sup-state">Loading…</p>
+            <SkeletonList rows={3} label="Loading your conversations" />
           ) : tickets.length === 0 ? (
             <div className="card sup-empty">
               <h2 className="sup-empty-title">You have not asked us anything yet</h2>

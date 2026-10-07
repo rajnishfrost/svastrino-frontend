@@ -3,11 +3,11 @@
  * from the comparison matrix in the planning sheet.
  */
 export const PROGRAMS = [
-  { name: "Bull's Eye Program", slug: 'bulls-eye', category: 'Career Counselling' },
-  { name: 'Bloom Program', slug: 'bloom', category: 'Personalised Mentoring' },
+  { name: "Bull's Eye Programme", slug: 'bulls-eye', category: 'Career Counselling' },
+  { name: 'Bloom Programme', slug: 'bloom', category: 'Personalised Mentoring' },
   // expertCall: sold after a conversation, so its button opens the call-back
   // form on its own page rather than the booking wizard.
-  { name: 'Breakthrough Program', slug: 'breakthrough', category: 'Personalised Mentoring', expertCall: true },
+  { name: 'Breakthrough Programme', slug: 'breakthrough', category: 'Personalised Mentoring', expertCall: true },
 ]
 
 /** The headline facts — shown as words, not ticks. */
@@ -16,7 +16,7 @@ export const DETAILS = [
   { label: "No. of Sessions", values: ["2 Sessions", "3 Sessions", "10 Sessions of 2.5 Hours Each, Or 20 Sessions of 1 To 1.5 Hour Each (depending on the Student's pace)"] },
   { label: "Total Time", values: ["About 5 Hours", "About 10 Hours", "About 36 Hours"] },
   { label: "Purpose", values: ["Immediate Career Counselling", "Career Decision Through Deep Self Reflection", "Personalised Mentoring for Overall Transformation (Life & Career)"] },
-  { label: "Follow-Ups", values: ["Once", "Weekly, Until Program Ends", "Weekly, Until Program Ends"] },
+  { label: "Follow-Ups", values: ["Once", "Weekly, Until Programme Ends", "Weekly, Until Programme Ends"] },
 ]
 
 /** What each program includes. true = included, false = not part of it. */

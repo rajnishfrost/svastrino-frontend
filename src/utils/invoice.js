@@ -150,7 +150,7 @@ function invoiceHtml(order, customer) {
         <tr>
           <td>
             <div class="item-name">${esc(product)}${pkg ? ' — ' + esc(pkg) + ' package' : ''}</div>
-            <div class="item-sub">Skill-Build career program${order.isUpgrade ? ' · upgrade' : ''}${order.quantity > 1 ? ` · ${order.quantity} students × ${money(order.amount / order.quantity)}` : ''}</div>
+            <div class="item-sub">Skill-Build career programme${order.isUpgrade ? ' · upgrade' : ''}${order.quantity > 1 ? ` · ${order.quantity} students × ${money(order.amount / order.quantity)}` : ''}</div>
           </td>
           <td class="r">${money(order.listPrice ?? order.basePrice ?? order.amount)}</td>
         </tr>

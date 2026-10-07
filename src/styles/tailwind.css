@@ -89,9 +89,9 @@
   /* Light, airy hero wash — white fading into a soft blue, with a rose glow */
   .bg-hero {
     background:
-      radial-gradient(1200px 600px at 80% -10%, #fdeef1 0%, transparent 55%),
-      radial-gradient(1000px 500px at 10% 0%, #eef4ff 0%, transparent 50%),
-      linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+      radial-gradient(1200px 600px at 80% -10%, #f9dde3 0%, transparent 55%),
+      radial-gradient(1000px 500px at 10% 0%, #dce8fb 0%, transparent 50%),
+      linear-gradient(180deg, #eef4fd 0%, #dde8f8 100%);
   }
   /* Soft blue band used by lighter alternating sections */
   .bg-soft {
@@ -100,4 +100,67 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ---------------------------------------------------------------------
+   Buttons built from utilities (`inline-flex h-11 px-6 …`) have a FIXED
+   height. When a label wraps on a narrow phone the text spilled out and was
+   clipped ("Register for 1 Week Free Trial" showed only "Week Free"). Let
+   them grow with their text instead — same height as before on one line.
+   Only elements with horizontal padding: icon circles (h-10 w-10) are left
+   alone.
+   --------------------------------------------------------------------- */
+.inline-flex.h-10[class*="px-"],
+.inline-flex.h-11[class*="px-"],
+.inline-flex.h-12[class*="px-"] {
+  height: auto;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  text-align: center;
+}
+.inline-flex.h-10[class*="px-"] { min-height: 2.5rem; }
+.inline-flex.h-11[class*="px-"] { min-height: 2.75rem; }
+.inline-flex.h-12[class*="px-"] { min-height: 3rem; }
+
+/* Phones: slimmer side padding, so most labels fit on one line. */
+@media (max-width: 599px) {
+  .inline-flex.h-10[class*="px-"],
+  .inline-flex.h-11[class*="px-"],
+  .inline-flex.h-12[class*="px-"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Rich-text tables (career library salaries etc.) on phones: a 4-column
+   table can't fit 300px, and a box that scrolls sideways hides the salary
+   columns without saying so. Below 640px each row becomes a card of
+   "heading / value" pairs; the heading comes from the cell's data-label.
+   --------------------------------------------------------------------- */
+@media (max-width: 639px) {
+  .rt-table { overflow: visible; border: 0; }
+  .rt-table table { min-width: 0; table-layout: auto; }
+  .rt-table colgroup, .rt-table thead { display: none; }
+  .rt-table table, .rt-table tbody, .rt-table tr, .rt-table td { display: block; width: 100%; }
+  .rt-table tr {
+    margin-bottom: 12px;
+    border: 1px solid rgba(15, 44, 92, 0.1);
+    border-radius: 12px;
+    padding: 6px 0;
+    background: #fff;
+  }
+  .rt-table tr:last-child { margin-bottom: 0; }
+  .rt-table td { padding: 6px 16px; }
+  .rt-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0f2c5c;
+    opacity: 0.7;
+  }
+  .rt-table td:first-child { font-weight: 700; color: #0f2c5c; }
 }

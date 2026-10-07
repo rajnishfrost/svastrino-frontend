@@ -8,6 +8,7 @@ import '../../admin/adminShared.css'
 import {
   LIMITS, checkEmail, checkName, checkPhone, sanitisePhone,
 } from '../../../utils/validate.js'
+import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * The organisation's student roster.
@@ -105,7 +106,7 @@ export default function OrgStudents() {
 
       {error && <p className="adm-error">{error}</p>}
 
-      {!rows ? <p className="adm-empty">Loading…</p> : rows.length === 0 ? (
+      {!rows ? <SkeletonTable /> : rows.length === 0 ? (
         <p className="adm-empty">No students yet — download the sample sheet, fill it in, then use “Bulk add from sheet”.</p>
       ) : (
         <>

@@ -6,6 +6,8 @@ import { useAuth } from '../../../context/AuthContext.jsx'
 import { usePsychometric } from '../../../hooks/usePsychometric.js'
 import Downloads from '../downloadspage/Downloads.jsx'
 import Settings from '../settingspage/Settings.jsx'
+import { SkeletonList, SkeletonDashPanel, SkeletonDashboard } from '../../../common_component/Skeleton/Skeleton.jsx'
+import { useKeyHold, useRevealFade } from '../../../common_component/Skeleton/useHold.js'
 
 /**
  * The student's dashboard: a sidebar on the left, one panel at a time.
@@ -117,9 +119,25 @@ export default function Dashboard() {
     fetchMyMentoring().then(setMentoring).catch(() => setMentoring([]))
   }, [])
 
+  // Switching tabs: the sidebar answers at once, the panel sits on a skeleton
+  // for a second (loading underneath) and then eases in — the same rhythm as
+  // moving between pages anywhere else on the site.
+  const panelHolding = useKeyHold(tab)
+  const panelRef = useRevealFade(panelHolding)
+
   // No tab, or one that is not on the sidebar: go to the default. A redirect
   // rather than a silent fallback, so the address bar always says where you are.
-  if (!TABS.some((t) => t.key === tab)) return <Navigate to={`/dashboard/${DEFAULT_TAB}`} replace />
+  // No tab (straight after signing in, or a plain /dashboard link): open the
+  // section for what the student actually has — their most recent purchase.
+  // Nirmaan (a free trial included) or the psychometric test → Skill-Build;
+  // a Svastrino programme → Services; nothing yet → the default tab.
+  // Enrollments arrive newest first. Wait for them rather than guess.
+  if (!TABS.some((t) => t.key === tab)) {
+    if (enrollments == null) return <SkeletonDashboard />
+    const latest = enrollments[0]
+    const pick = !latest ? DEFAULT_TAB : latest.kind === 'mentoring' ? 'services' : 'skill-build'
+    return <Navigate to={`/dashboard/${pick}`} replace />
+  }
 
   return (
     <section className="bg-white py-10 md:py-14">
@@ -133,10 +151,12 @@ export default function Dashboard() {
             column grows to the pill row's full width and the cards run off
             the right edge of the screen. */}
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[224px_minmax(0,1fr)]">
-          {/* Sidebar on a wide screen; a row of pills that scrolls sideways on a phone. */}
+          {/* Sidebar on a wide screen. Below 900px the four tabs sit in a grid (2×2 on a
+              phone, one row on a tablet) so every tab — and the one you're on — is
+              always in view; a sideways-scrolling row hid half of them. */}
           <aside className="min-w-0">
             <nav
-              className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 lg:sticky lg:top-24 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
+              className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:sticky lg:top-24 lg:flex lg:flex-col"
               aria-label="Dashboard sections"
             >
               {TABS.map((t) => (
@@ -157,10 +177,13 @@ export default function Dashboard() {
           </aside>
 
           <div className="min-w-0">
-            {tab === 'services' && <ServicesPanel mentoring={mentoring} />}
-            {tab === 'skill-build' && <SkillBuildPanel courses={courses} />}
-            {tab === 'downloads' && <Downloads embedded />}
-            {tab === 'settings' && <Settings embedded />}
+            {panelHolding && <SkeletonDashPanel label="Loading this section" />}
+            <div ref={panelRef} style={panelHolding ? { display: 'none' } : undefined}>
+              {tab === 'services' && <ServicesPanel mentoring={mentoring} />}
+              {tab === 'skill-build' && <SkillBuildPanel courses={courses} />}
+              {tab === 'downloads' && <Downloads embedded />}
+              {tab === 'settings' && <Settings embedded />}
+            </div>
           </div>
         </div>
       </div>
@@ -176,7 +199,7 @@ function ServicesPanel({ mentoring }) {
 
       <div className="mt-4 space-y-5">
         {mentoring == null ? (
-          <p className={EMPTY}>Loading…</p>
+          <SkeletonList rows={2} />
         ) : mentoring.length === 0 ? (
           <div>
             <p className={EMPTY}>You haven't booked a service yet.</p>
@@ -291,16 +314,18 @@ function PsychometricLine() {
 function SkillBuildPanel({ courses }) {
   // One psychometric line, under the first open Nirmaan card — an upgrade can
   // leave more than one Nirmaan row, and the test belongs to the student.
-  const psyCardId = (courses || []).find(
+  // Bought on its own, the test has a card of its own, and the status line
+  // goes there instead.
+  const psyCardId = ((courses || []).find((e) => e.kind === 'test') || (courses || []).find(
     (e) => (e.courseSlug || 'nirmaan') === 'nirmaan' && accessState(e) === 'active'
-  )?.id
+  ))?.id
   return (
     <div>
       <h2 className={PANEL_TITLE}>Skill-Build</h2>
 
       <div className="mt-4 space-y-5">
         {courses == null ? (
-          <p className={EMPTY}>Loading…</p>
+          <SkeletonList rows={2} />
         ) : courses.length === 0 ? (
           <div>
             <p className={EMPTY}>You haven't enrolled in a Skill-Build course yet.</p>
@@ -312,7 +337,8 @@ function SkillBuildPanel({ courses }) {
           courses.map((e) => {
             const state = accessState(e)
             const open = state === 'active'
-            const isNirmaan = (e.courseSlug || 'nirmaan') === 'nirmaan'
+            const isTest = e.kind === 'test'
+            const isNirmaan = isTest || (e.courseSlug || 'nirmaan') === 'nirmaan'
             const accent = isNirmaan ? 'text-nirmaan-green' : 'text-brand-crimson'
             const bar = isNirmaan ? 'bg-nirmaan-green' : 'bg-brand-crimson'
             return (
@@ -323,10 +349,12 @@ function SkillBuildPanel({ courses }) {
                       {courseTitle(e.courseName, e.packageName)}
                     </h3>
                     <p className="mt-0.5 text-sm text-brand-slate">
-                      {e.progress && e.progress.total > 0
-                        ? `${e.progress.completed} of ${e.progress.total} lectures complete`
-                        : 'Skill-Build subscription'}
-                      {e.expiresAt
+                      {isTest
+                        ? 'Psychometric test · Stream or Career Selector, by your class'
+                        : e.progress && e.progress.total > 0
+                          ? `${e.progress.completed} of ${e.progress.total} lectures complete`
+                          : 'Skill-Build subscription'}
+                      {!isTest && e.expiresAt
                         ? open
                           ? ` · valid till ${fmtDate(e.expiresAt)}`
                           : ` · ended on ${fmtDate(e.expiresAt)}`
@@ -346,7 +374,11 @@ function SkillBuildPanel({ courses }) {
                 </div>
                 {e.id === psyCardId && <PsychometricLine />}
                 <div className="mt-4">
-                  {e.progress && e.progress.total > 0 ? (
+                  {isTest ? (
+                    <Link to="/skill-build/psychometric-testing" className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>
+                      Go to your test →
+                    </Link>
+                  ) : e.progress && e.progress.total > 0 ? (
                     <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>
                       {open
                         ? e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'

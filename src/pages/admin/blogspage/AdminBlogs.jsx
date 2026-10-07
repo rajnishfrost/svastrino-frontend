@@ -5,6 +5,7 @@ import ConfirmModal from '../../../common_component/admin/ConfirmModal/ConfirmMo
 import Pager from '../../../common_component/admin/Pager/Pager.jsx'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonForm, SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Blog — write, edit, publish and delete posts. Drafts (`published: false`) are
@@ -135,7 +136,7 @@ export default function AdminBlogs() {
 
       {error && <p className="adm-error">{error}</p>}
 
-      {!posts ? <p className="adm-empty">Loading…</p> : posts.length === 0 ? (
+      {!posts ? <SkeletonTable /> : posts.length === 0 ? (
         <p className="adm-empty">No posts match these filters.</p>
       ) : (
         <>
@@ -262,7 +263,7 @@ function PostEditor({ post, onCancel, onSaved }) {
     } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
 
-  if (loading) return <p className="adm-empty">Loading post…</p>
+  if (loading) return <SkeletonForm fields={5} />
 
   return (
     <div>

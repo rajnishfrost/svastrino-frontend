@@ -2,7 +2,7 @@
 
 ## Collection of Information
 
-The **Provider** may receive, collect and store information voluntarily provided by the **Receiver/s** through the Website, Application, registration forms,program enrollment, course enrollment, assessments, communications, transactions, scholarship quizzes, digital marketing processes, support interactions or any other permitted means of using the Services.
+The **Provider** may receive, collect and store information voluntarily provided by the **Receiver/s** through the Website, Application, registration forms,programme enrolment, course enrolment, assessments, communications, transactions, scholarship quizzes, digital marketing processes, support interactions or any other permitted means of using the Services.
 
 The information collected may include, as applicable:
 
@@ -15,7 +15,7 @@ The information collected may include, as applicable:
 * Course, assessment and programme participation details;  
 * Payment and transaction-related information;  
 * Feedback, comments, reviews, recommendations and communications;  
-* Information voluntarily submitted through services (Program and/or course) tasks, worksheets, activities, forms and assessments; and  
+* Information voluntarily submitted through services (Programme and/or course) tasks, worksheets, activities, forms and assessments; and  
 * Other information reasonably required to provide, administer, secure and improve the Services.
 
 The Provider may also automatically collect certain technical and usage information, including IP address, device type, browser, operating system, connection information, access times, pages visited, session information, page-response times, duration of visits, interaction with webpages and methods used to navigate away from webpages.

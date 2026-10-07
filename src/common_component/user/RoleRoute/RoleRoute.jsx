@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext.jsx'
+import { SkeletonSection, SkeletonCards } from '../../Skeleton/Skeleton.jsx'
 
 /**
  * Restricts a route to specific application roles. Use inside a ProtectedRoute
@@ -12,7 +13,7 @@ export default function RoleRoute({ roles = [], children }) {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return <div className="container" style={{ padding: '80px 0' }}>Loading…</div>
+    return <SkeletonSection><SkeletonCards count={3} media={false} /></SkeletonSection>
   }
   if (!user) return <Navigate to="/login" replace />
   if (roles.length && !roles.includes(user.role)) return <Navigate to="/dashboard" replace />

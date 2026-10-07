@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../api/client.js'
 import '../adminShared.css'
 import { LIMITS } from '../../../utils/validate.js'
+import { SkeletonForm } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
  * Site settings — the switches the team can change without a deploy.
@@ -93,7 +94,7 @@ export default function AdminSettings() {
     }
   }
 
-  if (!settings && !error) return <p className="adm-sub">Loading…</p>
+  if (!settings && !error) return <SkeletonForm fields={4} />
 
   const usingFallback = settings && !settings.enquiryTo && settings.effectiveEnquiryTo
 
