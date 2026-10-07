@@ -18,22 +18,71 @@
 }
 .bo-link:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Step indicator */
+/* Step indicator — a stepper: number in a circle on top, its label centred
+   under it, a line joining the circles that fills in as steps are done. Every
+   step takes an equal share of one row, so it never wraps — on a 300px phone
+   as on a desktop (and with 3 steps as with 4). */
 .bo-steps {
-  display: flex; gap: var(--space-4); flex-wrap: wrap;
-  list-style: none; padding: 0; margin: 0 0 var(--space-5);
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
 }
 .bo-step {
-  display: flex; align-items: center; gap: 8px;
-  color: var(--color-text-muted); font-size: 0.9rem;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.25;
 }
+/* The line from the previous circle to this one. */
+.bo-step + .bo-step::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: calc(50% + 18px);
+  left: calc(-50% + 18px);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-surface-border, #dfe3ea);
+}
+.bo-step.is-current::before,
+.bo-step.is-done::before { background: var(--color-primary, #2e5d3f); }
 .bo-step-num {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px; border-radius: 50%;
-  border: 1.5px solid currentColor; font-size: 0.78rem; font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: var(--white, #fff);
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex: none;
 }
 .bo-step.is-current { color: var(--color-primary, #2e5d3f); font-weight: 600; }
-.bo-step.is-done { color: var(--color-primary, #2e5d3f); opacity: 0.75; }
+.bo-step.is-current .bo-step-num {
+  background: var(--color-primary, #2e5d3f);
+  border-color: var(--color-primary, #2e5d3f);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(15, 44, 92, 0.12);
+}
+.bo-step.is-done { color: var(--color-primary, #2e5d3f); }
+.bo-step.is-done .bo-step-num { background: var(--color-primary, #2e5d3f); border-color: var(--color-primary, #2e5d3f); color: #fff; }
+@media (max-width: 420px) {
+  /* A little room each side, so a tight label wraps under its own number
+     ("Date & / time") rather than running into the next one. */
+  .bo-step { font-size: 0.74rem; gap: 6px; padding: 0 4px; }
+  .bo-step-num { width: 26px; height: 26px; font-size: 0.74rem; }
+  .bo-step + .bo-step::before { top: 12px; right: calc(50% + 16px); left: calc(-50% + 16px); }
+}
 
 /* Program picker */
 .bo-programs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); }
@@ -61,6 +110,11 @@
   background: rgba(47, 122, 229, 0.1);
   border: 1px solid rgba(47, 122, 229, 0.28);
   border-radius: 10px;
+}
+@media (max-width: 600px) {
+  .bo-selected-name { display: block; }
+  .bo-selected-meta { display: block; margin-top: 2px; }
+  .bo-selected-sep { display: none; }   /* no leading " · " on its own line */
 }
 .bo-paid-tag { color: var(--color-primary, #2e5d3f); font-weight: 600; font-size: 0.88rem; margin-left: 6px; }
 

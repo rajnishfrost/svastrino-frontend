@@ -50,7 +50,7 @@ export default function OrgSidebar({ open, onClose }) {
     <aside className={`admin-sidebar${open ? ' is-open' : ''}`}>
       <div className="admin-sidebar-brand">
         {/* White wordmark variant so the navy-text logo reads on the dark sidebar. */}
-        <img src="/logo-white.png" alt="Svastrino Consultancy Services" />
+        <img src="/logo-white-128.png" srcSet="/logo-white-128.png 128w, /logo-white-256.png 256w, /logo-white-384.png 384w, /logo-white-512.png 512w, /logo-white.png 734w" sizes="117px" alt="Svastrino Consultancy Services" />
       </div>
 
       <nav className="admin-sidebar-nav">

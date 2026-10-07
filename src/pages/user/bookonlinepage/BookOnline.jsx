@@ -545,12 +545,17 @@ export default function BookOnline() {
           {/* Selected-program strip (all later steps) */}
           {step !== 'program' && step !== 'success' && program && (
             <div className="bo-selected">
-              <div>
-                <strong>{program.name}</strong>
-                <span className="bo-muted"> · {program.sessionsShort || `${program.sessions} ${program.sessions === 1 ? 'session' : 'sessions'} × ${fmtHrs(program.sessionMins)}`}</span>
-                {isFree
-                  ? <span className="bo-paid-tag">Programme purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
-                  : <span className="bo-muted"> · {paiseInr(program.price)}</span>}
+              {/* One line on desktop; on a phone the name sits on its own line
+                  and the sessions and price on the next. */}
+              <div className="bo-selected-info">
+                <strong className="bo-selected-name">{program.name}</strong>
+                <span className="bo-selected-meta">
+                  <span className="bo-muted bo-selected-sep"> · </span>
+                  <span className="bo-muted">{program.sessionsShort || `${program.sessions} ${program.sessions === 1 ? 'session' : 'sessions'} × ${fmtHrs(program.sessionMins)}`}</span>
+                  {isFree
+                    ? <span className="bo-paid-tag">Programme purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
+                    : <span className="bo-muted"> · {paiseInr(program.price)}</span>}
+                </span>
               </div>
               {!rescheduleId && (
                 <button type="button" className="bo-link" onClick={backToPrograms}>
