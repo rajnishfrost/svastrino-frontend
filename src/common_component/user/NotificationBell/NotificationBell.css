@@ -102,8 +102,8 @@
   text-decoration: underline;
 }
 
-/* The list scrolls inside the panel, so a long history never pushes the offers
-   link off the bottom of a small screen. */
+/* The list scrolls inside the panel, so a long history never runs off the
+   bottom of a small screen. */
 .nav-notif-list {
   display: flex;
   flex-direction: column;
@@ -179,19 +179,7 @@
   color: var(--color-text-muted);
 }
 
-.nav-notif-foot {
-  margin-top: 6px;
-  padding: 10px 12px;
-  border-top: 1px solid var(--color-surface-border);
-  color: var(--color-accent);
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-}
 
-.nav-notif-foot:hover {
-  text-decoration: underline;
-}
 
 /* ---- Inside the mobile drawer ---- */
 /* The drawer scrolls, so a floating panel would be clipped and awkward. The

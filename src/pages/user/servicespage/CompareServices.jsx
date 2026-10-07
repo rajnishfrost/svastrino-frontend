@@ -28,6 +28,13 @@ export default function CompareServices() {
 
       <section className="section">
         <div className="container">
+          {/* Phones (portrait): the table is wider than the screen, so it
+              scrolls sideways inside its box — feature names stay pinned on
+              the left, programme names on top. Landscape fits it whole. */}
+          <p className="cmp-hint" aria-hidden>
+            Swipe sideways to compare all three <span>→</span>
+            <small>or turn your phone for the full table</small>
+          </p>
           <div className="cmp-wrap">
             <table className="cmp-table">
               <caption className="cmp-caption">
@@ -57,7 +64,7 @@ export default function CompareServices() {
                   {/* Colours go on the <th>, not the <tr>: the cell's own
                       background/color (from `.cmp-divider th`) paints over the
                       row's, so styling the row has no visible effect. */}
-                  <th scope="row" colSpan={PROGRAMS.length + 1} className="!bg-brand-navy !text-white">What’s included</th>
+                  <th scope="row" colSpan={PROGRAMS.length + 1} className="!bg-brand-navy !text-white"><span className="cmp-divider-label">What’s included</span></th>
                 </tr>
 
                 {CAPABILITIES.map((c) => (
@@ -96,45 +103,6 @@ export default function CompareServices() {
                 </tr>
               </tfoot>
             </table>
-          </div>
-
-          {/* Phones: four columns can't fit, so the same comparison reads as one
-              card per program (details, then what's included). The table above
-              takes over from 768px. */}
-          <div className="cmp-cards">
-            {PROGRAMS.map((p, pi) => (
-              <article key={p.slug} className="cmp-card">
-                <p className="cmp-cat">{p.category}</p>
-                <h2 className="cmp-card-name"><Link to={`/services/${p.slug}`}>{p.name}</Link></h2>
-                <dl className="cmp-card-details">
-                  {DETAILS.map((d) => (
-                    <div key={d.label}>
-                      <dt>{d.label}</dt>
-                      <dd>{d.values[pi]}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="cmp-card-sub">What’s included</p>
-                <ul className="cmp-card-list">
-                  {CAPABILITIES.map((c) => (
-                    <li key={c.label} className={c.has[pi] ? 'cmp-card-yes' : 'cmp-card-no'}>
-                      <span aria-hidden>{c.has[pi] ? '✓' : '✗'}</span>
-                      <span className="sr-only">{c.has[pi] ? 'Included:' : 'Not included:'}</span> {c.label}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  to={
-                    p.expertCall
-                      ? `/services/${p.slug}#talk-to-an-expert`
-                      : `/book-online?program=mentoring-${p.slug.replace('bulls-eye', 'bullseye')}`
-                  }
-                  className="btn btn-primary cmp-card-cta"
-                >
-                  {p.expertCall ? 'Talk to an Expert' : 'Book Now'}&nbsp;&nbsp;<ArrowRight className="size-4" />
-                </Link>
-              </article>
-            ))}
           </div>
 
           <p className="cmp-note">

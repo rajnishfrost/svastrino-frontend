@@ -44,6 +44,11 @@ function fromBackend(journey) {
 
 const cleanTitle = (t) => (t || '').replace(/\s*[-–—]\s*Stage\s*\d+\s*$/i, '').trim()
 const cleanRange = (r) => (r || '').replace(/^\s*\(\s*/, '').replace(/\s*\)\s*$/, '').trim()
+// On a phone the name and time share one row, so both may wrap. Keep the
+// pieces that read as one unit together: "Pre-Session" never splits at its
+// hyphen (non-breaking hyphen), and "Day 3" / "90 minutes" never split apart.
+const keepHyphen = (t) => t.replace(/(\w)-(\w)/g, '$1\u2011$2')
+const keepUnits = (r) => r.replace(/(\d+) (minutes?)/gi, '$1\u00a0$2').replace(/(Day) (\d+)/gi, '$1\u00a0$2')
 
 // Some inclusion lists carry a bare connector line ("Or", "And") between two
 // alternatives — it isn't an inclusion in its own right, so it renders as a
@@ -157,14 +162,16 @@ function StageHeading({ title, range, note }) {
   const noteLines = note ? note.split('\n').map((l) => l.trim()).filter(Boolean) : []
   return (
     <div className="lg:pr-16">
-      {/* Phones/tablets: the time chip always sits under the stage name, so
-          Pre-, Actual and Post-session line up the same way (it used to sit
-          beside a short name and under a long one). Side by side from 900px. */}
-      <div className="flex flex-col items-start gap-2 lg:inline-flex lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
-        <h3 className="font-display text-xl font-bold text-brand-navy lg:text-white">{title}</h3>
+      {/* Phones/tablets: the stage name and its time chip always share ONE row
+          — name left, chip right — for every programme and every stage. Neither
+          may push the other onto a new line: a long name wraps within its own
+          column and a long time wraps inside the chip (capped at ~55% of the
+          row). From 900px it becomes the navy pill. */}
+      <div className="flex items-center justify-between gap-3 lg:inline-flex lg:flex-wrap lg:justify-start lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
+        <h3 className="min-w-0 font-display text-[15px] min-[380px]:text-base font-bold leading-snug text-brand-navy sm:text-lg lg:text-xl lg:text-white">{keepHyphen(title)}</h3>
         {range && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-crimson/10 lg:bg-brand-crimson px-3 py-1 text-[13px] font-semibold text-brand-crimson lg:text-white">
-            <ClockIcon className="shrink-0" /> {range}
+          <span className="inline-flex max-w-[58%] shrink-0 items-center gap-1.5 rounded-xl bg-brand-crimson/10 px-2 py-1 text-[11px] min-[380px]:max-w-[55%] min-[380px]:px-2.5 min-[380px]:text-[12px] font-semibold leading-snug text-brand-crimson sm:text-[13px] lg:max-w-none lg:rounded-full lg:bg-brand-crimson lg:px-3 lg:text-white">
+            <ClockIcon className="shrink-0" /> <span>{keepUnits(range)}</span>
           </span>
         )}
       </div>

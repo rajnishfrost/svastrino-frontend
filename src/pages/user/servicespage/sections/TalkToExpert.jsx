@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckCircle2 } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useAuth } from '../../../../context/AuthContext.jsx'
 import { api } from '../../../../api/client.js'
 import {
@@ -83,39 +83,48 @@ export default function TalkToExpert({ program }) {
   const waiting = !!standing && !approved
 
   /**
-   * The status card. Tinted and marked rather than plain, because this replaces
-   * a form: someone who filled one in and came back needs to SEE that it landed
-   * and that an answer is coming, not read a paragraph and wonder.
+   * The status card. It replaces the form, so it has to read at a glance as
+   * "done, it landed": a green success card with a big tick, not a tinted note
+   * in the brand crimson (which reads as a warning).
    */
   const Panel = ({ children }) => (
-    <div className="mt-6 rounded-xl border border-brand-crimson/20 bg-brand-rose p-5">{children}</div>
+    <div className="mt-6 rounded-2xl border border-solid border-emerald-200 bg-gradient-to-b from-emerald-50 to-white p-5 text-center shadow-[0_12px_32px_-14px_rgba(5,150,105,0.35)] sm:p-7">
+      {children}
+    </div>
   )
 
   /**
    * Where they are along a process they cannot otherwise see. The three steps
    * are the enquiry's own states (new -> contacted -> approved), so the card can
-   * never claim progress the checkout would disagree with.
+   * never claim progress the checkout would disagree with. One row at every
+   * width: number on top, label under it, a line joining the circles.
    */
   const Steps = ({ status }) => {
     const done = [true, status === 'contacted' || status === 'approved', status === 'approved']
     const labels = ['Request sent', 'Mentor calls you', 'Enrol']
     return (
-      <ol className="mt-4 flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+      <ol className="mx-auto mt-6 flex w-full max-w-md list-none p-0">
         {labels.map((label, i) => (
-          <li key={label} className={`flex items-center gap-2 ${i < labels.length - 1 ? 'sm:flex-1' : ''}`}>
+          <li key={label} className="relative flex min-w-0 flex-1 flex-col items-center gap-2 px-1">
+            {i > 0 && (
+              <span
+                aria-hidden
+                className={`absolute top-[13px] h-0.5 rounded-full ${done[i] ? 'bg-emerald-500' : 'bg-emerald-200'}`}
+                style={{ left: 'calc(-50% + 18px)', right: 'calc(50% + 18px)' }}
+              />
+            )}
             <span
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                done[i] ? 'bg-brand-crimson text-white' : 'border border-brand-navy/20 bg-white text-brand-slate'
+              className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                done[i]
+                  ? 'bg-emerald-500 text-white'
+                  : 'border-2 border-solid border-emerald-200 bg-white text-emerald-700'
               }`}
             >
-              {done[i] ? '\u2713' : i + 1}
+              {done[i] ? <Check className="size-4" strokeWidth={3} /> : i + 1}
             </span>
-            <span className={`whitespace-nowrap text-xs ${done[i] ? 'font-semibold text-brand-navy' : 'text-brand-slate'}`}>
+            <span className={`text-xs leading-tight ${done[i] ? 'font-semibold text-emerald-800' : 'text-brand-slate'}`}>
               {label}
             </span>
-            {i < labels.length - 1 && (
-              <span className={`hidden h-px flex-1 sm:block ${done[i + 1] ? 'bg-brand-crimson' : 'bg-brand-navy/15'}`} />
-            )}
           </li>
         ))}
       </ol>
@@ -123,12 +132,12 @@ export default function TalkToExpert({ program }) {
   }
 
   const Submitted = ({ heading, when }) => (
-    <div className="flex items-start gap-3">
-      <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand-crimson" />
-      <div>
-        <strong className="block font-display text-base font-bold text-brand-navy">{heading}</strong>
-        {when && <span className="text-xs text-brand-slate">Sent on {when}</span>}
-      </div>
+    <div className="flex flex-col items-center">
+      <span className="flex size-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 ring-8 ring-emerald-100">
+        <Check className="size-7" strokeWidth={3} />
+      </span>
+      <strong className="mt-4 block font-display text-xl font-bold text-emerald-900">{heading}</strong>
+      {when && <span className="mt-1 text-xs text-brand-slate">Sent on {when}</span>}
     </div>
   )
 
@@ -156,7 +165,7 @@ export default function TalkToExpert({ program }) {
       {/* Just sent, this visit. */}
       {sent && (
         <Panel>
-          <Submitted heading="Request submitted" when={onDate(new Date())} />
+          <Submitted heading="Request submitted!" when={onDate(new Date())} />
           <Steps status="new" />
           <p className="mt-4 text-sm leading-relaxed text-brand-slate">
             One of our mentors will call you within one working day. We have emailed you a

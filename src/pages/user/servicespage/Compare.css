@@ -74,7 +74,9 @@
   z-index: 2;
   border-bottom: 2px solid var(--color-accent);
 }
-.cmp-corner { z-index: 3; }
+/* The top-left cell is pinned both ways, so it must sit above the header cells
+   sliding past it (they share `thead th`, which is more specific than .cmp-corner). */
+.cmp-table thead th.cmp-corner { z-index: 4; }
 
 .cmp-cat {
   display: block;
@@ -100,6 +102,10 @@
   position: static;
 }
 
+/* The label rides along when the table scrolls sideways on a phone, instead of
+   scrolling out of view with the full-width bar. */
+.cmp-divider-label { position: sticky; left: var(--space-3); }
+
 .cmp-yes,
 .cmp-no { text-align: center; font-size: 17px; }
 .cmp-yes { color: var(--color-success, #2e7d32); }
@@ -113,41 +119,70 @@
   color: var(--color-text-muted);
 }
 
-/* ---- Phones: one card per program instead of the table ---- */
-.cmp-cards { display: none; }
+/* ---- Phones and small tablets: the table, made to work on a small screen ----
+   The wrap becomes its own scroll box: sideways when the table is wider than
+   the screen (portrait phones), and down with the header row pinned to its top,
+   so the programme names stay in view the whole way. The feature column stays
+   pinned on the left, narrower, with a soft edge so it reads as fixed. In
+   landscape the table fits without scrolling sideways at all. */
+.cmp-hint { display: none; }
 
 @media (max-width: 767px) {
-  .cmp-wrap { display: none; }
-  .cmp-cards { display: grid; gap: var(--space-4); }
+  .cmp-wrap {
+    overflow: auto;
+    max-height: 78vh;
+    overscroll-behavior-x: contain;
+  }
+  .cmp-table {
+    min-width: 540px;
+    font-size: 13px;
+  }
+  .cmp-caption { padding: 10px 12px; font-size: 12px; }
+  .cmp-table th,
+  .cmp-table td { padding: 9px 10px; line-height: 1.4; }
+  .cmp-table tbody th,
+  .cmp-corner {
+    width: 118px;
+    min-width: 118px;
+    font-size: 12.5px;
+    box-shadow: 6px 0 8px -6px rgba(15, 44, 92, 0.25);   /* pinned edge */
+  }
+  .cmp-table thead th { top: 0; }
+  .cmp-cat { font-size: 9.5px; letter-spacing: 0.3px; }
+  .cmp-table thead a { font-size: 13px; line-height: 1.25; }
+  .cmp-yes, .cmp-no { font-size: 15px; }
+  .cmp-table tfoot td { padding: 12px 8px; }
+  .cmp-table tfoot .btn {
+    width: 100%;
+    padding: 9px 8px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  .cmp-table tfoot .btn svg { display: none; }
 }
 
-.cmp-card {
-  border: 1px solid var(--color-surface-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  padding: 20px 18px;
+/* The hint only where the table actually scrolls sideways. */
+@media (max-width: 579px) {
+  .cmp-hint {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 2px 6px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-heading);
+    text-align: center;
+  }
+  .cmp-hint span { color: var(--color-accent); }
+  .cmp-hint small {
+    flex-basis: 100%;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
 }
-.cmp-card .cmp-cat { margin: 0; }
-.cmp-card-name { margin: 4px 0 12px; font-size: 20px; }
-.cmp-card-name a { color: var(--color-heading); }
-.cmp-card-details { margin: 0; display: grid; gap: 10px; }
-.cmp-card-details div { display: grid; gap: 2px; }
-.cmp-card-details dt { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); }
-.cmp-card-details dd { margin: 0; font-size: 14.5px; color: var(--color-text); }
-.cmp-card-sub {
-  margin: 18px 0 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-surface-border);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-heading);
-}
-.cmp-card-list { margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
-.cmp-card-list li { display: flex; gap: 8px; align-items: baseline; }
-.cmp-card-yes span[aria-hidden] { color: #16a34a; font-weight: 700; }
-.cmp-card-no { color: var(--color-text-muted); }
-.cmp-card-no span[aria-hidden] { color: var(--crimson); font-weight: 700; }
-.cmp-card-cta { margin-top: 18px; width: 100%; justify-content: center; }
 
 /* Visually hidden but read out — the tick/dash columns need a real word. */
 .sr-only {

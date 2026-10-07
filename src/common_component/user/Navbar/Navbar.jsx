@@ -85,6 +85,13 @@ export default function Navbar() {
     return () => { document.body.style.overflow = prev; document.removeEventListener('keydown', onKey) }
   }, [open])
 
+  // Closing the phone menu — by the button, the backdrop, Escape or a page
+  // change — folds every dropdown inside it too, so it always reopens collapsed
+  // rather than with Services (or a submenu) still open from last time.
+  useEffect(() => {
+    if (!open) window.dispatchEvent(new Event(NAV_CLOSED))
+  }, [open])
+
   return (
     <>
     {/* Tapping anywhere outside the open phone menu closes it. A sibling of
@@ -96,7 +103,9 @@ export default function Navbar() {
         {/* Brand is always Svastrino — even on the Nirmaan page — so users can
             always return home. The logo is the full wordmark (name baked in). */}
         <Link className="nav-brand" to="/" onClick={close}>
-          <img src="/logo.png" alt="Svastrino Consultancy Services" />
+          {/* Pre-sized copies (1×, 2×, 3× of the 44px-tall slot): the browser picks
+              the one that matches the screen, so the small lettering stays sharp. */}
+          <img src="/logo-128.png" srcSet="/logo-128.png 128w, /logo-256.png 256w, /logo-384.png 384w, /logo-512.png 512w, /logo.png 734w" sizes="128px" width="128" height="44" alt="Svastrino Consultancy Services" />
         </Link>
 
         <div className="nav-end">
@@ -178,6 +187,8 @@ const canHover = () =>
 // once. Submenus inside Services are not part of it — opening one must not
 // close the menu it sits in.
 const MENU_OPENED = 'svastrino:nav-menu-opened'
+// Fired when the phone menu closes: every dropdown, at any level, shuts.
+const NAV_CLOSED = 'svastrino:nav-closed'
 
 function useHoverMenu(delay = 180, { exclusive = false } = {}) {
   const [open, setOpenRaw] = useState(false)
@@ -191,6 +202,11 @@ function useHoverMenu(delay = 180, { exclusive = false } = {}) {
     }
     setOpenRaw(value)
   }
+  useEffect(() => {
+    const onNavClosed = () => setOpenRaw(false)
+    window.addEventListener(NAV_CLOSED, onNavClosed)
+    return () => window.removeEventListener(NAV_CLOSED, onNavClosed)
+  }, [])
   useEffect(() => {
     if (!exclusive) return undefined
     const onOther = (e) => { if (e.detail !== id.current) setOpenRaw(false) }
@@ -346,8 +362,13 @@ function ProfileMenu({ user, onNavigate }) {
     const onDocClick = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
+    const onNavClosed = () => setOpen(false)
     document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
+    window.addEventListener(NAV_CLOSED, onNavClosed)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      window.removeEventListener(NAV_CLOSED, onNavClosed)
+    }
   }, [])
 
   const closeAll = () => {

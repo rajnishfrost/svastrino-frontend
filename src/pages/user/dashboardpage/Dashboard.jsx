@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Navigate, useParams } from 'react-router-dom'
+import { BookOpen, Brain, CalendarDays } from 'lucide-react'
 import { api } from '../../../api/client.js'
 import { fetchMyMentoring } from '../../../api/mentoring.js'
 import { useAuth } from '../../../context/AuthContext.jsx'
@@ -81,16 +82,44 @@ const accessState = (e) => e.access?.state || 'active'
 
 const ACTION = 'inline-flex items-center gap-1 text-sm font-semibold text-brand-crimson hover:underline'
 const PANEL_TITLE = 'font-display text-xl font-bold text-brand-navy'
-// Nothing to show yet. Deliberately not inside a card: a card's padding indents
-// its text past the panel heading, so an empty panel read as misaligned rather
-// than empty. With no card there is nothing to line the text up against but the
-// heading itself.
+// Nothing to show yet: a dashed card with one line and the way in.
 const EMPTY = 'text-sm text-brand-slate'
-// One row of a dashboard panel — an enrolment, a booked program. A bordered,
-// padded card put its text 24px right of the panel heading, which is the whole
-// reason these panels looked misaligned. A hairline separates rows instead, so
-// every line in the panel starts at the same edge as its title.
-const ROW = 'border-b border-brand-navy/10 pb-5 last:border-0 last:pb-0'
+// One item of a panel — a booked programme, an enrolment — as a white card on
+// the dashboard's soft background, so each reads as its own thing on a phone
+// instead of a run of loose lines.
+const CARD = 'rounded-2xl border border-solid border-brand-navy/15 bg-white p-4 shadow-[0_12px_30px_-14px_rgba(15,44,92,0.4)] sm:p-6'
+// The card's main call to action: full width on a phone (an easy thumb target),
+// its natural width from a tablet up.
+const CTA = 'inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl px-5 text-[13px] font-semibold text-white no-underline transition-colors sm:w-auto'
+const ACTIVE_PILL = 'shrink-0 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700'
+
+/** Empty panel: a dashed card, a line, and the way in. */
+function Empty({ text, to, cta }) {
+  return (
+    <div className="rounded-2xl border-2 border-dashed border-brand-navy/15 bg-white/70 p-6 text-center">
+      <p className={EMPTY}>{text}</p>
+      <Link to={to} className={`${ACTION} mt-3`}>{cta}</Link>
+    </div>
+  )
+}
+
+/** A slim progress bar, labelled above with its percentage. */
+function Progress({ percent, bar, label = 'Progress' }) {
+  const pct = Math.max(0, Math.min(100, Math.round(percent)))
+  return (
+    <div className="mt-4">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-medium text-brand-slate">{label}</span>
+        <span className="font-bold text-brand-navy">{pct}%</span>
+      </div>
+      {/* A track that reads even when empty: thicker, a clearer grey, and an
+          inset edge — at 0% the bar is still plainly there. */}
+      <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-slate-200 shadow-[inset_0_1px_2px_rgba(15,44,92,0.18)] ring-1 ring-inset ring-slate-300/70">
+        {pct > 0 && <span className={`block h-full rounded-full ${bar}`} style={{ width: `${Math.max(pct, 3)}%` }} />}
+      </div>
+    </div>
+  )
+}
 
 /**
  * The course name in front of the plan reads "Nirmaan — Nirmaan" whenever the
@@ -139,24 +168,43 @@ export default function Dashboard() {
     return <Navigate to={`/dashboard/${pick}`} replace />
   }
 
+  const first = (user?.name || '').trim().split(/\s+/)[0]
+  const initial = (first || user?.email || '?').charAt(0).toUpperCase()
+
   return (
-    <section className="bg-white py-10 md:py-14">
+    <section className="bg-soft py-6 md:py-12">
       <div className="container">
-        <div className="border-b border-brand-navy/10 pb-6">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-brand-navy">Dashboard</h1>
-          <p className="mt-2 text-brand-slate">Welcome back{user?.name ? `, ${user.name}` : ''}.</p>
+        {/* Welcome band: who is signed in, at a glance. */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy to-brand-blue-dark p-5 text-white shadow-[0_16px_36px_-18px_rgba(15,44,92,0.7)] sm:p-7">
+          <span aria-hidden className="pointer-events-none absolute -right-10 -top-12 size-40 rounded-full bg-white/10" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-16 right-16 size-32 rounded-full bg-white/5" />
+          <div className="relative flex items-center gap-4">
+            {user?.avatar ? (
+              <img src={user.avatar} alt="" referrerPolicy="no-referrer" className="size-14 shrink-0 rounded-full object-cover ring-2 ring-white/40" />
+            ) : (
+              <span aria-hidden className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white/15 font-display text-2xl font-bold ring-2 ring-white/30">
+                {initial}
+              </span>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm text-white/70">Welcome back{first ? ',' : ''}</p>
+              <h1 className="truncate font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                {first || 'Dashboard'}
+              </h1>
+            </div>
+          </div>
         </div>
 
         {/* grid-cols-1 is minmax(0,1fr): without the 0 floor, on a phone the
-            column grows to the pill row's full width and the cards run off
-            the right edge of the screen. */}
-        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[224px_minmax(0,1fr)]">
-          {/* Sidebar on a wide screen. Below 900px the four tabs sit in a grid (2×2 on a
-              phone, one row on a tablet) so every tab — and the one you're on — is
-              always in view; a sideways-scrolling row hid half of them. */}
+            column grows to the tab bar's full width and the cards run off the
+            right edge of the screen. */}
+        <div className="mt-5 grid grid-cols-1 gap-6 lg:mt-8 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-8">
+          {/* Below 900px the four tabs are one segmented bar — icon over label,
+              every tab and the one you're on always in view. From 900px it is
+              the sidebar. */}
           <aside className="min-w-0">
             <nav
-              className="grid grid-cols-2 gap-1 sm:grid-cols-4 lg:sticky lg:top-24 lg:flex lg:flex-col"
+              className="grid grid-cols-4 gap-2 lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-1 lg:rounded-2xl lg:border lg:border-solid lg:border-brand-navy/10 lg:bg-white lg:p-2 lg:shadow-sm"
               aria-label="Dashboard sections"
             >
               {TABS.map((t) => (
@@ -164,13 +212,15 @@ export default function Dashboard() {
                   key={t.key}
                   to={`/dashboard/${t.key}`}
                   className={({ isActive }) =>
-                    `flex shrink-0 items-center gap-3 whitespace-nowrap rounded-lg px-3.5 py-2.5 text-sm font-semibold transition-colors ${
-                      isActive ? 'bg-brand-navy text-white' : 'text-brand-navy hover:bg-brand-navy/5'
+                    `flex min-w-0 flex-col items-center gap-1 rounded-xl border border-solid px-0.5 py-2.5 text-[10.5px] font-semibold no-underline transition-colors min-[380px]:text-xs lg:flex-row lg:gap-3 lg:border-0 lg:px-3.5 lg:py-2.5 lg:text-sm ${
+                      isActive
+                        ? 'border-brand-navy bg-brand-navy text-white shadow-md shadow-brand-navy/25'
+                        : 'border-brand-navy/20 bg-white text-brand-navy shadow-[0_6px_16px_-8px_rgba(15,44,92,0.35)] hover:border-brand-navy/40 lg:bg-transparent lg:shadow-none lg:hover:bg-brand-navy/5'
                     }`
                   }
                 >
                   <span className="shrink-0" aria-hidden>{ICON[t.icon]}</span>
-                  {t.label}
+                  <span className="max-w-full">{t.label}</span>
                 </NavLink>
               ))}
             </nav>
@@ -192,6 +242,18 @@ export default function Dashboard() {
 }
 
 /* ---------- Services (mentoring programs) ---------- */
+
+/** What a session's own actions are: book the next one, or move a booked one. */
+function SessionAction({ p, s }) {
+  if (!s.startAt && s.sessionNumber === p.sessionsBooked + 1) {
+    return <Link to={`/book-online?program=${p.sku}`} className={ACTION}>Book →</Link>
+  }
+  if (canReschedule(s)) {
+    return <Link to={`/book-online?program=${p.sku}&reschedule=${s.bookingId}`} className={ACTION}>Reschedule</Link>
+  }
+  return null
+}
+
 function ServicesPanel({ mentoring }) {
   return (
     <div>
@@ -201,27 +263,69 @@ function ServicesPanel({ mentoring }) {
         {mentoring == null ? (
           <SkeletonList rows={2} />
         ) : mentoring.length === 0 ? (
-          <div>
-            <p className={EMPTY}>You haven't booked a service yet.</p>
-            <div className="mt-3">
-              <Link to="/book-online" className={ACTION}>Book a session →</Link>
-            </div>
-          </div>
+          <Empty text="You haven't booked a service yet." to="/book-online" cta="Book a session →" />
         ) : (
           mentoring.map((p) => (
-            <div key={p.sku} className={ROW}>
+            <div key={p.sku} className={CARD}>
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="font-display text-lg font-bold text-brand-navy">{p.name}</h3>
-                  <p className="mt-0.5 text-sm text-brand-slate">
+                <div className="min-w-0">
+                  <h3 className="font-display text-base font-bold leading-snug text-brand-navy sm:text-lg">{p.name}</h3>
+                  <p className="mt-1 text-[13px] leading-snug text-brand-slate sm:text-sm">
                     {p.sessionsBooked} of {p.sessionsTotal} sessions booked
                     {p.sessionsRemaining > 0 ? ` · ${p.sessionsRemaining} remaining` : ''}
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">Active</span>
+                <span className={ACTIVE_PILL}>Active</span>
               </div>
+              {p.sessionsTotal > 0 && (
+                <Progress percent={(p.sessionsBooked / p.sessionsTotal) * 100} bar="bg-brand-crimson" label="Sessions booked" />
+              )}
 
-              <div className="mt-5 overflow-x-auto">
+              {/* Phones: one small card per session — a table here cut off its
+                  right-hand columns. */}
+              <ol className="mt-5 list-none space-y-3 p-0 md:hidden">
+                {p.sessions.map((s) => {
+                  const done = s.status === 'completed'
+                  return (
+                    <li key={s.sessionNumber} className="rounded-xl border border-solid border-brand-navy/10 bg-brand-cream p-3.5">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                            done ? 'bg-green-600 text-white' : s.startAt ? 'bg-brand-navy text-white' : 'border-2 border-solid border-brand-navy/20 bg-white text-brand-navy'
+                          }`}
+                        >
+                          {done ? '✓' : s.sessionNumber}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-brand-slate">Session {s.sessionNumber}</p>
+                          <p className={`text-sm font-semibold ${s.startAt ? 'text-brand-navy' : 'text-brand-slate'}`}>
+                            {s.startAt ? fmtWhen(s.startAt) : 'Not booked yet'}
+                            {done && <span className="text-green-600"> · done</span>}
+                          </p>
+                        </div>
+                        <span className="shrink-0"><SessionAction p={p} s={s} /></span>
+                      </div>
+                      {s.update && (
+                        <div className="mt-3 border-0 border-t border-solid border-brand-navy/10 pt-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-brand-slate">Session update</p>
+                          <p className="mt-1 text-sm leading-relaxed text-brand-navy">{s.update}</p>
+                        </div>
+                      )}
+                      {s.tasks && s.tasks.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-brand-slate">Tasks</p>
+                          <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-brand-navy">
+                            {s.tasks.map((t, i) => <li key={i}>{t}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  )
+                })}
+              </ol>
+
+              {/* Tablet and up: the full table. */}
+              <div className="mt-5 hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[640px] border-collapse text-sm">
                   <thead>
                     <tr className="border-b border-brand-navy/10 text-left text-xs uppercase tracking-wide text-brand-slate">
@@ -234,7 +338,7 @@ function ServicesPanel({ mentoring }) {
                   </thead>
                   <tbody>
                     {p.sessions.map((s) => (
-                      <tr key={s.sessionNumber} className="border-b border-brand-navy/5 align-top text-brand-navy">
+                      <tr key={s.sessionNumber} className="border-b border-brand-navy/5 align-top text-brand-navy last:border-0">
                         <td className="py-3 pr-4 font-semibold">#{s.sessionNumber}</td>
                         <td className="py-3 pr-4">
                           {s.startAt
@@ -247,16 +351,7 @@ function ServicesPanel({ mentoring }) {
                             ? <ul className="list-disc space-y-1 pl-4">{s.tasks.map((t, i) => <li key={i}>{t}</li>)}</ul>
                             : <span className="text-brand-slate">—</span>}
                         </td>
-                        <td className="py-3 text-right">
-                          {!s.startAt && s.sessionNumber === p.sessionsBooked + 1 && (
-                            <Link to={`/book-online?program=${p.sku}`} className={ACTION}>Book →</Link>
-                          )}
-                          {canReschedule(s) && (
-                            <Link to={`/book-online?program=${p.sku}&reschedule=${s.bookingId}`} className={ACTION}>
-                              Reschedule
-                            </Link>
-                          )}
-                        </td>
+                        <td className="py-3 text-right"><SessionAction p={p} s={s} /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -264,8 +359,8 @@ function ServicesPanel({ mentoring }) {
               </div>
 
               {p.sessionsRemaining > 0 && (
-                <div className="mt-4">
-                  <Link to={`/book-online?program=${p.sku}`} className={ACTION}>
+                <div className="mt-5">
+                  <Link to={`/book-online?program=${p.sku}`} className={`${CTA} bg-brand-crimson hover:bg-brand-crimson-dark`}>
                     Book session {p.sessionsBooked + 1} →
                   </Link>
                 </div>
@@ -294,15 +389,25 @@ function PsychometricLine() {
   if (state !== 'owned' || !assessment) return null
   const line = PSY_LINE[assessment.status] || PSY_LINE.not_started
   const reportUrl = assessment.status === 'completed' ? assessment.report?.url : null
+  const done = assessment.status === 'submitted' || assessment.status === 'completed'
+  const status = line.text.replace(/^Psychometric test:\s*/, '').replace(/^./, (c) => c.toUpperCase())
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-      <span className="text-brand-slate">{line.text}</span>
+    <div className="mt-4 rounded-xl bg-nirmaan-green/[0.08] px-3.5 py-3 text-[13px]">
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-brand-navy">
+          <Brain className="size-4 shrink-0 text-nirmaan-green" aria-hidden />
+          <span className="truncate">Psychometric test</span>
+        </span>
+        <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${done ? 'bg-nirmaan-green text-white' : 'bg-white text-nirmaan-green-dark'}`}>
+          {status}
+        </span>
+      </div>
       {reportUrl ? (
-        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-nirmaan-green hover:underline">
+        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
           View your report →
         </a>
       ) : line.cta ? (
-        <Link to="/skill-build/psychometric-testing" className="font-semibold text-nirmaan-green hover:underline">
+        <Link to="/skill-build/psychometric-testing" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
           {line.cta}
         </Link>
       ) : null}
@@ -327,65 +432,68 @@ function SkillBuildPanel({ courses }) {
         {courses == null ? (
           <SkeletonList rows={2} />
         ) : courses.length === 0 ? (
-          <div>
-            <p className={EMPTY}>You haven't enrolled in a Skill-Build course yet.</p>
-            <div className="mt-3">
-              <Link to="/skill-build/nirmaan" className={ACTION}>Explore Nirmaan →</Link>
-            </div>
-          </div>
+          <Empty text="You haven't enrolled in a Skill-Build course yet." to="/skill-build/nirmaan" cta="Explore Nirmaan →" />
         ) : (
           courses.map((e) => {
             const state = accessState(e)
             const open = state === 'active'
             const isTest = e.kind === 'test'
             const isNirmaan = isTest || (e.courseSlug || 'nirmaan') === 'nirmaan'
-            const accent = isNirmaan ? 'text-nirmaan-green' : 'text-brand-crimson'
             const bar = isNirmaan ? 'bg-nirmaan-green' : 'bg-brand-crimson'
             return (
-              <div key={e.id} className={ROW}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-display text-lg font-bold text-brand-navy">
-                      {courseTitle(e.courseName, e.packageName)}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-brand-slate">
-                      {isTest
-                        ? 'Psychometric test · Stream or Career Selector, by your class'
-                        : e.progress && e.progress.total > 0
-                          ? `${e.progress.completed} of ${e.progress.total} lectures complete`
-                          : 'Skill-Build subscription'}
-                      {!isTest && e.expiresAt
-                        ? open
-                          ? ` · valid till ${fmtDate(e.expiresAt)}`
-                          : ` · ended on ${fmtDate(e.expiresAt)}`
-                        : ''}
-                    </p>
-                    {e.progress && e.progress.total > 0 && (
-                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-brand-navy/10">
-                        <span className={`block h-full rounded-full ${bar}`} style={{ width: `${e.progress.percent}%` }} />
-                      </div>
-                    )}
-                  </div>
+              <div key={e.id} className={CARD}>
+                {/* Title on one line of its own; status and facts as chips under it. */}
+                <div className="flex items-center gap-3">
+                  <span aria-hidden className={`hidden size-10 shrink-0 items-center justify-center rounded-xl sm:flex ${isNirmaan ? 'bg-nirmaan-green/10 text-nirmaan-green' : 'bg-brand-crimson/10 text-brand-crimson'}`}>
+                    {isTest ? <Brain className="size-5" /> : <BookOpen className="size-5" />}
+                  </span>
+                  <h3 className="min-w-0 truncate whitespace-nowrap font-display text-[15px] font-bold leading-snug text-brand-navy sm:text-lg" title={courseTitle(e.courseName, e.packageName)}>
+                    {courseTitle(e.courseName, e.packageName)}
+                  </h3>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-1.5 text-[11.5px] font-medium text-brand-slate">
                   {open ? (
-                    <span className="shrink-0 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">Active</span>
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 font-semibold text-green-700">Active</span>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-brand-navy/10 px-2.5 py-0.5 text-xs font-semibold text-brand-slate">Course closed</span>
+                    <span className="inline-flex items-center rounded-full bg-brand-navy/10 px-2.5 py-1 font-semibold text-brand-slate">Closed</span>
+                  )}
+                  {isTest ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy/[0.05] px-2.5 py-1">
+                      <Brain className="size-3.5" aria-hidden /> Stream or Career Selector
+                    </span>
+                  ) : (
+                    <>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy/[0.05] px-2.5 py-1">
+                        <BookOpen className="size-3.5" aria-hidden />
+                        {e.progress && e.progress.total > 0
+                          ? `${e.progress.completed}/${e.progress.total} lectures`
+                          : 'Skill-Build subscription'}
+                      </span>
+                      {e.expiresAt && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy/[0.05] px-2.5 py-1">
+                          <CalendarDays className="size-3.5" aria-hidden />
+                          {open ? 'Valid till' : 'Ended'} {fmtDate(e.expiresAt)}
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
+                {e.progress && e.progress.total > 0 && <Progress percent={e.progress.percent} bar={bar} />}
                 {e.id === psyCardId && <PsychometricLine />}
                 <div className="mt-4">
                   {isTest ? (
-                    <Link to="/skill-build/psychometric-testing" className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>
+                    <Link to="/skill-build/psychometric-testing" className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
                       Go to your test →
                     </Link>
                   ) : e.progress && e.progress.total > 0 ? (
-                    <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>
+                    <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
                       {open
                         ? e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'
                         : state === 'expired' ? 'Download your work →' : 'View course details →'}
                     </Link>
                   ) : (
-                    <Link to={`/skill-build/${e.courseSlug || 'nirmaan'}#packages`} className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${accent}`}>
+                    <Link to={`/skill-build/${e.courseSlug || 'nirmaan'}#packages`} className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
                       View packages →
                     </Link>
                   )}

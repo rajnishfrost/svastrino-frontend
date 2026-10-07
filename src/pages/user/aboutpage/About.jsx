@@ -32,10 +32,11 @@ const TEAM = [
   { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: '/assets/images/team/rohit-gala.png', linkedin: null },
   { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: '/assets/images/team/miloni-gala.png', linkedin: null },
   { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
-  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
+  // Ravindra's photo is raviSir3.jpeg re-cut onto the same beige backdrop and
+  // 1080x1220 frame as everyone else's, so the circles match.
+  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravindra-yadav-team.jpg', linkedin: null },
   { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
-  // { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravi.png', linkedin: null },
-  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/raviSir3.jpeg', linkedin: null },
+  { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
 ]
 
 const SERVICES = [

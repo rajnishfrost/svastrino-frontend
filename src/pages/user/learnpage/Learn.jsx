@@ -34,6 +34,15 @@ const addOnName = (optionName, currentName) => {
   return optionName.startsWith(prefix) ? optionName.slice(prefix.length) : optionName
 }
 
+// A small padlock, drawn rather than the 🔒 emoji (which renders tiny and grey
+// on most phones and reads as a smudge).
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
+  </svg>
+)
+
 // mm:ss clock for note timestamps.
 const fmtClock = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`
 
@@ -94,6 +103,17 @@ export default function Learn() {
   const qRef = useRef(null)      // the questions panel, so the page can land on it
   const landed = useRef(false)   // ...but only once per visit
   const posRef = useRef({ local: -999, server: -999 }) // last saved video positions (s)
+  const playerRef = useRef(null) // the video block, so picking a week can bring it into view
+  const stripRef = useRef(null)  // the phone's week strip, kept scrolled to the open week
+
+  // Picking a week from the list at the foot of a phone screen used to change
+  // the video far above, out of sight. Bring the player to the top of the screen.
+  const pickSession = (id) => {
+    setActiveId(id)
+    if (window.matchMedia?.('(max-width: 899px)').matches) {
+      requestAnimationFrame(() => playerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    }
+  }
 
   const pickDefault = (sessions) => {
     const openIncomplete = sessions.find((s) => !s.videoLocked && !s.completed)
@@ -221,6 +241,13 @@ export default function Learn() {
   }, [active?.id, active?.resumeAt, active?.resumeUpdatedAt, user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { posRef.current = { local: -999, server: -999 } }, [activeId])
+
+  useEffect(() => {
+    const row = stripRef.current
+    const chip = row?.querySelector('.is-active')
+    if (!row || !chip) return
+    row.scrollTo({ left: chip.offsetLeft - row.clientWidth / 2 + chip.clientWidth / 2, behavior: 'smooth' })
+  }, [activeId, course?.sessions?.length])
 
   // The step up the banner talks about: the cheapest tier above the one they
   // own (upgrade-status sorts them by price).
@@ -583,6 +610,7 @@ export default function Learn() {
   }
 
   const { progress } = course
+  const doneCount = course.sessions.filter((s) => s.completed).length
 
   return (
     <section className="section">
@@ -599,9 +627,62 @@ export default function Learn() {
             the server env and restarting.
           </div>
         )}
+        <header className="learn-head">
+          <div>
+            {COURSE_LOGO[slug] ? (
+              <h1 className="learn-title-logo">
+                <img src={COURSE_LOGO[slug]} alt="" aria-hidden />
+                <span className="learn-eyebrow">Skill-Build · {course.skillBuild.name}</span>
+              </h1>
+            ) : (
+              <>
+                <p className="learn-eyebrow">Skill Build</p>
+                <h1>{course.skillBuild.name}</h1>
+              </>
+            )}
+          </div>
+          <div className="learn-progress">
+            <div className="learn-progress-top">
+              <span>{doneCount} of {course.sessions.length} weeks done</span>
+              <strong>{progress.percent}%</strong>
+            </div>
+            <div className="learn-progress-track"><span style={{ width: `${Math.max(progress.percent, progress.percent > 0 ? 3 : 0)}%` }} /></div>
+          </div>
+        </header>
+
+        {!online && (
+          <p className="learn-offline-banner">
+            📴 You're offline — showing your saved content. Downloaded videos will play
+            {pending > 0
+              ? `; ${pending} change${pending > 1 ? 's' : ''} will sync when you're back.`
+              : '; your progress will sync when you\'re back.'}
+          </p>
+        )}
+        {online && pending > 0 && (
+          <p className="learn-offline-banner">🔄 Syncing {pending} saved change{pending > 1 ? 's' : ''}…</p>
+        )}
+
+        {course.psychometric?.blocks && (
+          <PsychometricGate slug={slug} status={course.psychometric.status} onDone={load} />
+        )}
+        {/* Not blocking: the report once it is done, or — for a student who
+            added the test after buying the course — the test alongside it. */}
+        {course.psychometric?.included && !course.psychometric?.blocks && (
+          <PsychometricReady slug={slug} required={course.psychometric.required} onReopened={load} />
+        )}
+
+        {report && <ReportStrip report={report} />}
+
         {upgrade?.canUpgrade && nextUp && (
           <div className="learn-upgrade" role="note">
             <div className="learn-upgrade-info">
+              {/* Phones: the offer in one line, so it never pushes the video
+                  off the first screen. */}
+              <p className="learn-upgrade-mini">
+                ⭐ Add <strong>{addOnName(nextUp.name, upgrade.currentPackage.name)}</strong> for{' '}
+                <strong>{inr(nextUp.amount)}</strong>
+                {upgrade.courseStarted && <> · <span className="learn-upgrade-days">{upgrade.daysLeft} day{upgrade.daysLeft === 1 ? '' : 's'} left</span></>}
+              </p>
               <p className="learn-upgrade-title">Upgrade your plan</p>
               <p className="learn-upgrade-sub">
                 You're on <strong>{upgrade.currentPackage.name}</strong>. Add{' '}
@@ -631,52 +712,38 @@ export default function Learn() {
             </div>
           </div>
         )}
-        <header className="learn-head">
-          <div>
-            {COURSE_LOGO[slug] ? (
-              <h1 className="learn-title-logo">
-                <img src={COURSE_LOGO[slug]} alt="" aria-hidden />
-                <span className="learn-eyebrow">Skill-Build · {course.skillBuild.name}</span>
-              </h1>
-            ) : (
-              <>
-                <p className="learn-eyebrow">Skill Build</p>
-                <h1>{course.skillBuild.name}</h1>
-              </>
-            )}
+
+        {/* Phones and tablets: every week in one swipeable row above the video.
+            This IS the week list there — the sidebar list is desktop only. */}
+        <nav className="learn-weeks" aria-label="Weeks">
+          <div className="learn-weeks-head">
+            <span>Your weeks</span>
+            <em>{doneCount}/{course.sessions.length} done</em>
           </div>
-          <div className="learn-progress">
-            <div className="learn-progress-track"><span style={{ width: `${progress.percent}%` }} /></div>
-            <span className="learn-progress-label">{progress.percent}%</span>
+          <div className="learn-weeks-row" ref={stripRef}>
+            {course.sessions.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className={`learn-wk${s.id === activeId ? ' is-active' : ''}${s.completed ? ' is-done' : ''}${s.videoLocked ? ' is-locked' : ''}`}
+                disabled={s.videoLocked}
+                onClick={() => pickSession(s.id)}
+                aria-label={`Week ${s.order}: ${s.title}${s.completed ? ' (done)' : s.videoLocked ? ' (locked)' : ''}`}
+              >
+                <span className="learn-wk-n">{s.completed ? '✓' : s.videoLocked ? <LockIcon /> : s.order}</span>
+                <span className="learn-wk-l">Week {s.order}</span>
+              </button>
+            ))}
           </div>
-        </header>
-
-        {!online && (
-          <p className="learn-offline-banner">
-            📴 You're offline — showing your saved content. Downloaded videos will play
-            {pending > 0
-              ? `; ${pending} change${pending > 1 ? 's' : ''} will sync when you're back.`
-              : '; your progress will sync when you\'re back.'}
-          </p>
-        )}
-        {online && pending > 0 && (
-          <p className="learn-offline-banner">🔄 Syncing {pending} saved change{pending > 1 ? 's' : ''}…</p>
-        )}
-
-        {course.psychometric?.blocks && (
-          <PsychometricGate slug={slug} status={course.psychometric.status} onDone={load} />
-        )}
-        {/* Not blocking: the report once it is done, or — for a student who
-            added the test after buying the course — the test alongside it. */}
-        {course.psychometric?.included && !course.psychometric?.blocks && (
-          <PsychometricReady slug={slug} required={course.psychometric.required} onReopened={load} />
-        )}
-
-        {report && <ReportStrip report={report} />}
+        </nav>
 
         <div className="learn-grid">
           {/* Session list */}
-          <aside className="learn-sidebar">
+          <aside className="learn-sidebar" id="learn-all-weeks">
+            <div className="learn-sidebar-head">
+              <h3>All weeks</h3>
+              <span>{doneCount}/{course.sessions.length} done</span>
+            </div>
             <ol className="learn-list">
               {course.sessions.map((s) => (
                 <li key={s.id}>
@@ -684,10 +751,10 @@ export default function Learn() {
                     type="button"
                     className={`learn-item${s.id === activeId ? ' is-active' : ''}`}
                     disabled={s.videoLocked}
-                    onClick={() => setActiveId(s.id)}
+                    onClick={() => pickSession(s.id)}
                   >
                     <span className={`learn-item-ico learn-item-ico--${s.completed ? 'done' : s.videoLocked ? 'locked' : 'open'}`}>
-                      {s.completed ? '✓' : s.videoLocked ? '🔒' : s.order}
+                      {s.completed ? '✓' : s.videoLocked ? <LockIcon /> : s.order}
                     </span>
                     <span className="learn-item-main">
                       <span className="learn-item-title">{s.title}</span>
@@ -714,22 +781,44 @@ export default function Learn() {
           <main className="learn-main">
             {active && (
               <>
+                <div className="learn-player" ref={playerRef}>
                 <HlsPlayer key={active.id} src={active.videoUrl} videoRef={videoRef}
                            onTimeUpdate={onTimeUpdate} startAt={startAt}
                            lockSeek={!active.videoDone && !course.testMode}
                            watermark={user?.email || ''} captions={active.captions || []}
                            onFirstPlay={() => allowPlay(active.id)}
                            playBlockedMessage={`You have watched this video the maximum of ${playLimit} times.`} />
-                {!active.videoDone && !course.testMode && (
-                  <p className="learn-seek-note">🔒 Watch to 90% once to unlock skipping ahead on this video.</p>
-                )}
-                {active.playsLeft != null && !course.testMode && (
-                  <p className="learn-plays-note">
-                    {playsLeftFor(active) > 0
-                      ? `${playsLeftFor(active)} of ${playLimit} plays left for this video.`
-                      : 'You have used all the plays for this video.'}
+                </div>
+
+                {/* What is playing, straight under the video. */}
+                <div className="learn-now">
+                  <p className="learn-now-eyebrow">
+                    Week {active.order}{active.durationMins ? ` · ${active.durationMins} min` : ''}
                   </p>
-                )}
+                  <h2 className="learn-title">{active.title}</h2>
+                  {active.description && <p className="learn-desc">{active.description}</p>}
+                  {/* Plays left on the left, "Save offline" on the right of the
+                      same row. */}
+                  <div className="learn-now-row">
+                    <div className="learn-chips">
+                      {!course.testMode && active.playsLeft != null && (
+                        <span className={`learn-chip${playsLeftFor(active) === 0 ? ' is-warn' : ''}`}>
+                          ▶ {playsLeftFor(active) > 0
+                            ? `${playsLeftFor(active)} of ${playLimit} plays left`
+                            : 'No plays left'}
+                        </span>
+                      )}
+                      {!course.testMode && !active.videoDone && (
+                        <span className="learn-chip"><LockIcon /> Skip ahead after 90% watched</span>
+                      )}
+                    </div>
+                    {active.videoUrl && dlPct === null && !dlInfo && (
+                      <button type="button" className="learn-offline-btn learn-offline-btn--sm" onClick={openQualityPicker}>
+                        ⤓ Save offline
+                      </button>
+                    )}
+                  </div>
+                </div>
 
                 {/* Offline: saved inside the app — never as a file on the device */}
                 <div className="learn-offline">
@@ -747,18 +836,19 @@ export default function Learn() {
                       <button type="button" className="settings-link" onClick={dropOffline}>Remove</button>
                     </>
                   ) : (
-                    <>
-                      <button type="button" className="learn-offline-btn" onClick={openQualityPicker}>⤓ Save for offline</button>
-                      <span className="learn-offline-txt">
-                        Plays without internet, inside this site only — nothing is saved as a
-                        file on your device. It is kept in this browser's storage for this
-                        site, and you can find it any time under{' '}
+                    // The "Save offline" button itself sits up beside the plays
+                    // chip; the full explanation stays one tap away here.
+                    <details className="learn-offline-help">
+                      <summary>How does saving offline work?</summary>
+                      <p>
+                        The video plays without internet, inside this site only. Nothing is saved
+                        as a file on your device: it is kept in this browser&rsquo;s storage, and you
+                        can find it any time under{' '}
                         <Link to="/dashboard/downloads" className="learn-offline-link">My downloads</Link>
-                        {' '}(also in your profile menu). It stays on this browser only, so
-                        clearing this site's data — or opening the course on another device —
-                        means saving it again.
-                      </span>
-                    </>
+                        {' '}(also in your profile menu). It stays on this browser only, so if you
+                        clear this site&rsquo;s data or open the course on another device, save it again.
+                      </p>
+                    </details>
                   )}
                   {dlErr && <span className="learn-err">{dlErr}</span>}
                 </div>
@@ -792,9 +882,6 @@ export default function Learn() {
                     </ul>
                   </div>
                 )}
-
-                <h2 className="learn-title">{active.title}</h2>
-                <p className="learn-desc">{active.description}</p>
 
                 {/* The week's reading sits between its rule and its tasks — the
                     moment the student has just finished the video and is about
@@ -843,10 +930,10 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
             of an answer where the answer goes says what is being asked while
             still leaving the box empty. */}
         <textarea
-          className="learn-q-input" rows={4}
+          className="learn-q-input" rows={7}
           maxLength={LIMITS.answer}
           placeholder={q.current.placeholder
-            ? `For example — ${q.current.placeholder}`
+            ? `For example: ${q.current.placeholder}`
             : 'Type your answer…'}
           value={answerText} onChange={(e) => setAnswerText(e.target.value)}
         />
@@ -938,11 +1025,10 @@ function WeekResource({ slug, session }) {
 
   return (
     <div className="learn-resource">
-      <h3 className="learn-resource-title">📄 This week&rsquo;s resource</h3>
+      <h3 className="learn-resource-title">📄 This week&rsquo;s reading</h3>
       <p className="learn-resource-intro">
-        The written companion to this week&rsquo;s video — the same ideas in writing, with the
-        comparisons and examples set out so you can read them again while you work through the
-        tasks.{res.headings?.length ? ' Inside:' : ''}
+        The written version of this week&rsquo;s video, with its comparisons and examples, to
+        read again while you work on the tasks.{res.headings?.length ? ' Inside:' : ''}
       </p>
       {res.headings?.length > 0 && (
         <ul className="learn-resource-list">
@@ -950,12 +1036,12 @@ function WeekResource({ slug, session }) {
         </ul>
       )}
       <button type="button" className="btn btn-primary learn-resource-btn" onClick={open} disabled={busy}>
-        {busy ? 'Opening…' : `Download Week ${session.order} resource (PDF)`}
+        {busy ? 'Opening…' : `Download Week ${session.order} PDF`}
       </button>
       {/* Said plainly, because "download" and "a print view opens" are not the
           same promise — and because this is one week, not the whole course. */}
       <p className="learn-resource-note">
-        Opens a print view — choose &ldquo;Save as PDF&rdquo;. Week {session.order} only.
+        Opens a print view. Choose &ldquo;Save as PDF&rdquo;.
       </p>
       {err && <p className="learn-resource-err">{err}</p>}
     </div>

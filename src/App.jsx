@@ -36,7 +36,6 @@ import LegalPage from './pages/user/legalpage/LegalPage.jsx'
 import Blog from './pages/user/blogpage/Blog.jsx'
 import BlogPost from './pages/user/blogpage/BlogPost.jsx'
 import Contact from './pages/user/contactpage/Contact.jsx'
-import Offers from './pages/user/offerspage/Offers.jsx'
 import Login from './pages/user/loginpage/Login.jsx'
 import ResetPassword from './pages/user/loginpage/ResetPassword.jsx'
 import VerifyEmail from './pages/user/loginpage/VerifyEmail.jsx'
@@ -110,7 +109,6 @@ function PublicSite() {
           <Route path="/blog/page/:pageNumber" element={<Blog />} />
           <Route path="/blog/:slug" element={<ToRootSlug />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/offers" element={<Offers />} />
 
           {/* Auth + unified account */}
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />

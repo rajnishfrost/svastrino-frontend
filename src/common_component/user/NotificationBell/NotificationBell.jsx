@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   fetchNotifications,
   markAllNotificationsRead,
@@ -44,8 +44,7 @@ function timeAgo(iso) {
 /**
  * The bell in the navbar, shown only to a signed-in account. It carries the
  * unread count and opens a short list of what has happened to that student —
- * a report attached, a session confirmed, a payment gone through — plus a way
- * through to the offers page.
+ * a report attached, a session confirmed, a payment gone through.
  *
  * Nothing here is allowed to be load-bearing: every request fails silently, so
  * a student on a train with no signal still gets a working navbar and a bell
@@ -188,10 +187,6 @@ export default function NotificationBell({ onNavigate, onOpen }) {
             ))}
           </ul>
         )}
-
-        <Link to="/offers" className="nav-notif-foot" onClick={closeAll}>
-          See what's on offer
-        </Link>
       </div>
     </div>
   )

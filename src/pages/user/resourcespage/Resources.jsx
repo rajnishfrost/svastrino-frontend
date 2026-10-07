@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Compass, Search } from 'lucide-react'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import ProgramHeroArt from '../servicespage/sections/ProgramHeroArt.jsx'
 import ConnectionState from '../../../common_component/user/ConnectionState/ConnectionState.jsx'
@@ -70,9 +70,9 @@ function CoursesSkeleton({ count }) {
   return (
     <>
       <p className="sr-only" role="status">Loading careers…</p>
-      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 md:mt-10 md:grid-cols-2 lg:grid-cols-3" aria-hidden>
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="animate-skeleton rounded-[10px] border border-brand-navy/10 bg-white p-6 shadow-sm">
+          <div key={i} className="animate-skeleton rounded-2xl border border-solid border-brand-navy/10 bg-white p-6 shadow-[0_2px_6px_rgba(15,44,92,0.08),0_10px_28px_-4px_rgba(15,44,92,0.2)]">
             <div className="h-5 w-3/4 rounded bg-brand-navy/20" />
             <div className="mt-4 space-y-2">
               <div className="h-3 w-full rounded bg-brand-navy/10" />
@@ -321,8 +321,11 @@ export default function Resources({ view = 'all' }) {
   // border-style — so `border` alone gives a 1px border of style none, which
   // draws nothing. The resting border is transparent, so the card looks exactly
   // as it does now until the hover colours it and the row does not shift.
+  // A real card on the white page: a visible edge and a soft navy shadow on
+  // every side (it was white-on-white with a transparent border, so the grid
+  // read as loose text).
   const careerCardClass =
-    'rounded-[10px] border border-solid border-transparent bg-white p-6 shadow-sm'
+    'overflow-hidden rounded-2xl border border-solid border-brand-navy/15 bg-white shadow-[0_2px_6px_rgba(15,44,92,0.08),0_10px_28px_-4px_rgba(15,44,92,0.2)]'
 
   return (
     <>
@@ -370,10 +373,10 @@ export default function Resources({ view = 'all' }) {
           {/* ---- Career library ---- */}
           {!loading && !error && view === 'career-library' && (
             <div id="career-library">
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 {/* Phones: the stream chips are one row you swipe (the next chip
                     peeks in at the edge), not twelve rows before any career. */}
-                <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap">
+                <div className="-mx-4 flex min-w-0 gap-2 overflow-x-auto px-4 pb-1 min-[360px]:-mx-6 min-[360px]:px-6 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap">
                   <button className={filterBtn(!field)} onClick={() => update({ field: '' })}>
                     {/* The total belongs to the page that has landed — while one
                         is on its way the chip would otherwise read "All (0)"
@@ -391,9 +394,9 @@ export default function Resources({ view = 'all' }) {
                   ))}
                 </div>
 
-                <form className="order-first flex shrink-0 items-center gap-2 md:order-none" onSubmit={onSearch}>
+                <form className="order-first flex shrink-0 items-center gap-2 lg:order-none" onSubmit={onSearch}>
                   <SearchSuggest
-                    className="flex-1 md:w-56"
+                    className="flex-1 lg:w-56"
                     value={search}
                     onChange={onSearchChange}
                     suggest={suggestCourses}
@@ -440,40 +443,57 @@ export default function Resources({ view = 'all' }) {
               )}
 
               {!coursesLoading && courses.length > 0 && (
-                <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:gap-6 md:mt-10 md:grid-cols-2 lg:grid-cols-3">
                   {courses.map((c) => (
                     <article
                       key={c.slug}
-                      className={`group relative flex flex-col ${careerCardClass} transition-all hover:-translate-y-1.5 hover:border-brand-crimson hover:shadow-xl hover:shadow-brand-navy/5`}
+                      className={`group relative flex flex-col ${careerCardClass} transition-all duration-200 hover:-translate-y-1 hover:border-brand-crimson/40 hover:shadow-[0_4px_10px_rgba(15,44,92,0.1),0_18px_40px_-6px_rgba(15,44,92,0.3)]`}
                     >
-                      <h3 className="font-display text-lg font-bold leading-snug text-brand-navy group-hover:text-brand-crimson">
-                        <Link to={`/${c.slug}`}>
-                          {/* The card IS the link: this stretches the title's
-                              anchor over the whole card, so a click anywhere on
-                              it opens the career. Written this way rather than
-                              wrapping the card in a <Link> because the stream
-                              chips below are buttons — an anchor around them
-                              would be invalid, and clicking one would navigate
-                              instead of filtering. */}
-                          <span className="absolute inset-0" aria-hidden />
-                          {c.name}
-                        </Link>
-                      </h3>
-                      <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-slate">{c.overview}</p>
-                      {c.fields.length > 0 && (
-                        // Above the stretched anchor, so a chip still filters.
-                        <div className="relative mt-4 flex flex-wrap gap-1.5">
-                          {c.fields.map((f) => (
-                            <button
-                              key={f.slug}
-                              onClick={() => update({ field: f.slug })}
-                              className="cursor-pointer rounded-full border-0 bg-brand-rose px-2.5 py-0.5 font-sans text-xs font-semibold text-brand-crimson hover:underline"
-                            >
-                              {f.name}
-                            </button>
-                          ))}
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
+                        <div className="flex items-start gap-3">
+                          <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue-light text-brand-blue-dark transition-colors group-hover:bg-brand-crimson group-hover:text-white">
+                            <Compass className="size-5" />
+                          </span>
+                          <h3 className="min-w-0 pt-1.5 font-display text-base font-bold leading-snug text-brand-navy group-hover:text-brand-crimson sm:text-lg sm:pt-1">
+                            <Link to={`/${c.slug}`}>
+                              {/* The card IS the link: this stretches the title's
+                                  anchor over the whole card, so a click anywhere on
+                                  it opens the career. Written this way rather than
+                                  wrapping the card in a <Link> because the stream
+                                  chips below are buttons — an anchor around them
+                                  would be invalid, and clicking one would navigate
+                                  instead of filtering. */}
+                              <span className="absolute inset-0" aria-hidden />
+                              {c.name}
+                            </Link>
+                          </h3>
                         </div>
-                      )}
+                        {/* flex-1 on a wrapper, not on the clamped paragraph: stretched, the
+                            paragraph showed a cut-off 4th line below its "…". */}
+                        <div className="mt-3 flex-1">
+                          <p className="line-clamp-3 text-sm leading-relaxed text-brand-slate">{c.overview}</p>
+                        </div>
+
+                        <div className="mt-4 flex items-end justify-between gap-3 border-0 border-t border-solid border-brand-navy/10 pt-4">
+                          {c.fields.length > 0 ? (
+                            // Above the stretched anchor, so a chip still filters.
+                            <div className="relative flex min-w-0 flex-wrap gap-1.5">
+                              {c.fields.map((f) => (
+                                <button
+                                  key={f.slug}
+                                  onClick={() => update({ field: f.slug })}
+                                  className="cursor-pointer whitespace-nowrap rounded-full border-0 bg-brand-rose px-2.5 py-1 font-sans text-xs font-semibold text-brand-crimson hover:underline"
+                                >
+                                  {f.name}
+                                </button>
+                              ))}
+                            </div>
+                          ) : <span />}
+                          <span aria-hidden className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-navy transition-colors group-hover:text-brand-crimson">
+                            Explore <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                          </span>
+                        </div>
+                      </div>
                     </article>
                   ))}
                 </div>

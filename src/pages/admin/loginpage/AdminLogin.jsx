@@ -38,7 +38,7 @@ export default function AdminLogin() {
     <div className="admin-login-wrap">
       <form className="admin-login-card" onSubmit={onSubmit}>
         <div className="admin-login-brand">
-          <img src="/logo.png" alt="Svastrino Consultancy Services" />
+          <img src="/logo-256.png" srcSet="/logo-128.png 128w, /logo-256.png 256w, /logo-384.png 384w, /logo-512.png 512w, /logo.png 734w" sizes="152px" alt="Svastrino Consultancy Services" />
         </div>
 
         {error && <p className="admin-login-error">{error}</p>}

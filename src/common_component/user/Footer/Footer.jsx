@@ -95,7 +95,7 @@ export default function Footer() {
           {/* Brand — its own row on phones and tablets, a column from 900px */}
           <div className="sm:col-span-2 md:col-span-4 lg:col-span-1">
             <Link to="/" className="inline-flex rounded-[5px] bg-white p-2">
-              <img src="/logo.png" alt="Svastrino Consultancy Services" className="w-full h-auto" />
+              <img src="/logo.png" srcSet="/logo-128.png 128w, /logo-256.png 256w, /logo-384.png 384w, /logo-512.png 512w, /logo.png 734w" sizes="(min-width: 900px) 240px, 340px" alt="Svastrino Consultancy Services" className="w-full h-auto" />
               {/* <img src="/svastrino-icon-t.png" alt="Svastrino Consultancy Services" className="w-full" /> */}
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed">
