@@ -9,6 +9,7 @@ import PsychometricActions from '../../../common_component/user/PsychometricTest
 import StudentJourney from './sections/StudentJourney.jsx'
 import WhatYouGet from './sections/WhatYouGet.jsx'
 import Faqs from './sections/Faqs.jsx'
+import Wave from '../homepage/sections/Wave.jsx'
 
 /**
  * Psychometric Testing — the second Skill-Build product, sold alongside Nirmaan.
@@ -165,7 +166,7 @@ export default function Psychometric() {
           Two-column split (copy left, flat illustration right) to match the
           hero treatment on the other public pages. Stacks and re-centres on
           narrow screens. */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-14">
+      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white pt-14 pb-28 md:pb-36">
         <div className="container relative grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12">
           {/* Copy */}
           <div className="text-center lg:text-left">
@@ -241,6 +242,9 @@ export default function Psychometric() {
             />
           </div>
         </div>
+
+        {/* Curved divider into the next (white) section — same wave the other pages use. */}
+        <Wave color="#ffffff" />
       </section>
 
       {/* ---- Section 2 · What is Psychometric Testing? ---- */}
@@ -278,7 +282,7 @@ export default function Psychometric() {
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {HOW_IT_WORKS.map((s, i) => (
-              <div key={s.title} className="rounded-xl border border-nirmaan-sand bg-white p-6 shadow-sm">
+              <div key={s.title} className="rounded-xl border border-nirmaan-sand bg-white p-6 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
                 <span className="flex size-10 items-center justify-center rounded-full bg-nirmaan-green font-display text-base font-bold text-white">
                   {i + 1}
                 </span>
@@ -307,7 +311,7 @@ export default function Psychometric() {
               { title: 'For Students', points: STUDENTS },
               { title: 'For Parents', points: PARENTS },
             ].map((col) => (
-              <div key={col.title} className="rounded-xl border border-nirmaan-sand bg-white p-7 shadow-sm">
+              <div key={col.title} className="rounded-xl border border-nirmaan-sand bg-white p-7 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
                 <h3 className="font-display text-xl font-bold text-nirmaan-brown">{col.title}</h3>
                 <ul className="mt-4 space-y-3">
                   {col.points.map((p) => (
@@ -341,7 +345,7 @@ export default function Psychometric() {
             {TESTS.map((t) => (
               <div
                 key={t.name}
-                className={`relative flex flex-col rounded-xl border bg-white p-7 shadow-sm ${
+                className={`relative flex flex-col rounded-xl border border-solid bg-white p-7 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)] ${
                   owned && t.name === yourTest ? 'border-nirmaan-green ring-2 ring-nirmaan-green/20' : 'border-nirmaan-sand'
                 }`}
               >
@@ -406,7 +410,7 @@ export default function Psychometric() {
       {!checking && !owned && (
       <section className="bg-nirmaan-cream/50 py-16 md:py-20">
         <div className="container">
-          <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
+          <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)] sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
             {/* Branded accent ribbon + soft glow, matching the Nirmaan cards elsewhere. */}
             <span aria-hidden className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-nirmaan-green via-nirmaan-green-light to-nirmaan-olive" />
             <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-nirmaan-green/10 blur-2xl" />
