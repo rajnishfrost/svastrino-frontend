@@ -1,0 +1,60 @@
+/* Institute portal on top of the admin shell: the ☰ button shows on a desktop
+   too, where it folds the menu away to give a page the full width. */
+.org-shell .admin-menu-btn {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .org-shell.is-collapsed .admin-sidebar {
+    display: none;
+  }
+}
+
+/* Student Reports: the assessment site's admin, as tall as the screen allows
+   under the top bar, the heading and its one-line bar. */
+.org-reports-frame {
+  height: calc(100vh - 210px);
+  min-height: 560px;
+}
+
+/* Covers the frame while the assessment site loads into it. */
+.org-reports-wrap {
+  position: relative;
+}
+.org-reports-load {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  background: var(--white, #fff);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+}
+.org-reports-spinner {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  border: 3px solid var(--gray-200, #dfe4ec);
+  border-top-color: var(--color-accent, #c8102e);
+  animation: org-reports-spin 0.75s linear infinite;
+}
+@keyframes org-reports-spin { to { transform: rotate(360deg); } }
+.org-reports-load-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.org-reports-load-sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted, #5b6478);
+}
+@media (prefers-reduced-motion: reduce) {
+  .org-reports-spinner { animation-duration: 2s; }
+}

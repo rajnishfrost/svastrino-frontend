@@ -246,6 +246,8 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
 
       {error && <p className="adm-error">{error}</p>}
 
+      {editing && <ConfigureModal org={editing} onClose={onCloseEdit} />}
+
       <div className="adm-toolbar">
         <button className="adm-btn adm-btn--ghost" onClick={loadStudents}>
           {showStudents ? 'Refresh students' : 'View students'}

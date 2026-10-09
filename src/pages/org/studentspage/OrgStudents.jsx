@@ -165,7 +165,7 @@ export default function OrgStudents() {
       )}
       {del && (
         <ConfirmModal
-          title={`Remove ${del.name} from ${organisation?.name || 'your organisation'}?`}
+          title={`Remove ${del.name} from ${organisation?.name || 'your institute'}?`}
           message={
             'They leave your roster. If the account was created for them by you, their login is switched off ' +
             'until you add them again (same email) or Svastrino restores them — nothing they have done is deleted' +

@@ -19,6 +19,7 @@ import OrgLayout from './common_component/org/OrgLayout/OrgLayout.jsx'
 import OrgDashboard from './pages/org/dashboardpage/OrgDashboard.jsx'
 import OrgStudents from './pages/org/studentspage/OrgStudents.jsx'
 import OrgProfile from './pages/org/profilepage/OrgProfile.jsx'
+import OrgReports from './pages/org/reportspage/OrgReports.jsx'
 
 // ---- User pages ----
 import Home from './pages/user/homepage/Home.jsx'
@@ -241,6 +242,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<OrgDashboard />} />
                 <Route path="/students" element={<OrgStudents />} />
+                <Route path="/reports" element={<OrgReports />} />
                 <Route path="/profile" element={<OrgProfile />} />
                 <Route path="*" element={<Navigate to="/organisation" replace />} />
               </Routes>

@@ -33,6 +33,9 @@ const BLANK_ORG = {
   city: '', state: '', pincode: '', website: '', contactPerson: '', phone: '',
   publicListed: true,
   packages: [], // sponsored Skill-Build course SKUs — see SponsoredCoursePicker
+  // The institution's Mindler account. `password` is only ever what is typed
+  // now — blank keeps the saved one; the server never sends it back.
+  mindler: { loginId: '', password: '', schoolId: '', passwordSetAt: null },
 }
 
 // The institution as the server takes it. PhoneInput writes its dial code
@@ -391,6 +394,7 @@ function AccountForm({ account, roles, isSelf, onCancel, onSaved }) {
       .then((d) => {
         const o = d.organisation || {}
         setOrg(Object.fromEntries(Object.keys(BLANK_ORG).map((k) => [k, o[k] ?? BLANK_ORG[k]])))
+        setOrg((p) => ({ ...p, mindler: { ...BLANK_ORG.mindler, ...(o.mindler || {}), password: '' } }))
         setOrg((p) => ({ ...p, email: o.email || '' }))
         setOwnedLoaded(true)
       })
@@ -686,12 +690,51 @@ function OrgFields({ org, set, loginEmail, nameErr, editing = false, hideName = 
         </>
       )}
 
+      <MindlerFields value={org.mindler || BLANK_ORG.mindler} onChange={(v) => set('mindler', v)} />
+
       <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 14 }}>
         <input type="checkbox" checked={org.publicListed !== false}
                onChange={(e) => set('publicListed', e.target.checked)} />
         List in the public institutions directory (/organisations)
       </label>
     </div>
+  )
+}
+
+/**
+ * The institution's account on Mindler, the psychometric test provider, as
+ * Mindler issued it — what the institution reads its reports with — and the
+ * Mindler school ID, which every student it adds carries to the test so the
+ * school sees their report. The password is encrypted on the server and never shown again.
+ */
+function MindlerFields({ value, onChange }) {
+  const set = (k, v) => onChange({ ...value, [k]: v })
+  const saved = value.passwordSetAt
+    ? `Saved ${new Date(value.passwordSetAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} — leave blank to keep`
+    : 'As Mindler gave it'
+  return (
+    <>
+      <h4 className="adm-form-section">Mindler (psychometric reports)</h4>
+      <p className="adm-sub" style={{ marginTop: 0 }}>
+        The account Mindler created for this institution. Leave empty if it has none yet.
+      </p>
+      <div className="adm-row2">
+        <div className="adm-field"><label>Mindler login (email)</label>
+          <input className="adm-input" type="email" value={value.loginId} maxLength={LIMITS.email}
+                 autoComplete="off" placeholder="e.g. school@example.com"
+                 onChange={(e) => set('loginId', e.target.value)} /></div>
+        <div className="adm-field"><label>Mindler password</label>
+          <input className="adm-input" type="password" value={value.password} maxLength={200}
+                 autoComplete="new-password" placeholder={saved}
+                 onChange={(e) => set('password', e.target.value)} /></div>
+      </div>
+      <div className="adm-row2">
+        <div className="adm-field"><label>Mindler school ID</label>
+          <input className="adm-input" value={value.schoolId} maxLength={40}
+                 placeholder="e.g. 2" onChange={(e) => set('schoolId', e.target.value)} />
+          <span className="adm-sub" style={{ fontSize: 12 }}>Given to every student this institution adds, and to those already on its roster.</span></div>
+      </div>
+    </>
   )
 }
 
