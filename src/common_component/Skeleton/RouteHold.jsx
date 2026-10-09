@@ -3,9 +3,12 @@ import { useLocation } from 'react-router-dom'
 import { SkeletonSplitHero, SkeletonBody, SkeletonDashboard } from './Skeleton.jsx'
 import { HOLD_MS, useRevealFade } from './useHold.js'
 
-// The Skill-Build pages (Nirmaan, Psychometric Testing) are white, so their
-// loading skeleton is white too; everything else keeps the blue hero wash.
-const SKILL_BUILD_BG = '#ffffff'
+// The Skill-Build pages (Nirmaan, Psychometric Testing) wear a cream→white
+// wash on their hero, so the skeleton matches it — the white hero wave then
+// reads as a curve against the cream, same as the real page. Everything else
+// keeps the blue hero wash. (Mirrors Tailwind `bg-gradient-to-br
+// from-nirmaan-cream to-white`.)
+const SKILL_BUILD_BG = 'linear-gradient(to bottom right, #faf6ec, #ffffff)'
 
 /** Same "page" for hold purposes: pagination and tab-style sibling routes. */
 function family(path) {
