@@ -23,7 +23,6 @@ const TYPE_LABEL = {
 const ALL_MODULES = [
   { key: 'students', label: 'Students', hint: 'Add students and bulk-import a roster' },
   { key: 'profile', label: 'Profile', hint: 'Edit their public listing' },
-  { key: 'reports', label: 'Student Reports', hint: 'Their students’ psychometric test progress, and a way into their Mindler reports' },
 ]
 
 export default function AdminOrganisations() {

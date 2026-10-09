@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useNirmaanStanding } from '../../../../hooks/useNirmaanStanding.js'
 import { LEARN_PATH } from '../trialIntent.js'
+import Wave from '../../homepage/sections/Wave.jsx'
 
 /**
  * Nirmaan · Section 1 — the intro banner. Cream fading to white with a soft
@@ -16,7 +17,7 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white">
       {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/15 blur-3xl" /> */}
-      <div className="container relative grid grid-cols-1 items-center gap-10 py-16 md:grid-cols-[1.2fr_1fr] md:py-24">
+      <div className="container relative grid grid-cols-1 items-center gap-10 pb-28 pt-16 md:grid-cols-[1.2fr_1fr] md:pb-36 md:pt-24">
         <div className="text-center md:text-left">
           <span className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
             Soch Se Vikas
@@ -72,6 +73,9 @@ export default function Hero() {
           />
         </div>
       </div>
+
+      {/* Curved divider into the next (white) section — same wave the other pages use. */}
+      <Wave color="#ffffff" />
     </section>
   )
 }

@@ -30,8 +30,8 @@ const ICON = {
 const NAV = [
   { label: 'Dashboard', to: '/organisation', end: true, icon: 'dashboard' }, // always visible
   { label: 'Students', to: '/organisation/students', icon: 'students', module: 'students' },
-  { label: 'Student Reports', to: '/organisation/reports', icon: 'reports', module: 'reports' },
-  { label: 'Organisation', to: '/organisation/profile', icon: 'profile', module: 'profile' },
+  { label: 'Student Reports', to: '/organisation/reports', icon: 'reports' }, // always visible
+  { label: 'Institute', to: '/organisation/profile', icon: 'profile', module: 'profile' },
 ]
 
 export default function OrgSidebar({ open, onClose }) {
@@ -76,7 +76,7 @@ export default function OrgSidebar({ open, onClose }) {
           <span className="admin-user-avatar">{initial}</span>
           <div className="admin-user-meta">
             <strong title={organisation.name}>{organisation.name}</strong>
-            <span className="admin-user-role">{typeLabel || 'Organisation'}</span>
+            <span className="admin-user-role">{typeLabel || 'Institute'}</span>
           </div>
         </div>
       )}
