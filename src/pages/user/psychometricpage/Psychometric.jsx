@@ -282,7 +282,7 @@ export default function Psychometric() {
           </h2>
           <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
             {HOW_IT_WORKS.map((s, i) => (
-              <div key={s.title} className="rounded-xl border border-nirmaan-sand bg-white p-6 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
+              <div key={s.title} className="rounded-xl border border-solid border-nirmaan-sand bg-white p-6 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
                 <span className="flex size-10 items-center justify-center rounded-full bg-nirmaan-green font-display text-base font-bold text-white">
                   {i + 1}
                 </span>
@@ -311,7 +311,7 @@ export default function Psychometric() {
               { title: 'For Students', points: STUDENTS },
               { title: 'For Parents', points: PARENTS },
             ].map((col) => (
-              <div key={col.title} className="rounded-xl border border-nirmaan-sand bg-white p-7 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
+              <div key={col.title} className="rounded-xl border border-solid border-nirmaan-sand bg-white p-7 shadow-[0_12px_32px_-10px_rgba(59,40,34,0.25)]">
                 <h3 className="font-display text-xl font-bold text-nirmaan-brown">{col.title}</h3>
                 <ul className="mt-4 space-y-3">
                   {col.points.map((p) => (
