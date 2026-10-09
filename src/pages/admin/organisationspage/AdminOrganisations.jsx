@@ -23,6 +23,7 @@ const TYPE_LABEL = {
 const ALL_MODULES = [
   { key: 'students', label: 'Students', hint: 'Add students and bulk-import a roster' },
   { key: 'profile', label: 'Profile', hint: 'Edit their public listing' },
+  { key: 'reports', label: 'Student Reports', hint: 'Their students’ psychometric test progress, and a way into their Mindler reports' },
 ]
 
 export default function AdminOrganisations() {
@@ -245,6 +246,8 @@ function OrgDetail({ detail, onBack, onConfigure, editing, onCloseEdit }) {
       </div>
 
       {error && <p className="adm-error">{error}</p>}
+
+      {editing && <ConfigureModal org={editing} onClose={onCloseEdit} />}
 
       <div className="adm-toolbar">
         <button className="adm-btn adm-btn--ghost" onClick={loadStudents}>
