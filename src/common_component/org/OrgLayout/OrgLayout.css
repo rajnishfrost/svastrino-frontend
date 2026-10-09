@@ -55,6 +55,12 @@
   font-size: 14px;
   color: var(--color-text-muted, #5b6478);
 }
+/* Before the frame exists (still signing in), the loader holds its place. */
+.org-reports-load--alone {
+  position: static;
+  height: calc(100vh - 210px);
+  min-height: 560px;
+}
 @media (prefers-reduced-motion: reduce) {
   .org-reports-spinner { animation-duration: 2s; }
 }
