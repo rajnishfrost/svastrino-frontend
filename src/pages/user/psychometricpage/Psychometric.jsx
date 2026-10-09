@@ -165,7 +165,7 @@ export default function Psychometric() {
           Two-column split (copy left, flat illustration right) to match the
           hero treatment on the other public pages. Stacks and re-centres on
           narrow screens. */}
-      <section className="relative overflow-hidden bg-white py-14">
+      <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white py-14">
         <div className="container relative grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12">
           {/* Copy */}
           <div className="text-center lg:text-left">
@@ -271,7 +271,7 @@ export default function Psychometric() {
       </section>
 
       {/* ---- Section 3 · How It Works ---- */}
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             How It Works
@@ -297,7 +297,7 @@ export default function Psychometric() {
       <WhatYouGet yourTest={user?.studentClass ? yourTest : null} />
 
       {/* ---- Section 5 · How Can This Test Help You? ---- */}
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
             How Can This Test Help You?
@@ -404,7 +404,7 @@ export default function Psychometric() {
           Selling the bundle to someone who owns the test is noise, so owners do
           not see it; a Nirmaan student without the test sees it as an upgrade. */}
       {!checking && !owned && (
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-nirmaan-cream/50 py-16 md:py-20">
         <div className="container">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-6 overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-sm sm:flex-row sm:gap-8 sm:p-9 sm:text-left">
             {/* Branded accent ribbon + soft glow, matching the Nirmaan cards elsewhere. */}

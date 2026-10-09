@@ -14,7 +14,7 @@ export default function Hero() {
   const standing = useNirmaanStanding()
   const learning = standing === 'owned' || standing === 'trial'
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-nirmaan-cream to-white">
       {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/15 blur-3xl" /> */}
       <div className="container relative grid grid-cols-1 items-center gap-10 py-16 md:grid-cols-[1.2fr_1fr] md:py-24">
         <div className="text-center md:text-left">

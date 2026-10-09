@@ -73,11 +73,8 @@ export default {
           'green-light': '#5a9a4d',
           olive: '#90743c',
           'olive-light': '#b09462',
-          // Deep enough that white cards stand out on it (was #faf6ec, ~2% off white).
-          // A little deeper than the original #faf6ec (~2% off white), so white
-          // cards stand out on it while it still reads as a light cream.
-          cream: '#f5eedc',
-          'cream-dark': '#eadfc3',
+          cream: '#faf6ec',
+          'cream-dark': '#f1ead5',
           sand: '#e5e0d4',
           'gray-500': '#786c5b',
         },
