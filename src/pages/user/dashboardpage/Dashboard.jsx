@@ -172,7 +172,7 @@ export default function Dashboard() {
   const initial = (first || user?.email || '?').charAt(0).toUpperCase()
 
   return (
-    <section className="bg-soft py-6 md:py-12">
+    <section className="min-h-[100svh] bg-soft py-6 md:min-h-0 md:py-12">
       <div className="container">
         {/* Welcome band: who is signed in, at a glance. */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy to-brand-blue-dark p-5 text-white shadow-[0_16px_36px_-18px_rgba(15,44,92,0.7)] sm:p-7">
