@@ -428,14 +428,13 @@ function ProfileMenu({ user, onNavigate }) {
             and active, so the link never lands on a 403. */}
         {user.organisation?.portal && (
           <Link to="/organisation" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-            <ShieldIcon /> Organisation Portal
+            <ShieldIcon /> Institute Portal
           </Link>
         )}
-        {/* The student side of the menu, and only for an account the student
-            portal is open to. Offering a Dashboard link to a panel-only account
-            would be offering a door that answers "no access" — better not to
-            draw the door. They keep the whole public site either way. */}
-        {hasPortalAccess(user) && (
+        {/* The student side of the menu is for student accounts only — admins
+            and institutes have their own panel/portal above, and keep the whole
+            public site either way. */}
+        {(user.role || 'student') === 'student' && hasPortalAccess(user) && (
           <>
             <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
               <GridIcon /> Dashboard
