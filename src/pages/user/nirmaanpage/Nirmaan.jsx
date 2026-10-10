@@ -40,7 +40,7 @@ export default function Nirmaan() {
       <Benefits />
       {/* Same space above and below the line, so it sits in the middle of the band. */}
       <div className={`w-full bg-nirmaan-brown py-12 -translate-y-10`}>
-        <p className="mx-auto max-w-3xl px-5 text-center font-display text-base font-semibold italic text-white">
+        <p className="mx-auto max-w-3xl px-5 text-center font-display text-base sm:text-lg font-semibold italic text-white">
           From “I don’t know if I can” → “I know myself, I can learn, I can adapt, and I know what I
           can do next.”
         </p>
