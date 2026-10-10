@@ -353,7 +353,7 @@ export default function Checkout() {
                   <input className="checkout-input" placeholder="Coupon code"
                          maxLength={LIMITS.couponCode} inputMode="text" autoCapitalize="characters"
                          value={coupon} onChange={(e) => setCoupon(sanitiseCoupon(e.target.value))} />
-                  <button type="button" className="btn btn-secondary" onClick={applyCoupon} disabled={busy || !coupon.trim()}>Apply</button>
+                  <button type="button" className="checkout-apply" onClick={applyCoupon} disabled={busy || !coupon.trim()}>Apply</button>
                 </div>
               )}
               {couponErr && <p className="checkout-error-sm">{couponErr}</p>}

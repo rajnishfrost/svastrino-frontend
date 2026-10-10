@@ -88,11 +88,51 @@
   padding-top: 12px;
 }
 
-/* Coupon */
+/* Coupon — the box and Apply are one control: a shared border and height,
+   Apply a solid button joined to the box's right edge. The whole control
+   lights up while the code is being typed. */
 .checkout-coupon {
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  height: 46px;
   margin-top: 6px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 12px;
+  background: var(--white, #fff);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.checkout-coupon:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+.checkout-coupon .checkout-input {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0 14px;
+  background: transparent;
+  letter-spacing: 0.04em;
+}
+.checkout-coupon .checkout-input:focus { box-shadow: none; }
+.checkout-apply {
+  flex: 0 0 auto;
+  padding: 0 22px;
+  border: 0;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.checkout-apply:hover:not(:disabled) { background: var(--color-accent); }
+.checkout-apply:disabled {
+  background: var(--gray-100, #eef0f4);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }
 
 .checkout-input {
@@ -106,9 +146,6 @@
 }
 /* Coupon codes are capitals; nothing else typed on this page is. */
 .checkout-coupon .checkout-input { text-transform: uppercase; }
-/* Apply keeps its own width; the box takes the rest. (On phones every .btn is
-   made full width site-wide, which here pushed Apply out of the card.) */
-.checkout-coupon .btn { width: auto; flex: 0 0 auto; padding-left: 18px; padding-right: 18px; }
 
 .checkout-input:focus {
   outline: none;
