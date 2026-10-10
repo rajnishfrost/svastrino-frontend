@@ -13,7 +13,7 @@ const COLUMNS = [
       { label: "Bull's Eye", to: '/services/bulls-eye' },
       { label: 'Bloom', to: '/services/bloom' },
       { label: 'Breakthrough', to: '/services/breakthrough' },
-      { label: 'Compare programmes', to: '/services/compare' },
+      { label: 'Compare programs', to: '/services/compare' },
       { label: 'Book Online', to: '/book-online' },
     ],
     // A second list stacked under Services in the same column.

@@ -89,7 +89,7 @@ export default function AdminEnquiries() {
       <h1 className="adm-title">Enquiries</h1>
       <p className="adm-sub">
         Everyone who has written in. Approving an expert-call request is what
-        opens the checkout for that programme.
+        opens the checkout for that program.
       </p>
 
       <div className="adm-toolbar">
@@ -166,7 +166,7 @@ export default function AdminEnquiries() {
                           className="adm-btn adm-btn--sm"
                           disabled={busyId === r.id}
                           onClick={() => patch(r.id, { status: 'approved' })}
-                          title="Opens the checkout for this programme and emails them the booking link"
+                          title="Opens the checkout for this program and emails them the booking link"
                         >
                           Approve to pay
                         </button>

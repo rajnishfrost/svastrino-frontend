@@ -10,7 +10,7 @@ import './AuthPrompt.css'
 
 /**
  * The sign-in pop-up. A signed-out visitor who goes to buy something — a
- * Nirmaan plan, the psychometric test, a mentoring programme — is asked to sign
+ * Nirmaan plan, the psychometric test, a mentoring program — is asked to sign
  * up or log in right where they are, instead of being sent off to /login and
  * having to find their way back.
  *

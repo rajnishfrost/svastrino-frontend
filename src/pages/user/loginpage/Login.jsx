@@ -33,7 +33,7 @@ export default function Login() {
   // Where to land afterwards. Somewhere specific if they were sent here from
   // it — /checkout?pkg=…, a course — otherwise the dashboard, which opens on
   // the section for what they own (Skill-Build for Nirmaan or a free trial,
-  // Services for a Svastrino programme). See the no-tab rule in Dashboard.jsx.
+  // Services for a Svastrino program). See the no-tab rule in Dashboard.jsx.
   const sentFrom = location.state?.from || null
 
   // The flag the Nirmaan page leaves behind when a visitor pressed "Start the

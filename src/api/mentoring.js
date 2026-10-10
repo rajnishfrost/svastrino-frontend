@@ -1,6 +1,6 @@
 import { api } from './client.js'
 
-// Counselling & mentoring booking API (server: /api/user/mentoring/*).
+// Counseling & mentoring booking API (server: /api/user/mentoring/*).
 
 /** Public catalog — Bull's Eye / Bloom / Breakthrough with price + sessions. */
 export const fetchMentoringPrograms = () =>

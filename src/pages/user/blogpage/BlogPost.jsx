@@ -185,7 +185,7 @@ export default function BlogPost() {
           </h3>
           <p className="mx-auto mt-2 max-w-xl text-brand-slate">
             Start with a 15-minute Model Session — we’ll help you identify what you need and which
-            programme fits you.
+            program fits you.
           </p>
           <Link
             to="/book-online"

@@ -96,9 +96,9 @@ export default function ServiceProgram() {
   if (error) {
     return (
       <>
-        <PageHero eyebrow="Services" title="Programme" />
+        <PageHero eyebrow="Services" title="Program" />
         <section className="py-16"><div className="container">
-          <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="this programme" />
+          <ConnectionState error={error} onRetry={() => setReloadKey((k) => k + 1)} label="this program" />
         </div></section>
       </>
     )
@@ -136,7 +136,7 @@ export default function ServiceProgram() {
     return (
       <>
         {heroEl}
-        <SkeletonBody label="Loading the programme" />
+        <SkeletonBody label="Loading the program" />
       </>
     )
   }
@@ -185,7 +185,7 @@ export default function ServiceProgram() {
             to={"/services/compare"}
             className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
           >
-            Compare Programmes <ArrowRight className="size-4" />
+            Compare Programs <ArrowRight className="size-4" />
           </Link>
         </div>
       </section>

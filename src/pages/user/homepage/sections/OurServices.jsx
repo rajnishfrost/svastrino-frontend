@@ -11,7 +11,7 @@ import ProgramEmblem from '../../../../common_component/user/ProgramEmblem/Progr
  */
 const SERVICES = [
   {
-    need: 'I Need Immediate Career Counselling and Clarity',
+    need: 'I Need Immediate Career Counseling and Clarity',
     who: 'For individuals who want to make a confident stream & career choice',
     points: [
       "Resolve Last-Minute Career Confusion",
@@ -52,7 +52,7 @@ const SERVICES = [
     cta: 'Explore Breakthrough',
     to: '/services/breakthrough',
     accent: 'navy',
-    // Flagship 2-year programme — rendered as a filled navy card with a gold
+    // Flagship 2-year program — rendered as a filled navy card with a gold
     // action so it dominates the row instead of blending into the light section.
     featured: true,
   },

@@ -1,7 +1,7 @@
 import FaqGroups from './FaqGroups.jsx'
 
 /**
- * The FAQ block every programme page uses — Bull's Eye, Bloom, Breakthrough,
+ * The FAQ block every program page uses — Bull's Eye, Bloom, Breakthrough,
  * Nirmaan and Psychometric Testing — so the heading, width and accordion look
  * the same wherever a visitor meets them. Only the colours follow the page:
  * `tone="nirmaan"` for the green/brown Skill-Build pages, navy otherwise.

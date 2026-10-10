@@ -12,8 +12,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore how a second opinion from professional can refine your career path, from industry insights to skill gaps and networking strategies.",
   },
   "3-most-common-myths-about-career-counseling": {
-    title: "3 Most Common Myths About Career Counselling",
-    description: "Discover and debunk the myths about career counselling. Learn how career counselling can benefit all students, and enhance parental guidance.",
+    title: "3 Most Common Myths About Career Counseling",
+    description: "Discover and debunk the myths about career counseling. Learn how career counseling can benefit all students, and enhance parental guidance.",
   },
   "3-smart-ways-for-skill-building-in-the-modern-age": {
     title: "3 smart Ways for Skill-Building in the Modern Age",
@@ -68,8 +68,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore the benefits of homeschooling in India and See why more parents are choosing this personalised approach to schooling.",
   },
   "5-reasons-why-early-career-counseling-is-essential-for-success": {
-    title: "5 Reasons Why Early Career Counselling is Essential for Success",
-    description: "Discover how early career counselling shapes your academic choices, aligns passions with careers, and prepares you for a dynamic market",
+    title: "5 Reasons Why Early Career Counseling is Essential for Success",
+    description: "Discover how early career counseling shapes your academic choices, aligns passions with careers, and prepares you for a dynamic market",
   },
   "5-reasons-why-personalized-career-mentoring-is-essential-for-students": {
     title: "5 Reasons why Personalised Career Mentoring is Essential",
@@ -273,11 +273,11 @@ export const LEGACY_ROOT_SEO = {
   },
   "book-online": {
     title: "Book your Online Career Mentoring & Guidance Session with Svastrino",
-    description: "Book Your Spot in Svastrino's Online Programmes: Model Session, Bull's Eye Programme, Bloom Programme, Breakthrough Programme. Discover Your Potential Now!",
+    description: "Book Your Spot in Svastrino's Online Programs: Model Session, Bull's Eye Program, Bloom Program, Breakthrough Program. Discover Your Potential Now!",
   },
   "building-meaningful-connections-through-online-career-counseling": {
-    title: "Building Meaningful Connections Through Online Career Counselling",
-    description: ": Discover how online career counselling fosters deep connections, transforming personal and professional lives through expert guidance.",
+    title: "Building Meaningful Connections Through Online Career Counseling",
+    description: ": Discover how online career counseling fosters deep connections, transforming personal and professional lives through expert guidance.",
   },
   "career-block-how-to-decide-if-youre-due-for-a-job-change": {
     title: "Career FOMO? How to Tell if You're Due for a Job Glow-Up",
@@ -313,7 +313,7 @@ export const LEGACY_ROOT_SEO = {
   },
   "contact": {
     title: "Connect with Svastrino- Best Online Career Guidance Provider",
-    description: "Reach out and connect with Svastrino career counselling, your gateway to personalised career guidance and support.",
+    description: "Reach out and connect with Svastrino career counseling, your gateway to personalised career guidance and support.",
   },
   "corporate-training": {
     title: "Corporate Training",
@@ -348,8 +348,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Discover daily habits to cultivate a success-oriented mindset. Learn tips for effective morning routines, goal setting, positive affirmations",
   },
   "decoding-myths-about-online-career-counselling": {
-    title: "Decoding Myths About Online Career Counselling",
-    description: "Ever wondered if online career counselling is right for you? We're dispelling the myths about this modern approach to career guidance.",
+    title: "Decoding Myths About Online Career Counseling",
+    description: "Ever wondered if online career counseling is right for you? We're dispelling the myths about this modern approach to career guidance.",
   },
   "decoding-your-passion-puzzle": {
     title: "Decoding Your Passion Puzzle",
@@ -373,7 +373,7 @@ export const LEGACY_ROOT_SEO = {
   },
   "eq-the-edge-of-tomorrows-leaders": {
     title: "EQ- The Edge of Tomorrow's Leaders!",
-    description: "Discover how personality-based mentoring programmes can supercharge your EQ skills. EQ empowers leaders with empathy, self-awareness...",
+    description: "Discover how personality-based mentoring programs can supercharge your EQ skills. EQ empowers leaders with empathy, self-awareness...",
   },
   "extracurricular-activities-and-their-role-in-enhancing-career-readiness": {
     title: "Extracurricular Activities and Their Role in Enhancing Career Readiness",
@@ -424,8 +424,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Support your child's career decisions after 10th grade with practical tips, open communication, and professional guidance.",
   },
   "how-career-counseling-can-help-you-post-class-12-results": {
-    title: "How Career Counselling Can Help You Post Class 12 Results",
-    description: "Find out how career counselling can help after Class 12.​ career exploration, skill development, and college preparation can impact.",
+    title: "How Career Counseling Can Help You Post Class 12 Results",
+    description: "Find out how career counseling can help after Class 12.​ career exploration, skill development, and college preparation can impact.",
   },
   "how-globalization-shapes-our-career-choice": {
     title: "How Globalisation Shapes Our Career Choices",
@@ -460,8 +460,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Discover how mentorship empowers youth for societal change, shaping tomorrow's leaders today and is not limited to one-on-one interactions.",
   },
   "how-mentorship-programs-can-support-social-development": {
-    title: "How Mentorship Programmes Can Support Social Development",
-    description: "Explore how mentorship programmes can boost social development in adolescents by enhancing skills like communication, empathy, and confidence.",
+    title: "How Mentorship Programs Can Support Social Development",
+    description: "Explore how mentorship programs can boost social development in adolescents by enhancing skills like communication, empathy, and confidence.",
   },
   "how-mentorship-shapes-perspectives": {
     title: "How Mentorship Shapes Perspectives - Svastrino",
@@ -472,20 +472,20 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore how student mentorship profoundly influences student success in academics, personal development, and career readiness",
   },
   "how-online-career-counseling-can-help-students-set-clear-career-goals": {
-    title: "How Online Career Counselling Can Help Students Set Clear Career Goals",
-    description: "Discover how online career counselling can illuminate your path to professional success. Uncover the strategies to set clear career goals...",
+    title: "How Online Career Counseling Can Help Students Set Clear Career Goals",
+    description: "Discover how online career counseling can illuminate your path to professional success. Uncover the strategies to set clear career goals...",
   },
   "how-online-career-counselling-helps-you-beat-the-competition": {
-    title: "How Online Career Counselling Helps You Beat the Competition",
-    description: "Discover how Svastrino’s Online Career Counselling can give you a competitive edge in today's fast-paced job market.",
+    title: "How Online Career Counseling Helps You Beat the Competition",
+    description: "Discover how Svastrino’s Online Career Counseling can give you a competitive edge in today's fast-paced job market.",
   },
   "how-online-career-mentors-make-a-difference": {
     title: "Revolutionising Professional Growth: The Impact of Online Career Mentors",
     description: "Discover how online career mentors can transform your professional journey with tailored advice, skill bridging, networking, and more",
   },
   "how-online-counseling-can-clarify-students-career-goals": {
-    title: "How Online Counselling Can Clarify Students' Career Goals",
-    description: "Discover how online counselling empowers students to find career direction with personalised guidance and strategies",
+    title: "How Online Counseling Can Clarify Students' Career Goals",
+    description: "Discover how online counseling empowers students to find career direction with personalised guidance and strategies",
   },
   "how-parents-can-support-future-business-leaders": {
     title: "How Parents Can Support Future Business Leaders",
@@ -580,8 +580,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Learn practical strategies to make smart career decisions during uncertain times. Assess your situation, stay flexible, and advance with confidence.",
   },
   "how-to-maximize-your-experience-with-a-career-consultant-online": {
-    title: "Online Counselling For Career Guidance, Career Consultant Online",
-    description: "Confused about your career? Cant travel due to time constraints? Find the best career clarity & guidance through our online counselling for career guidance.",
+    title: "Online Counseling For Career Guidance, Career Consultant Online",
+    description: "Confused about your career? Cant travel due to time constraints? Find the best career clarity & guidance through our online counseling for career guidance.",
   },
   "how-to-overcome-perfectionism-in-academics": {
     title: "How to Overcome Perfectionism in Academics",
@@ -628,8 +628,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Learn from role models to shape your career, overcome challenges, set inspired goals, and embrace mentorship for success.",
   },
   "importance-of-online-counseling-for-career-guidance": {
-    title: "Importance of Online Counselling for Career Guidance",
-    description: "Discover importance of online counselling for career guidance. Explore the benefits of accessibility, convenience, and access global experts.",
+    title: "Importance of Online Counseling for Career Guidance",
+    description: "Discover importance of online counseling for career guidance. Explore the benefits of accessibility, convenience, and access global experts.",
   },
   "imposter-syndrome-its-impact-on-careers": {
     title: "Imposter Syndrome & its impact on Careers",
@@ -644,8 +644,8 @@ export const LEGACY_ROOT_SEO = {
     description: "",
   },
   "is-career-counseling-for-graduates": {
-    title: "Is Career Counselling for Graduates?",
-    description: "Learn about benefits of career counselling for graduates. Dive into why it's an essential bridge from college life to a professional journey.",
+    title: "Is Career Counseling for Graduates?",
+    description: "Learn about benefits of career counseling for graduates. Dive into why it's an essential bridge from college life to a professional journey.",
   },
   "journalism": {
     title: "Journalism",
@@ -712,8 +712,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Learn valuable strategies for navigating the new academic year with confidence and achieving success. From setting goals, organising...",
   },
   "online-career-counseling-for-mid-life-professionals": {
-    title: "Online Career Counselling for Mid-life Professionals",
-    description: "Discover how online career counselling transforms mid-career paths with personalised guidance, skill development, and strategic planning.",
+    title: "Online Career Counseling for Mid-life Professionals",
+    description: "Discover how online career counseling transforms mid-career paths with personalised guidance, skill development, and strategic planning.",
   },
   "operations-management": {
     title: "Operations management",
@@ -820,8 +820,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Discover the benefits of hobbies for students in high school. Learn how extracurricular activities can boost academic performance..",
   },
   "the-best-time-for-career-counselling-before-or-after-exams": {
-    title: "The Best Time for Career Counselling: Before or After Exams?",
-    description: "best time for career counselling. Explore the advantages and disadvantages of each approach and why early career counselling can lead...",
+    title: "The Best Time for Career Counseling: Before or After Exams?",
+    description: "best time for career counseling. Explore the advantages and disadvantages of each approach and why early career counseling can lead...",
   },
   "the-holistic-approach-of-modern-online-career-guidance": {
     title: "The Holistic Approach of Modern Online Career Guidance",
@@ -832,8 +832,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore how creativity fuels career growth, from sparking innovation and adapting to changes, to standing out in the job market.",
   },
   "the-impact-of-online-career-counseling-on-students": {
-    title: "The Impact of Online Career Counselling on Students",
-    description: "Dive into the transformative impacts of Online Career Counselling. How it refines academic paths, enhances skills, nurtures personal growth...",
+    title: "The Impact of Online Career Counseling on Students",
+    description: "Dive into the transformative impacts of Online Career Counseling. How it refines academic paths, enhances skills, nurtures personal growth...",
   },
   "the-impact-of-personality-development-on-student-success": {
     title: "The Impact of Personality Development on Student Success",
@@ -844,8 +844,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore the impact of social influence in shaping our perceptions of success and learn strategies to build a supportive environment.",
   },
   "the-importance-of-career-counselling-after-10th-grade": {
-    title: "The Importance of Career Counselling After 10th Grade",
-    description: "career Counselling after 10th grade helps students make informed decisions about their academic and career paths",
+    title: "The Importance of Career Counseling After 10th Grade",
+    description: "career Counseling after 10th grade helps students make informed decisions about their academic and career paths",
   },
   "the-key-role-of-mentor-mentee-compatibility": {
     title: "The Key Role of Mentor-Mentee Compatibility",
@@ -868,8 +868,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Discover how micro-goals can drive career success by breaking down larger goals into achievable steps for significant progress.",
   },
   "the-power-of-personality-based-mentoring-programs-for-success": {
-    title: "Personality Based Career Mentoring Programme",
-    description: "Elevate your success with personality-based mentoring programmes to unlock your unique potential and propel you towards a fulfilling and impactful career.",
+    title: "Personality Based Career Mentoring Program",
+    description: "Elevate your success with personality-based mentoring programs to unlock your unique potential and propel you towards a fulfilling and impactful career.",
   },
   "the-power-of-vision-in-career-planning": {
     title: "The Power of Vision in Career Planning",
@@ -892,7 +892,7 @@ export const LEGACY_ROOT_SEO = {
     description: "Unlock career growth with continuous learning. Master lifelong strategies to stay ahead in the evolving job market",
   },
   "the-role-of-counseling-in-your-career-development": {
-    title: "Counselling for Career Development & Mentoring Service",
+    title: "Counseling for Career Development & Mentoring Service",
     description: "Discover the power of personalised guidance and mentoring to shape your professional journey and achieve success.",
   },
   "the-role-of-education-in-societal-progress": {
@@ -948,8 +948,8 @@ export const LEGACY_ROOT_SEO = {
     description: "Discover top 3 reasons why mastering public speaking and debate is crucial for career advancement.Learn how these skills enhance opportunities",
   },
   "top-3-strategies-for-maximizing-your-career-counseling-experience": {
-    title: "Unlocking Your Full Potential: Master the Top Strategies for Career Counselling Success",
-    description: "Discover key strategies for efficient career counselling, including preparation tips, crucial questions, and advice for career growth.",
+    title: "Unlocking Your Full Potential: Master the Top Strategies for Career Counseling Success",
+    description: "Discover key strategies for efficient career counseling, including preparation tips, crucial questions, and advice for career growth.",
   },
   "top-4-career-boosting-activities-to-do-during-your-vacation": {
     title: "Top 4 Career-Boosting Activities to Do During Your Vacation",
@@ -1024,7 +1024,7 @@ export const LEGACY_ROOT_SEO = {
     description: "Explore the best extracurricular activities that can boost your college application, from leadership roles to community service and more.",
   },
   "top-7-skills-to-develop-through-a-mentorship-program": {
-    title: "Top 7 Skills to Develop Through a Mentorship Programme",
+    title: "Top 7 Skills to Develop Through a Mentorship Program",
     description: "Discover the top skills you can develop through mentorship, from effective communication to leadership and confidence",
   },
   "top-7-soft-skills-every-student-should-develop-for-career-success": {
@@ -1060,8 +1060,8 @@ export const LEGACY_ROOT_SEO = {
     description: "powerful guide to turning setbacks into learning experiences. Set realistic goals, analyse mistakes, and develop a growth mindset",
   },
   "unveiling-the-power-of-online-career-counseling": {
-    title: "Unveiling the Power of Online Career Counselling",
-    description: "Discover the advantages of online career counselling and how it may change your professional path. accessibility, ease, and personalisation.",
+    title: "Unveiling the Power of Online Career Counseling",
+    description: "Discover the advantages of online career counseling and how it may change your professional path. accessibility, ease, and personalisation.",
   },
   "using-online-courses-to-test-drive-a-career": {
     title: "Using Online Courses to Test Drive a Career",
@@ -1077,7 +1077,7 @@ export const LEGACY_ROOT_SEO = {
   },
   "what-is-expected-from-education-3": {
     title: "Steps and changes expected from the education system to better future careers",
-    description: "Get to know the ways in which education system is expected to perform to provide right support to future candidates through online career counselling",
+    description: "Get to know the ways in which education system is expected to perform to provide right support to future candidates through online career counseling",
   },
   "when-to-seek-a-second-opinion-for-career-or-education": {
     title: "When to Seek a Second Opinion for Career or Education",

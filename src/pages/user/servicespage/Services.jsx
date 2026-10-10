@@ -10,7 +10,7 @@ import { ArrowRight } from 'lucide-react'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
- *   Career Counselling   → Bull's Eye Program
+ *   Career Counseling   → Bull's Eye Program
  *   Personalised Mentoring → Bloom Program, Breakthrough Program
  * Each program links to its own detail page (/services/:slug).
  */
@@ -79,12 +79,12 @@ export default function Services() {
       <PageSeo />
       <PageHero
         eyebrow="Services"
-        title="Career Counselling & Mentoring"
-        subtitle="One-on-one guidance for every stage — from a focused counselling session to long-term personalised mentoring."
+        title="Career Counseling & Mentoring"
+        subtitle="One-on-one guidance for every stage — from a focused counseling session to long-term personalised mentoring."
         illustration={<ProgramHeroArt src="/assets/images/all-services-t.png" alt="" />}
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
-        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programmes</Link>
+        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programs</Link>
       </PageHero>
 
       <section className="bg-white pb-16 pt-4 sm:pt-16">
@@ -110,7 +110,7 @@ export default function Services() {
 
           {!loading && list.length === 0 && (
             <p className="text-center text-sm text-brand-slate">
-              The programmes could not be loaded just now.{' '}
+              The programs could not be loaded just now.{' '}
               <button
                 type="button"
                 onClick={() => window.location.reload()}

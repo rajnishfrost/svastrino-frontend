@@ -13,16 +13,16 @@ const FOUNDER_IMG = '/assets/images/founder-rohit-gala.jpg'
 
 const MILESTONES = [
   { year: '2009', title: 'Where It All Began', text: 'Founded by Rohit M. Gala, Svastrino began with 20 students in Mumbai.' },
-  { year: '2014', title: 'Built Long-Term Mentoring', text: "Realised that just career counselling isn't enough, and so crafted the Breakthrough Programme." },
+  { year: '2014', title: 'Built Long-Term Mentoring', text: "Realised that just career counseling isn't enough, and so crafted the Breakthrough Program." },
   { year: '2016', title: 'Our Strongest Media Recognition', text: 'Got featured in The Economic Times 3 times; online services began.' },
-  { year: '2017', title: 'Expanded to the Middle East and Africa', text: 'Provided counselling & mentoring across the Asian & African continents.' },
+  { year: '2017', title: 'Expanded to the Middle East and Africa', text: 'Provided counseling & mentoring across the Asian & African continents.' },
   { year: '2021', title: 'Global Reach', text: 'Provided services to 10,000+ clients in over 22 countries & 4 continents.' },
   { year: '2026', title: 'Building an Ecosystem', text: 'Started building Skill-Building courses for the untapped India.' },
 ]
 
 const MEET_ROHIT = [
   'Rohit Gala knows what it feels like to choose a career without guidance. Like many students, he spent years trying different paths before finding the one that fit. He didn’t let that experience go to waste. It became the reason he started Svastrino, with one clear mission — no student should have to struggle the way he did.',
-  'Rohit trained properly for this work. He holds a Diploma in Counselling Psychology and a Master’s in Sociology, which made him one of the few licensed career and education counsellors in India. Within four years, he had built a personalised career mentoring programme running across the country.',
+  'Rohit trained properly for this work. He holds a Diploma in Counseling Psychology and a Master’s in Sociology, which made him one of the few licensed career and education counsellors in India. Within four years, he had built a personalised career mentoring program running across the country.',
   'His understanding of careers didn’t come from books alone. He has spent years talking to professors, corporate leaders, entrepreneurs, and consultants, building a real picture of what different fields actually demand.',
   'He hasn’t stopped learning either. He later completed a Diploma in Introduction to Psychology from Yale University, scoring 97.05%.',
   'Rohit still works the same way he did on day one — understand the student first, and let the career plan follow from that. What drives him now is bigger than one student at a time. He wants a generation that chooses its own path, instead of settling for whatever was expected of them.',
@@ -40,9 +40,9 @@ const TEAM = [
 ]
 
 const SERVICES = [
-  { need: 'For Immediate Career Counselling', label: "Bull's Eye Programme", to: '/services/bulls-eye' },
-  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Programme', to: '/services/bloom' },
-  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Programme', to: '/services/breakthrough' },
+  { need: 'For Immediate Career Counseling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
   { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
   { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
@@ -99,7 +99,7 @@ export default function About() {
               <h3 className="font-display text-xl font-bold text-brand-navy">Our Mission</h3>
               <p className="mt-3 leading-relaxed text-brand-slate">
                 To provide accessible, structured, and continuous career development through online
-                skill-building, career counselling, and mentoring that is practical, personalised,
+                skill-building, career counseling, and mentoring that is practical, personalised,
                 and future-ready.
               </p>
             </div>

@@ -1049,7 +1049,7 @@ function WeekResource({ slug, session }) {
 }
 
 // What the streak is worth, said once. The reward is deliberately unnamed here
-// — what it actually is belongs to the programme, not to this component.
+// — what it actually is belongs to the program, not to this component.
 const STREAK_REWARD = 'Rewards are waiting for the students who keep it going.'
 
 /**

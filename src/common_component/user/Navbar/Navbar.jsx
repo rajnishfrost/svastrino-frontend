@@ -19,16 +19,16 @@ import './Navbar.css'
 // "Mentoring"; /services is the mentoring landing page in the router.)
 const MENTORING_LINKS = [
   {
-    label: 'Career Counselling',
+    label: 'Career Counseling',
     children: [
-      { label: "Bull's Eye Programme", to: '/services/bulls-eye' },
+      { label: "Bull's Eye Program", to: '/services/bulls-eye' },
     ],
   },
   {
     label: 'Personalised Mentoring',
     children: [
-      { label: 'Bloom Programme', to: '/services/bloom' },
-      { label: 'Breakthrough Programme', to: '/services/breakthrough' },
+      { label: 'Bloom Program', to: '/services/bloom' },
+      { label: 'Breakthrough Program', to: '/services/breakthrough' },
     ],
   },
 ]

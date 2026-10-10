@@ -19,7 +19,7 @@
  */
 export const PROGRAM_JOURNEYS = {
   'bulls-eye': {
-    subtitle: "Our Bull's Eye Programme provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
+    subtitle: "Our Bull's Eye Program provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
     stages: [
       {
         title: 'Pre-session',
@@ -28,7 +28,7 @@ export const PROGRAM_JOURNEYS = {
           {
             points: [
               'Analysis of your background, academics, and personal development so far',
-              'Organising your details for a productive counselling session',
+              'Organising your details for a productive counseling session',
             ],
           },
         ],
@@ -95,7 +95,7 @@ export const PROGRAM_JOURNEYS = {
           {
             points: [
               'Analysis of your background, academics, and personal development so far',
-              'Organising all details for the planned personalised mentoring programme',
+              'Organising all details for the planned personalised mentoring program',
             ],
           },
         ],
@@ -160,7 +160,7 @@ export const PROGRAM_JOURNEYS = {
   },
 
   breakthrough: {
-    subtitle: "Our Breakthrough Programme is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
+    subtitle: "Our Breakthrough Program is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
     stages: [
       {
         title: 'Pre-session',
@@ -169,7 +169,7 @@ export const PROGRAM_JOURNEYS = {
           {
             points: [
               'Knowing your background, academics, and personal development so far',
-              'Organising all details for the planned personalised mentoring programme',
+              'Organising all details for the planned personalised mentoring program',
             ],
           },
         ],
@@ -311,15 +311,15 @@ export const PROGRAM_JOURNEYS = {
 
 export const PROGRAM_HERO = {
   'bulls-eye': {
-    title: "Bull's Eye Programme",
+    title: "Bull's Eye Program",
     tagline: "Get a quick yet accurate solution for your career confusion.\n\rTrusted by 14k students over 17+ years."
   },
   'bloom': {
-    title: "Bloom Programme",
+    title: "Bloom Program",
     tagline: "Cultivate a visionary mindset and set goals for a bright future.\n\rTrusted by 500+ students."
   },
   'breakthrough': {
-    title: "Breakthrough Programme",
+    title: "Breakthrough Program",
     tagline: "Ace the art of self-discipline and evolve into an enterprising leader.\n\rTrusted by 290+ students."
   }
 }
@@ -367,7 +367,7 @@ export const PROGRAM_BENEFITS = {
  */
 export const PROGRAM_JOURNEYS_2 = {
   'bulls-eye': {
-    subtitle: "Our Bull's Eye Programme provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
+    subtitle: "Our Bull's Eye Program provides a step-by-step process to understand your profile, explore your options, and finalise your career direction.",
     stages: [
       {
         title: 'Pre-Session - Stage 1',
@@ -376,7 +376,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             points: [
               "Analysis of your background, academics, and personal development so far",
-              "Organising your details for a productive counselling session",
+              "Organising your details for a productive counseling session",
             ],
           },
         ],
@@ -451,7 +451,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             points: [
               "Analysis of your background, academics, and personal development so far",
-              "Organising all details for the planned personalised mentoring programme",
+              "Organising all details for the planned personalised mentoring program",
             ],
           },
         ],
@@ -515,12 +515,12 @@ export const PROGRAM_JOURNEYS_2 = {
       // "+ Weekly follow-ups & support throughout the program",
       "Pre-session of 90 minutes",
       "3 sessions of about 2.5 hours each",
-      "Weekly follow-ups and support throughout the programme"
+      "Weekly follow-ups and support throughout the program"
     ],
   },
 
   breakthrough: {
-    subtitle: "Our Breakthrough Programme is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
+    subtitle: "Our Breakthrough Program is for students who want long-term mentoring to achieve complete transformation of their personality, life & career.",
     stages: [
       {
         title: 'Pre-Session - Stage 1',
@@ -529,7 +529,7 @@ export const PROGRAM_JOURNEYS_2 = {
           {
             points: [
               "Understanding your background, academics, and personal development so far",
-              "Organising all the details for the planned personalised mentoring programme",
+              "Organising all the details for the planned personalised mentoring program",
             ],
           },
         ],

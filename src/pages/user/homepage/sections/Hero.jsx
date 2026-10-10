@@ -56,7 +56,7 @@ export default function Hero() {
                 to="/services"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-crimson px-8 text-base font-semibold text-white shadow-sm transition-colors hover:bg-brand-crimson-dark capitalize"
               >
-                Explore Our Programmes <ArrowRight className="size-4" />
+                Explore Our Programs <ArrowRight className="size-4" />
               </Link>
             </div>
           </div>

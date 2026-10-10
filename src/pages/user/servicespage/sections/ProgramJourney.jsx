@@ -163,7 +163,7 @@ function StageHeading({ title, range, note }) {
   return (
     <div className="lg:pr-16">
       {/* Phones/tablets: the stage name and its time chip always share ONE row
-          — name left, chip right — for every programme and every stage. Neither
+          — name left, chip right — for every program and every stage. Neither
           may push the other onto a new line: a long name wraps within its own
           column and a long time wraps inside the chip (capped at ~55% of the
           row). From 900px it becomes the navy pill. */}
@@ -241,7 +241,7 @@ export default function ProgramJourney({ program }) {
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">The journey</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-            Your Programme Journey
+            Your Program Journey
           </h2>
           {data.subtitle && (
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-brand-slate">{data.subtitle}</p>
@@ -339,7 +339,7 @@ export default function ProgramJourney({ program }) {
         {(data.duration || inclusions.length > 0 || program.duration) && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-brand-navy">
             <div className="border-b border-white/10 bg-white/5 px-6 py-4 md:px-8">
-              <h3 className="font-display text-lg font-bold text-white">What the Programme Includes</h3>
+              <h3 className="font-display text-lg font-bold text-white">What the Program Includes</h3>
             </div>
             <div className="grid grid-cols-1 items-start gap-6 p-6 sm:grid-cols-[200px_1fr] sm:gap-8 md:p-8">
               {/* Duration — a bordered stat card so the column reads as a deliberate

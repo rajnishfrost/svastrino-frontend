@@ -76,7 +76,7 @@ export function organization() {
     name: 'Svastrino',
     url: ORIGIN,
     logo: `${ORIGIN}/logo.png`,
-    description: 'Career mentoring and counselling for students — personalised guidance, mentoring programmes and the Nirmaan course.',
+    description: 'Career mentoring and counseling for students — personalised guidance, mentoring programs and the Nirmaan course.',
     email: 'admin@svastrino.com',
     telephone: '+919987777016',
     sameAs: [
