@@ -310,7 +310,7 @@ export default function Resources({ view = 'all' }) {
   }[view] || '/assets/images/all-resources-t.png'
 
   const cardClass =
-    'rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm'
+    'rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm'
 
   // The library's cards carry their own corner and their own hover, so the
   // radius is written here rather than as a second `rounded-*` over cardClass —
@@ -573,7 +573,7 @@ export default function Resources({ view = 'all' }) {
               {latest.map((p) => (
                 <article
                   key={p.slug}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-brand-navy/5 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-solid border-brand-navy/15 bg-white shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                 >
                   {p.coverImage && (
                     <Link to={`/${p.slug}`} className="block aspect-[16/9] overflow-hidden">
