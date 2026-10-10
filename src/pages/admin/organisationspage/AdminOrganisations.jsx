@@ -337,7 +337,7 @@ function ConfigureModal({ org, onClose }) {
         </label>
         <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 14 }}>
           <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
-          Active — unticking suspends their portal and hides them from enrolment
+          Active — unticking suspends their portal and hides them from enrollment
         </label>
 
         {error && <p className="adm-error">{error}</p>}

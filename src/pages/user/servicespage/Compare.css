@@ -122,7 +122,7 @@
 /* ---- Phones and small tablets: the table, made to work on a small screen ----
    The wrap becomes its own scroll box: sideways when the table is wider than
    the screen (portrait phones), and down with the header row pinned to its top,
-   so the programme names stay in view the whole way. The feature column stays
+   so the program names stay in view the whole way. The feature column stays
    pinned on the left, narrower, with a soft edge so it reads as fixed. In
    landscape the table fits without scrolling sideways at all. */
 .cmp-hint { display: none; }

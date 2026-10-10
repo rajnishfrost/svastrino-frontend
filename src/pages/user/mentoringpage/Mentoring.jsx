@@ -62,16 +62,16 @@ export default function Mentoring() {
       <PageHero
         eyebrow="Mentoring"
         title="1-on-1 Career Mentoring"
-        subtitle="Personalised career mentoring programmes — choose the depth of guidance that fits your moment."
+        subtitle="Personalised career mentoring programs — choose the depth of guidance that fits your moment."
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
       </PageHero>
 
       <section className="section">
         <div className="container mentoring-list">
-          {loading && <SkeletonCards count={3} media={false} label="Loading programmes" />}
+          {loading && <SkeletonCards count={3} media={false} label="Loading programs" />}
           {error && !loading && (
-            <ConnectionState error={error} onRetry={retry} label="the programmes" />
+            <ConnectionState error={error} onRetry={retry} label="the programs" />
           )}
 
           {!loading && !error && programs.map((p) => {
@@ -113,7 +113,7 @@ export default function Mentoring() {
                         <>
                           {detail.chooseIf?.length > 0 && (
                             <div className="mentoring-detail-block">
-                              <h4>Choose this programme if…</h4>
+                              <h4>Choose this program if…</h4>
                               <ul>
                                 {detail.chooseIf.map((c, i) => <li key={i}>{c}</li>)}
                               </ul>
@@ -122,7 +122,7 @@ export default function Mentoring() {
 
                           {detail.journey?.length > 0 && (
                             <div className="mentoring-detail-block">
-                              <h4>Programme journey</h4>
+                              <h4>Program journey</h4>
                               <ol className="mentoring-journey">
                                 {detail.journey.map((s, i) => (
                                   <li key={i}>
@@ -167,7 +167,7 @@ export default function Mentoring() {
             <h3>Not sure which to pick?</h3>
             <p>
               Start with the 15-minute <strong>Model Session</strong> — we’ll identify what you need
-              and point you to the right programme.
+              and point you to the right program.
             </p>
             <Link to="/book-online" className="btn btn-primary">Book a Model Session</Link>
           </div>
@@ -196,7 +196,7 @@ export default function Mentoring() {
               ))}
             </div>
             <div className="text-center" style={{ marginTop: 'var(--space-5)' }}>
-              <Link to="/resources#success-stories" className="btn btn-secondary">
+              <Link to="/resources/success-stories" className="btn btn-secondary">
                 Read all success stories
               </Link>
             </div>

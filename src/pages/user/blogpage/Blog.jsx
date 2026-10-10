@@ -217,8 +217,8 @@ export default function Blog() {
   return (
     <>
       <PageHero
-        eyebrow="Blog"
-        title="From the Svastrino blog"
+        eyebrow="Resources"
+        title="Blog"
         subtitle="Insights on careers, mentoring, study abroad and building the skills that matter."
         illustration={<ProgramHeroArt src="/assets/images/blog-t.png" alt="" />}
       />

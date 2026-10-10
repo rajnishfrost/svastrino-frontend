@@ -42,8 +42,8 @@ export default function AdminSkillBuilds() {
       <h1 className="adm-title">Skill Builds</h1>
       <p className="adm-sub">
         Courses and their packages, together. Course videos are managed in{' '}
-        <Link to="/admin/content">Content</Link>; mentoring programmes in{' '}
-        <Link to="/admin/mentoring">Mentoring → Programmes</Link>.
+        <Link to="/admin/content">Content</Link>; mentoring programs in{' '}
+        <Link to="/admin/mentoring">Mentoring → Programs</Link>.
       </p>
 
       <div className="adm-toolbar">
@@ -288,7 +288,7 @@ function PackageFields({ f, set, isNew }) {
       </div>
       <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
         {f.paymentMode === 'per-phase'
-          ? `Price above is ONE instalment. The card will read "x ${f.phases || 1}" and show the full run.`
+          ? `Price above is ONE installment. The card will read "x ${f.phases || 1}" and show the full run.`
           : 'Price above is the whole course. Paying once opens every phase immediately.'}
       </p>
       <div className="adm-row2">

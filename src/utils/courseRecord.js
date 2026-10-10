@@ -7,7 +7,7 @@
  *
  * This is the twin of invoice.js and follows it deliberately: no PDF library,
  * no server round trip, one string of HTML. A course closes one year after
- * enrolment; this document is the part the student keeps, so it has to work
+ * enrollment; this document is the part the student keeps, so it has to work
  * long after the course page has stopped letting them in.
  */
 

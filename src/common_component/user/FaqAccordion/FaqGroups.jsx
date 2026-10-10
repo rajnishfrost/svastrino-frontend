@@ -4,7 +4,7 @@ import FaqAccordion from './FaqAccordion.jsx'
 
 /**
  * FAQ sections as collapsible headings, each holding its own FaqAccordion of
- * questions. Shared by /resources/faqs and every programme page (Bull's Eye,
+ * questions. Shared by /resources/faqs and every program page (Bull's Eye,
  * Bloom, Breakthrough, Nirmaan, Psychometric Testing) so they all read the same.
  *
  * Closed by default and one open at a time: a long list of questions buries

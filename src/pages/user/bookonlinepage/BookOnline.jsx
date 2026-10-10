@@ -28,7 +28,7 @@ import { useNirmaanStanding } from '../../../hooks/useNirmaanStanding.js'
 import { Bone, SkeletonCards } from '../../../common_component/Skeleton/Skeleton.jsx'
 
 /**
- * Counselling & mentoring booking wizard. Four steps (as per spec):
+ * Counseling & mentoring booking wizard. Four steps (as per spec):
  *   1 Date & time  → month calendar (T+3 … +2 months) + 2.5-hour slot picker
  *   2 Your details → account (guest auto-account) + coupon + fees
  *   3 Verify       → full summary before committing
@@ -121,7 +121,7 @@ export default function BookOnline() {
   const [payPhase, setPayPhase] = useState(null)
   const [err, setErr] = useState('')
   const [emailExists, setEmailExists] = useState(false)
-  // Set when a visitor on an expert-call programme says they have already
+  // Set when a visitor on an expert-call program says they have already
   // spoken to us, so the wizard steps aside and lets them carry on.
   const [callDone, setCallDone] = useState(false)
 
@@ -142,7 +142,7 @@ export default function BookOnline() {
   const isFree = !!rescheduleId || (owned && owned.sessionsRemaining > 0)
   const soldOut = owned && owned.sessionsRemaining === 0 && !rescheduleId
 
-  // Programmes sold after a call (Breakthrough) are not bought from here. Show
+  // Programs sold after a call (Breakthrough) are not bought from here. Show
   // the reason instead of the wizard — unless they already own it, are
   // rescheduling, or say they have had the call. If they say so and have not,
   // the server refuses at the payment step with the same explanation.
@@ -209,7 +209,7 @@ export default function BookOnline() {
 
   /**
    * Booking needs an account. Someone signed out gets the sign-in pop-up right
-   * here and, once in, carries on to "Your details" with the programme, date
+   * here and, once in, carries on to "Your details" with the program, date
    * and time still picked. An email sign-up waits for its verification link;
    * the address (with step=details) is remembered for the sign-in after it.
    */
@@ -235,7 +235,7 @@ export default function BookOnline() {
   }, [user])
 
   // Phones: each new step starts at the top of the wizard ("Back to
-  // programmes"), not wherever the last step was scrolled to.
+  // programs"), not wherever the last step was scrolled to.
   const wizardTop = useRef(null)
   const firstStep = useRef(true)
   useEffect(() => {
@@ -474,9 +474,9 @@ export default function BookOnline() {
       <PageSeo />
       <PageHero
         eyebrow="Book Online"
-        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Programme, Now!'}
+        title={rescheduleId ? 'Reschedule your session' : 'Book a Preferred Program, Now!'}
         // subtitle="Choose a plan that fits your goals and get personalised one-on-one guidance."
-        subtitle="Select the programme that you would want to book a personalised session for"
+        subtitle="Select the program that you would want to book a personalised session for"
         illustration={<ProgramHeroArt src="/assets/images/book-t.png" alt="" />}
       />
       <section className="section bo-section">
@@ -489,7 +489,7 @@ export default function BookOnline() {
           {step !== 'program' && step !== 'success' && !rescheduleId && (
             <button type="button" className="bo-back" onClick={backToPrograms}>
               <ArrowLeft className="size-4" aria-hidden />
-              Back to programmes
+              Back to programs
             </button>
           )}
 
@@ -518,7 +518,7 @@ export default function BookOnline() {
               payment screen. */}
           {step === 'program' && (
             <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
-              {programs == null ? <div style={{ gridColumn: '1 / -1' }}><SkeletonCards count={3} media={false} minWidth={240} label="Loading programmes" /></div> : programs.map((p) => {
+              {programs == null ? <div style={{ gridColumn: '1 / -1' }}><SkeletonCards count={3} media={false} minWidth={240} label="Loading programs" /></div> : programs.map((p) => {
                 const byCall = p.buyMode === 'expert-call'
                 return (
                   <div
@@ -557,7 +557,7 @@ export default function BookOnline() {
                       </ul>
                     )}
 
-                    {/* A programme sold after a conversation cannot be booked
+                    {/* A program sold after a conversation cannot be booked
                         from here at all — its own page runs that conversation. */}
                     {/* {byCall ? (
                       <Link
@@ -592,13 +592,13 @@ export default function BookOnline() {
                   <span className="bo-muted bo-selected-sep"> · </span>
                   <span className="bo-muted">{program.sessionsShort || `${program.sessions} ${program.sessions === 1 ? 'session' : 'sessions'} × ${fmtHrs(program.sessionMins)}`}</span>
                   {isFree
-                    ? <span className="bo-paid-tag">Programme purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
+                    ? <span className="bo-paid-tag">Program purchased ✓ {rescheduleId ? '· rescheduling' : `· booking session ${sessionNo} of ${program.sessions}`}</span>
                     : <span className="bo-muted"> · {paiseInr(program.price)}</span>}
                 </span>
               </div>
               {!rescheduleId && (
                 <button type="button" className="bo-link" onClick={backToPrograms}>
-                  Change programme
+                  Change program
                 </button>
               )}
             </div>
@@ -683,7 +683,7 @@ export default function BookOnline() {
               <p className="bo-muted">
                 Your sessions, reminders and receipts live in your account. Sign in, or create
                 an account in a minute, and you will come straight back here with your
-                programme, date and time still picked.
+                program, date and time still picked.
               </p>
               <div className="bo-signin-acts">
                 <button type="button" className="btn btn-primary" onClick={() => goToLogin('login')}>Log in</button>
@@ -785,7 +785,7 @@ export default function BookOnline() {
             <div className="card bo-card bo-verify">
               <h2 className="bo-h2">Verify your booking</h2>
               <div className="bo-lines">
-                <Line label="Programme" value={program.name} />
+                <Line label="Program" value={program.name} />
                 {sessionNo && <Line label="Session" value={`${sessionNo} of ${program.sessions}`} />}
                 <Line label="Date" value={fmtLong(date)} />
                 <Line label="Time" value={`${fmt12(slot)} – ${fmt12(addHM(slot, program.sessionMins || 150))} (${fmtHrs(program.sessionMins)})`} />
@@ -819,7 +819,7 @@ export default function BookOnline() {
               amount={inr(quote?.rupees?.amount ?? Math.round(program.price / 100))}
               onRetry={() => { setPayFailed(''); openCashfree(order) }}
               backTo={`/services/${program.slug}`}
-              backLabel="Back to the programme"
+              backLabel="Back to the program"
             />
           )}
 
@@ -863,7 +863,7 @@ export default function BookOnline() {
               <div className="bo-tick" aria-hidden>✓</div>
               <h2>{rescheduleId ? 'Session rescheduled' : 'Session booked'}</h2>
               <div className="bo-lines">
-                <Line label="Programme" value={program?.name || booking.programSku} />
+                <Line label="Program" value={program?.name || booking.programSku} />
                 <Line label="Session" value={`${booking.sessionNumber} of ${program?.sessions ?? '—'}`} />
                 <Line label="When" value={`${fmtLong(date)} · ${fmt12(slot)} – ${fmt12(addHM(slot, 120))}`} />
                 {receipt && <Line label="Payment" value={`${inr(receipt.amountInr)} · receipt ${receipt.receiptNo}`} />}
@@ -971,7 +971,7 @@ function FeeLines({ program, quote, isFree }) {
   if (isFree) {
     return (
       <div className="bo-lines">
-        <div className="bo-line"><span>Programme fee</span><span>Already paid ✓</span></div>
+        <div className="bo-line"><span>Program fee</span><span>Already paid ✓</span></div>
         <div className="bo-total"><span>Payable now</span><span>{inr(0)}</span></div>
       </div>
     )
@@ -979,7 +979,7 @@ function FeeLines({ program, quote, isFree }) {
   if (quote) {
     return (
       <div className="bo-lines">
-        <div className="bo-line"><span>Programme fee</span>
+        <div className="bo-line"><span>Program fee</span>
           <span className={quote.earlyBirdApplied ? 'bo-strike' : ''}>{inr(quote.rupees.listPrice)}</span></div>
         {quote.earlyBirdApplied && (
           <div className="bo-line"><span>Early bird</span>
@@ -996,7 +996,7 @@ function FeeLines({ program, quote, isFree }) {
   }
   return (
     <div className="bo-lines">
-      <div className="bo-line"><span>Programme fee</span><span>{paiseInr(program.price)}</span></div>
+      <div className="bo-line"><span>Program fee</span><span>{paiseInr(program.price)}</span></div>
       <div className="bo-total"><span>Payable now</span><span>{paiseInr(program.price)}</span></div>
       <p className="bo-hint">One payment covers all {program.sessions} sessions — later sessions are booked free.</p>
     </div>

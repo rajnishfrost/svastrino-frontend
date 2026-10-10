@@ -27,7 +27,7 @@ const Ico = ({ d }) => (
 const ACTIONS = [
   { module: 'skill-builds', to: '/admin/skill-builds', label: 'Skill Builds & pricing', desc: 'Courses, tiers and prices' },
   { module: 'content', to: '/admin/content', label: 'Course content', desc: 'Videos, sessions & questions' },
-  { module: 'mentoring', to: '/admin/mentoring', label: 'Mentoring', desc: 'Bookings, notes & programmes' },
+  { module: 'mentoring', to: '/admin/mentoring', label: 'Mentoring', desc: 'Bookings, notes & programs' },
   { module: 'orders', to: '/admin/orders', label: 'Orders & revenue', desc: 'Transactions and refunds' },
   { module: 'coupons', to: '/admin/coupons', label: 'Coupons', desc: 'Discount codes' },
   { module: 'users', to: '/admin/users', label: 'Users', desc: 'Accounts and roles' },

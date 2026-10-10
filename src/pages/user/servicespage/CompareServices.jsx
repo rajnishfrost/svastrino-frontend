@@ -7,7 +7,7 @@ import PageSeo from '../../../seo/PageSeo.jsx'
 import { ArrowRight } from 'lucide-react'
 
 /**
- * Compare the three counselling and mentoring programs side by side — for the
+ * Compare the three counseling and mentoring programs side by side — for the
  * visitor who has narrowed it down but cannot choose.
  *
  * The table is wide, so it scrolls inside its own box rather than pushing the
@@ -19,8 +19,8 @@ export default function CompareServices() {
       <PageSeo />
       <PageHero
         eyebrow="Services"
-        title="Compare Our Programmes"
-        subtitle="What each programme covers, side by side, so you can see exactly where they differ."
+        title="Compare Our Programs"
+        subtitle="What each program covers, side by side, so you can see exactly where they differ."
         illustration={<ProgramHeroArt src="/assets/images/compare-t.png" alt="" />}
       >
         {/* <Link to="/services" className="btn btn-secondary btn-large">All services</Link> */}
@@ -30,7 +30,7 @@ export default function CompareServices() {
         <div className="container">
           {/* Phones (portrait): the table is wider than the screen, so it
               scrolls sideways inside its box — feature names stay pinned on
-              the left, programme names on top. Landscape fits it whole. */}
+              the left, program names on top. Landscape fits it whole. */}
           <p className="cmp-hint" aria-hidden>
             Swipe sideways to compare all three <span>→</span>
             <small>or turn your phone for the full table</small>
@@ -38,11 +38,11 @@ export default function CompareServices() {
           <div className="cmp-wrap">
             <table className="cmp-table">
               <caption className="cmp-caption">
-                <span className={`text-green-600 font-semibold`}>✓</span> means the programme includes it
+                <span className={`text-green-600 font-semibold`}>✓</span> means the program includes it
               </caption>
               <thead>
                 <tr>
-                  <th scope="col" className="cmp-corner">Programme</th>
+                  <th scope="col" className="cmp-corner">Program</th>
                   {PROGRAMS.map((p) => (
                     <th scope="col" key={p.slug} className='!text-center'>
                       <span className="cmp-cat">{p.category}</span>
@@ -106,7 +106,7 @@ export default function CompareServices() {
           </div>
 
           <p className="cmp-note">
-            Still not sure? A short <Link to="/services/bulls-eye" className={`text-brand-navy font-semibold`}>counselling session</Link> will
+            Still not sure? A short <Link to="/services/bulls-eye" className={`text-brand-navy font-semibold`}>counseling session</Link> will
             help you pick the right one.
           </p>
         </div>

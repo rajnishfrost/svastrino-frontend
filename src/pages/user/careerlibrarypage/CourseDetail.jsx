@@ -68,7 +68,7 @@ export default function CourseDetail() {
   // they landed here straight from a search result or a shared link.
   const goBack = () => {
     if (window.history.state?.idx > 0) navigate(-1)
-    else navigate('/resources#career-library')
+    else navigate('/resources/career-library')
   }
 
   if (loading) {
@@ -86,7 +86,7 @@ export default function CourseDetail() {
           <h1 className="font-display text-3xl font-extrabold text-brand-navy">Course not found</h1>
           <p className="mt-3 text-brand-slate">That course may have been moved or removed.</p>
           <Link
-            to="/resources#career-library"
+            to="/resources/career-library"
             className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-brand-crimson px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-crimson-dark"
           >
             Back to Career Library
@@ -103,7 +103,7 @@ export default function CourseDetail() {
           <ConnectionState error={error} onRetry={retry} label="this course" />
           <p className="mt-6 text-center">
             <Link
-              to="/resources#career-library"
+              to="/resources/career-library"
               className="inline-flex h-11 items-center justify-center rounded-lg border border-brand-navy/15 bg-white px-6 text-sm font-semibold text-brand-navy transition-colors hover:text-brand-crimson"
             >
               Back to Career Library

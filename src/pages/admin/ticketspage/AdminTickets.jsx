@@ -78,7 +78,7 @@ const isLate = (t) =>
   t.status === 'open' && Date.now() - new Date(t.lastMessageAt).getTime() > LATE_AFTER_DAYS * DAY_MS
 
 /**
- * The ticket carries the course as a slug, because that is what the enrolment
+ * The ticket carries the course as a slug, because that is what the enrollment
  * is keyed on. Nobody should have to read a slug off a screen, so it is turned
  * back into words for display while the slug itself stays the thing we send.
  */

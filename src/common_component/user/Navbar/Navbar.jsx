@@ -19,16 +19,16 @@ import './Navbar.css'
 // "Mentoring"; /services is the mentoring landing page in the router.)
 const MENTORING_LINKS = [
   {
-    label: 'Career Counselling',
+    label: 'Career Counseling',
     children: [
-      { label: "Bull's Eye Programme", to: '/services/bulls-eye' },
+      { label: "Bull's Eye Program", to: '/services/bulls-eye' },
     ],
   },
   {
     label: 'Personalised Mentoring',
     children: [
-      { label: 'Bloom Programme', to: '/services/bloom' },
-      { label: 'Breakthrough Programme', to: '/services/breakthrough' },
+      { label: 'Bloom Program', to: '/services/bloom' },
+      { label: 'Breakthrough Program', to: '/services/breakthrough' },
     ],
   },
 ]
@@ -243,8 +243,8 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
 function SkillBuildDropdown({ onNavigate }) {
   const { open, setOpen, hoverProps } = useHoverMenu(180, { exclusive: true })
   const items = [
-    { label: 'Nirmaan', desc: '24-week mindset & skills course', to: '/skill-build/nirmaan', Icon: Sprout },
-    { label: 'Psychometric Testing', desc: 'Stream & Career Selector · from ₹900', to: '/skill-build/psychometric-testing', Icon: Brain },
+    { label: 'Nirmaan', desc: 'Mindset & skills course', to: '/skill-build/nirmaan', Icon: Sprout },
+    { label: 'Psychometric Testing', desc: 'Stream & Career Selector', to: '/skill-build/psychometric-testing', Icon: Brain },
   ]
 
   return (
@@ -428,14 +428,13 @@ function ProfileMenu({ user, onNavigate }) {
             and active, so the link never lands on a 403. */}
         {user.organisation?.portal && (
           <Link to="/organisation" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-            <ShieldIcon /> Organisation Portal
+            <ShieldIcon /> Institute Portal
           </Link>
         )}
-        {/* The student side of the menu, and only for an account the student
-            portal is open to. Offering a Dashboard link to a panel-only account
-            would be offering a door that answers "no access" — better not to
-            draw the door. They keep the whole public site either way. */}
-        {hasPortalAccess(user) && (
+        {/* The student side of the menu is for student accounts only — admins
+            and institutes have their own panel/portal above, and keep the whole
+            public site either way. */}
+        {(user.role || 'student') === 'student' && hasPortalAccess(user) && (
           <>
             <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
               <GridIcon /> Dashboard

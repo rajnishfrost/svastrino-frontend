@@ -75,7 +75,7 @@ const canReschedule = (s) =>
   s.status === 'booked' && s.startAt && new Date(s.startAt).getTime() - Date.now() >= 2 * 24 * 3600_000
 
 /**
- * Where this enrolment stands against the one-year rule (decided by the server).
+ * Where this enrollment stands against the one-year rule (decided by the server).
  * 'active' is the fallback for a payload without it.
  */
 const accessState = (e) => e.access?.state || 'active'
@@ -84,7 +84,7 @@ const ACTION = 'inline-flex items-center gap-1 text-sm font-semibold text-brand-
 const PANEL_TITLE = 'font-display text-xl font-bold text-brand-navy'
 // Nothing to show yet: a dashed card with one line and the way in.
 const EMPTY = 'text-sm text-brand-slate'
-// One item of a panel — a booked programme, an enrolment — as a white card on
+// One item of a panel — a booked program, an enrollment — as a white card on
 // the dashboard's soft background, so each reads as its own thing on a phone
 // instead of a run of loose lines.
 const CARD = 'rounded-2xl border border-solid border-brand-navy/15 bg-white p-4 shadow-[0_12px_30px_-14px_rgba(15,44,92,0.4)] sm:p-6'
@@ -159,7 +159,7 @@ export default function Dashboard() {
   // No tab (straight after signing in, or a plain /dashboard link): open the
   // section for what the student actually has — their most recent purchase.
   // Nirmaan (a free trial included) or the psychometric test → Skill-Build;
-  // a Svastrino programme → Services; nothing yet → the default tab.
+  // a Svastrino program → Services; nothing yet → the default tab.
   // Enrollments arrive newest first. Wait for them rather than guess.
   if (!TABS.some((t) => t.key === tab)) {
     if (enrollments == null) return <SkeletonDashboard />

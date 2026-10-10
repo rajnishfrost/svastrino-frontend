@@ -11,12 +11,12 @@
  */
 export const LEGACY_SEO = {
   '/': {
-    title: "Personalised Career Mentoring Programme, Online Career Counselling",
-    description: "If you are looking for online career counselling and career mentoring programme, then we svastrino is here to help you to provide career guidance.",
+    title: "Personalised Career Mentoring Program, Online Career Counseling",
+    description: "If you are looking for online career counseling and career mentoring program, then we svastrino is here to help you to provide career guidance.",
   },
   '/about': {
-    title: "About Svastrino – Best Career Counselling and Mentoring",
-    description: "Svastrino is best career counselling service provider who provide service to choose right career path for students.",
+    title: "About Svastrino – Best Career Counseling and Mentoring",
+    description: "Svastrino is best career counseling service provider who provide service to choose right career path for students.",
   },
   '/blog': {
     // The old site had both /blog/ and /blogs/ as separate listings; this one
@@ -27,14 +27,14 @@ export const LEGACY_SEO = {
   },
   '/book-online': {
     title: "Book your Online Career Mentoring & Guidance Session with Svastrino",
-    description: "Book Your Spot in Svastrino's Online Programmes: Model Session, Bull's Eye Programme, Bloom Programme, Breakthrough Programme. Discover Your Potential Now!",
+    description: "Book Your Spot in Svastrino's Online Programs: Model Session, Bull's Eye Program, Bloom Program, Breakthrough Program. Discover Your Potential Now!",
   },
   '/contact': {
     title: "Connect with Svastrino- Best Online Career Guidance Provider",
-    description: "Reach out and connect with Svastrino career counselling, your gateway to personalised career guidance and support.",
+    description: "Reach out and connect with Svastrino career counseling, your gateway to personalised career guidance and support.",
   },
   '/our-ideology': {
-    title: "Svastrino Approach Career Mentoring, Online Career Counselling",
+    title: "Svastrino Approach Career Mentoring, Online Career Counseling",
     description: "Svastrino understand the core issues those are coming infront of career planning and how to deal with them and providing planned results.",
   },
   '/resources/career-library': {
@@ -46,28 +46,28 @@ export const LEGACY_SEO = {
     description: "Get Answers to Your Concerns on Svastrino's working. Find Details on how Svastrino is committed to help you Identify your Career Needs & to Resolve all your Career Concerns.",
   },
   '/resources/success-stories': {
-    title: "Read The Success Stories of Our Online Guidance for Career Counselling",
+    title: "Read The Success Stories of Our Online Guidance for Career Counseling",
     description: "Experience the Transformative Power of Svastrino's Services: Explore Inspiring Success Stories and Discover the Future of personalised Career Guidance.",
   },
   '/services': {
-    title: "Online Career Guidance Programmes: Bulls Eye, Bloom, Breakthrough Programmes",
-    description: "Svastrino’s Bulls Eye, Bloom, & Breakthrough programmes are meticulously designed to provide tailored support to empower individuals to navigate their career paths.",
+    title: "Online Career Guidance Programs: Bulls Eye, Bloom, Breakthrough Programs",
+    description: "Svastrino’s Bulls Eye, Bloom, & Breakthrough programs are meticulously designed to provide tailored support to empower individuals to navigate their career paths.",
   },
   '/services/bloom': {
-    title: "Transform your Career through Svastrino's Personality Based Mentoring Programme",
-    description: "Cultivate a Visionary Mindset and Set Goals for a Bright Future with Svastrino's Bloom Programme. Experience Personalised Career Mentoring to Explore Your Potential",
+    title: "Transform your Career through Svastrino's Personality Based Mentoring Program",
+    description: "Cultivate a Visionary Mindset and Set Goals for a Bright Future with Svastrino's Bloom Program. Experience Personalised Career Mentoring to Explore Your Potential",
   },
   '/services/breakthrough': {
-    title: "Personalised Career Mentoring Programme to craft Future Leaders & Entrepreneurs",
-    description: "Elevate Your Potential with Svastrino's Breakthrough Programme: Master Self-Discipline and Evolve as a Leader through Crafting Right Mindset.",
+    title: "Personalised Career Mentoring Program to craft Future Leaders & Entrepreneurs",
+    description: "Elevate Your Potential with Svastrino's Breakthrough Program: Master Self-Discipline and Evolve as a Leader through Crafting Right Mindset.",
   },
   '/services/bulls-eye': {
-    title: "Immediate Career Counselling – Bull's Eye Programme",
-    description: "Get Professional Solutions to Last Moment Career Confusion through the Iconic Bull's Eye Programme Tailored to Guide Immediate Resolution in Two 2.5-Hour Sessions",
+    title: "Immediate Career Counseling – Bull's Eye Program",
+    description: "Get Professional Solutions to Last Moment Career Confusion through the Iconic Bull's Eye Program Tailored to Guide Immediate Resolution in Two 2.5-Hour Sessions",
   },
   '/services/compare': {
-    title: "Compare Our Career Counselling Programmes Bull's Eye, Bloom, Breakthrough Programme",
-    description: "Compare to know the Benefits of our carefully crafted Career Mentoring and Counselling Programmes tailor to fit your needs",
+    title: "Compare Our Career Counseling Programs Bull's Eye, Bloom, Breakthrough Program",
+    description: "Compare to know the Benefits of our carefully crafted Career Mentoring and Counseling Programs tailor to fit your needs",
   }
 }
 

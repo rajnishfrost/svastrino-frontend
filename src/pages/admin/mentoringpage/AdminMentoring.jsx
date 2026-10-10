@@ -9,7 +9,7 @@ import { SkeletonTable } from '../../../common_component/Skeleton/Skeleton.jsx'
  *   Bookings  → every appointment; the mentor writes per-session updates/tasks
  *               (shown verbatim in the student's dashboard table).
  *   Programs  → the Services catalog, grouped by sub-category
- *               (Career Counselling → Bull's Eye · Personalised Mentoring →
+ *               (Career Counseling → Bull's Eye · Personalised Mentoring →
  *               Bloom, Breakthrough). Create & edit programs here.
  */
 const STATUS_CLS = { booked: 'ok', completed: 'muted', cancelled: 'warn' }
@@ -31,7 +31,7 @@ export default function AdminMentoring() {
       <h1 className="adm-title">Services</h1>
       <p className="adm-sub">
         Bookings and session notes, plus the Services catalogue grouped by sub-category
-        (Career Counselling, Personalised Mentoring).
+        (Career Counseling, Personalised Mentoring).
       </p>
 
       <div className="adm-toolbar">
@@ -39,7 +39,7 @@ export default function AdminMentoring() {
           Bookings
         </button>
         <button className={`adm-btn adm-btn--sm ${tab === 'programs' ? '' : 'adm-btn--ghost'}`} onClick={() => setTab('programs')}>
-          Programmes
+          Programs
         </button>
       </div>
 
@@ -105,7 +105,7 @@ function BookingsTab() {
     <div>
       <div className="adm-toolbar">
         <select className="adm-select" style={{ width: 200 }} value={sku} onChange={(e) => setSku(e.target.value)}>
-          <option value="">All programmes</option>
+          <option value="">All programs</option>
           {programs.map((p) => <option key={p.sku} value={p.sku}>{p.name}</option>)}
         </select>
         <select className="adm-select" style={{ width: 160 }} value={when} onChange={(e) => setWhen(e.target.value)}>
@@ -128,7 +128,7 @@ function BookingsTab() {
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
             <thead>
-              <tr><th>Student</th><th>Programme</th><th>Session</th><th>Appointment (IST)</th><th>Status</th><th>Update / tasks</th><th></th></tr>
+              <tr><th>Student</th><th>Program</th><th>Session</th><th>Appointment (IST)</th><th>Status</th><th>Update / tasks</th><th></th></tr>
             </thead>
             <tbody>
               {rows.map((b) => (
@@ -223,7 +223,7 @@ function ProgramsTab() {
   return (
     <div>
       <div className="adm-toolbar">
-        <button className="adm-btn adm-btn--sm" onClick={() => setAdding(!adding)}>+ New programme</button>
+        <button className="adm-btn adm-btn--sm" onClick={() => setAdding(!adding)}>+ New program</button>
       </div>
 
       {adding && (
@@ -344,7 +344,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
 
   return (
     <div>
-      <h2 style={{ fontSize: 16, marginBottom: 12 }}>{isNew ? 'New programme' : `Edit ${pkg.name}`}</h2>
+      <h2 style={{ fontSize: 16, marginBottom: 12 }}>{isNew ? 'New program' : `Edit ${pkg.name}`}</h2>
       <div className="adm-field">
         <label>Sub-category</label>
         <select className="adm-select" value={f.skillBuildSlug} disabled={!isNew}
@@ -360,11 +360,11 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
         </div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Price (₹, whole programme)</label><input className="adm-input adm-num" type="number" value={f.priceInr} onChange={(e) => set('priceInr', e.target.value)} /></div>
+        <div className="adm-field"><label>Price (₹, whole program)</label><input className="adm-input adm-num" type="number" value={f.priceInr} onChange={(e) => set('priceInr', e.target.value)} /></div>
         <div className="adm-field"><label>Early bird (₹, blank = none)</label><input className="adm-input adm-num" type="number" value={f.earlyBirdInr} onChange={(e) => set('earlyBirdInr', e.target.value)} /></div>
       </div>
       <div className="adm-row2">
-        <div className="adm-field"><label>Sessions in the programme</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
+        <div className="adm-field"><label>Sessions in the program</label><input className="adm-input adm-num" type="number" value={f.sessionsCount} onChange={(e) => set('sessionsCount', e.target.value)} placeholder="e.g. 5" /></div>
         <div className="adm-field"><label>Session length (mins)</label><input className="adm-input adm-num" type="number" value={f.sessionMins} onChange={(e) => set('sessionMins', e.target.value)} /></div>
       </div>
       <div className="adm-field"><label>Tagline (red line on the card)</label><input className="adm-input" value={f.tagline} onChange={(e) => set('tagline', e.target.value)} maxLength={LIMITS.shortText} /></div>
@@ -395,7 +395,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
           through the form on its own page. One setting could not say both, and
           while it tried, opening the checkout took the form off the page. */}
       <div className="adm-field">
-        <label>Programme page</label>
+        <label>Program page</label>
         <select className="adm-input" value={f.expertEnquiry ? 'enquiry' : 'book'}
                 onChange={(e) => set('expertEnquiry', e.target.value === 'enquiry')}>
           <option value="book">Book now strip — links to the checkout</option>
@@ -404,7 +404,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
       </div>
       <p className="adm-hint" style={{ marginTop: -8, marginBottom: 12, fontSize: 12, opacity: 0.75 }}>
         {f.expertEnquiry
-          ? 'The /services card and the programme page both read "Talk to an Expert" and lead to the form. Requests land in Enquiries.'
+          ? 'The /services card and the program page both read "Talk to an Expert" and lead to the form. Requests land in Enquiries.'
           : 'The card and the page both read "Book Now" and lead to the booking wizard.'}
       </p>
       <div className="adm-field"><label>Features (one per line)</label><textarea className="adm-textarea" rows={4} value={f.features} onChange={(e) => set('features', e.target.value)} maxLength={LIMITS.longText} /></div>
@@ -420,7 +420,7 @@ function ProgramForm({ pkg, subcats = [], onCancel, onSaved }) {
       <div style={{ display: 'flex', gap: 10 }}>
         <button className="adm-btn" onClick={save}
                 disabled={busy || !f.name || (isNew && !f.sku) || f.priceInr === '' || f.sessionsCount === ''}>
-          {busy ? (isNew ? 'Creating…' : 'Saving…') : (isNew ? 'Create programme' : 'Save changes')}
+          {busy ? (isNew ? 'Creating…' : 'Saving…') : (isNew ? 'Create program' : 'Save changes')}
         </button>
         <button className="adm-btn adm-btn--ghost" onClick={onCancel} disabled={busy}>Cancel</button>
       </div>

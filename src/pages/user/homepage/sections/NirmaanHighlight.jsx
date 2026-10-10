@@ -54,7 +54,7 @@ export default function NirmaanHighlight() {
                 Nirmaan — <span className="text-nirmaan-green">Soch Se Vikas</span>
               </h2>
               <p className="mt-4 max-w-2xl text-nirmaan-brown-soft">
-                ​Nirmaan is a structured journey to build self-awareness, self-control, discipline, communication, confidence, and other essential skills for life and growth. For students from Grade 7 onwards who want to understand themselves better and handle life and its choices with total self-belief & confidence.
+                ​Nirmaan is a structured journey to build self-awareness, self-control, discipline, communication, confidence, and other essential skills for life and growth. For students from Class 7 onwards who want to understand themselves better and handle life and its choices with total self-belief & confidence.
               </p>
 
               <ul className="mt-6 space-y-3">

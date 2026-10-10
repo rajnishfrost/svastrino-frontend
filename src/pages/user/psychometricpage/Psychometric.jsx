@@ -213,16 +213,18 @@ export default function Psychometric() {
                 </div>
               </div>
             ) : (
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:items-start">
+              // Stacked, the two buttons share one width: the column is as wide
+              // as the wider button and both stretch to it.
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:w-fit sm:items-stretch">
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark sm:w-auto sm:flex-row sm:gap-2"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark sm:flex-row sm:gap-2"
                 >
                   Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
                 </a>
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white sm:w-auto sm:flex-row sm:gap-2"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white sm:flex-row sm:gap-2"
                 >
                   Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
                 </a>
@@ -330,14 +332,14 @@ export default function Psychometric() {
       </section>
 
       {/* ---- Section 6 · Find Which Test Is Right for You ----
-          Its own soft green band (10% Nirmaan green over the page cream), so it
-          reads as a separate step (choose your test); the white cards sit on it. */}
-      <section id="which-test" className="bg-white py-16 md:py-20">
+          The dark brown band of the Student Journey section, so it reads as its
+          own step (choose your test); the white cards sit on it. */}
+      <section id="which-test" aria-busy={checking} className="bg-nirmaan-brown py-16 md:py-20">
         <div className="container">
-          <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-nirmaan-brown sm:text-4xl">
+          <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Find Which Test Is Right for You
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-nirmaan-brown-soft">
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base text-white/80">
             Two tests, one for each stage of school. Pick the one for your class.
           </p>
 

@@ -10,7 +10,7 @@ import { ArrowRight } from 'lucide-react'
 
 /**
  * Services landing — our consultancy offering, grouped into sub-categories:
- *   Career Counselling   → Bull's Eye Program
+ *   Career Counseling   → Bull's Eye Program
  *   Personalised Mentoring → Bloom Program, Breakthrough Program
  * Each program links to its own detail page (/services/:slug).
  */
@@ -79,12 +79,12 @@ export default function Services() {
       <PageSeo />
       <PageHero
         eyebrow="Services"
-        title="Career Counselling & Mentoring"
-        subtitle="One-on-one guidance for every stage — from a focused counselling session to long-term personalised mentoring."
+        title="Career Counseling & Mentoring"
+        subtitle="One-on-one guidance for every stage — from a focused counseling session to long-term personalised mentoring."
         illustration={<ProgramHeroArt src="/assets/images/all-services-t.png" alt="" />}
       >
         <Link to="/book-online" className="btn btn-accent btn-large">Book Online</Link>
-        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programmes</Link>
+        <Link to="/services/compare" className="btn btn-secondary btn-large">Compare Programs</Link>
       </PageHero>
 
       <section className="bg-white pb-16 pt-4 sm:pt-16">
@@ -94,7 +94,7 @@ export default function Services() {
             // testimonials below it do not jump when the programs land.
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" aria-hidden>
               {[0, 1, 2].map((i) => (
-                <div key={i} className="animate-skeleton rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+                <div key={i} className="animate-skeleton rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm">
                   <div className="size-12 rounded-xl bg-brand-navy/5" />
                   <div className="mt-4 h-3 w-28 rounded bg-brand-navy/5" />
                   <div className="mt-2 h-5 w-44 rounded bg-brand-navy/10" />
@@ -110,7 +110,7 @@ export default function Services() {
 
           {!loading && list.length === 0 && (
             <p className="text-center text-sm text-brand-slate">
-              The programmes could not be loaded just now.{' '}
+              The programs could not be loaded just now.{' '}
               <button
                 type="button"
                 onClick={() => window.location.reload()}
@@ -123,18 +123,11 @@ export default function Services() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {groups.flatMap((g) => g.programs).map((p) => {
-                // Breakthrough is the flagship long-term program — give it a
-                // crimson frame + elevated, scaled-up card so it stands out
-                // (matches the featured treatment on the Book Online page).
-                const featured = p.slug === 'breakthrough'
+                // All three cards look the same — no featured card here.
                 return (
                   <article
                     key={p.slug}
-                    className={
-                      featured
-                        ? 'relative z-10 flex flex-col rounded-xl border-2 border-brand-crimson bg-white p-6 shadow-2xl shadow-brand-crimson/20 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/25'
-                        : 'relative flex flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5'
-                    }
+                    className="relative flex flex-col rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                   >
                     <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-crimson/10 p-2.5 text-brand-crimson">
                       <ProgramEmblem variant={p.slug} />
@@ -181,7 +174,7 @@ export default function Services() {
       <Testimonials
         items={testimonials}
         eyebrow="Success stories"
-        title="What People Say About Us !"
+        title="What People Say About Us!"
         className="bg-soft py-16 md:py-20"
         footer={
           <Link

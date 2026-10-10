@@ -25,7 +25,7 @@ import './Testimonials.css'
  */
 function TestimonialCard({ t }) {
   return (
-    <figure className="flex h-full flex-col rounded-xl border border-brand-navy/5 bg-white p-6 shadow-sm">
+    <figure className="flex h-full flex-col rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm">
       <Quote className="size-8 fill-brand-crimson/15 text-brand-crimson" />
       <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-brand-navy/80">
         &ldquo;{t.quote}&rdquo;

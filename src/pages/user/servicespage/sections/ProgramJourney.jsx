@@ -162,15 +162,15 @@ function StageHeading({ title, range, note }) {
   const noteLines = note ? note.split('\n').map((l) => l.trim()).filter(Boolean) : []
   return (
     <div className="lg:pr-16">
-      {/* Phones/tablets: the stage name and its time chip always share ONE row
-          — name left, chip right — for every programme and every stage. Neither
-          may push the other onto a new line: a long name wraps within its own
-          column and a long time wraps inside the chip (capped at ~55% of the
-          row). From 900px it becomes the navy pill. */}
-      <div className="flex items-center justify-between gap-3 lg:inline-flex lg:flex-wrap lg:justify-start lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
+      {/* Phones/tablets: the stage name on its own line, and its time chip on
+          the line below it, kept to one line (only the narrowest phones may
+          wrap the longest time rather than run off the screen) — for every
+          program and every stage. From 900px it becomes the navy pill, name
+          and time side by side. */}
+      <div className="flex flex-col items-start gap-1.5 lg:inline-flex lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
         <h3 className="min-w-0 font-display text-[15px] min-[380px]:text-base font-bold leading-snug text-brand-navy sm:text-lg lg:text-xl lg:text-white">{keepHyphen(title)}</h3>
         {range && (
-          <span className="inline-flex max-w-[58%] shrink-0 items-center gap-1.5 rounded-xl bg-brand-crimson/10 px-2 py-1 text-[11px] min-[380px]:max-w-[55%] min-[380px]:px-2.5 min-[380px]:text-[12px] font-semibold leading-snug text-brand-crimson sm:text-[13px] lg:max-w-none lg:rounded-full lg:bg-brand-crimson lg:px-3 lg:text-white">
+          <span className="inline-flex max-w-full items-center gap-1.5 rounded-none bg-brand-crimson/10 px-2 py-1 text-[11px] min-[380px]:whitespace-nowrap min-[380px]:px-2.5 min-[380px]:text-[12px] font-semibold leading-snug text-brand-crimson sm:text-[13px] lg:rounded-full lg:bg-brand-crimson lg:px-3 lg:text-white">
             <ClockIcon className="shrink-0" /> <span>{keepUnits(range)}</span>
           </span>
         )}
@@ -241,7 +241,7 @@ export default function ProgramJourney({ program }) {
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-crimson">The journey</p>
           <h2 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-            Your Programme Journey
+            Your Program Journey
           </h2>
           {data.subtitle && (
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-brand-slate">{data.subtitle}</p>
@@ -339,7 +339,7 @@ export default function ProgramJourney({ program }) {
         {(data.duration || inclusions.length > 0 || program.duration) && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-brand-navy">
             <div className="border-b border-white/10 bg-white/5 px-6 py-4 md:px-8">
-              <h3 className="font-display text-lg font-bold text-white">What the Programme Includes</h3>
+              <h3 className="font-display text-lg font-bold text-white">What the Program Includes</h3>
             </div>
             <div className="grid grid-cols-1 items-start gap-6 p-6 sm:grid-cols-[200px_1fr] sm:gap-8 md:p-8">
               {/* Duration — a bordered stat card so the column reads as a deliberate

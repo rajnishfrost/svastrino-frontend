@@ -33,9 +33,9 @@ const PILLARS = [
 ]
 
 const SERVICES = [
-  { need: 'For Immediate Career Counselling', label: "Bull's Eye Programme", to: '/services/bulls-eye' },
-  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Programme', to: '/services/bloom' },
-  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Programme', to: '/services/breakthrough' },
+  { need: 'For Immediate Career Counseling', label: "Bull's Eye Program", to: '/services/bulls-eye' },
+  { need: 'Choosing Career Through Deep Self-Reflection', label: 'Bloom Program', to: '/services/bloom' },
+  { need: 'To Transform Completely Through Long-Term Mentoring', label: 'Breakthrough Program', to: '/services/breakthrough' },
   { need: 'To Build Skills And Yourself', label: 'Nirmaan', to: '/skill-build/nirmaan' },
   { need: 'To Verify Your Potential & Career Scientifically', label: 'Psychometric Testing', to: '/skill-build/psychometric-testing' },
 ]
