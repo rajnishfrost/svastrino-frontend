@@ -170,7 +170,7 @@ function StageHeading({ title, range, note }) {
       <div className="flex flex-col items-start gap-1.5 lg:inline-flex lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-4 lg:bg-brand-navy lg:py-3 lg:px-6 lg:rounded-full">
         <h3 className="min-w-0 font-display text-[15px] min-[380px]:text-base font-bold leading-snug text-brand-navy sm:text-lg lg:text-xl lg:text-white">{keepHyphen(title)}</h3>
         {range && (
-          <span className="inline-flex max-w-full items-center gap-1.5 rounded-xl bg-brand-crimson/10 px-2 py-1 text-[11px] min-[380px]:whitespace-nowrap min-[380px]:px-2.5 min-[380px]:text-[12px] font-semibold leading-snug text-brand-crimson sm:text-[13px] lg:rounded-full lg:bg-brand-crimson lg:px-3 lg:text-white">
+          <span className="inline-flex max-w-full items-center gap-1.5 rounded-none bg-brand-crimson/10 px-2 py-1 text-[11px] min-[380px]:whitespace-nowrap min-[380px]:px-2.5 min-[380px]:text-[12px] font-semibold leading-snug text-brand-crimson sm:text-[13px] lg:rounded-full lg:bg-brand-crimson lg:px-3 lg:text-white">
             <ClockIcon className="shrink-0" /> <span>{keepUnits(range)}</span>
           </span>
         )}
