@@ -153,7 +153,7 @@ export default function FreeTrial() {
   // Dark-green band (a second tonal anchor for the page) — the white trial card
   // floats on it as a highlighted, "featured" call to action.
   return (
-    <section id="free-trial" className="bg-nirmaan-green py-10 sm:py-16 md:py-20">
+    <section id="free-trial" aria-busy={standing === undefined} className="bg-nirmaan-green py-10 sm:py-16 md:py-20">
       <div className="container">
         <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
           {/* Two flat tinted circles, hung off the edges so the card's

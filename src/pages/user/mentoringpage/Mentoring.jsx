@@ -196,7 +196,7 @@ export default function Mentoring() {
               ))}
             </div>
             <div className="text-center" style={{ marginTop: 'var(--space-5)' }}>
-              <Link to="/resources#success-stories" className="btn btn-secondary">
+              <Link to="/resources/success-stories" className="btn btn-secondary">
                 Read all success stories
               </Link>
             </div>

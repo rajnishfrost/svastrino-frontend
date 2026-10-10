@@ -36,6 +36,8 @@ const glideTo = (el) => window.scrollTo({ top: topFor(el), behavior: 'smooth' })
 const TICK_MS = 100
 const SETTLED_TICKS = 3
 const MAX_WAIT_MS = 6000
+// How long after the glide a late shift is still corrected.
+const KEEP_MS = 2000
 
 export default function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -83,6 +85,24 @@ export default function ScrollToTop() {
     window.addEventListener('touchstart', letGo, { passive: true })
     window.addEventListener('keydown', letGo)
 
+    // After the glide, something above may still load late (testimonials, an
+    // image) and push the section down. For a short while, glide back to it —
+    // gently, never a snap — unless the visitor has started scrolling.
+    let observer
+    let keepTimer
+    let reglideTimer
+    const keepOnTarget = (el) => {
+      if (typeof ResizeObserver === 'undefined') { unlisten(); return }
+      observer = new ResizeObserver(() => {
+        clearTimeout(reglideTimer)
+        reglideTimer = setTimeout(() => {
+          if (!cancelled && Math.abs(topFor(el) - window.scrollY) > 24) glideTo(el)
+        }, 150)
+      })
+      observer.observe(document.body)
+      keepTimer = setTimeout(() => { observer?.disconnect(); unlisten() }, KEEP_MS)
+    }
+
     const tick = () => {
       if (cancelled) return
       const el = ready()
@@ -94,8 +114,8 @@ export default function ScrollToTop() {
         settled = height === lastHeight ? settled + 1 : 0
         lastHeight = height
         if (settled >= SETTLED_TICKS || late) {
-          unlisten()
           glideTo(el)
+          keepOnTarget(el)
           return
         }
       } else if (late) {
@@ -106,7 +126,12 @@ export default function ScrollToTop() {
     }
     tick()
 
-    return letGo
+    return () => {
+      letGo()
+      observer?.disconnect()
+      clearTimeout(keepTimer)
+      clearTimeout(reglideTimer)
+    }
   }, [pathname, hash])
 
   return null

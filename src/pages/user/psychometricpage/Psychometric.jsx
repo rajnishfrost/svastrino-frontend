@@ -334,7 +334,7 @@ export default function Psychometric() {
       {/* ---- Section 6 · Find Which Test Is Right for You ----
           The dark brown band of the Student Journey section, so it reads as its
           own step (choose your test); the white cards sit on it. */}
-      <section id="which-test" className="bg-nirmaan-brown py-16 md:py-20">
+      <section id="which-test" aria-busy={checking} className="bg-nirmaan-brown py-16 md:py-20">
         <div className="container">
           <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Find Which Test Is Right for You
