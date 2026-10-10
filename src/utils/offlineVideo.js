@@ -115,6 +115,28 @@ export async function listQualities(url, durationSec = 0) {
 }
 
 /* ---------- download / remove ---------- */
+/**
+ * fetch, retried. Saving one video is ~150 requests (each segment of an HLS
+ * rung), and on a phone connection one of them dropping used to fail the whole
+ * save — with Safari's raw "FetchEvent.respondWith received an error: Load
+ * failed" on screen. A network error or a 5xx/429 is tried again, with a short
+ * pause that grows; anything else (a 404) is final at once.
+ */
+async function fetchRetry(url, tries = 3) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(url)
+      if (res.ok || attempt >= tries || !(res.status >= 500 || res.status === 429)) return res
+    } catch (err) {
+      if (attempt >= tries) throw err
+    }
+    await new Promise((r) => setTimeout(r, 700 * attempt))
+  }
+}
+
+// A connection that failed (fetch rejects with a TypeError, in every browser)
+// reads as what it is, not as the browser's internal wording.
+const INTERRUPTED = 'The download was interrupted — check your connection and try again. Wi-Fi works best.'
 /** Drop every cached entry under a video's folder (its playlists and segments). */
 async function purgeFolder(cache, url) {
   const base = isHls(url) ? dirOf(url) : absUrl(url)
@@ -143,13 +165,13 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
   try {
   if (!isHls(url)) {
     // Plain file (MP4 fallback uploads)
-    const res = await fetch(url)
+    const res = await fetchRetry(url)
     if (!res.ok) throw new Error('Could not fetch the video')
     await track(res)
     await cache.put(absUrl(url), res.clone())
     onProgress?.(100, 1, 1)
   } else {
-    const masterRes = await fetch(url)
+    const masterRes = await fetchRetry(url)
     if (!masterRes.ok) throw new Error('Could not fetch the video playlist')
     const masterText = await masterRes.text()
 
@@ -159,7 +181,7 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
     const chosen = (height && variants.find((v) => v.height === height)) || pickVariant(variants, maxHeight)
     savedHeight = chosen.height
 
-    const varRes = await fetch(chosen.url)
+    const varRes = await fetchRetry(chosen.url)
     if (!varRes.ok) throw new Error('Could not fetch the quality playlist')
     const varText = await varRes.text()
     const segments = parseSegments(varText, chosen.url)
@@ -182,7 +204,7 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
     for (let i = 0; i < segments.length; i += BATCH) {
       const slice = segments.slice(i, i + BATCH)
       await Promise.all(slice.map(async (segUrl) => {
-        const r = await fetch(segUrl)
+        const r = await fetchRetry(segUrl)
         if (!r.ok) throw new Error('Download failed — please retry')
         await track(r)
         await cache.put(segUrl, r.clone())
@@ -195,7 +217,7 @@ export async function downloadVideo(url, { height = null, maxHeight = 480, onPro
     // player would choose the saved copy and then stall on the first segment
     // that never arrived - so a failed download leaves nothing behind.
     await purgeFolder(cache, url).catch(() => {})
-    throw err
+    throw err instanceof TypeError ? new Error(INTERRUPTED) : err
   }
 
   const idx = readIndex()
