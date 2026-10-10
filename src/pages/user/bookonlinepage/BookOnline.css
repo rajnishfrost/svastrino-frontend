@@ -150,7 +150,10 @@
   aspect-ratio: 1; border-radius: 8px; border: 1px solid transparent;
   background: none; cursor: pointer; font-size: 0.88rem;
 }
-.bo-cal-day:hover:not(:disabled) { background: var(--color-surface, #f2ede4); }
+/* Not on the picked day: this rule outranks .is-picked, and its light
+   background under the picked day's white text made the date vanish while
+   hovered (on phones the tap leaves it hovered until you tap elsewhere). */
+.bo-cal-day:hover:not(:disabled):not(.is-picked) { background: var(--color-surface, #f2ede4); }
 .bo-cal-day:disabled { color: #c9c4bb; cursor: default; }
 .bo-cal-day.is-picked { background: var(--color-primary, #2e5d3f); color: #fff; font-weight: 600; }
 
