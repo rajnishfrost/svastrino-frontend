@@ -243,8 +243,8 @@ const navClass = ({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')
 function SkillBuildDropdown({ onNavigate }) {
   const { open, setOpen, hoverProps } = useHoverMenu(180, { exclusive: true })
   const items = [
-    { label: 'Nirmaan', desc: '24-week mindset & skills course', to: '/skill-build/nirmaan', Icon: Sprout },
-    { label: 'Psychometric Testing', desc: 'Stream & Career Selector · from ₹900', to: '/skill-build/psychometric-testing', Icon: Brain },
+    { label: 'Nirmaan', desc: 'Mindset & skills course', to: '/skill-build/nirmaan', Icon: Sprout },
+    { label: 'Psychometric Testing', desc: 'Stream & Career Selector', to: '/skill-build/psychometric-testing', Icon: Brain },
   ]
 
   return (
