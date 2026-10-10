@@ -23,7 +23,9 @@
 
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0,…), not 1fr: a plain 1fr track can't shrink below its widest
+     content (a coupon box + button), which pushed the page sideways on phones. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
@@ -95,13 +97,16 @@
 
 .checkout-input {
   flex: 1;
+  min-width: 0;                /* may shrink in its row instead of overflowing it */
   padding: 10px 12px;
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-family: var(--font-sans);
-  text-transform: uppercase;
 }
+/* Coupon codes are capitals; nothing else typed on this page is. */
+.checkout-coupon .checkout-input { text-transform: uppercase; }
+.checkout-coupon .btn { flex-shrink: 0; }
 
 .checkout-input:focus {
   outline: none;
@@ -216,7 +221,11 @@
 }
 
 @media (max-width: 720px) {
-  .checkout-grid { grid-template-columns: 1fr; }
+  .checkout-grid { grid-template-columns: minmax(0, 1fr); }
+  .checkout-title { font-size: 24px; }
+  /* 16px or more: iPhones zoom the page in when a smaller field is tapped,
+     and the zoomed page then scrolls sideways. */
+  .checkout-input { font-size: 16px; }
 }
 
 /* Class prompt on the pay panel — shown when the plan bundles the psychometric
@@ -234,11 +243,47 @@
   line-height: 1.5;
   color: var(--color-text-muted);
 }
-.checkout-class-row {
-  display: flex;
+.checkout-class-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+/* The six classes as big tap targets: three to a row. */
+.checkout-class-chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
-.checkout-class-row .checkout-input { flex: 1; min-width: 0; }
+.checkout-chip {
+  min-height: 44px;
+  padding: 10px 6px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 10px;
+  background: var(--white, #fff);
+  color: var(--navy);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.checkout-chip:hover:not(:disabled):not(.is-on) { border-color: var(--color-accent); }
+.checkout-chip.is-on {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft, #fdecef);
+  color: var(--color-accent);
+}
+.checkout-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+.checkout-chip:disabled { cursor: default; opacity: 0.6; }
+.checkout-class-pick {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  color: var(--color-text);
+}
 .checkout-class-ok {
   margin: 0 0 10px;
   font-size: 13px;
