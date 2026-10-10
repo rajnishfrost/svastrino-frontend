@@ -31,9 +31,10 @@ import './PsychometricTest.css'
  *
  * Taking the test: in API mode the account may first need its class and phone
  * (asked in a pop-up, then carried straight on), then the server signs the
- * student in on the test site and the browser follows that one-time link, with
- * a loader up in between. In handoff mode the white-label site opens in a new
- * tab, where the student signs up themselves.
+ * student in on the test site and that one-time link opens in a NEW tab, with a
+ * loader up here in between. In handoff mode the white-label site opens in a
+ * new tab too, where the student signs up themselves. The test site never
+ * replaces this page.
  *
  * Props
  *   product      the course slug ('nirmaan')
@@ -77,6 +78,25 @@ function signInQuietly(url) {
   })
 }
 
+/**
+ * Open the tab the test site will load in, NOW — inside the tap. Browsers
+ * (Safari above all) only allow a new tab straight from a click, and the test
+ * link only exists once our server has signed the student in, a second later;
+ * a tab opened then is blocked. So an empty tab opens at once with a short
+ * "opening" note, and is pointed at the test site when the link arrives.
+ * Null when the browser refused even this.
+ */
+function openPendingTab(label) {
+  const tab = window.open('', '_blank')
+  if (!tab) return null
+  try {
+    tab.document.title = 'Svastrino'
+    tab.document.body.innerHTML =
+      `<p style="font:16px/1.5 system-ui,sans-serif;color:#1c2a4a;text-align:center;margin-top:30vh">${label}…</p>`
+  } catch { /* nothing to write into — the tab still works */ }
+  return tab
+}
+
 export default function PsychometricActions({ product, assessment, onChange, onFinished }) {
   const [busy, setBusy] = useState(false)
   // True from the click until the browser leaves for the test.
@@ -85,6 +105,9 @@ export default function PsychometricActions({ product, assessment, onChange, onF
   // 'test' | 'report' while that guide video is up, else null.
   const [guide, setGuide] = useState(null)
   const [err, setErr] = useState('')
+  // The test-site link, when the browser blocked the new tab and the student
+  // has to tap once more to open it.
+  const [readyUrl, setReadyUrl] = useState('')
 
   const status = assessment?.status || 'not_started'
   const apiMode = assessment?.mode === 'api'
@@ -102,8 +125,16 @@ export default function PsychometricActions({ product, assessment, onChange, onF
       setOpening(false); setBusy(false)
       reload().catch(() => {})
     }
+    // The test site opens in its own tab, so this page never unloads: when the
+    // student switches back to it, read the status again (a test finished
+    // there shows here). The server throttles how often it asks the test site.
+    const onBack = () => { if (document.visibilityState === 'visible') reload().catch(() => {}) }
     window.addEventListener('pageshow', onShow)
-    return () => window.removeEventListener('pageshow', onShow)
+    document.addEventListener('visibilitychange', onBack)
+    return () => {
+      window.removeEventListener('pageshow', onShow)
+      document.removeEventListener('visibilitychange', onBack)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product])
 
@@ -123,28 +154,40 @@ export default function PsychometricActions({ product, assessment, onChange, onF
   }
 
   // Anything the test still needs from the profile is asked for next.
+  // "Continue" is the tap the new tab is opened in (see openPendingTab).
   const proceed = () => {
     setGuide(null)
     if (apiMode && assessment?.needs?.length) return setAskDetails(true)
-    return goToTest()
+    return goToTest(openPendingTab(done ? 'Opening your report' : 'Opening your test'))
   }
 
-  const goToTest = async () => {
-    setErr(''); setBusy(true); setOpening(true)
+  // The test site always opens in a NEW tab — the test, the report, and the
+  // handoff site alike — so this page stays where it is behind it.
+  const goToTest = async (tab = null) => {
+    setErr(''); setReadyUrl(''); setBusy(true); setOpening(true)
     try {
       const a = await api(`/user/assessment/${product}/start`, { method: 'POST', auth: 'user' })
       onChange?.(a)
-      if (a.redirectUrl) {
-        // The report page: sign in there first (see signInQuietly).
-        if (a.loginUrl) await signInQuietly(a.loginUrl)
-        // For the test, the link itself signs them in and lands on the
-        // questions. Same tab — the loader stays up until the page goes.
-        window.location.assign(a.redirectUrl)
-        return
+      // The report page: sign in there first (see signInQuietly). For the
+      // test, the link itself signs them in and lands on the questions.
+      if (a.redirectUrl && a.loginUrl) await signInQuietly(a.loginUrl)
+      const url = a.redirectUrl || a.testUrl
+      if (url) {
+        if (tab && !tab.closed) {
+          tab.location.href = url
+        } else if (!window.open(url, '_blank')) {
+          // Blocked (the tab could not be opened inside the tap, e.g. after
+          // the details pop-up): one more tap on "Open" opens it.
+          setReadyUrl(url)
+          setBusy(false)
+          return
+        }
+      } else {
+        tab?.close()
       }
-      if (a.testUrl) window.open(a.testUrl, '_blank', 'noopener')
       setOpening(false); setBusy(false)
     } catch (e) {
+      tab?.close()
       setOpening(false); setBusy(false)
       // The page was loaded before the profile lost its class or phone (or in
       // another tab): read what is missing now and ask for it.
@@ -216,14 +259,28 @@ export default function PsychometricActions({ product, assessment, onChange, onF
       {/* Only in API mode, where the click waits on the test site and then
           leaves this one. In handoff mode the click is instant and opens a new
           tab, so a loader would only flash. */}
-      {opening && apiMode && toBody(
+      {opening && (apiMode || readyUrl) && toBody(
         <div className="ptest-load" role="status" aria-live="polite">
           <div className="ptest-load-panel">
-            <div className="ptest-load-spinner" aria-hidden />
-            <p className="ptest-load-title">{done ? 'Opening your report' : 'Setting up your test'}</p>
-            <p className="ptest-load-sub">
-              We are signing you in to the assessment. This takes a few seconds — please keep this page open.
-            </p>
+            {readyUrl ? (
+              <>
+                <p className="ptest-load-title">{done ? 'Your report is ready' : 'Your test is ready'}</p>
+                <p className="ptest-load-sub">It opens in a new tab.</p>
+                <a className="btn btn-primary" href={readyUrl} target="_blank" rel="noreferrer"
+                   style={{ marginTop: 16 }}
+                   onClick={() => { setReadyUrl(''); setOpening(false) }}>
+                  {done ? 'Open your report' : 'Open your test'}
+                </a>
+              </>
+            ) : (
+              <>
+                <div className="ptest-load-spinner" aria-hidden />
+                <p className="ptest-load-title">{done ? 'Opening your report' : 'Setting up your test'}</p>
+                <p className="ptest-load-sub">
+                  We are signing you in to the assessment. It opens in a new tab in a few seconds.
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
