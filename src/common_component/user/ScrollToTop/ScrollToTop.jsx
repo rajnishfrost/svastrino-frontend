@@ -83,6 +83,9 @@ export default function ScrollToTop() {
       if (tries++ < 40) timer = setTimeout(scrollToEl, 70)
     }
 
+    // Not there yet: start from the top while it loads, rather than wherever
+    // the previous page was scrolled to (often its footer).
+    if (!document.getElementById(id)) window.scrollTo({ top: 0, behavior: 'instant' })
     scrollToEl()
     return () => { cancelled = true; clearTimeout(timer); stopFollowing() }
   }, [pathname, hash])
