@@ -902,11 +902,18 @@
     background: rgba(15, 44, 92, 0.08);
     color: var(--color-accent);
   }
+  /* A single link (an institute's "Institute Portal", an admin's "Admin
+     Panel") takes the whole first row rather than a third of it. */
+  .nav-links a.nav-profile-item:only-of-type {
+    grid-column: 1 / -1;
+  }
 
-  /* Row 2 — who you are, then Sign out. */
+  /* Row 2 — who you are, then Sign out. The name always starts its own row
+     (column 1), so with fewer than three links above it never slides up
+     beside them and pushes Sign out down on its own. */
   .nav-links .nav-avatar {
     order: 2;
-    grid-column: span 2;
+    grid-column: 1 / span 2;
     width: auto;
     margin-top: 6px;
     padding: 0;
