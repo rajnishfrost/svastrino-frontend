@@ -97,6 +97,11 @@ function openPendingTab(label) {
   return tab
 }
 
+// How long the new tab gets to finish the test site's token sign-in before it
+// is sent on to the report (their app loads, checks the token and stores the
+// session — about two seconds on a phone, so double that).
+const SIGN_IN_MS = 4500
+
 export default function PsychometricActions({ product, assessment, onChange, onFinished }) {
   const [busy, setBusy] = useState(false)
   // True from the click until the browser leaves for the test.
@@ -168,9 +173,21 @@ export default function PsychometricActions({ product, assessment, onChange, onF
     try {
       const a = await api(`/user/assessment/${product}/start`, { method: 'POST', auth: 'user' })
       onChange?.(a)
-      // The report page: sign in there first (see signInQuietly). For the
-      // test, the link itself signs them in and lands on the questions.
-      if (a.redirectUrl && a.loginUrl) await signInQuietly(a.loginUrl)
+      // The report page needs the student signed in on the test site first;
+      // its token login always lands on the test itself. In our own new tab
+      // that sign-in happens IN the tab — the login is then the site's own,
+      // which the report page reads. (Signing in from a hidden frame on this
+      // page did not carry over: browsers keep a frame's storage apart from a
+      // tab of the same site.) After a moment for it to finish, the same tab
+      // moves on to the report. For the test, the link itself signs them in
+      // and lands on the questions.
+      const report = !!(a.redirectUrl && a.loginUrl)
+      if (report && tab && !tab.closed) {
+        tab.location.href = a.loginUrl
+        await new Promise((r) => setTimeout(r, SIGN_IN_MS))
+      } else if (report) {
+        await signInQuietly(a.loginUrl)
+      }
       const url = a.redirectUrl || a.testUrl
       if (url) {
         if (tab && !tab.closed) {
