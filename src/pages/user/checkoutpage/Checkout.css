@@ -106,7 +106,9 @@
 }
 /* Coupon codes are capitals; nothing else typed on this page is. */
 .checkout-coupon .checkout-input { text-transform: uppercase; }
-.checkout-coupon .btn { flex-shrink: 0; }
+/* Apply keeps its own width; the box takes the rest. (On phones every .btn is
+   made full width site-wide, which here pushed Apply out of the card.) */
+.checkout-coupon .btn { width: auto; flex: 0 0 auto; padding-left: 18px; padding-right: 18px; }
 
 .checkout-input:focus {
   outline: none;
