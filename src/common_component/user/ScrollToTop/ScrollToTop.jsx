@@ -2,29 +2,40 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 /**
- * On route change: if the URL has a #hash, scroll to that element (e.g.
+ * On route change: if the URL has a #hash, bring that section into view (e.g.
  * /skill-build/nirmaan#packages or /services/breakthrough#talk-to-an-expert);
  * otherwise scroll to the top.
  *
- * The target often mounts a while AFTER navigation — many pages render the
- * anchored section only once their data has loaded from the API. So instead of
- * a single retry we poll for a short window until the element appears, then
- * re-align once more after layout settles (async hero images can shift it).
+ * Arriving from another page, the section is usually not ready at once: the
+ * page-change skeleton hides the page for a second, and the section may still
+ * be loading its data. Snapping to it and re-snapping as things grew looked
+ * like a glitch, so instead the page starts at the top, waits until the
+ * section is there and done loading (no aria-busy) and the page has stopped
+ * changing size, then glides down to it once.
  */
+
 /**
- * Bring an anchored section into the middle of what the visitor can see — the
- * space between the sticky navbar and the bottom of the screen — so the eye
- * lands on it. A section taller than that space can't be centred; it lines up
- * just under the navbar instead, so its beginning is never hidden.
+ * Where to scroll so an anchored section sits in the middle of what the
+ * visitor can see — the space between the sticky navbar and the bottom of the
+ * screen. A section taller than that space lines up just under the navbar
+ * instead, so its beginning is never hidden.
  */
-function centerOnScreen(el) {
+function topFor(el) {
   const nav = document.querySelector('.nav')
   const navBottom = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0
   const visible = window.innerHeight - navBottom
   const r = el.getBoundingClientRect()
   const gap = r.height < visible ? (visible - r.height) / 2 : 12
-  window.scrollTo({ top: window.scrollY + r.top - navBottom - gap, behavior: 'instant' })
+  return window.scrollY + r.top - navBottom - gap
 }
+
+const glideTo = (el) => window.scrollTo({ top: topFor(el), behavior: 'smooth' })
+
+// How often to check, how many unchanged checks count as "settled", and the
+// longest we wait before going anyway.
+const TICK_MS = 100
+const SETTLED_TICKS = 3
+const MAX_WAIT_MS = 6000
 
 export default function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -36,58 +47,66 @@ export default function ScrollToTop() {
     }
 
     const id = hash.slice(1)
-    let cancelled = false
+    // The section, once it can be scrolled to: the page-change skeleton is
+    // gone and the section is not marked as still loading.
+    const ready = () => {
+      if (document.querySelector('[data-route-hold]')) return null
+      const el = document.getElementById(id)
+      return el && el.getAttribute('aria-busy') !== 'true' ? el : null
+    }
+
+    // Already on screen (a link to a section of this same page): glide now.
+    const now = ready()
+    if (now) {
+      glideTo(now)
+      return
+    }
+
+    // Coming from another page: start at the top while it loads, rather than
+    // wherever the previous page was scrolled to (often its footer).
+    window.scrollTo({ top: 0, behavior: 'instant' })
+
     let timer
-    let tries = 0
-    let observer
-    let settleTimer
+    let cancelled = false
+    const started = Date.now()
+    let lastHeight = -1
+    let settled = 0
 
-    // Once the target is placed, sections above it are often still loading
-    // (prices, images, FAQs) and grow, pushing the target down — the visitor
-    // saw it land and then jump. So for a short while every layout change
-    // re-centres it immediately, and the moment the visitor scrolls or taps
-    // we let go and never fight them.
-    const SETTLE_MS = 2500
-    const stopFollowing = () => {
-      observer?.disconnect(); observer = null
-      clearTimeout(settleTimer)
-      window.removeEventListener('wheel', stopFollowing)
-      window.removeEventListener('touchstart', stopFollowing)
-      window.removeEventListener('keydown', stopFollowing)
+    // The visitor takes over the moment they scroll or press a key.
+    const letGo = () => { cancelled = true; clearTimeout(timer); unlisten() }
+    const unlisten = () => {
+      window.removeEventListener('wheel', letGo)
+      window.removeEventListener('touchstart', letGo)
+      window.removeEventListener('keydown', letGo)
     }
-    const follow = () => {
-      if (typeof ResizeObserver === 'undefined') return
-      observer = new ResizeObserver(() => {
-        const el = document.getElementById(id)
-        if (!cancelled && el) centerOnScreen(el)
-      })
-      observer.observe(document.body)
-      settleTimer = setTimeout(stopFollowing, SETTLE_MS)
-      window.addEventListener('wheel', stopFollowing, { passive: true })
-      window.addEventListener('touchstart', stopFollowing, { passive: true })
-      window.addEventListener('keydown', stopFollowing)
-    }
+    window.addEventListener('wheel', letGo, { passive: true })
+    window.addEventListener('touchstart', letGo, { passive: true })
+    window.addEventListener('keydown', letGo)
 
-    const scrollToEl = () => {
+    const tick = () => {
       if (cancelled) return
-      // While the page-change skeleton is up the real page is hidden, so an
-      // anchor in it can't be scrolled to yet — keep polling until it shows.
-      const el = document.querySelector('[data-route-hold]') ? null : document.getElementById(id)
+      const el = ready()
+      const late = Date.now() - started > MAX_WAIT_MS
       if (el) {
-        centerOnScreen(el)
-        follow()
+        // Sections above may still be growing (prices, images); wait until the
+        // page height holds still for a few checks so the glide ends on target.
+        const height = document.body.scrollHeight
+        settled = height === lastHeight ? settled + 1 : 0
+        lastHeight = height
+        if (settled >= SETTLED_TICKS || late) {
+          unlisten()
+          glideTo(el)
+          return
+        }
+      } else if (late) {
+        unlisten()
         return
       }
-      // Target (or its async content) may still be loading — keep trying briefly
-      // (~40 × 70ms ≈ 2.8s) before giving up.
-      if (tries++ < 40) timer = setTimeout(scrollToEl, 70)
+      timer = setTimeout(tick, TICK_MS)
     }
+    tick()
 
-    // Not there yet: start from the top while it loads, rather than wherever
-    // the previous page was scrolled to (often its footer).
-    if (!document.getElementById(id)) window.scrollTo({ top: 0, behavior: 'instant' })
-    scrollToEl()
-    return () => { cancelled = true; clearTimeout(timer); stopFollowing() }
+    return letGo
   }, [pathname, hash])
 
   return null

@@ -220,7 +220,9 @@ export default function Packages() {
   const isFeatured = () => false
 
   return (
-    <section id="packages" className="bg-nirmaan-cream py-16 md:py-20">
+    // aria-busy while the plans load: a link to #packages waits for it to clear
+    // before scrolling here (ScrollToTop), so it lands on the real cards.
+    <section id="packages" aria-busy={loading} className="bg-nirmaan-cream py-16 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Packages</p>

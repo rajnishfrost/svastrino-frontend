@@ -41,11 +41,7 @@ export default function RouteHold({ children }) {
   // the skeleton (an effect would let the real page flash for one frame).
   let { holding } = state
   if (state.path !== location.pathname) {
-    // A link to a section of another page (/skill-build/nirmaan#packages) is
-    // not held either: the visitor asked for one spot, so the page shows at
-    // once and ScrollToTop lands them on it. Held, the anchor stayed hidden for
-    // the second and they sat at the footer, then jumped.
-    if (location.key !== 'default' && !location.hash && family(state.path) !== family(location.pathname)) {
+    if (location.key !== 'default' && family(state.path) !== family(location.pathname)) {
       holding = true
       setState({ path: location.pathname, holding, since: Date.now() })
     } else {
