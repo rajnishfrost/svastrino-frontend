@@ -320,9 +320,12 @@ export default function Packages() {
 
                   {/* Pricing — the three cost lines from the sheet */}
                   <div className="mt-4 rounded-lg border border-nirmaan-sand bg-nirmaan-cream/40 p-4">
-                    <div className="flex items-baseline justify-between gap-3">
+                    {/* Phones: the label on its own row and the price below it,
+                        a size smaller and on one line — "₹1,000 x 6 = 6,000"
+                        did not fit beside the label. Side by side from 640px. */}
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
                       <span className="text-sm font-semibold text-nirmaan-brown">Support cost</span>
-                      <span className="font-display text-2xl font-extrabold text-nirmaan-brown">₹{pkg.pricing.supportCost}</span>
+                      <span className="whitespace-nowrap font-display text-xl font-extrabold text-nirmaan-brown sm:text-2xl">₹{pkg.pricing.supportCost}</span>
                     </div>
                     <div className="mt-2 flex items-baseline justify-between gap-3 text-sm text-nirmaan-brown-soft">
                       <span>Actual cost</span>

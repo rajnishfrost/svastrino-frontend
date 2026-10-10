@@ -110,12 +110,12 @@ export default function Checkout() {
     setBusy(false)
   }
 
-  // Write the class to the account, then re-read the profile so the rest of the
-  // page (and the next Proceed) sees it. Saving does NOT start the payment: the
-  // student came here to press Pay themselves, and opening a payment widget off
-  // the back of a save would be a surprise.
+  // Write the chosen class to the account, then re-read the profile so the
+  // order sees it. Called by "Proceed to pay" — the student picks a class (a tap
+  // only selects, so a mis-tap costs nothing) and pressing Pay saves it first.
+  // True when saved.
   const saveClass = async () => {
-    if (!studentClass) return
+    if (!studentClass) return false
     setClassBusy(true)
     setClassErr('')
     try {
@@ -124,8 +124,10 @@ export default function Checkout() {
       setClassBlock('')
       setLoadErr('')
       setClassSaved(`Saved — you're recorded as ${studentClass}.`)
+      return true
     } catch (e) {
       setClassErr(e.message)
+      return false
     } finally {
       setClassBusy(false)
     }
@@ -254,6 +256,15 @@ export default function Checkout() {
   // has no class on it — and keep asking while the server is refusing over it.
   const askClass = (quote.includesPsychometric && !user?.studentClass) || !!classBlock
 
+  // Pay: a class picked here is saved first, then the order goes ahead.
+  const payNow = async () => {
+    if (askClass) {
+      if (!studentClass) return
+      if (studentClass !== user?.studentClass && !(await saveClass())) return
+    }
+    proceed()
+  }
+
   return (
     <section className="section">
       {/* Outside the content, because it covers the whole viewport rather than
@@ -342,7 +353,7 @@ export default function Checkout() {
                   <input className="checkout-input" placeholder="Coupon code"
                          maxLength={LIMITS.couponCode} inputMode="text" autoCapitalize="characters"
                          value={coupon} onChange={(e) => setCoupon(sanitiseCoupon(e.target.value))} />
-                  <button type="button" className="btn btn-secondary" onClick={applyCoupon} disabled={busy || !coupon.trim()}>Apply</button>
+                  <button type="button" className="checkout-apply" onClick={applyCoupon} disabled={busy || !coupon.trim()}>Apply</button>
                 </div>
               )}
               {couponErr && <p className="checkout-error-sm">{couponErr}</p>}
@@ -369,32 +380,38 @@ export default function Checkout() {
                   </div>
                   {askClass && (
                     <div className="checkout-class">
+                      <p className="checkout-class-title" id="checkout-class-q">Which class are you in?</p>
                       <p className="checkout-class-note">
                         {classBlock ||
-                          'This plan includes a psychometric test, which is written for a particular school year. Tell us which class you are in and we will save it to your profile.'}
+                          'The psychometric test is written for your school year: Classes 7–9 take the Stream Selector, Classes 10–12 the Career Selector. We save your class to your profile.'}
                       </p>
-                      <div className="checkout-class-row">
-                        <label className="checkout-sr-only" htmlFor="checkout-class">Your class</label>
-                        <select id="checkout-class" className="checkout-input" value={studentClass}
-                                onChange={(e) => setStudentClass(e.target.value)} disabled={classBusy}>
-                          <option value="">Select your class</option>
-                          {/* Only the classes this plan can be sold to. */}
-                          {PSYCHOMETRIC_CLASSES.map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                          ))}
-                        </select>
-                        <button type="button" className="btn btn-secondary" onClick={saveClass}
-                                disabled={classBusy || !studentClass || studentClass === user?.studentClass}>
-                          {classBusy ? 'Saving…' : 'Save'}
-                        </button>
+                      {/* Only the classes this plan can be sold to, as big tap
+                          targets. A tap selects; Proceed to pay saves it. */}
+                      <div className="checkout-class-chips" role="radiogroup" aria-labelledby="checkout-class-q">
+                        {PSYCHOMETRIC_CLASSES.map((c) => (
+                          <button key={c} type="button" role="radio" aria-checked={studentClass === c}
+                                  className={`checkout-chip${studentClass === c ? ' is-on' : ''}`}
+                                  onClick={() => setStudentClass(c)} disabled={classBusy || busy}>
+                            {c}
+                          </button>
+                        ))}
                       </div>
+                      {studentClass && (
+                        <p className="checkout-class-pick">
+                          {studentClass} takes the <strong>{testFor(studentClass)}</strong>.
+                        </p>
+                      )}
                       {classErr && <p className="checkout-error-sm">{classErr}</p>}
                     </div>
                   )}
                   {classSaved && <p className="checkout-class-ok">{classSaved}</p>}
-                  <button className="btn btn-primary checkout-full" onClick={proceed}
-                          disabled={busy || (askClass && !user?.studentClass)}>
-                    {busy ? 'Please wait…' : `Proceed to pay ${inr(quote.rupees.amount)}`}
+                  <button className="btn btn-primary checkout-full" onClick={payNow}
+                          disabled={busy || classBusy || (askClass && !studentClass)}>
+                    {busy || classBusy
+                      ? 'Please wait…'
+                      : askClass && !studentClass
+                        ? 'Choose your class to continue'
+                        : `Proceed to pay ${inr(quote.rupees.amount)}`}
                   </button>
                 </>
               ) : (
@@ -426,6 +443,12 @@ export default function Checkout() {
       </div>
     </section>
   )
+}
+
+/** Which test a class sits: 7 to 9 the Stream Selector, 10 to 12 the Career Selector. */
+function testFor(cls) {
+  const n = parseInt(String(cls).replace(/\D/g, ''), 10)
+  return n >= 10 ? 'Career Selector' : 'Stream Selector'
 }
 
 function Line({ label, value, strike, good }) {
