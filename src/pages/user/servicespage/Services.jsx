@@ -123,18 +123,11 @@ export default function Services() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {groups.flatMap((g) => g.programs).map((p) => {
-                // Breakthrough is the flagship long-term program — give it a
-                // crimson frame + elevated, scaled-up card so it stands out
-                // (matches the featured treatment on the Book Online page).
-                const featured = p.slug === 'breakthrough'
+                // All three cards look the same — no featured card here.
                 return (
                   <article
                     key={p.slug}
-                    className={
-                      featured
-                        ? 'relative z-10 flex flex-col rounded-xl border-2 border-solid border-brand-crimson bg-white p-6 shadow-2xl shadow-brand-crimson/20 transition-all md:-translate-y-2 md:scale-[1.03] hover:shadow-brand-crimson/25'
-                        : 'relative flex flex-col rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5'
-                    }
+                    className="relative flex flex-col rounded-xl border border-solid border-brand-navy/15 bg-white p-6 shadow-sm transition-all hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-navy/5"
                   >
                     <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-brand-crimson/10 p-2.5 text-brand-crimson">
                       <ProgramEmblem variant={p.slug} />
