@@ -213,16 +213,18 @@ export default function Psychometric() {
                 </div>
               </div>
             ) : (
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:items-start">
+              // Stacked, the two buttons share one width: the column is as wide
+              // as the wider button and both stretch to it.
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 lg:justify-start sm:w-fit sm:items-stretch">
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark sm:w-auto sm:flex-row sm:gap-2"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-nirmaan-green px-7 text-base font-semibold text-white shadow-sm transition-colors hover:bg-nirmaan-green-dark sm:flex-row sm:gap-2"
                 >
                   Stream Selector <span className="text-sm font-normal text-white/80">(Class 7–9 Students)</span>
                 </a>
                 <a
                   href="#which-test"
-                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white sm:w-auto sm:flex-row sm:gap-2"
+                  className="inline-flex h-12 w-full flex-col items-center justify-center gap-0.5 rounded-lg border border-nirmaan-green/40 px-7 text-base font-semibold transition-colors bg-nirmaan-green text-white sm:flex-row sm:gap-2"
                 >
                   Career Selector <span className="text-sm font-normal opacity-80">(Class 10–12 Students)</span>
                 </a>
