@@ -44,6 +44,7 @@ import Welcome from './pages/user/loginpage/Welcome.jsx'
 import Dashboard from './pages/user/dashboardpage/Dashboard.jsx'
 import { LegacySettingsRedirect } from './pages/user/settingspage/Settings.jsx'
 import Checkout from './pages/user/checkoutpage/Checkout.jsx'
+import GiftCoupons from './pages/user/giftpage/GiftCoupons.jsx'
 import PayLink from './pages/user/paylinkpage/PayLink.jsx'
 import Learn from './pages/user/learnpage/Learn.jsx'
 import Support from './pages/user/supportpage/Support.jsx'
@@ -92,6 +93,7 @@ function PublicSite() {
           <Route path="/services/:slug" element={<ServiceProgram />} />
           <Route path="/mentoring" element={<Navigate to="/services" replace />} />
           <Route path="/book-online" element={<BookOnline />} />
+          <Route path="/gift-coupons" element={<GiftCoupons />} />
           <Route path="/skill-build/nirmaan" element={<Nirmaan />} />
           <Route path="/skill-build/psychometric-testing" element={<Psychometric />} />
           <Route path="/resources" element={<Resources view="all" />} />
