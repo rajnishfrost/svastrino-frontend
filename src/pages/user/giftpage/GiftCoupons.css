@@ -344,3 +344,30 @@
   .gt-notch--b { right: -12px; bottom: auto; }
   .gt-stamp { left: 50%; top: 62%; }
 }
+
+/* The "coupons are ready" screen */
+.gift-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 8px 16px;
+  border: 1.5px solid rgba(15, 44, 92, 0.18);
+  border-radius: 999px;
+  background: #fff;
+  color: #0f2c5c;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.gift-back:hover { border-color: #c8102e; color: #c8102e; }
+.gift-ready-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+.gift-pay--inline { width: auto; height: 46px; padding: 0 26px; }
+.gift-ready--loading { color: #475569; font-size: 15px; }
+.gift-ready--err { background: #fdeef1; border-color: rgba(200, 16, 46, 0.3); }

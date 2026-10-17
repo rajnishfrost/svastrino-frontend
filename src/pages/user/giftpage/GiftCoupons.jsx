@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
@@ -50,6 +50,7 @@ export default function GiftCoupons() {
   const [payPhase, setPayPhase] = useState(null)
   const [err, setErr] = useState('')
   const [justBought, setJustBought] = useState(null)
+  const [readyErr, setReadyErr] = useState('')
   const [mine, setMine] = useState(null)
   const readyRef = useRef(null)
 
@@ -57,18 +58,22 @@ export default function GiftCoupons() {
     api('/user/gifts/options').then(setOptions).catch(() => {})
   }, [])
 
-  // Back from Cashfree's own payment page (an in-app browser cannot hold the
-  // popup): the return link names the order and its token. Show its coupons,
-  // then tidy the address so the token does not sit in the bar.
+  // The "coupons are ready" screen: /gift-coupons?order=<id>&t=<token>. The
+  // buy flow goes there once paid, Cashfree's return link (in-app browsers)
+  // lands there, and a refresh keeps it — the order is read again with its
+  // token (confirming the payment if that has not happened yet).
+  const readyOrder = params.get('order')
+  const readyToken = params.get('t')
   useEffect(() => {
-    const orderId = params.get('order')
-    const token = params.get('t')
-    if (!orderId || !token) return
-    api(`/user/gifts/orders/${orderId}/verify`, { method: 'POST', body: { token } })
+    if (!readyOrder || !readyToken) return
+    if (justBought?.orderId === readyOrder) return
+    setReadyErr('')
+    api(`/user/gifts/orders/${readyOrder}/verify`, { method: 'POST', body: { token: readyToken } })
       .then(({ gift }) => setJustBought(gift))
-      .catch((e) => { if (e.code !== 'PAYMENT_NOT_COMPLETED') setErr(e.message) })
-      .finally(() => setParams({}, { replace: true }))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+      .catch((e) => setReadyErr(e.code === 'PAYMENT_NOT_COMPLETED'
+        ? 'This payment was not completed, so no coupons were made.'
+        : e.message))
+  }, [readyOrder, readyToken]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // The account's email to start with; the student may change it.
   useEffect(() => {
@@ -122,9 +127,12 @@ export default function GiftCoupons() {
       const { gift } = await api(`/user/gifts/orders/${res.orderId}/verify`, {
         method: 'POST', body: { token: res.giftToken },
       })
+      // Paid: on to the "ready" screen (a new history entry, so the browser's
+      // back returns to the form).
       setJustBought(gift)
       if (user) loadMine()
-      setTimeout(() => readyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+      setParams({ order: res.orderId, t: res.giftToken })
+      window.scrollTo({ top: 0, behavior: 'instant' })
     } catch (e) {
       // Closing the popup without paying is not an error worth shouting about.
       if (e.code !== 'PAYMENT_NOT_COMPLETED') setErr(e.message)
@@ -134,7 +142,51 @@ export default function GiftCoupons() {
     }
   }
 
-  const history = (mine || []).filter((g) => g.orderId !== justBought?.orderId)
+  const history = mine || []
+
+  if (readyOrder) {
+    const n = justBought?.coupons.length || 0
+    return (
+      <div className="gift-page">
+        <section className="py-8 md:py-12">
+          <div className="container">
+            <Link to="/gift-coupons" className="gift-back">← Back</Link>
+            {readyErr ? (
+              <div className="gift-ready gift-ready--err">
+                <p className="gift-error" role="alert" style={{ marginTop: 0 }}>{readyErr}</p>
+                <Link to="/gift-coupons" className="gift-link">Back to Gift a Coupon</Link>
+              </div>
+            ) : !justBought ? (
+              <div className="gift-ready gift-ready--loading" role="status">Loading your coupons…</div>
+            ) : (
+              <div className="gift-ready" ref={readyRef}>
+                <h1 className="gift-section-title">
+                  {n === 1 ? 'Your gift coupon is ready 🎉' : `Your ${n} gift coupons are ready 🎉`}
+                </h1>
+                <p className="gift-section-sub">
+                  We have also emailed {n === 1 ? 'it' : 'them'} to <strong>{justBought.email}</strong>.
+                  Copy a code or download the tickets to hand them on.
+                </p>
+                <div className="gift-tickets">
+                  {justBought.coupons.map((c) => (
+                    <GiftTicket key={c.code} {...c} onDownload={() => openGiftTickets(justBought.downloadUrl, c.code)} />
+                  ))}
+                </div>
+                <div className="gift-ready-actions">
+                  {n > 1 && (
+                    <button type="button" className="gift-pay gift-pay--inline" onClick={() => openGiftTickets(justBought.downloadUrl)}>
+                      Download all {n} tickets ↓
+                    </button>
+                  )}
+                  <Link to="/gift-coupons" className="gift-link">Gift another coupon</Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    )
+  }
 
   return (
     <div className="gift-page">
@@ -147,29 +199,6 @@ export default function GiftCoupons() {
 
       <section className="py-12 md:py-16">
         <div className="container">
-          {justBought && (
-            <div className="gift-ready" ref={readyRef}>
-              <h2 className="gift-section-title">
-                {justBought.coupons.length === 1 ? 'Your gift coupon is ready 🎉' : `Your ${justBought.coupons.length} gift coupons are ready 🎉`}
-              </h2>
-              <p className="gift-section-sub">
-                We have also emailed {justBought.coupons.length === 1 ? 'it' : 'them'} to <strong>{justBought.email}</strong>.
-                Copy a code or download the tickets to hand them on.
-              </p>
-              <div className="gift-tickets">
-                {justBought.coupons.map((c) => (
-                  <GiftTicket key={c.code} {...c} onDownload={() => openGiftTickets(justBought.downloadUrl, c.code)} />
-                ))}
-              </div>
-              {justBought.coupons.length > 1 && (
-                <button type="button" className="gift-link" style={{ marginTop: 16 }}
-                        onClick={() => openGiftTickets(justBought.downloadUrl)}>
-                  Download all {justBought.coupons.length} tickets ↓
-                </button>
-              )}
-            </div>
-          )}
-
           <div className="gift-grid">
             {/* ---- Build the gift ---- */}
             <div className="gift-card">
