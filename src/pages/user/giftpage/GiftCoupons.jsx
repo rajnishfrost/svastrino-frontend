@@ -21,7 +21,11 @@ import './GiftCoupons.css'
  */
 
 // Shown until the server's own list arrives (and if it cannot be reached).
-const FALLBACK = { values: [50000, 100000, 200000, 450000].map((v) => ({ value: v })), maxQuantity: 10 }
+const FALLBACK = {
+  values: [50000, 100000, 200000, 450000].map((v) => ({ value: v })),
+  custom: { min: 100, max: 100000 }, // rupees
+  maxQuantity: 10,
+}
 const inr = (paise) => '₹' + (Number(paise) / 100).toLocaleString('en-IN')
 const day = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -35,6 +39,9 @@ export default function GiftCoupons() {
 
   const [options, setOptions] = useState(FALLBACK)
   const [value, setValue] = useState(100000)
+  // "Other amount": whole rupees the buyer types, digits only.
+  const [custom, setCustom] = useState(false)
+  const [customText, setCustomText] = useState('')
   const [qty, setQty] = useState(1)
   const [email, setEmail] = useState('')
   const [emailTouched, setEmailTouched] = useState(false)
@@ -62,7 +69,18 @@ export default function GiftCoupons() {
   }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const max = options.maxQuantity || 10
-  const total = value * qty
+  const range = options.custom || FALLBACK.custom
+  const customRupees = customText ? Number(customText) : 0
+  const customErr = custom
+    ? !customText
+      ? 'Enter an amount.'
+      : customRupees < range.min || customRupees > range.max
+        ? `Enter an amount from ₹${range.min.toLocaleString('en-IN')} to ₹${range.max.toLocaleString('en-IN')}.`
+        : ''
+    : ''
+  // The coupon's value in paise — the typed amount once it is in range.
+  const chosen = custom ? (customErr ? 0 : customRupees * 100) : value
+  const total = chosen * qty
   const emailErr = checkEmail(email)
 
   const buy = async () => {
@@ -71,12 +89,13 @@ export default function GiftCoupons() {
       prompt({ reason: 'to buy gift coupons', onDone: () => {} })
       return
     }
+    if (customErr) { setErr(customErr); return }
     if (emailErr) { setErr(emailErr); return }
     setBusy(true)
     setPayPhase('preparing')
     try {
       const res = await api('/user/gifts/order', {
-        method: 'POST', auth: 'user', body: { value, quantity: qty, email: email.trim() },
+        method: 'POST', auth: 'user', body: { value: chosen, quantity: qty, email: email.trim() },
       })
       if (!res.mock) {
         // Cashfree's popup owns the screen from here; our overlay stands down.
@@ -146,12 +165,34 @@ export default function GiftCoupons() {
                 <span className="gift-step-label" id="gift-value-q">1. Choose a value</span>
                 <div className="gift-values" role="radiogroup" aria-labelledby="gift-value-q">
                   {options.values.map(({ value: v }) => (
-                    <button key={v} type="button" role="radio" aria-checked={value === v}
-                            className={`gift-value${value === v ? ' is-on' : ''}`} onClick={() => setValue(v)}>
+                    <button key={v} type="button" role="radio" aria-checked={!custom && value === v}
+                            className={`gift-value${!custom && value === v ? ' is-on' : ''}`}
+                            onClick={() => { setValue(v); setCustom(false) }}>
                       {inr(v)}
                     </button>
                   ))}
+                  <button type="button" role="radio" aria-checked={custom}
+                          className={`gift-value gift-value--other${custom ? ' is-on' : ''}`}
+                          onClick={() => setCustom(true)}>
+                    Other amount
+                  </button>
                 </div>
+                {custom && (
+                  <div className="gift-custom">
+                    <span className="gift-custom-prefix" aria-hidden>₹</span>
+                    {/* Text, not type="number": a number box accepts "-", "e" and
+                        decimals. Only digits get in, and no leading zeros. */}
+                    <input className="gift-input gift-custom-input" type="text" inputMode="numeric"
+                           autoFocus aria-label="Coupon value in rupees" placeholder={`${range.min} to ${range.max.toLocaleString('en-IN')}`}
+                           maxLength={String(range.max).length} value={customText}
+                           onChange={(e) => setCustomText(e.target.value.replace(/\D/g, '').replace(/^0+/, ''))} />
+                  </div>
+                )}
+                {custom && (
+                  <p className={customErr && customText ? 'gift-error' : 'gift-hint'}>
+                    {customErr && customText ? customErr : `Whole rupees, from ₹${range.min.toLocaleString('en-IN')} to ₹${range.max.toLocaleString('en-IN')}.`}
+                  </p>
+                )}
               </div>
 
               <div className="gift-step">
@@ -175,13 +216,13 @@ export default function GiftCoupons() {
               <div className="gift-total">
                 <div>
                   <div style={{ fontWeight: 700 }}>Total</div>
-                  <small>{qty} × {inr(value)}</small>
+                  <small>{qty} × {chosen ? inr(chosen) : '—'}</small>
                 </div>
-                <strong>{inr(total)}</strong>
+                <strong>{chosen ? inr(total) : '—'}</strong>
               </div>
 
-              <button type="button" className="gift-pay" onClick={buy} disabled={busy || (!!user && !!emailErr)}>
-                {busy ? 'Please wait…' : user ? `Buy for ${inr(total)}` : 'Sign in to buy'}
+              <button type="button" className="gift-pay" onClick={buy} disabled={busy || (!!user && (!!emailErr || !!customErr))}>
+                {busy ? 'Please wait…' : !user ? 'Sign in to buy' : chosen ? `Buy for ${inr(total)}` : 'Enter an amount'}
               </button>
               {err && <p className="gift-error" role="alert">{err}</p>}
 
@@ -196,7 +237,7 @@ export default function GiftCoupons() {
             {/* ---- Live preview ---- */}
             <div>
               <p className="gift-preview-label">Your gift will look like this</p>
-              <GiftTicket value={value} sample />
+              <GiftTicket value={chosen || (custom ? range.min * 100 : value)} sample />
               {qty > 1 && <p className="gift-hint" style={{ marginTop: 14 }}>× {qty} — every ticket gets its own code.</p>}
             </div>
           </div>

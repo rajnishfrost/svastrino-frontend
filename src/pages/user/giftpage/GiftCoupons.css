@@ -49,6 +49,19 @@
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 .gift-value:hover:not(.is-on) { border-color: #c8102e; }
+/* "Other amount" takes a whole row of its own under the fixed values. */
+.gift-value--other { grid-column: 1 / -1; min-height: 50px; font-size: 15px; }
+.gift-custom { position: relative; margin-top: 10px; }
+.gift-custom-prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f2c5c;
+}
+.gift-custom-input { padding-left: 32px; font-size: 18px; font-weight: 700; }
 .gift-value.is-on {
   border-color: #c8102e;
   background: #fdeef1;
