@@ -131,6 +131,15 @@ export default function GiftCoupons() {
       // back returns to the form).
       setJustBought(gift)
       if (user) loadMine()
+      // Start the form afresh for the next gift: Back (or "Gift another
+      // coupon") must not show the last order still filled in.
+      setValue(100000)
+      setCustom(false)
+      setCustomText('')
+      setQty(1)
+      setEmail(user?.email || '')
+      setEmailTouched(false)
+      setErr('')
       setParams({ order: res.orderId, t: res.giftToken })
       window.scrollTo({ top: 0, behavior: 'instant' })
     } catch (e) {
