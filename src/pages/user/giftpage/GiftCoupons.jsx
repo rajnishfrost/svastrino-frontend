@@ -24,7 +24,7 @@ import './GiftCoupons.css'
 // Shown until the server's own list arrives (and if it cannot be reached).
 const FALLBACK = {
   values: [50000, 100000, 200000, 450000].map((v) => ({ value: v })),
-  custom: { min: 100, max: 100000 }, // rupees
+  custom: { min: 100, max: 99999 }, // rupees
   maxQuantity: 10,
 }
 const inr = (paise) => '₹' + (Number(paise) / 100).toLocaleString('en-IN')
