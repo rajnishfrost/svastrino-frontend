@@ -158,12 +158,12 @@ export default function GiftCoupons() {
               </p>
               <div className="gift-tickets">
                 {justBought.coupons.map((c) => (
-                  <GiftTicket key={c.code} {...c} onDownload={() => openGiftTickets([c])} />
+                  <GiftTicket key={c.code} {...c} onDownload={() => openGiftTickets(justBought.downloadUrl, c.code)} />
                 ))}
               </div>
               {justBought.coupons.length > 1 && (
                 <button type="button" className="gift-link" style={{ marginTop: 16 }}
-                        onClick={() => openGiftTickets(justBought.coupons)}>
+                        onClick={() => openGiftTickets(justBought.downloadUrl)}>
                   Download all {justBought.coupons.length} tickets ↓
                 </button>
               )}
@@ -268,14 +268,14 @@ export default function GiftCoupons() {
                     </span>
                     {g.coupons.some((c) => c.status === 'active') && (
                       <button type="button" className="gift-link"
-                              onClick={() => openGiftTickets(g.coupons.filter((c) => c.status === 'active'))}>
-                        Download unused ↓
+                              onClick={() => openGiftTickets(g.downloadUrl)}>
+                        Download all ↓
                       </button>
                     )}
                   </div>
                   <div className="gift-tickets">
                     {g.coupons.map((c) => (
-                      <GiftTicket key={c.code} {...c} onDownload={c.status === 'active' ? () => openGiftTickets([c]) : undefined} />
+                      <GiftTicket key={c.code} {...c} onDownload={c.status === 'active' && g.downloadUrl ? () => openGiftTickets(g.downloadUrl, c.code) : undefined} />
                     ))}
                   </div>
                 </div>
