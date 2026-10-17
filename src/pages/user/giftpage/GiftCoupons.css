@@ -1,0 +1,373 @@
+/* ---- Gift coupons page ---- */
+.gift-page { background: #fff; }
+
+.gift-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 899px) {
+  .gift-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+.gift-card {
+  border: 1px solid rgba(15, 44, 92, 0.15);
+  border-radius: 18px;
+  background: #fff;
+  padding: 26px;
+  box-shadow: 0 12px 32px -14px rgba(15, 44, 92, 0.25);
+}
+@media (max-width: 560px) { .gift-card { padding: 20px 16px; } }
+
+.gift-step { margin: 0 0 22px; }
+.gift-step-label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f2c5c;
+}
+
+/* Value choices */
+.gift-values {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 480px) { .gift-values { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.gift-value {
+  min-height: 64px;
+  border: 1.5px solid rgba(15, 44, 92, 0.18);
+  border-radius: 12px;
+  background: #fff;
+  color: #0f2c5c;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.gift-value:hover:not(.is-on) { border-color: #c8102e; }
+/* "Other amount" takes a whole row of its own under the fixed values. */
+.gift-value--other { grid-column: 1 / -1; min-height: 50px; font-size: 15px; }
+.gift-custom { position: relative; margin-top: 10px; }
+.gift-custom-prefix {
+  position: absolute;
+  left: 15px;
+  line-height: 1;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f2c5c;
+}
+/* Scoped under .gift-custom so it outranks .gift-input's padding further down
+   — otherwise the first digit sits under the ₹. */
+.gift-custom .gift-custom-input { padding-left: 34px; font-size: 18px; font-weight: 700; line-height: 1; }
+.gift-value.is-on {
+  border-color: #c8102e;
+  background: #fdeef1;
+  color: #c8102e;
+  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.12);
+}
+
+/* Quantity stepper */
+.gift-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid rgba(15, 44, 92, 0.18);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.gift-qty button {
+  width: 46px;
+  height: 46px;
+  border: 0;
+  background: #f6f9fc;
+  color: #0f2c5c;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gift-qty button:disabled { color: #b7c0cf; cursor: default; }
+.gift-qty output {
+  min-width: 56px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f2c5c;
+}
+
+/* Email */
+.gift-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(15, 44, 92, 0.18);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px; /* 16px: no iPhone zoom on tap */
+  color: #0f2c5c;
+  box-sizing: border-box;
+}
+.gift-input:focus { outline: none; border-color: #c8102e; box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.12); }
+.gift-hint { margin: 8px 0 0; font-size: 13px; color: #64748b; }
+
+/* Total + pay */
+.gift-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 16px 18px;
+  margin: 4px 0 16px;
+  border-radius: 12px;
+  background: #f6f9fc;
+  color: #0f2c5c;
+}
+.gift-total small { color: #64748b; font-size: 13px; }
+.gift-total strong { font-size: 24px; font-weight: 800; }
+.gift-pay {
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: 999px;
+  background: #c8102e;
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gift-pay:hover:not(:disabled) { background: #a30c25; }
+.gift-pay:disabled { opacity: 0.6; cursor: default; }
+.gift-error { margin: 12px 0 0; font-size: 14px; color: #c8102e; }
+
+.gift-rules {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #475569;
+}
+.gift-rules li { display: flex; gap: 8px; }
+.gift-rules li::before { content: '✓'; color: #1b7a43; font-weight: 700; }
+
+.gift-preview-label {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+/* Bought coupons */
+.gift-section-title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f2c5c;
+}
+.gift-section-sub { margin: 0 0 20px; color: #64748b; font-size: 14.5px; }
+.gift-order {
+  padding: 18px 0 22px;
+  border-top: 1px solid rgba(15, 44, 92, 0.1);
+}
+.gift-order-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #475569;
+}
+.gift-order-head strong { color: #0f2c5c; }
+.gift-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #c8102e;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gift-link:hover { text-decoration: underline; }
+.gift-tickets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 470px), 1fr));
+  gap: 18px;
+}
+.gift-ready {
+  border: 1.5px solid rgba(27, 122, 67, 0.3);
+  background: #f2fbf5;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+@media (max-width: 560px) { .gift-ready { padding: 18px 14px; } }
+
+/* ---- The ticket ----
+   --gt-bg is the colour behind the ticket: the two punched notches are
+   circles of it sitting on the tear line. */
+.gt {
+  --gt-bg: #ffffff;
+  --gt-stub: 34%;
+  position: relative;
+  display: flex;
+  min-height: 190px;
+  border-radius: 18px;
+  filter: drop-shadow(0 14px 22px rgba(15, 44, 92, 0.18));
+}
+.gift-ready .gt { --gt-bg: #f2fbf5; }
+
+.gt-stub {
+  position: relative;
+  flex: 0 0 var(--gt-stub);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 20px 12px;
+  border-radius: 18px 0 0 18px;
+  color: #fff;
+  text-align: center;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(240, 198, 116, 0.28), transparent 42%),
+    radial-gradient(circle at 85% 90%, rgba(200, 16, 46, 0.35), transparent 45%),
+    linear-gradient(150deg, #0f2c5c 0%, #0a1f43 100%);
+  overflow: hidden;
+}
+.gt-stub-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f0c674;
+}
+.gt-stub-value { font-size: clamp(28px, 4.4vw, 38px); font-weight: 800; line-height: 1.1; }
+.gt-stub-sub { font-size: 12px; color: #c9d3e6; }
+.gt-stub-stars { margin-top: 8px; font-size: 10px; letter-spacing: 6px; color: rgba(240, 198, 116, 0.75); }
+
+.gt-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 18px 20px 16px 24px;
+  border-radius: 0 18px 18px 0;
+  background:
+    repeating-linear-gradient(135deg, rgba(15, 44, 92, 0.025) 0 10px, transparent 10px 20px),
+    #fffaf0;
+  border-left: 2px dashed rgba(15, 44, 92, 0.25);
+}
+.gt-notch {
+  position: absolute;
+  left: var(--gt-stub);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gt-bg);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.gt-notch--a { top: -12px; }
+.gt-notch--b { bottom: -12px; }
+
+.gt-brand { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.gt-logo { height: 26px; width: auto; }
+.gt-site { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; color: #8a7f6a; }
+.gt-title { margin: 10px 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #c8102e; text-transform: uppercase; }
+
+.gt-code-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gt-code {
+  padding: 7px 12px;
+  border: 1.5px dashed rgba(15, 44, 92, 0.35);
+  border-radius: 10px;
+  background: #fff;
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-size: clamp(16px, 2.4vw, 20px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #0f2c5c;
+  white-space: nowrap;
+}
+.gt-copy, .gt-download {
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gt-copy { padding: 8px 14px; background: #0f2c5c; color: #fff; font-size: 13px; }
+.gt-copy:hover { background: #c8102e; }
+.gt-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; font-size: 12.5px; color: #475569; }
+.gt-meta strong { color: #0f2c5c; }
+.gt-dot { color: #c9b98f; }
+.gt-how { margin: 6px 0 0; font-size: 12px; color: #8a7f6a; }
+.gt-download { margin-top: 10px; padding: 7px 14px; background: transparent; color: #c8102e; border: 1.5px solid rgba(200, 16, 46, 0.35); font-size: 13px; }
+.gt-download:hover { background: #fdeef1; }
+
+.gt--off .gt-stub, .gt--off .gt-main { filter: grayscale(1); opacity: 0.6; }
+.gt-stamp {
+  position: absolute;
+  top: 50%;
+  left: 62%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  padding: 6px 18px;
+  border: 3px solid #c8102e;
+  border-radius: 10px;
+  color: #c8102e;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 2;
+}
+
+/* Phones: the stub on top, the tear line across, notches at the sides. */
+@media (max-width: 560px) {
+  .gt { flex-direction: column; --gt-stub-h: 120px; }
+  .gt-stub { flex: 0 0 auto; height: var(--gt-stub-h); border-radius: 18px 18px 0 0; }
+  .gt-main { border-radius: 0 0 18px 18px; border-left: 0; border-top: 2px dashed rgba(15, 44, 92, 0.25); padding: 16px; }
+  .gt-notch { left: auto; top: var(--gt-stub-h); transform: translateY(-50%); }
+  .gt-notch--a { left: -12px; }
+  .gt-notch--b { right: -12px; bottom: auto; }
+  .gt-stamp { left: 50%; top: 62%; }
+}
+
+/* The "coupons are ready" screen */
+.gift-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 8px 16px;
+  border: 1.5px solid rgba(15, 44, 92, 0.18);
+  border-radius: 999px;
+  background: #fff;
+  color: #0f2c5c;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.gift-back:hover { border-color: #c8102e; color: #c8102e; }
+.gift-ready-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+.gift-pay--inline { width: auto; height: 46px; padding: 0 26px; }
+.gift-ready--loading { color: #475569; font-size: 15px; }
+.gift-ready--err { background: #fdeef1; border-color: rgba(200, 16, 46, 0.3); }

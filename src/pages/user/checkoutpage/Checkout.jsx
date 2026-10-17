@@ -145,6 +145,15 @@ export default function Checkout() {
         body: { packageId, couponCode: quote?.couponCode || undefined },
       })
       setOrder(res)
+      // A coupon covered the whole price: the server has already completed the
+      // order (there is nothing for the gateway to take), so go straight to
+      // the receipt.
+      if (res.free) {
+        setPayPhase('confirming')
+        await confirm({ orderId: res.orderId })
+        setPayPhase(null)
+        return
+      }
       if (res.mock) {
         setPayPhase(null)
         setStep('paying') // no keys → local test panel

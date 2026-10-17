@@ -15,6 +15,7 @@ const COLUMNS = [
       { label: 'Breakthrough', to: '/services/breakthrough' },
       { label: 'Compare programs', to: '/services/compare' },
       { label: 'Book Online', to: '/book-online' },
+      { label: 'Gift a Coupon', to: '/gift-coupons' },
     ],
     // A second list stacked under Services in the same column.
     below: {

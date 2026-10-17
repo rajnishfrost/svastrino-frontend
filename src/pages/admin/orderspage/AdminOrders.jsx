@@ -84,7 +84,8 @@ export default function AdminOrders() {
                           <span title={o.user?.email}>{o.organisation.name}</span>
                           <span className="adm-badge adm-badge--muted">Institution</span>
                         </div>
-                      : o.user ? <span title={o.user.email}>{o.user.name || o.user.email}</span> : '—'}
+                      : o.user ? <span title={o.user.email}>{o.user.name || o.user.email}</span>
+                        : o.giftEmail ? <span title="Gift coupons, bought without an account">{o.giftEmail} · gift</span> : '—'}
                   </td>
                   <td>
                     {o.item}
