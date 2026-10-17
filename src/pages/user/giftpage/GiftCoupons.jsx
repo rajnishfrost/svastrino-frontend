@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PageHero from '../../../common_component/user/PageHero/PageHero.jsx'
 import PaymentGuard from '../../../common_component/user/PaymentGuard/PaymentGuard.jsx'
 import { useAuth } from '../../../context/AuthContext.jsx'
-import { useAuthPrompt } from '../../../common_component/user/AuthPrompt/AuthPrompt.jsx'
 import { api } from '../../../api/client.js'
 import { openCashfreeCheckout } from '../../../utils/cashfree.js'
 import { usePageSeo } from '../../../seo/PageSeo.jsx'
@@ -12,9 +12,10 @@ import GiftTicket from './GiftTicket.jsx'
 import './GiftCoupons.css'
 
 /**
- * Gift a coupon (footer → /gift-coupons). A signed-in student picks a value and
- * how many, gives an email the coupons are also sent to, and pays through the
- * usual Cashfree popup. The coupons appear as tickets they can copy, download
+ * Gift a coupon (footer → /gift-coupons). Anyone — no sign-in needed — picks a
+ * value and how many, gives an email the coupons are also sent to (their copy
+ * if they lose them), and pays through the usual Cashfree popup. The order
+ * hands back a secret token that confirms the payment and reads the coupons. The coupons appear as tickets they can copy, download
  * (print / save as PDF) and hand on. Rules live on the server
  * (gifts/gift.service.js): any course or programme, once, for a year, used only
  * when the purchase it is applied to completes.
@@ -35,7 +36,7 @@ export default function GiftCoupons() {
     description: 'Buy a Svastrino gift coupon for a younger sibling or a friend. It works on any course or programme, once, for a year.',
   })
   const { user } = useAuth()
-  const prompt = useAuthPrompt()
+  const [params, setParams] = useSearchParams()
 
   const [options, setOptions] = useState(FALLBACK)
   const [value, setValue] = useState(100000)
@@ -55,6 +56,19 @@ export default function GiftCoupons() {
   useEffect(() => {
     api('/user/gifts/options').then(setOptions).catch(() => {})
   }, [])
+
+  // Back from Cashfree's own payment page (an in-app browser cannot hold the
+  // popup): the return link names the order and its token. Show its coupons,
+  // then tidy the address so the token does not sit in the bar.
+  useEffect(() => {
+    const orderId = params.get('order')
+    const token = params.get('t')
+    if (!orderId || !token) return
+    api(`/user/gifts/orders/${orderId}/verify`, { method: 'POST', body: { token } })
+      .then(({ gift }) => setJustBought(gift))
+      .catch((e) => { if (e.code !== 'PAYMENT_NOT_COMPLETED') setErr(e.message) })
+      .finally(() => setParams({}, { replace: true }))
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // The account's email to start with; the student may change it.
   useEffect(() => {
@@ -85,10 +99,6 @@ export default function GiftCoupons() {
 
   const buy = async () => {
     setErr('')
-    if (!user) {
-      prompt({ reason: 'to buy gift coupons', onDone: () => {} })
-      return
-    }
     if (customErr) { setErr(customErr); return }
     if (emailErr) { setErr(emailErr); return }
     setBusy(true)
@@ -106,12 +116,14 @@ export default function GiftCoupons() {
         // back to this page, where the list below shows the coupons.
         if (result.redirect) return
       }
-      // Only our server's check with Cashfree counts as paid.
+      // Only our server's check with Cashfree counts as paid. The order's
+      // token proves this browser placed it — no account needed.
       setPayPhase('confirming')
-      await api('/user/payments/verify', { method: 'POST', auth: 'user', body: { orderId: res.orderId } })
-      const { gift } = await api(`/user/gifts/orders/${res.orderId}`, { auth: 'user' })
+      const { gift } = await api(`/user/gifts/orders/${res.orderId}/verify`, {
+        method: 'POST', body: { token: res.giftToken },
+      })
       setJustBought(gift)
-      loadMine()
+      if (user) loadMine()
       setTimeout(() => readyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
     } catch (e) {
       // Closing the popup without paying is not an error worth shouting about.
@@ -210,7 +222,7 @@ export default function GiftCoupons() {
                 <input id="gift-email" className="gift-input" type="email" inputMode="email" autoComplete="email"
                        maxLength={LIMITS.email} value={email} placeholder="you@example.com"
                        onChange={(e) => { setEmail(e.target.value); setEmailTouched(true) }} required />
-                <p className="gift-hint">We also send the coupons to this email, in case you lose them.</p>
+                <p className="gift-hint">No account needed. We send the coupons to this email too, in case you lose them.</p>
               </div>
 
               <div className="gift-total">
@@ -221,8 +233,8 @@ export default function GiftCoupons() {
                 <strong>{chosen ? inr(total) : '—'}</strong>
               </div>
 
-              <button type="button" className="gift-pay" onClick={buy} disabled={busy || (!!user && (!!emailErr || !!customErr))}>
-                {busy ? 'Please wait…' : !user ? 'Sign in to buy' : chosen ? `Buy for ${inr(total)}` : 'Enter an amount'}
+              <button type="button" className="gift-pay" onClick={buy} disabled={busy || !chosen || !!customErr || !!emailErr}>
+                {busy ? 'Please wait…' : chosen ? `Buy for ${inr(total)}` : 'Enter an amount of ₹100 or more'}
               </button>
               {err && <p className="gift-error" role="alert">{err}</p>}
 
