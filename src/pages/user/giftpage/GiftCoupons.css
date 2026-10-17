@@ -54,14 +54,18 @@
 .gift-custom { position: relative; margin-top: 10px; }
 .gift-custom-prefix {
   position: absolute;
-  left: 14px;
+  left: 15px;
+  line-height: 1;
+  pointer-events: none;
   top: 50%;
   transform: translateY(-50%);
   font-size: 18px;
   font-weight: 800;
   color: #0f2c5c;
 }
-.gift-custom-input { padding-left: 32px; font-size: 18px; font-weight: 700; }
+/* Scoped under .gift-custom so it outranks .gift-input's padding further down
+   — otherwise the first digit sits under the ₹. */
+.gift-custom .gift-custom-input { padding-left: 34px; font-size: 18px; font-weight: 700; line-height: 1; }
 .gift-value.is-on {
   border-color: #c8102e;
   background: #fdeef1;
