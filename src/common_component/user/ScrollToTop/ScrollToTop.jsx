@@ -15,18 +15,19 @@ import { useLocation, useNavigate } from 'react-router-dom'
  */
 
 /**
- * Where to scroll so an anchored section sits in the middle of what the
- * visitor can see — the space between the sticky navbar and the bottom of the
- * screen. A section taller than that space lines up just under the navbar
- * instead, so its beginning is never hidden.
+ * Where to scroll so an anchored section sits in the middle of the SCREEN —
+ * equal space above and below it within the whole window, navbar included
+ * (user's call, 2026-10-19). If that would tuck the section's top under the
+ * sticky navbar (a section nearly as tall as the screen, or taller), it lines
+ * up just under the navbar instead, so its beginning is never hidden.
  */
 function topFor(el) {
   const nav = document.querySelector('.nav')
   const navBottom = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0
-  const visible = window.innerHeight - navBottom
   const r = el.getBoundingClientRect()
-  const gap = r.height < visible ? (visible - r.height) / 2 : 12
-  return window.scrollY + r.top - navBottom - gap
+  const centred = (window.innerHeight - r.height) / 2
+  const offset = centred >= navBottom + 12 ? centred : navBottom + 12
+  return window.scrollY + r.top - offset
 }
 
 const glideTo = (el) => window.scrollTo({ top: topFor(el), behavior: 'smooth' })
