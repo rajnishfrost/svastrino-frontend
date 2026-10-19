@@ -152,7 +152,7 @@ export default function TalkToExpert({ program }) {
       // heading. Offset the scroll by the nav height (+ the offline bar when shown)
       // and a little breathing room, so the heading lands just below the navbar.
       style={{ scrollMarginTop: 'calc(var(--nav-height, 68px) + var(--offline-h, 0px) + 1.25rem)' }}
-      className="bg-soft py-14 md:py-16"
+      className="bg-soft py-8 sm:py-14 md:py-16"
     >
       <div className="container mx-auto max-w-4xl">
         <div className="rounded-2xl border border-solid border-brand-navy/15 bg-white p-5 shadow-[0_12px_32px_-14px_rgba(15,44,92,0.25)] sm:p-7">
@@ -264,15 +264,17 @@ export default function TalkToExpert({ program }) {
 
           {err && <p className="text-sm text-brand-crimson sm:col-span-2" role="alert">{err}</p>}
 
-          <div className="flex flex-col items-start gap-2 sm:col-span-2 sm:flex-row sm:items-center">
+          {/* Phones: a full-width button with its note centred under it, so the
+              card ends level rather than on a short button hanging left. */}
+          <div className="flex flex-col items-stretch gap-2 sm:col-span-2 sm:flex-row sm:items-center">
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex h-12 cursor-pointer items-center justify-center rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark disabled:opacity-60"
+              className="inline-flex h-12 w-full cursor-pointer sm:w-auto items-center justify-center rounded-lg border-0 bg-brand-crimson px-8 text-base font-semibold text-white transition-colors hover:bg-brand-crimson-dark disabled:opacity-60"
             >
               {busy ? 'Sending…' : 'Request a Call Back'}
             </button>
-            <span className="text-xs text-brand-slate">No payment now. We call you within one working day.</span>
+            <span className="text-center text-xs text-brand-slate sm:text-left">No payment now. We call you within one working day.</span>
           </div>
         </form>
       )}
