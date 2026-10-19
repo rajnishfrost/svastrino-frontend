@@ -517,7 +517,9 @@ export default function BookOnline() {
               another — which is the worst kind of bug to find out about at a
               payment screen. */}
           {step === 'program' && (
-            <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
+            // #programs: the navbar's "Book Online" lands here, the three cards
+            // centred (ScrollToTop waits while aria-busy, i.e. still loading).
+            <div id="programs" aria-busy={programs == null} className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
               {programs == null ? <div style={{ gridColumn: '1 / -1' }}><SkeletonCards count={3} media={false} minWidth={240} label="Loading programs" /></div> : programs.map((p) => {
                 const byCall = p.buyMode === 'expert-call'
                 return (

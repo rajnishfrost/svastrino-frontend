@@ -33,7 +33,7 @@ const day = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', mon
 export default function GiftCoupons() {
   usePageSeo({
     title: 'Gift a coupon — help someone start with Svastrino',
-    description: 'Buy a Svastrino gift coupon for a younger sibling or a friend. It works on any course or programme, once, for a year.',
+    description: 'Buy a Svastrino gift coupon for a younger sibling, a cousin, a friend or a student. It works on any course or programme, once, for a year.',
   })
   const { user } = useAuth()
   const [params, setParams] = useSearchParams()
@@ -203,7 +203,7 @@ export default function GiftCoupons() {
       <PageHero
         eyebrow="Gift a coupon"
         title="Give someone a head start"
-        subtitle="Buy a Svastrino coupon for a younger sibling, a cousin or a friend. They use it on any course or programme — and you help them find their path."
+        subtitle="Buy a Svastrino coupon for a younger sibling, a cousin, a friend or a student. They use it on any course or programme — and you help them find their path."
       />
 
       <section className="py-12 md:py-16">
@@ -279,7 +279,8 @@ export default function GiftCoupons() {
               <ul className="gift-rules">
                 <li>Works on any course or programme at checkout</li>
                 <li>One-time use, valid for 1 year from today</li>
-                <li>Counts as used only when their purchase is completed</li>
+                <li>Coupon counts as exhausted only when the purchase is completed</li>
+                <li>One coupon per purchase</li>
                 <li>Pay securely — cards, UPI, net banking and wallets</li>
               </ul>
             </div>

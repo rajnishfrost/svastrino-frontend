@@ -51,7 +51,7 @@ export default function FaqAccordion({ items = [], tone = 'brand' }) {
         return (
           <div
             key={item.id}
-            className={`overflow-hidden rounded-xl border shadow-sm transition-colors duration-200 ${
+            className={`overflow-hidden rounded-xl border border-solid shadow-sm transition-colors duration-200 ${
               isOpen ? t.open : t.closed
             }`}
           >

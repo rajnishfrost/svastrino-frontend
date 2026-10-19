@@ -136,7 +136,8 @@ export default function Navbar() {
           {/* <Dropdown label="Mentoring" to="/services" items={MENTORING_LINKS} onNavigate={close} /> */}
           <Dropdown label="Services" to="/services" items={MENTORING_LINKS} onNavigate={close} icon={Compass} />
 
-          <NavLink to="/book-online" onClick={close} className={navClass}>
+          {/* Straight to the three program cards, centred on screen. */}
+          <NavLink to="/book-online#programs" onClick={close} className={navClass}>
             <span className="nav-ico" aria-hidden><CalendarCheck /></span>
             <span className="nav-label">Book Online</span>
           </NavLink>

@@ -155,7 +155,9 @@ export default function FreeTrial() {
   return (
     <section id="free-trial" aria-busy={standing === undefined} className="bg-nirmaan-green py-10 sm:py-16 md:py-20">
       <div className="container">
-        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
+        {/* data-scroll-focus: a link to #free-trial centres this card, not
+            the whole (taller) green band around it. */}
+        <div data-scroll-focus className="relative mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-nirmaan-cream-dark bg-white p-8 text-center shadow-[0_18px_44px_-16px_rgba(59,40,34,0.28)] md:p-12">
           {/* Two flat tinted circles, hung off the edges so the card's
               overflow-hidden crops them to a half and a quarter — the shapes
               the design asks for. They were written as blurred glows back when
