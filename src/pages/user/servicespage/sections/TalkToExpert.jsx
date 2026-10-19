@@ -152,7 +152,7 @@ export default function TalkToExpert({ program }) {
       className="bg-soft py-14 md:py-16"
     >
       <div className="container mx-auto max-w-4xl">
-        <div className="rounded-2xl border border-brand-navy/5 bg-white p-5 shadow-sm sm:p-7">
+        <div className="rounded-2xl border border-solid border-brand-navy/15 bg-white p-5 shadow-[0_12px_32px_-14px_rgba(15,44,92,0.25)] sm:p-7">
       <h2 className="text-center font-display text-xl font-bold text-brand-navy">
         {approved ? `You're Cleared to Start ${program.name}` : 'Talk to an Expert First'}
       </h2>

@@ -7,7 +7,7 @@ import { Check } from 'lucide-react'
 export default function ChooseIf({ items = [] }) {
   if (!items.length) return null
   return (
-    <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+    <div className="rounded-2xl border border-solid border-brand-navy/15 bg-white p-7 shadow-[0_12px_32px_-14px_rgba(15,44,92,0.25)]">
       <h2 className="font-display text-xl font-bold text-brand-navy">Choose this program if…</h2>
       <ul className="mt-4 grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2">
         {items.map((c, i) => (

@@ -4,7 +4,7 @@
  */
 export default function ProgramOverview({ program }) {
   return (
-    <div className="rounded-2xl border border-brand-navy/5 bg-white p-7 shadow-sm">
+    <div className="rounded-2xl border border-solid border-brand-navy/15 bg-white p-7 shadow-[0_12px_32px_-14px_rgba(15,44,92,0.25)]">
       <p className="text-lg leading-relaxed text-brand-slate">{program.summary}</p>
       <ul className="mt-5 flex flex-wrap gap-x-8 gap-y-2 border-t border-brand-navy/10 pt-5 text-sm text-brand-slate">
         {program.duration && <li><strong className="font-semibold text-brand-navy">Duration:</strong> {program.duration}</li>}
