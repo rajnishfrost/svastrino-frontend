@@ -121,7 +121,7 @@ export default function Journey() {
   const [open, setOpen] = useState(1) // first phase open, so the shape is obvious
 
   return (
-    <section id="journey" className="bg-white py-16 md:py-20">
+    <section id="journey" className="bg-white py-12 md:py-20">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">Course Journey</p>
