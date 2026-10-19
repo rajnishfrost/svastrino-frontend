@@ -153,10 +153,10 @@ export default function TalkToExpert({ program }) {
     >
       <div className="container mx-auto max-w-4xl">
         <div className="rounded-2xl border border-brand-navy/5 bg-white p-5 shadow-sm sm:p-7">
-      <h2 className="font-display text-xl font-bold text-brand-navy">
+      <h2 className="text-center font-display text-xl font-bold text-brand-navy">
         {approved ? `You're Cleared to Start ${program.name}` : 'Talk to an Expert First'}
       </h2>
-      <p className="mt-2 text-sm leading-relaxed text-brand-slate">
+      <p className="mt-2 text-center text-sm leading-relaxed text-brand-slate">
         {approved
           ? 'Your call is done and our team has cleared you to enrol. Pick a slot whenever you are ready — nothing is pending at your end.'
           : `${program.name} runs for ${program.duration || 'a long time'}, so we do not ask anyone to pay for it from a checkout page. Leave your number, talk to one of our mentors about where you are and what you want, and only then decide. If you go ahead, we send you a payment link after the call.`}
