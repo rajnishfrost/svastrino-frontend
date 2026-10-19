@@ -144,6 +144,9 @@ export default function TalkToExpert({ program }) {
   return (
     <section
       id="talk-to-an-expert"
+      // Still finding out whether to show the form or a status: a link here
+      // waits for the answer before scrolling (see ScrollToTop).
+      aria-busy={standing === undefined}
       // Jumping to this anchor (from the All Services card or the hero CTA) aligns
       // the section top to y=0 — but the sticky navbar would then cover the
       // heading. Offset the scroll by the nav height (+ the offline bar when shown)
@@ -214,7 +217,9 @@ export default function TalkToExpert({ program }) {
       {/* Nothing on file → the form. */}
       {!sent && standing === null && (
         // noValidate: our own per-field messages, not the browser's one-at-a-time bubbles.
-        <form ref={formRef} onSubmit={submit} noValidate className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        // data-scroll-focus: a link to #talk-to-an-expert centres the form —
+        // Name down to the Request button — rather than the heading and intro.
+        <form data-scroll-focus ref={formRef} onSubmit={submit} noValidate className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EnquiryField
             className="sm:col-span-2"
             name="name" label="Name" placeholder="Full name" autoComplete="name" maxLength={LIMITS.name}
