@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 /**
  * On route change: if the URL has a #hash, bring that section into view (e.g.
@@ -37,10 +37,61 @@ const TICK_MS = 100
 const SETTLED_TICKS = 3
 const MAX_WAIT_MS = 6000
 // How long after the glide a late shift is still corrected.
-const KEEP_MS = 2000
+const KEEP_MS = 3000
+
+/**
+ * Glide to a section and hold it there for KEEP_MS against late layout shifts,
+ * letting go the moment the visitor scrolls. Used for a section link clicked
+ * when the address already names that section (the router sees no change).
+ */
+function glideAndHold(el) {
+  glideTo(el)
+  if (typeof ResizeObserver === 'undefined') return
+  let t
+  const ro = new ResizeObserver(() => {
+    clearTimeout(t)
+    t = setTimeout(() => { if (Math.abs(topFor(el) - window.scrollY) > 24) glideTo(el) }, 150)
+  })
+  const stop = () => {
+    ro.disconnect(); clearTimeout(t)
+    window.removeEventListener('wheel', stop)
+    window.removeEventListener('touchstart', stop)
+    window.removeEventListener('keydown', stop)
+  }
+  ro.observe(document.body)
+  window.addEventListener('wheel', stop, { passive: true })
+  window.addEventListener('touchstart', stop, { passive: true })
+  window.addEventListener('keydown', stop)
+  setTimeout(stop, KEEP_MS)
+}
 
 export default function ScrollToTop() {
   const { pathname, hash } = useLocation()
+  const navigate = useNavigate()
+
+  // Links to a section of THIS page (<a href="#which-test">, or a Link to the
+  // same path with a #hash). Left to the browser they jump the section to the
+  // very top — under the sticky navbar — and when the address already names
+  // that section (a second click) the router sees no change, so nothing below
+  // ever centres it. Caught first (capture phase), they always glide to the
+  // middle: a new #hash goes through the router as usual, the same one glides
+  // here.
+  useEffect(() => {
+    const onClick = (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+      const a = e.target.closest?.('a[href]')
+      if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return
+      const url = new URL(a.href, window.location.href)
+      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !url.hash) return
+      const el = document.getElementById(decodeURIComponent(url.hash.slice(1)))
+      if (!el) return
+      e.preventDefault()
+      if (url.hash === window.location.hash) glideAndHold(el)
+      else navigate({ pathname: url.pathname, search: url.search, hash: url.hash })
+    }
+    document.addEventListener('click', onClick, true)
+    return () => document.removeEventListener('click', onClick, true)
+  }, [navigate])
 
   useEffect(() => {
     if (!hash) {
@@ -57,16 +108,14 @@ export default function ScrollToTop() {
       return el && el.getAttribute('aria-busy') !== 'true' ? el : null
     }
 
-    // Already on screen (a link to a section of this same page): glide now.
+    // Already on screen (a link to a section of this same page): glide now —
+    // and, below, keep on it while pictures above load in as the glide passes
+    // them (lazy images grow the page and used to leave the section low).
     const now = ready()
-    if (now) {
-      glideTo(now)
-      return
-    }
 
     // Coming from another page: start at the top while it loads, rather than
     // wherever the previous page was scrolled to (often its footer).
-    window.scrollTo({ top: 0, behavior: 'instant' })
+    if (!now) window.scrollTo({ top: 0, behavior: 'instant' })
 
     let timer
     let cancelled = false
@@ -124,7 +173,12 @@ export default function ScrollToTop() {
       }
       timer = setTimeout(tick, TICK_MS)
     }
-    tick()
+    if (now) {
+      glideTo(now)
+      keepOnTarget(now)
+    } else {
+      tick()
+    }
 
     return () => {
       letGo()
