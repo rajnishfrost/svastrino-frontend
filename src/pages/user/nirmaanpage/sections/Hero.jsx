@@ -20,7 +20,7 @@ export default function Hero() {
     // vanished). Wider screens keep the fade.
     <section className="relative overflow-hidden bg-gradient-to-b from-nirmaan-cream to-nirmaan-cream-dark/40 md:bg-gradient-to-br md:from-nirmaan-cream md:to-white">
       {/* <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-nirmaan-green/15 blur-3xl" /> */}
-      <div className="container relative grid grid-cols-1 items-center gap-6 pb-24 pt-10 md:gap-10 md:pb-36 md:pt-24 md:grid-cols-[1.2fr_1fr]">
+      <div className="container relative grid grid-cols-1 items-center gap-7 pb-20 pt-14 md:gap-10 md:pb-36 md:pt-24 md:grid-cols-[1.2fr_1fr]">
         <div className="text-center md:text-left">
           <span className="text-sm font-semibold uppercase tracking-wide text-nirmaan-green">
             Soch Se Vikas
@@ -68,7 +68,9 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="flex justify-center md:justify-end">
+        {/* Phones: the mark sits on a soft cream-to-green panel of its own;
+            wider screens show it bare beside the words. */}
+        <div className="mx-auto flex w-full max-w-sm justify-center rounded-3xl bg-gradient-to-br from-white via-nirmaan-cream to-nirmaan-green/20 px-6 py-6 shadow-[0_14px_30px_-18px_rgba(63,121,50,0.45)] ring-1 ring-nirmaan-sand md:mx-0 md:max-w-none md:justify-end md:rounded-none md:bg-none md:p-0 md:shadow-none md:ring-0">
           {/* The PNG is square with the mark in a wide band across its middle;
               on phones it is cropped to that band, or it leaves a tall empty
               gap above and below. */}
