@@ -160,6 +160,24 @@ function Accounts({ me }) {
     }
   }
 
+  /**
+   * The daily course emails (7 AM task, 7 PM still-pending) for one account.
+   * Offered only on accounts that have Nirmaan — nobody else gets them.
+   */
+  const changeTaskEmails = async (id, taskEmails) => {
+    setSavingId(id); setError('')
+    try {
+      const { user } = await api(`/admin/users/${id}/task-emails`, {
+        method: 'PATCH', auth: 'admin', body: { taskEmails },
+      })
+      setUsers((list) => list.map((u) => (u.id === id ? { ...u, taskEmails: user.taskEmails } : u)))
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSavingId(null)
+    }
+  }
+
   const changeRole = async (id, role) => {
     setSavingId(id); setError('')
     try {
@@ -255,7 +273,7 @@ function Accounts({ me }) {
         <div className="adm-panel adm-table-wrap">
           <table className="adm-table">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Institution</th><th>Signed up</th><th>Created</th><th>Access</th><th>Student portal</th>{isSuper && <th></th>}</tr>
+              <tr><th>Name</th><th>Email</th><th>Status</th><th>Role</th><th>Institution</th><th>Signed up</th><th>Created</th><th>Access</th><th>Student portal</th><th title="Daily Nirmaan task and reminder emails">Task emails</th>{isSuper && <th></th>}</tr>
             </thead>
             <tbody>
               {users.map((u) => (
@@ -337,6 +355,24 @@ function Accounts({ me }) {
                       <span className={`adm-badge adm-badge--${u.siteAccess !== false ? 'ok' : 'muted'}`}>
                         {u.siteAccess !== false ? 'Allowed' : 'Blocked'}
                       </span>
+                    )}
+                  </td>
+                  <td>
+                    {u.nirmaanSubscribed ? (
+                      <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={u.taskEmails !== false}
+                          disabled={savingId === u.id}
+                          onChange={(e) => changeTaskEmails(u.id, e.target.checked)}
+                        />
+                        <span className="adm-sub" style={{ margin: 0 }}>
+                          {u.taskEmails !== false ? 'On' : 'Off'}
+                        </span>
+                      </label>
+                    ) : (
+                      // No Nirmaan, so no task emails to switch.
+                      <span className="adm-sub" style={{ margin: 0 }} title="Not subscribed to Nirmaan">—</span>
                     )}
                   </td>
                   {isSuper && (
