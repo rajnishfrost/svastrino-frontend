@@ -139,7 +139,7 @@ function recordHtml(record, student) {
   .sess-meta { margin:4px 0 12px; font-size:12px; color:var(--muted); }
   .sess-meta-none { font-style:italic; }
   .qa { padding:10px 0; }
-  .q { margin:0 0 6px; font-size:14px; font-weight:600; }
+  .q { margin:0 0 6px; font-size:14px; font-weight:600; white-space:pre-line; }
   .q-num { display:inline-block; min-width:34px; color:var(--accent); font-weight:700; }
   .a { margin:0; font-size:14px; line-height:1.7; white-space:pre-wrap;
        padding:10px 14px; background:#fafbfc; border-left:3px solid var(--line); border-radius:0 6px 6px 0; }

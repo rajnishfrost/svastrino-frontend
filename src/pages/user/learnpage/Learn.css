@@ -339,7 +339,7 @@
    as a warning rather than as a word target. */
 .learn-q-left { margin-top: 6px; font-size: 12.5px; color: var(--color-text-muted); }
 .learn-q-num { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-accent); margin-bottom: 6px; }
-.learn-q-prompt { font-size: 15.5px; color: var(--color-text); margin-bottom: 12px; line-height: 1.5; }
+.learn-q-prompt { font-size: 15.5px; color: var(--color-text); margin-bottom: 12px; line-height: 1.5; white-space: pre-line; }
 .learn-q-input {
   width: 100%;
   border: 1px solid var(--gray-200);
@@ -369,7 +369,7 @@
 .learn-q-past { margin-bottom: 14px; }
 .learn-q-past summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-muted); }
 .learn-q-pastitem { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
-.learn-q-pastq { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.learn-q-pastq { font-size: 13px; font-weight: 600; color: var(--color-text); white-space: pre-line; }
 .learn-q-pasta { font-size: 13.5px; color: var(--color-text-muted); margin-top: 3px; white-space: pre-wrap; }
 /* Gate / errors */
 .learn-gate {
