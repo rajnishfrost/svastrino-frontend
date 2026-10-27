@@ -515,7 +515,7 @@
 .learn-streakcard {
   flex-basis: 100%;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 18px;
 }
 .learn-streakcard-badge { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; }
@@ -540,7 +540,17 @@
   filter: grayscale(0.35);
 }
 .learn-streakcard-name { font-size: 13px; font-weight: 700; color: var(--color-heading); white-space: nowrap; }
-.learn-streakcard-main { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+/* Beside the badge and as tall as it: the label level with the top of the
+   ring, the grace days level with the badge name, all right-aligned. */
+.learn-streakcard-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  text-align: right;
+  min-width: 0;
+}
+.learn-streakcard-label { line-height: 1; }
 .learn-streakcard-label {
   font-size: 11px;
   font-weight: 600;
@@ -560,7 +570,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 4px;
   padding: 4px 10px;
   border-radius: 999px;
   background: #e9f5ee;
