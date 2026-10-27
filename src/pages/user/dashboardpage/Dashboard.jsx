@@ -256,7 +256,8 @@ export default function Dashboard() {
 
 /** What a session's own actions are: book the next one, or move a booked one. */
 function SessionAction({ p, s }) {
-  if (!s.startAt && s.sessionNumber === p.sessionsBooked + 1) {
+  // The next session opens once the one before it is marked completed.
+  if (!s.startAt && s.sessionNumber === p.sessionsBooked + 1 && p.canBookNext !== false) {
     return <Link to={`/book-online?program=${p.sku}`} className={ACTION}>Book →</Link>
   }
   if (canReschedule(s)) {
@@ -369,13 +370,17 @@ function ServicesPanel({ mentoring }) {
                 </table>
               </div>
 
-              {p.sessionsRemaining > 0 && (
+              {p.sessionsRemaining > 0 && (p.canBookNext !== false ? (
                 <div className="mt-5">
                   <Link to={`/book-online?program=${p.sku}`} className={`${CTA} bg-brand-crimson hover:bg-brand-crimson-dark`}>
                     Book session {p.sessionsBooked + 1} →
                   </Link>
                 </div>
-              )}
+              ) : (
+                <p className="mt-5 text-sm text-brand-slate">
+                  You can book session {p.sessionsBooked + 1} once session {p.waitingOn} is completed.
+                </p>
+              ))}
             </div>
           ))
         )}

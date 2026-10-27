@@ -141,6 +141,8 @@ export default function BookOnline() {
   )
   const isFree = !!rescheduleId || (owned && owned.sessionsRemaining > 0)
   const soldOut = owned && owned.sessionsRemaining === 0 && !rescheduleId
+  // Sessions are booked one at a time: the next waits until the last is completed.
+  const waiting = owned && !soldOut && owned.canBookNext === false && !rescheduleId
 
   // Programs sold after a call (Breakthrough) are not bought from here. Show
   // the reason instead of the wizard — unless they already own it, are
@@ -606,6 +608,16 @@ export default function BookOnline() {
             </div>
           )}
 
+          {waiting && step !== 'success' && (
+            <div className="card bo-card">
+              <p>
+                You can book session {owned.sessionsBooked + 1} of <strong>{program?.name}</strong> once
+                session {owned.waitingOn} is completed.
+              </p>
+              <Link to="/dashboard/services" className="btn btn-primary">View your sessions</Link>
+            </div>
+          )}
+
           {soldOut && (
             <div className="card bo-card">
               <p>All {owned.sessionsTotal} sessions of <strong>{program?.name}</strong> are already booked.</p>
@@ -634,7 +646,7 @@ export default function BookOnline() {
           )}
 
           {/* ---- Step 1 · date & time ---- */}
-          {step === 'schedule' && program && !soldOut && !gateByCall && (
+          {step === 'schedule' && program && !soldOut && !waiting && !gateByCall && (
             <div className="bo-grid">
               <div className="card bo-card">
                 <h2 className="bo-h2">Pick a date</h2>
@@ -876,12 +888,8 @@ export default function BookOnline() {
               </p>
               <div className="bo-actions">
                 <Link to="/dashboard/services" className="btn btn-primary">Go to dashboard</Link>
-                {owned && owned.sessionsRemaining > 1 && !rescheduleId && (
-                  <button className="btn btn-secondary"
-                          onClick={() => { setBooking(null); setReceipt(null); setSlot(''); setDate(''); syncParams({ date: '', start: '' }); setStep('schedule'); fetchMyMentoring().then(setMine).catch(() => {}) }}>
-                    Book next session
-                  </button>
-                )}
+                {/* No "Book next session" here: the session just booked has to be
+                    completed before the next one can be booked. */}
               </div>
             </div>
           )}
