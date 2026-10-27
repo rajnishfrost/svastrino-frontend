@@ -1051,30 +1051,60 @@ const STREAK_REWARD = 'Rewards are waiting for the students who keep it going.'
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
-/** A grace day's shield: drawn, because the 🛡️ emoji renders squashed at text size. */
-const Shield = () => <ShieldCheck className="learn-shield" aria-hidden strokeWidth={2.25} />
+/**
+ * The line under the streak card: what to do today, then the rules once. The
+ * numbers themselves are on the card, so this stays short.
+ */
+function streakNote({ days, best, todayDone, brokenAfter }) {
+  const rules = 'Every 7 days in a row earns a badge and a grace day. Miss a day with no grace day left and your streak and badges start again from zero. ' + STREAK_REWARD
+  if (days > 0 && !todayDone) return <><strong>Take today's step to keep your streak going.</strong> {rules}</>
+  if (days > 0) return <><strong>Today is done — come back tomorrow.</strong> {rules}</>
+  if (brokenAfter) {
+    return <><strong>Your streak was reset{best > 1 ? ` (best: ${best} days)` : ''}.</strong> Start again today. {rules}</>
+  }
+  return <><strong>Take a step every day to build your streak.</strong> {rules}</>
+}
 
 /**
- * The streak line, written for the situation the student is actually in. The
- * rules (a badge and a grace day every 7 days in a row; a miss with no grace
- * day left resets it all) are said out loud, because a counter that only ever
- * goes up is not a reason to come back tomorrow.
+ * The streak card: the badge held, the count, a seven-step track towards the
+ * next badge, and the grace days banked. Everything comes from the server's
+ * computeStreak, so the card cannot disagree with the rules.
  */
-function streakNote({ days, best, todayDone, brokenAfter, graceDays = 0, badge, nextBadgeIn = 7 }) {
-  const next = `${plural(nextBadgeIn, 'more day')} to ${badge ? 'your next badge' : 'your first badge'}`
-  const grace = graceDays > 0
-    ? <>You have <Shield /> {plural(graceDays, 'grace day')}: miss a day and it is used up instead of your streak.</>
-    : <>Every 7 days in a row earns a badge and a <Shield /> grace day. Miss a day without one and your streak and badges go back to zero.</>
-  if (days > 0 && !todayDone) {
-    return <>🔥 {plural(days, 'day')} in a row — today's step makes it {days + 1}. {next}. {grace} {STREAK_REWARD}</>
-  }
-  if (days > 0) {
-    return <>🔥 {plural(days, 'day')} in a row, and today is done. {next}. {grace} {STREAK_REWARD}</>
-  }
-  if (brokenAfter) {
-    return `A missed day took your streak and badges back to zero${best > 1 ? ` — your best run was ${best} days` : ''}. Take today's step and start earning them again. ${STREAK_REWARD}`
-  }
-  return <>Take a step every day: 7 days in a row earns your first badge and a <Shield /> grace day. Miss a day without one and it goes back to zero. {STREAK_REWARD}</>
+function StreakCard({ streak }) {
+  const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0, badgesTotal } = streak
+  const step = nextBadge ? 7 - nextBadgeIn : 7
+  return (
+    <div className="learn-streakcard">
+      <div className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`} aria-hidden>
+        {badge ? badge.emoji : '🔥'}
+      </div>
+      <div className="learn-streakcard-main">
+        <span className="learn-streakcard-label">Current streak</span>
+        <strong className="learn-streakcard-count">
+          {days} <small>{days === 1 ? 'day' : 'days'}</small>
+        </strong>
+        <span className="learn-streakcard-rank">
+          {badge ? <>{badge.name} · Badge {badge.level}{badgesTotal ? ` of ${badgesTotal}` : ''}</> : 'No badge yet'}
+        </span>
+      </div>
+      <div className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
+        <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
+        <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
+      </div>
+      <div className="learn-streakcard-next">
+        <div className="learn-streakcard-nexthead">
+          {nextBadge
+            ? <span>Next badge · <b>{nextBadge.emoji} {nextBadge.name}</b></span>
+            : <span><b>Top badge reached</b></span>}
+          {nextBadge && <span className="learn-streakcard-left">{plural(nextBadgeIn, 'day')} to go</span>}
+        </div>
+        <div className="learn-streakcard-track" role="progressbar" aria-valuemin={0} aria-valuemax={7} aria-valuenow={step}
+             aria-label="Days towards the next badge">
+          {Array.from({ length: 7 }, (_, i) => <span key={i} className={i < step ? 'is-on' : ''} />)}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function ReportStrip({ report }) {
@@ -1091,18 +1121,7 @@ function ReportStrip({ report }) {
           )}
         </>
       ) : (
-        // The streak sits on the right, where the pace badge used to be.
-        <div className="learn-report-item learn-report-item--end">
-          <span>Streak</span>
-          <strong className={`learn-streak${streak.days > 0 ? ' is-alive' : ''}`}>
-            🔥 {plural(streak.days, 'day')}
-          </strong>
-          {/* The badge for every 7 days in a row, and the grace days they earned. */}
-          <small className="learn-streak-badge">
-            {streak.badge ? `${streak.badge.emoji} ${streak.badge.name}` : `${plural(streak.nextBadgeIn ?? 7, 'day')} to first badge`}
-            {streak.graceDays > 0 && <> · <Shield /> {streak.graceDays}</>}
-          </small>
-        </div>
+        <StreakCard streak={streak} />
       )}
       {done && <span className="learn-report-badge is-done">✓ Completed</span>}
 
