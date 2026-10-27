@@ -1081,20 +1081,15 @@ function ReportStrip({ report }) {
           )}
         </>
       ) : (
-        <div className="learn-report-item">
+        // The streak sits on the right, where the pace badge used to be.
+        <div className="learn-report-item learn-report-item--end">
           <span>Streak</span>
           <strong className={`learn-streak${streak.days > 0 ? ' is-alive' : ''}`}>
             {streak.days > 0 ? `🔥 ${streak.days} day${streak.days === 1 ? '' : 's'}` : '—'}
           </strong>
         </div>
       )}
-      <span className={`learn-report-badge${done ? ' is-done' : report.onTrack ? ' is-ok' : ' is-late'}`}>
-        {done
-          ? '✓ Completed'
-          : report.onTrack
-            ? 'On track'
-            : `${report.behindDays} day${report.behindDays > 1 ? 's' : ''} behind · est. ${report.estimatedDays} days`}
-      </span>
+      {done && <span className="learn-report-badge is-done">✓ Completed</span>}
 
       {/* The SAME "what's due today" line the reminder e-mail uses */}
       {!done && task && (

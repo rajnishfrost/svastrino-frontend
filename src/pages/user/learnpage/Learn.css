@@ -309,6 +309,7 @@
 .learn-report-item { display: flex; flex-direction: column; }
 .learn-report-item span { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted); }
 .learn-report-item strong { font-size: 16px; color: var(--color-heading); }
+.learn-report-item--end { margin-left: auto; align-items: flex-end; }
 .learn-report-badge {
   margin-left: auto;
   font-size: 12.5px;
@@ -316,8 +317,6 @@
   padding: 5px 12px;
   border-radius: var(--radius-pill);
 }
-.learn-report-badge.is-ok { background: #e9f7ef; color: #1b7a43; }
-.learn-report-badge.is-late { background: #fdf0e3; color: #9a5b16; }
 .learn-report-badge.is-done { background: var(--color-accent-soft); color: var(--color-accent-hover); }
 /* ---- Questions panel ---- */
 .learn-q {
@@ -780,6 +779,7 @@
     margin-bottom: 12px;
   }
   .learn-report-item strong { font-size: 15px; white-space: nowrap; }
+  .learn-report-item--end { grid-column: 2; justify-self: end; }
   /* Status as coloured text, not a pill, so it starts flush under "Day". */
   .learn-report-badge {
     grid-column: 1 / -1;
