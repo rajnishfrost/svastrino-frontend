@@ -1085,11 +1085,10 @@ function ReportStrip({ report }) {
         <div className="learn-report-item learn-report-item--end">
           <span>Streak</span>
           <strong className={`learn-streak${streak.days > 0 ? ' is-alive' : ''}`}>
-            {/* Out of the longest run the course allows: one step a day, so its
-                step count (the same targetDays the report uses). */}
-            {streak.days > 0 ? '🔥 ' : ''}{streak.days}
-            {report.targetDays > 0 && <small className="learn-streak-max"> / {report.targetDays} days</small>}
+            {streak.days > 0 ? `🔥 ${streak.days} day${streak.days === 1 ? '' : 's'}` : '—'}
           </strong>
+          {/* The longest run the course allows (server: streakMax). */}
+          {report.streakMax > 0 && <small className="learn-streak-max">Max {report.streakMax} days</small>}
         </div>
       )}
       {done && <span className="learn-report-badge is-done">✓ Completed</span>}
