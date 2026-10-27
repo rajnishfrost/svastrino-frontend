@@ -909,7 +909,9 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
   if (total === 0) return null
 
   let body
-  if (!session.videoDone) {
+  // A task already open (only in the server's open-all mode, before the video
+  // is watched) is shown rather than the "finish the video" note.
+  if (!session.videoDone && !q.current) {
     body = <p className="learn-q-msg">Finish watching the video (90%) to unlock Question 1 — it opens the next day.</p>
   } else if (q.sessionCompleted) {
     body = <p className="learn-q-msg learn-q-msg--done">✓ All {total} questions done. {session.completed ? 'The next video opens tomorrow.' : ''}</p>
