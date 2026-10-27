@@ -400,14 +400,31 @@ const PSY_LINE = {
   completed: { text: 'Psychometric test: done', cta: 'See your report →' },
 }
 
-function PsychometricLine() {
+/**
+ * `buttonClass`: the test's own card. Its main button becomes the next step
+ * (take / continue / see the report), so the strip above it carries no link.
+ */
+function PsychometricLine({ buttonClass }) {
   const { state, assessment } = usePsychometric('nirmaan')
-  if (state !== 'owned' || !assessment) return null
+  if (state !== 'owned' || !assessment) {
+    return buttonClass ? (
+      <div className="mt-4">
+        <Link to="/skill-build/psychometric-testing" className={buttonClass}>Go to your test →</Link>
+      </div>
+    ) : null
+  }
   const line = PSY_LINE[assessment.status] || PSY_LINE.not_started
   const reportUrl = assessment.status === 'completed' ? assessment.report?.url : null
   const done = assessment.status === 'submitted' || assessment.status === 'completed'
   const status = line.text.replace(/^Psychometric test:\s*/, '').replace(/^./, (c) => c.toUpperCase())
-  return (
+  const action = (className) => (reportUrl ? (
+    <a href={reportUrl} target="_blank" rel="noopener noreferrer" className={className}>
+      View your report →
+    </a>
+  ) : (
+    <Link to="/skill-build/psychometric-testing" className={className}>{line.cta}</Link>
+  ))
+  const strip = (
     <div className="mt-4 rounded-xl bg-nirmaan-green/[0.08] px-3.5 py-3 text-[13px]">
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-brand-navy">
@@ -418,17 +435,11 @@ function PsychometricLine() {
           {status}
         </span>
       </div>
-      {reportUrl ? (
-        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
-          View your report →
-        </a>
-      ) : line.cta ? (
-        <Link to="/skill-build/psychometric-testing" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
-          {line.cta}
-        </Link>
-      ) : null}
+      {!buttonClass && action('mt-2 inline-block font-semibold text-nirmaan-green hover:underline')}
     </div>
   )
+  if (!buttonClass) return strip
+  return <>{strip}<div className="mt-4">{action(buttonClass)}</div></>
 }
 
 /* ---------- Skill Build (courses) ---------- */
@@ -496,13 +507,14 @@ function SkillBuildPanel({ courses }) {
                   )}
                 </div>
                 {e.progress && e.progress.total > 0 && <Progress percent={e.progress.percent} bar={bar} />}
-                {e.id === psyCardId && <PsychometricLine />}
+                {e.id === psyCardId && (
+                  <PsychometricLine
+                    buttonClass={isTest ? `${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}` : undefined}
+                  />
+                )}
+                {!isTest && (
                 <div className="mt-4">
-                  {isTest ? (
-                    <Link to="/skill-build/psychometric-testing" className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
-                      Go to your test →
-                    </Link>
-                  ) : e.progress && e.progress.total > 0 ? (
+                  {e.progress && e.progress.total > 0 ? (
                     <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
                       {open
                         ? e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'
@@ -514,6 +526,7 @@ function SkillBuildPanel({ courses }) {
                     </Link>
                   )}
                 </div>
+                )}
               </div>
             )
           })
