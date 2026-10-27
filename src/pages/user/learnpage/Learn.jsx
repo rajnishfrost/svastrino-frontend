@@ -1093,9 +1093,9 @@ function StreakRing({ on }) {
 }
 
 /**
- * The streak card, built as an emblem around the badge: the grace days above
- * it, the badge name below, "Current streak" up the left side and the count
- * down the right. The ring round the badge is the seven days towards the next
+ * The streak card, built as an emblem around the badge: "Current streak"
+ * above it, the badge name below, the grace days up the left side and the
+ * count down the right. The ring round the badge is the seven days towards the next
  * one. Everything comes from the server's computeStreak, so the card cannot
  * disagree with the rules.
  */
@@ -1108,7 +1108,7 @@ function StreakCard({ streak }) {
         <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
         <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
       </span>
-      <span className="learn-streakcard-label">Current<br />streak</span>
+      <span className="learn-streakcard-label">Current streak</span>
       <div
         className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`}
         role="img"

@@ -518,8 +518,8 @@
   display: grid;
   grid-template-columns: auto auto auto;
   grid-template-areas:
-    ".     grace .    "
-    "label medal count"
+    ".     label .    "
+    "grace medal count"
     ".     name  .    ";
   align-items: center;
   justify-items: center;
@@ -545,19 +545,17 @@
   box-shadow: none;
   filter: grayscale(0.35);
 }
-/* The two sides read along the ring: the label upwards, the count downwards. */
-.learn-streakcard-label,
+/* The two sides read along the ring: the grace days upwards, the count downwards. */
+.learn-streakcard-grace,
 .learn-streakcard-count { writing-mode: vertical-rl; white-space: nowrap; }
 .learn-streakcard-label {
   grid-area: label;
-  transform: rotate(180deg);
   font-size: 10.5px;
   font-weight: 700;
-  line-height: 1.35;
   letter-spacing: 1.6px;
-  text-align: center;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 .learn-streakcard-count {
   grid-area: count;
@@ -585,7 +583,8 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 10px;
+  padding: 10px 3px;
+  transform: rotate(180deg);
   border-radius: 999px;
   background: #e9f5ee;
   color: #1f6b41;
@@ -594,7 +593,7 @@
 }
 .learn-streakcard-grace b { font-size: 13px; }
 .learn-streakcard-grace.is-none { background: var(--gray-100); color: var(--color-text-muted); }
-.learn-streakcard-shield { width: 15px; height: 15px; flex: none; }
+.learn-streakcard-shield { width: 15px; height: 15px; flex: none; transform: rotate(180deg); } /* upright again */
 /* Today's task and the note, beside the emblem. */
 .learn-report-body { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .learn-report-body .learn-report-task,
