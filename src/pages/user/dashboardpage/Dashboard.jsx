@@ -17,6 +17,9 @@ import { useKeyHold, useRevealFade } from '../../../common_component/Skeleton/us
  *   /dashboard/downloads    → videos saved for offline (the Downloads page, embedded)
  *   /dashboard/settings     → account + orders (the Settings page, embedded; its
  *                             own ?section=orders&order=ID keeps working inside)
+ * Only what the student has bought shows: Services once they hold a mentoring
+ * program, Skill-Build and Downloads once they hold a course (Downloads is part
+ * of the course), Settings always.
  * The tab lives in the URL, so a refresh, a shared link and the profile menu
  * all land on the same view. Bare /dashboard goes to Skill Build - the course
  * is what a signed-in student is here for most days.
@@ -161,10 +164,17 @@ export default function Dashboard() {
   // Nirmaan (a free trial included) or the psychometric test → Skill-Build;
   // a Svastrino program → Services; nothing yet → the default tab.
   // Enrollments arrive newest first. Wait for them rather than guess.
-  if (!TABS.some((t) => t.key === tab)) {
-    if (enrollments == null) return <SkeletonDashboard />
+  if (enrollments == null || mentoring == null) return <SkeletonDashboard />
+  const hasServices = mentoring.length > 0 || enrollments.some((e) => e.kind === 'mentoring')
+  const hasCourse = courses.length > 0
+  const tabs = TABS.filter((t) =>
+    t.key === 'settings'
+    || (t.key === 'services' && hasServices)
+    || ((t.key === 'skill-build' || t.key === 'downloads') && hasCourse))
+  if (!tabs.some((t) => t.key === tab)) {
     const latest = enrollments[0]
-    const pick = !latest ? DEFAULT_TAB : latest.kind === 'mentoring' ? 'services' : 'skill-build'
+    const wanted = !latest ? DEFAULT_TAB : latest.kind === 'mentoring' ? 'services' : 'skill-build'
+    const pick = tabs.some((t) => t.key === wanted) ? wanted : tabs[0].key
     return <Navigate to={`/dashboard/${pick}`} replace />
   }
 
@@ -199,15 +209,16 @@ export default function Dashboard() {
             column grows to the tab bar's full width and the cards run off the
             right edge of the screen. */}
         <div className="mt-5 grid grid-cols-1 gap-6 lg:mt-8 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-8">
-          {/* Below 900px the four tabs are one segmented bar — icon over label,
+          {/* Below 900px the tabs are one segmented bar — icon over label,
               every tab and the one you're on always in view. From 900px it is
               the sidebar. */}
           <aside className="min-w-0">
             <nav
-              className="grid grid-cols-4 gap-2 lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-1 lg:rounded-2xl lg:border lg:border-solid lg:border-brand-navy/10 lg:bg-white lg:p-2 lg:shadow-sm"
+              style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+              className="grid gap-2 lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-1 lg:rounded-2xl lg:border lg:border-solid lg:border-brand-navy/10 lg:bg-white lg:p-2 lg:shadow-sm"
               aria-label="Dashboard sections"
             >
-              {TABS.map((t) => (
+              {tabs.map((t) => (
                 <NavLink
                   key={t.key}
                   to={`/dashboard/${t.key}`}
@@ -467,7 +478,7 @@ function SkillBuildPanel({ courses }) {
                       <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy/[0.05] px-2.5 py-1">
                         <BookOpen className="size-3.5" aria-hidden />
                         {e.progress && e.progress.total > 0
-                          ? `${e.progress.completed}/${e.progress.total} lectures`
+                          ? `${e.progress.weeksDone ?? e.progress.completed}/${e.progress.weeks ?? e.progress.total} weeks`
                           : 'Skill-Build subscription'}
                       </span>
                       {e.expiresAt && (
