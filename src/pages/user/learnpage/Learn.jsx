@@ -1066,42 +1066,63 @@ function streakNote({ days, best, todayDone, brokenAfter }) {
 }
 
 /**
- * The streak card: the badge held, the count, a seven-step track towards the
- * next badge, and the grace days banked. Everything comes from the server's
- * computeStreak, so the card cannot disagree with the rules.
+ * Seven arcs around the medal, one per day towards the next badge, with even
+ * gaps between them. `on` of them are filled.
+ */
+function StreakRing({ on }) {
+  const SIZE = 84
+  const R = 38
+  const C = SIZE / 2
+  const GAP = 14 // degrees between arcs
+  const point = (deg) => {
+    const rad = ((deg - 90) * Math.PI) / 180
+    return `${(C + R * Math.cos(rad)).toFixed(2)} ${(C + R * Math.sin(rad)).toFixed(2)}`
+  }
+  return (
+    <svg className="learn-streakcard-ring" viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden>
+      {Array.from({ length: 7 }, (_, i) => {
+        const from = i * (360 / 7) + GAP / 2
+        const to = (i + 1) * (360 / 7) - GAP / 2
+        return (
+          <path key={i} d={`M ${point(from)} A ${R} ${R} 0 0 1 ${point(to)}`}
+                className={i < on ? 'is-on' : ''} />
+        )
+      })}
+    </svg>
+  )
+}
+
+/**
+ * The streak card: the badge held inside a ring of seven days towards the
+ * next one, its name under it, and beside it the count and the grace days
+ * banked. Everything comes from the server's computeStreak, so the card cannot
+ * disagree with the rules.
  */
 function StreakCard({ streak }) {
-  const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0, badgesTotal } = streak
+  const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0 } = streak
   const step = nextBadge ? 7 - nextBadgeIn : 7
   return (
     <div className="learn-streakcard">
-      <div className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`} aria-hidden>
-        {badge ? badge.emoji : '🔥'}
+      <div className="learn-streakcard-badge">
+        <div
+          className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`}
+          role="img"
+          aria-label={nextBadge ? `${step} of 7 days towards ${nextBadge.name}` : 'Top badge reached'}
+        >
+          <StreakRing on={step} />
+          <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
+        </div>
+        <span className="learn-streakcard-name">{badge ? badge.name : 'No badge yet'}</span>
       </div>
       <div className="learn-streakcard-main">
         <span className="learn-streakcard-label">Current streak</span>
         <strong className="learn-streakcard-count">
           {days} <small>{days === 1 ? 'day' : 'days'}</small>
         </strong>
-        <span className="learn-streakcard-rank">
-          {badge ? <>{badge.name} · Badge {badge.level}{badgesTotal ? ` of ${badgesTotal}` : ''}</> : 'No badge yet'}
+        <span className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
+          <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
+          <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
         </span>
-      </div>
-      <div className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
-        <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
-        <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
-      </div>
-      <div className="learn-streakcard-next">
-        <div className="learn-streakcard-nexthead">
-          {nextBadge
-            ? <span>Next badge · <b>{nextBadge.emoji} {nextBadge.name}</b></span>
-            : <span><b>Top badge reached</b></span>}
-          {nextBadge && <span className="learn-streakcard-left">{plural(nextBadgeIn, 'day')} to go</span>}
-        </div>
-        <div className="learn-streakcard-track" role="progressbar" aria-valuemin={0} aria-valuemax={7} aria-valuenow={step}
-             aria-label="Days towards the next badge">
-          {Array.from({ length: 7 }, (_, i) => <span key={i} className={i < step ? 'is-on' : ''} />)}
-        </div>
       </div>
     </div>
   )

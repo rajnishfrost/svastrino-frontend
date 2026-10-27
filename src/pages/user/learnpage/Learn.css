@@ -509,35 +509,38 @@
 .learn-resource-err { margin: 8px 0 0; font-size: 13px; color: #9a3412; }
 
 /* ---- Streak card ----
-   Medal (the badge held) · count and rank · grace days, with the seven-day
-   track to the next badge underneath. Warm amber for the streak itself, the
-   Nirmaan green for grace days and progress. */
+   The badge sits inside a ring of seven arcs (days towards the next badge),
+   its name under it; beside it the count and the grace days. Warm amber for
+   the streak, the Nirmaan green for grace days. */
 .learn-streakcard {
   flex-basis: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas: "medal main grace" "next next next";
+  display: flex;
   align-items: center;
-  gap: 14px 16px;
+  gap: 18px;
 }
-.learn-streakcard-medal {
-  grid-area: medal;
+.learn-streakcard-badge { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; }
+.learn-streakcard-medal { position: relative; width: 84px; height: 84px; display: grid; place-items: center; }
+.learn-streakcard-ring { position: absolute; inset: 0; width: 100%; height: 100%; }
+.learn-streakcard-ring path { fill: none; stroke: var(--gray-200); stroke-width: 6; stroke-linecap: round; }
+.learn-streakcard-ring path.is-on { stroke: #e8962f; }
+.learn-streakcard-emoji {
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   font-size: 30px;
   line-height: 1;
   background: radial-gradient(circle at 30% 25%, #fff7e6, #fde3b4 70%);
-  box-shadow: 0 0 0 3px #fff, 0 0 0 5px #f2c56b, 0 8px 18px -8px rgba(154, 91, 22, 0.55);
+  box-shadow: 0 6px 14px -8px rgba(154, 91, 22, 0.6);
 }
-.learn-streakcard-medal.is-empty {
+.learn-streakcard-medal.is-empty .learn-streakcard-emoji {
   background: var(--gray-50, #f6f7f9);
-  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--gray-200);
+  box-shadow: none;
   filter: grayscale(0.35);
 }
-.learn-streakcard-main { grid-area: main; display: flex; flex-direction: column; min-width: 0; }
+.learn-streakcard-name { font-size: 13px; font-weight: 700; color: var(--color-heading); white-space: nowrap; }
+.learn-streakcard-main { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
 .learn-streakcard-label {
   font-size: 11px;
   font-weight: 600;
@@ -553,36 +556,21 @@
   font-variant-numeric: tabular-nums;
 }
 .learn-streakcard-count small { font-size: 14px; font-weight: 600; color: var(--color-text-muted); }
-.learn-streakcard-rank { font-size: 13px; font-weight: 600; color: var(--color-heading); }
 .learn-streakcard-grace {
-  grid-area: grace;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: #e9f5ee;
   color: #1f6b41;
-  font-size: 13px;
+  font-size: 12.5px;
   white-space: nowrap;
 }
-.learn-streakcard-grace b { font-size: 15px; }
+.learn-streakcard-grace b { font-size: 14px; }
 .learn-streakcard-grace.is-none { background: var(--gray-100); color: var(--color-text-muted); }
-.learn-streakcard-shield { width: 18px; height: 18px; flex: none; }
-.learn-streakcard-next { grid-area: next; }
-.learn-streakcard-nexthead {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 7px;
-  font-size: 12.5px;
-  color: var(--color-text-muted);
-}
-.learn-streakcard-nexthead b { color: var(--color-heading); font-weight: 600; }
-.learn-streakcard-left { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.learn-streakcard-track { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-.learn-streakcard-track span { height: 8px; border-radius: 999px; background: var(--gray-200); }
-.learn-streakcard-track span.is-on { background: linear-gradient(90deg, #f2a93b, #d9822b); }
+.learn-streakcard-shield { width: 16px; height: 16px; flex: none; }
 .learn-report-streak {
   flex-basis: 100%;
   margin: 4px 0 0;
@@ -867,18 +855,8 @@
     line-height: 1.45;
   }
   .learn-report-streak { grid-column: 1 / -1; margin: 0; font-size: 12.5px; }
-  /* Phones: grace days move under the count, so the rank keeps one line. */
-  .learn-streakcard {
-    grid-column: 1 / -1;
-    grid-template-columns: auto 1fr;
-    grid-template-areas: "medal main" "grace grace" "next next";
-    gap: 12px 14px;
-  }
-  .learn-streakcard-grace { justify-self: start; }
-  .learn-streakcard-rank { white-space: nowrap; }
-  .learn-streakcard-medal { width: 50px; height: 50px; font-size: 25px; }
+  .learn-streakcard { grid-column: 1 / -1; gap: 16px; }
   .learn-streakcard-count { font-size: 22px; }
-  .learn-streakcard-grace { padding: 6px 10px; font-size: 12px; }
 
   /* Psychometric report card: smaller type and button on a phone. */
   .learn-psyready { padding: 14px 16px; gap: 12px; border-radius: 16px; border-left-width: 4px; margin-bottom: 12px; }
