@@ -7,6 +7,7 @@ import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } 
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
 import { openResourceWindow, writeWeekResource, closeResourceWindow } from '../../../utils/weekResource.js'
 import { LIMITS, MINIMUMS } from '../../../utils/validate.js'
+import { ShieldCheck } from 'lucide-react'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
@@ -1050,6 +1051,9 @@ const STREAK_REWARD = 'Rewards are waiting for the students who keep it going.'
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
+/** A grace day's shield: drawn, because the 🛡️ emoji renders squashed at text size. */
+const Shield = () => <ShieldCheck className="learn-shield" aria-hidden strokeWidth={2.25} />
+
 /**
  * The streak line, written for the situation the student is actually in. The
  * rules (a badge and a grace day every 7 days in a row; a miss with no grace
@@ -1059,18 +1063,18 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 function streakNote({ days, best, todayDone, brokenAfter, graceDays = 0, badge, nextBadgeIn = 7 }) {
   const next = `${plural(nextBadgeIn, 'more day')} to ${badge ? 'your next badge' : 'your first badge'}`
   const grace = graceDays > 0
-    ? `You have 🛡️ ${plural(graceDays, 'grace day')}: miss a day and it is used up instead of your streak.`
-    : 'Every 7 days in a row earns a badge and a 🛡️ grace day. Miss a day without one and your streak and badges go back to zero.'
+    ? <>You have <Shield /> {plural(graceDays, 'grace day')}: miss a day and it is used up instead of your streak.</>
+    : <>Every 7 days in a row earns a badge and a <Shield /> grace day. Miss a day without one and your streak and badges go back to zero.</>
   if (days > 0 && !todayDone) {
-    return `🔥 ${plural(days, 'day')} in a row — today's step makes it ${days + 1}. ${next}. ${grace} ${STREAK_REWARD}`
+    return <>🔥 {plural(days, 'day')} in a row — today's step makes it {days + 1}. {next}. {grace} {STREAK_REWARD}</>
   }
   if (days > 0) {
-    return `🔥 ${plural(days, 'day')} in a row, and today is done. ${next}. ${grace} ${STREAK_REWARD}`
+    return <>🔥 {plural(days, 'day')} in a row, and today is done. {next}. {grace} {STREAK_REWARD}</>
   }
   if (brokenAfter) {
     return `A missed day took your streak and badges back to zero${best > 1 ? ` — your best run was ${best} days` : ''}. Take today's step and start earning them again. ${STREAK_REWARD}`
   }
-  return `Take a step every day: 7 days in a row earns your first badge and a 🛡️ grace day. Miss a day without one and it goes back to zero. ${STREAK_REWARD}`
+  return <>Take a step every day: 7 days in a row earns your first badge and a <Shield /> grace day. Miss a day without one and it goes back to zero. {STREAK_REWARD}</>
 }
 
 function ReportStrip({ report }) {
@@ -1096,7 +1100,7 @@ function ReportStrip({ report }) {
           {/* The badge for every 7 days in a row, and the grace days they earned. */}
           <small className="learn-streak-badge">
             {streak.badge ? `${streak.badge.emoji} ${streak.badge.name}` : `${plural(streak.nextBadgeIn ?? 7, 'day')} to first badge`}
-            {streak.graceDays > 0 && ` · 🛡️ ${streak.graceDays}`}
+            {streak.graceDays > 0 && <> · <Shield /> {streak.graceDays}</>}
           </small>
         </div>
       )}
