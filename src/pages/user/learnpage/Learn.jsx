@@ -1093,9 +1093,10 @@ function StreakRing({ on }) {
 }
 
 /**
- * The streak card: the badge held inside a ring of seven days towards the
- * next one, its name under it, and beside it the count and the grace days
- * banked. Everything comes from the server's computeStreak, so the card cannot
+ * The streak card, built as an emblem around the badge: the grace days above
+ * it, the badge name below, "Current streak" up the left side and the count
+ * down the right. The ring round the badge is the seven days towards the next
+ * one. Everything comes from the server's computeStreak, so the card cannot
  * disagree with the rules.
  */
 function StreakCard({ streak }) {
@@ -1103,27 +1104,23 @@ function StreakCard({ streak }) {
   const step = nextBadge ? 7 - nextBadgeIn : 7
   return (
     <div className="learn-streakcard">
-      <div className="learn-streakcard-badge">
-        <div
-          className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`}
-          role="img"
-          aria-label={nextBadge ? `${step} of 7 days towards ${nextBadge.name}` : 'Top badge reached'}
-        >
-          <StreakRing on={step} />
-          <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
-        </div>
-        <span className="learn-streakcard-name">{badge ? badge.name : 'No badge yet'}</span>
+      <span className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
+        <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
+        <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
+      </span>
+      <span className="learn-streakcard-label">Current<br />streak</span>
+      <div
+        className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`}
+        role="img"
+        aria-label={nextBadge ? `${step} of 7 days towards ${nextBadge.name}` : 'Top badge reached'}
+      >
+        <StreakRing on={step} />
+        <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
       </div>
-      <div className="learn-streakcard-main">
-        <span className="learn-streakcard-label">Current streak</span>
-        <strong className="learn-streakcard-count">
-          {days} <small>{days === 1 ? 'day' : 'days'}</small>
-        </strong>
-        <span className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
-          <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
-          <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
-        </span>
-      </div>
+      <strong className="learn-streakcard-count">
+        {days}<small>{days === 1 ? 'day' : 'days'}</small>
+      </strong>
+      <span className="learn-streakcard-name">{badge ? badge.name : 'No badge yet'}</span>
     </div>
   )
 }
@@ -1146,14 +1143,19 @@ function ReportStrip({ report }) {
       )}
       {done && <span className="learn-report-badge is-done">✓ Completed</span>}
 
-      {/* The SAME "what's due today" line the reminder e-mail uses */}
-      {!done && task && (
-        <p className="learn-report-task">
-          🎯 {task.label}
-          {task.type === 'waiting' && task.unlockAt ? ` — opens ${fmtIst(task.unlockAt)}` : ''}
-        </p>
+      {/* Beside the emblem on a wide screen, under it on a phone. */}
+      {!done && (
+        <div className="learn-report-body">
+          {/* The SAME "what's due today" line the reminder e-mail uses */}
+          {task && (
+            <p className="learn-report-task">
+              🎯 {task.label}
+              {task.type === 'waiting' && task.unlockAt ? ` — opens ${fmtIst(task.unlockAt)}` : ''}
+            </p>
+          )}
+          <p className="learn-report-streak">{streakNote(streak)}</p>
+        </div>
       )}
-      {!done && <p className="learn-report-streak">{streakNote(streak)}</p>}
     </div>
   )
 }

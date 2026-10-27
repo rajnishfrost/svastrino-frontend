@@ -509,27 +509,33 @@
 .learn-resource-err { margin: 8px 0 0; font-size: 13px; color: #9a3412; }
 
 /* ---- Streak card ----
-   The badge sits inside a ring of seven arcs (days towards the next badge),
-   its name under it; beside it the count and the grace days. Warm amber for
-   the streak, the Nirmaan green for grace days. */
+   An emblem round the badge: grace days on top, the badge name underneath,
+   "Current streak" up the left and the count down the right. The ring round
+   the badge is the seven days towards the next one. Warm amber for the streak,
+   the Nirmaan green for grace days. */
 .learn-streakcard {
-  flex-basis: 100%;
-  display: flex;
-  align-items: stretch;
-  gap: 18px;
+  flex: none;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-areas:
+    ".     grace .    "
+    "label medal count"
+    ".     name  .    ";
+  align-items: center;
+  justify-items: center;
+  gap: 8px 10px;
 }
-.learn-streakcard-badge { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; }
-.learn-streakcard-medal { position: relative; width: 84px; height: 84px; display: grid; place-items: center; }
+.learn-streakcard-medal { grid-area: medal; position: relative; width: 92px; height: 92px; display: grid; place-items: center; }
 .learn-streakcard-ring { position: absolute; inset: 0; width: 100%; height: 100%; }
-.learn-streakcard-ring path { fill: none; stroke: var(--gray-200); stroke-width: 6; stroke-linecap: round; }
+.learn-streakcard-ring path { fill: none; stroke: var(--gray-200); stroke-width: 5.5; stroke-linecap: round; }
 .learn-streakcard-ring path.is-on { stroke: #e8962f; }
 .learn-streakcard-emoji {
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  font-size: 30px;
+  font-size: 32px;
   line-height: 1;
   background: radial-gradient(circle at 30% 25%, #fff7e6, #fde3b4 70%);
   box-shadow: 0 6px 14px -8px rgba(154, 91, 22, 0.6);
@@ -539,47 +545,60 @@
   box-shadow: none;
   filter: grayscale(0.35);
 }
-.learn-streakcard-name { font-size: 13px; font-weight: 700; color: var(--color-heading); white-space: nowrap; }
-/* Beside the badge and as tall as it: the label level with the top of the
-   ring, the grace days level with the badge name, all right-aligned. */
-.learn-streakcard-main {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  text-align: right;
-  min-width: 0;
-}
-.learn-streakcard-label { line-height: 1; }
+/* The two sides read along the ring: the label upwards, the count downwards. */
+.learn-streakcard-label,
+.learn-streakcard-count { writing-mode: vertical-rl; white-space: nowrap; }
 .learn-streakcard-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  grid-area: label;
+  transform: rotate(180deg);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 1.6px;
+  text-align: center;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 .learn-streakcard-count {
-  font-size: 26px;
+  grid-area: count;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 24px;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1;
   color: #9a5b16;
   font-variant-numeric: tabular-nums;
+  text-combine-upright: all; /* "12" stays side by side, upright */
 }
-.learn-streakcard-count small { font-size: 14px; font-weight: 600; color: var(--color-text-muted); }
+.learn-streakcard-count small {
+  text-combine-upright: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.learn-streakcard-name { grid-area: name; font-size: 13.5px; font-weight: 700; color: var(--color-heading); white-space: nowrap; }
 .learn-streakcard-grace {
+  grid-area: grace;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: #e9f5ee;
   color: #1f6b41;
-  font-size: 12.5px;
+  font-size: 12px;
   white-space: nowrap;
 }
-.learn-streakcard-grace b { font-size: 14px; }
+.learn-streakcard-grace b { font-size: 13px; }
 .learn-streakcard-grace.is-none { background: var(--gray-100); color: var(--color-text-muted); }
-.learn-streakcard-shield { width: 16px; height: 16px; flex: none; }
+.learn-streakcard-shield { width: 15px; height: 15px; flex: none; }
+/* Today's task and the note, beside the emblem. */
+.learn-report-body { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.learn-report-body .learn-report-task,
+.learn-report-body .learn-report-streak { margin: 0; }
 .learn-report-streak {
   flex-basis: 100%;
   margin: 4px 0 0;
@@ -864,8 +883,8 @@
     line-height: 1.45;
   }
   .learn-report-streak { grid-column: 1 / -1; margin: 0; font-size: 12.5px; }
-  .learn-streakcard { grid-column: 1 / -1; gap: 16px; }
-  .learn-streakcard-count { font-size: 22px; }
+  .learn-streakcard { grid-column: 1 / -1; justify-self: center; }
+  .learn-report-body { grid-column: 1 / -1; }
 
   /* Psychometric report card: smaller type and button on a phone. */
   .learn-psyready { padding: 14px 16px; gap: 12px; border-radius: 16px; border-left-width: 4px; margin-bottom: 12px; }
