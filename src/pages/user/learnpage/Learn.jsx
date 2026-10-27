@@ -1066,61 +1066,67 @@ function streakNote({ days, best, todayDone, brokenAfter }) {
 }
 
 /**
- * Seven arcs around the medal, one per day towards the next badge, with even
- * gaps between them. `on` of them are filled.
- */
-function StreakRing({ on }) {
-  const SIZE = 84
-  const R = 38
-  const C = SIZE / 2
-  const GAP = 14 // degrees between arcs
-  const point = (deg) => {
-    const rad = ((deg - 90) * Math.PI) / 180
-    return `${(C + R * Math.cos(rad)).toFixed(2)} ${(C + R * Math.sin(rad)).toFixed(2)}`
-  }
-  return (
-    <svg className="learn-streakcard-ring" viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden>
-      {Array.from({ length: 7 }, (_, i) => {
-        const from = i * (360 / 7) + GAP / 2
-        const to = (i + 1) * (360 / 7) - GAP / 2
-        return (
-          <path key={i} d={`M ${point(from)} A ${R} ${R} 0 0 1 ${point(to)}`}
-                className={i < on ? 'is-on' : ''} />
-        )
-      })}
-    </svg>
-  )
-}
-
-/**
- * The streak card, built as an emblem around the badge: "Current streak"
- * above it, the badge name below, the grace days up the left side and the
- * count down the right. The ring round the badge is the seven days towards the next
- * one. Everything comes from the server's computeStreak, so the card cannot
+ * The streak emblem, drawn as one SVG. Round the badge: seven arcs with even
+ * gaps, one per day towards the next badge. Round those, four labels on the
+ * circle, a quarter each: "Current streak" over the top, the count down the
+ * right, the badge name along the bottom and the grace days up the left.
+ * Everything comes from the server's computeStreak, so the emblem cannot
  * disagree with the rules.
  */
+const EMBLEM = 150
+const RING_R = 44
+const TEXT_R = 54
+
+// Angles in degrees, clockwise from the top.
+const polar = (r, deg) => {
+  const rad = ((deg - 90) * Math.PI) / 180
+  return `${(EMBLEM / 2 + r * Math.cos(rad)).toFixed(2)} ${(EMBLEM / 2 + r * Math.sin(rad)).toFixed(2)}`
+}
+// Clockwise arcs carry text upright over the top and along the sides; the
+// bottom runs the other way round (and a little further out) so its letters
+// stay the right way up.
+const arc = (r, from, to) => `M ${polar(r, from)} A ${r} ${r} 0 0 1 ${polar(r, to)}`
+const arcBack = (r, from, to) => `M ${polar(r, from)} A ${r} ${r} 0 0 0 ${polar(r, to)}`
+
 function StreakCard({ streak }) {
   const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0 } = streak
   const step = nextBadge ? 7 - nextBadgeIn : 7
+  const GAP = 14 // degrees between the day arcs
+  const paths = {
+    top: arc(TEXT_R, 305, 415),
+    right: arc(TEXT_R, 55, 125),
+    bottom: arcBack(TEXT_R + 8, 235, 125),
+    left: arc(TEXT_R, 235, 305),
+  }
+  const label = (key, className, children) => (
+    <text className={className}>
+      <textPath href={`#streak-${key}`} startOffset="50%" textAnchor="middle">{children}</textPath>
+    </text>
+  )
   return (
-    <div className="learn-streakcard">
-      <span className={`learn-streakcard-grace${graceDays ? '' : ' is-none'}`} title="A grace day keeps your streak when you miss a day">
-        <ShieldCheck className="learn-streakcard-shield" aria-hidden strokeWidth={2.25} />
-        <span><b>{graceDays}</b> grace {graceDays === 1 ? 'day' : 'days'}</span>
-      </span>
-      <span className="learn-streakcard-label">Current streak</span>
-      <div
-        className={`learn-streakcard-medal${badge ? '' : ' is-empty'}`}
-        role="img"
-        aria-label={nextBadge ? `${step} of 7 days towards ${nextBadge.name}` : 'Top badge reached'}
-      >
-        <StreakRing on={step} />
-        <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
-      </div>
-      <strong className="learn-streakcard-count">
-        {days}<small>{days === 1 ? 'day' : 'days'}</small>
-      </strong>
-      <span className="learn-streakcard-name">{badge ? badge.name : 'No badge yet'}</span>
+    <div
+      className={`learn-streakcard${badge ? '' : ' is-empty'}`}
+      role="img"
+      aria-label={`Current streak ${days} ${days === 1 ? 'day' : 'days'}. ${badge ? `Badge: ${badge.name}.` : 'No badge yet.'} ${graceDays} grace ${graceDays === 1 ? 'day' : 'days'}.${nextBadge ? ` ${step} of 7 days towards ${nextBadge.name}.` : ''}`}
+    >
+      <svg viewBox={`0 0 ${EMBLEM} ${EMBLEM}`} aria-hidden>
+        <defs>
+          {Object.entries(paths).map(([k, d]) => <path key={k} id={`streak-${k}`} d={d} />)}
+        </defs>
+        {Array.from({ length: 7 }, (_, i) => (
+          <path key={i} className={`learn-streakcard-day${i < step ? ' is-on' : ''}`}
+                d={arc(RING_R, i * (360 / 7) + GAP / 2, (i + 1) * (360 / 7) - GAP / 2)} />
+        ))}
+        {label('top', 'learn-streakcard-label', 'Current streak')}
+        {label('right', 'learn-streakcard-count', <>
+          <tspan className="learn-streakcard-num">{days}</tspan> {days === 1 ? 'day' : 'days'}
+        </>)}
+        {label('bottom', 'learn-streakcard-name', badge ? badge.name : 'No badge yet')}
+        {label('left', `learn-streakcard-grace${graceDays ? '' : ' is-none'}`, <>
+          <tspan className="learn-streakcard-num">{graceDays}</tspan> grace {graceDays === 1 ? 'day' : 'days'}
+        </>)}
+      </svg>
+      <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
     </div>
   )
 }
