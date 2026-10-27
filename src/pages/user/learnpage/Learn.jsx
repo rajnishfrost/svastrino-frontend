@@ -1090,7 +1090,9 @@ const arcBack = (r, from, to) => `M ${polar(r, from)} A ${r} ${r} 0 0 0 ${polar(
 
 function StreakCard({ streak }) {
   const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0 } = streak
-  const step = nextBadge ? 7 - nextBadgeIn : 7
+  // A badge just earned shows the ring full until the next step, rather than
+  // an empty ring on the very day it was won.
+  const step = !nextBadge || (days > 0 && nextBadgeIn === 7) ? 7 : 7 - nextBadgeIn
   const GAP = 14 // degrees between the day arcs
   const paths = {
     top: arc(TEXT_R, 305, 415),
