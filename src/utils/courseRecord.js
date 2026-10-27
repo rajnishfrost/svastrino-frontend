@@ -94,8 +94,9 @@ function sessionHtml(s) {
 function recordHtml(record, student) {
   const finished = !!record.completedAt
   const sessions = record.sessions || []
-  const sessionsTotal = record.sessionsTotal ?? sessions.length
-  const sessionsDone = record.sessionsCompleted ?? sessions.filter((s) => s.completedAt).length
+  // Counted in weeks: the introduction is a session, not one of the weeks.
+  const weeksTotal = record.weeksTotal ?? record.sessionsTotal ?? sessions.length
+  const weeksDone = record.weeksCompleted ?? record.sessionsCompleted ?? sessions.filter((s) => s.completedAt).length
 
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
@@ -194,7 +195,7 @@ function recordHtml(record, student) {
       ${fact('Started on', record.startedAt ? fmtDate(record.startedAt) : 'Not started')}
       ${fact('Completed on', finished ? fmtDate(record.completedAt) : 'Not completed')}
       ${fact('Days taken', record.daysTaken != null ? `${record.daysTaken} day${record.daysTaken === 1 ? '' : 's'}` : '—')}
-      ${fact('Sessions completed', `${sessionsDone} of ${sessionsTotal}`)}
+      ${fact('Weeks completed', `${weeksDone} of ${weeksTotal}`)}
       ${fact('Course access ended on', fmtDate(record.expiresAt))}
     </div>
 

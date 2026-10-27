@@ -569,7 +569,7 @@ export default function Learn() {
           <p className="learn-eyebrow">Skill Build</p>
           <h1>{course.skillBuild.name}</h1>
           <p className="learn-start-sub">
-            {course.packageName} plan · {course.sessions.length} sessions. One video opens each week,
+            {course.packageName} plan · {course.sessions.filter((s) => s.order > 0).length} weeks. One video opens each week,
             with 6 short questions that unlock one per day.
           </p>
           <p className="learn-start-motiv">
@@ -609,7 +609,9 @@ export default function Learn() {
     )
   }
 
-  const doneCount = course.sessions.filter((s) => s.completed).length
+  // Counted in weeks: the introduction (order 0) is a session, not a week.
+  const weeks = course.sessions.filter((s) => s.order > 0)
+  const doneCount = weeks.filter((s) => s.completed).length
 
   return (
     <section className="section">
@@ -710,7 +712,7 @@ export default function Learn() {
         <nav className="learn-weeks" aria-label="Weeks">
           <div className="learn-weeks-head">
             <span>Your weeks</span>
-            <em>{doneCount}/{course.sessions.length} done</em>
+            <em>{doneCount}/{weeks.length} done</em>
           </div>
           <div className="learn-weeks-row" ref={stripRef}>
             {course.sessions.map((s) => (
@@ -734,7 +736,7 @@ export default function Learn() {
           <aside className="learn-sidebar" id="learn-all-weeks">
             <div className="learn-sidebar-head">
               <h3>All weeks</h3>
-              <span>{doneCount}/{course.sessions.length} done</span>
+              <span>{doneCount}/{weeks.length} done</span>
             </div>
             <ol className="learn-list">
               {course.sessions.map((s) => (

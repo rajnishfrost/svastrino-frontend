@@ -68,6 +68,9 @@ export default function CourseExpired({ course, user, slug }) {
   const finished = record
     ? !!record.completedAt
     : sessionsTotal > 0 && sessionsDone === sessionsTotal
+  // What the student reads: weeks, so the introduction is not counted.
+  const weeksDone = record?.weeksCompleted ?? progress.weeksDone ?? sessionsDone
+  const weeksTotal = record?.weeksTotal ?? progress.weeks ?? sessionsTotal
 
   const download = async () => {
     setNote('')
@@ -106,7 +109,7 @@ export default function CourseExpired({ course, user, slug }) {
             <h1>Your free week with {courseName} is over</h1>
             <p className="learn-exp-lead">
               The free trial runs for one week, so the videos and tasks are now closed.
-              {sessionsTotal > 0 && ` You finished ${sessionsDone} of ${sessionsTotal} sessions.`}
+              {weeksTotal > 0 && ` You finished ${weeksDone} of ${weeksTotal} weeks.`}
             </p>
             <p className="learn-exp-lead">
               Everything you wrote is saved. Pick a package and you carry on from Week 2, with the
@@ -127,7 +130,7 @@ export default function CourseExpired({ course, user, slug }) {
             <p className="learn-exp-lead">
               A course stays open for one year from the day you enrol. That year is now over, so the
               videos and the tasks you had left are closed.
-              {sessionsTotal > 0 && ` You finished ${sessionsDone} of ${sessionsTotal} sessions.`}
+              {weeksTotal > 0 && ` You finished ${weeksDone} of ${weeksTotal} weeks.`}
             </p>
             <p className="learn-exp-lead">
               If something got in the way and you would like more time, tell us what happened.
