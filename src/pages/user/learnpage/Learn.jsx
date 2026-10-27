@@ -609,7 +609,6 @@ export default function Learn() {
     )
   }
 
-  const { progress } = course
   const doneCount = course.sessions.filter((s) => s.completed).length
 
   return (
@@ -640,13 +639,6 @@ export default function Learn() {
                 <h1>{course.skillBuild.name}</h1>
               </>
             )}
-          </div>
-          <div className="learn-progress">
-            <div className="learn-progress-top">
-              <span>{doneCount} of {course.sessions.length} weeks done</span>
-              <strong>{progress.percent}%</strong>
-            </div>
-            <div className="learn-progress-track"><span style={{ width: `${Math.max(progress.percent, progress.percent > 0 ? 3 : 0)}%` }} /></div>
           </div>
         </header>
 
@@ -1077,10 +1069,6 @@ function ReportStrip({ report }) {
   const streak = report.streak || { days: 0, best: 0, todayDone: false, brokenAfter: false }
   return (
     <div className="learn-report">
-      <div className="learn-report-item">
-        <span>Day</span>
-        <strong>{report.daysElapsed} of {report.targetDays}</strong>
-      </div>
       {done ? (
         <>
           <div className="learn-report-item"><span>Completed in</span><strong>{report.actualDays} days</strong></div>
