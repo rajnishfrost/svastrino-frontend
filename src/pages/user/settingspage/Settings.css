@@ -38,7 +38,7 @@
 .settings-avatar {
   width: 60px;
   height: 60px;
-  border-radius: var(--radius); /* square profile photo (lightly rounded), no frame */
+  border-radius: 50%; /* round profile photo, no frame */
   flex: none;
   object-fit: cover;
   display: block;
@@ -62,7 +62,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: var(--radius);
+  border-radius: 50%;
   flex: none;
   line-height: 0;
 }
@@ -73,8 +73,8 @@
 .settings-avatar-edit:focus-visible .settings-avatar { filter: brightness(0.6); }
 .settings-avatar-cam {
   position: absolute;
-  right: -4px;
-  bottom: -4px;
+  right: -2px;
+  bottom: -2px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -119,7 +119,7 @@
   max-width: 100%;
   aspect-ratio: 1 / 1;
   height: auto;
-  border-radius: var(--radius);
+  border-radius: 50%; /* round, so the crop shows what the round avatar will */
   border: 1px solid var(--gray-200);
   background: var(--gray-100);
   touch-action: none; /* the canvas owns drag gestures */

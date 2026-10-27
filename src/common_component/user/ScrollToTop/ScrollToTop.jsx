@@ -148,6 +148,7 @@ export default function ScrollToTop() {
   const firstKey = useRef(key)
   const moved = useRef(false)
   if (key !== firstKey.current) moved.current = true
+  const lastLoc = useRef(null)
 
   // We restore positions ourselves; the browser's own attempt (on a page that
   // is still loading) would only fight it.
@@ -198,6 +199,15 @@ export default function ScrollToTop() {
   }, [navigate])
 
   useEffect(() => {
+    // A page noting a choice in its own address (the booking wizard writes the
+    // picked date and time as ?date=&start=) is not a new page: stay put.
+    const prev = lastLoc.current
+    lastLoc.current = { pathname, hash }
+    if (navType === 'REPLACE' && prev && prev.pathname === pathname && prev.hash === hash) {
+      savePos(key, window.scrollY)
+      return
+    }
+
     // Back / Forward to a page we have been on: exactly where the visitor was.
     // (Not on the first load — an outside link to a #section still glides.)
     if (navType === 'POP' && moved.current) {

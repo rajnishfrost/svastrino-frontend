@@ -307,7 +307,7 @@
 .nav-avatar-initial {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-sm); /* square avatar (no frame) */
+  border-radius: 50%; /* round avatar (no frame) */
   flex: none;
   transition: box-shadow var(--transition-fast);
 }

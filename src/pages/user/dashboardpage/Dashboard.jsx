@@ -17,6 +17,9 @@ import { useKeyHold, useRevealFade } from '../../../common_component/Skeleton/us
  *   /dashboard/downloads    → videos saved for offline (the Downloads page, embedded)
  *   /dashboard/settings     → account + orders (the Settings page, embedded; its
  *                             own ?section=orders&order=ID keeps working inside)
+ * Only what the student has bought shows: Services once they hold a mentoring
+ * program, Skill-Build and Downloads once they hold a course (Downloads is part
+ * of the course), Settings always.
  * The tab lives in the URL, so a refresh, a shared link and the profile menu
  * all land on the same view. Bare /dashboard goes to Skill Build - the course
  * is what a signed-in student is here for most days.
@@ -161,10 +164,17 @@ export default function Dashboard() {
   // Nirmaan (a free trial included) or the psychometric test → Skill-Build;
   // a Svastrino program → Services; nothing yet → the default tab.
   // Enrollments arrive newest first. Wait for them rather than guess.
-  if (!TABS.some((t) => t.key === tab)) {
-    if (enrollments == null) return <SkeletonDashboard />
+  if (enrollments == null || mentoring == null) return <SkeletonDashboard />
+  const hasServices = mentoring.length > 0 || enrollments.some((e) => e.kind === 'mentoring')
+  const hasCourse = courses.length > 0
+  const tabs = TABS.filter((t) =>
+    t.key === 'settings'
+    || (t.key === 'services' && hasServices)
+    || ((t.key === 'skill-build' || t.key === 'downloads') && hasCourse))
+  if (!tabs.some((t) => t.key === tab)) {
     const latest = enrollments[0]
-    const pick = !latest ? DEFAULT_TAB : latest.kind === 'mentoring' ? 'services' : 'skill-build'
+    const wanted = !latest ? DEFAULT_TAB : latest.kind === 'mentoring' ? 'services' : 'skill-build'
+    const pick = tabs.some((t) => t.key === wanted) ? wanted : tabs[0].key
     return <Navigate to={`/dashboard/${pick}`} replace />
   }
 
@@ -199,15 +209,16 @@ export default function Dashboard() {
             column grows to the tab bar's full width and the cards run off the
             right edge of the screen. */}
         <div className="mt-5 grid grid-cols-1 gap-6 lg:mt-8 lg:grid-cols-[224px_minmax(0,1fr)] lg:gap-8">
-          {/* Below 900px the four tabs are one segmented bar — icon over label,
+          {/* Below 900px the tabs are one segmented bar — icon over label,
               every tab and the one you're on always in view. From 900px it is
               the sidebar. */}
           <aside className="min-w-0">
             <nav
-              className="grid grid-cols-4 gap-2 lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-1 lg:rounded-2xl lg:border lg:border-solid lg:border-brand-navy/10 lg:bg-white lg:p-2 lg:shadow-sm"
+              style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+              className="grid gap-2 lg:sticky lg:top-24 lg:flex lg:flex-col lg:gap-1 lg:rounded-2xl lg:border lg:border-solid lg:border-brand-navy/10 lg:bg-white lg:p-2 lg:shadow-sm"
               aria-label="Dashboard sections"
             >
-              {TABS.map((t) => (
+              {tabs.map((t) => (
                 <NavLink
                   key={t.key}
                   to={`/dashboard/${t.key}`}
@@ -245,7 +256,8 @@ export default function Dashboard() {
 
 /** What a session's own actions are: book the next one, or move a booked one. */
 function SessionAction({ p, s }) {
-  if (!s.startAt && s.sessionNumber === p.sessionsBooked + 1) {
+  // The next session opens once the one before it is marked completed.
+  if (!s.startAt && s.sessionNumber === p.sessionsBooked + 1 && p.canBookNext !== false) {
     return <Link to={`/book-online?program=${p.sku}`} className={ACTION}>Book →</Link>
   }
   if (canReschedule(s)) {
@@ -358,13 +370,17 @@ function ServicesPanel({ mentoring }) {
                 </table>
               </div>
 
-              {p.sessionsRemaining > 0 && (
+              {p.sessionsRemaining > 0 && (p.canBookNext !== false ? (
                 <div className="mt-5">
                   <Link to={`/book-online?program=${p.sku}`} className={`${CTA} bg-brand-crimson hover:bg-brand-crimson-dark`}>
                     Book session {p.sessionsBooked + 1} →
                   </Link>
                 </div>
-              )}
+              ) : (
+                <p className="mt-5 text-sm text-brand-slate">
+                  You can book session {p.sessionsBooked + 1} once session {p.waitingOn} is completed.
+                </p>
+              ))}
             </div>
           ))
         )}
@@ -384,14 +400,31 @@ const PSY_LINE = {
   completed: { text: 'Psychometric test: done', cta: 'See your report →' },
 }
 
-function PsychometricLine() {
+/**
+ * `buttonClass`: the test's own card. Its main button becomes the next step
+ * (take / continue / see the report), so the strip above it carries no link.
+ */
+function PsychometricLine({ buttonClass }) {
   const { state, assessment } = usePsychometric('nirmaan')
-  if (state !== 'owned' || !assessment) return null
+  if (state !== 'owned' || !assessment) {
+    return buttonClass ? (
+      <div className="mt-4">
+        <Link to="/skill-build/psychometric-testing" className={buttonClass}>Go to your test →</Link>
+      </div>
+    ) : null
+  }
   const line = PSY_LINE[assessment.status] || PSY_LINE.not_started
   const reportUrl = assessment.status === 'completed' ? assessment.report?.url : null
   const done = assessment.status === 'submitted' || assessment.status === 'completed'
   const status = line.text.replace(/^Psychometric test:\s*/, '').replace(/^./, (c) => c.toUpperCase())
-  return (
+  const action = (className) => (reportUrl ? (
+    <a href={reportUrl} target="_blank" rel="noopener noreferrer" className={className}>
+      View your report →
+    </a>
+  ) : (
+    <Link to="/skill-build/psychometric-testing" className={className}>{line.cta}</Link>
+  ))
+  const strip = (
     <div className="mt-4 rounded-xl bg-nirmaan-green/[0.08] px-3.5 py-3 text-[13px]">
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex min-w-0 items-center gap-2 font-semibold text-brand-navy">
@@ -402,17 +435,11 @@ function PsychometricLine() {
           {status}
         </span>
       </div>
-      {reportUrl ? (
-        <a href={reportUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
-          View your report →
-        </a>
-      ) : line.cta ? (
-        <Link to="/skill-build/psychometric-testing" className="mt-2 inline-block font-semibold text-nirmaan-green hover:underline">
-          {line.cta}
-        </Link>
-      ) : null}
+      {!buttonClass && action('mt-2 inline-block font-semibold text-nirmaan-green hover:underline')}
     </div>
   )
+  if (!buttonClass) return strip
+  return <>{strip}<div className="mt-4">{action(buttonClass)}</div></>
 }
 
 /* ---------- Skill Build (courses) ---------- */
@@ -467,7 +494,7 @@ function SkillBuildPanel({ courses }) {
                       <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy/[0.05] px-2.5 py-1">
                         <BookOpen className="size-3.5" aria-hidden />
                         {e.progress && e.progress.total > 0
-                          ? `${e.progress.completed}/${e.progress.total} lectures`
+                          ? `${e.progress.weeksDone ?? e.progress.completed}/${e.progress.weeks ?? e.progress.total} weeks`
                           : 'Skill-Build subscription'}
                       </span>
                       {e.expiresAt && (
@@ -480,13 +507,14 @@ function SkillBuildPanel({ courses }) {
                   )}
                 </div>
                 {e.progress && e.progress.total > 0 && <Progress percent={e.progress.percent} bar={bar} />}
-                {e.id === psyCardId && <PsychometricLine />}
+                {e.id === psyCardId && (
+                  <PsychometricLine
+                    buttonClass={isTest ? `${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}` : undefined}
+                  />
+                )}
+                {!isTest && (
                 <div className="mt-4">
-                  {isTest ? (
-                    <Link to="/skill-build/psychometric-testing" className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
-                      Go to your test →
-                    </Link>
-                  ) : e.progress && e.progress.total > 0 ? (
+                  {e.progress && e.progress.total > 0 ? (
                     <Link to={`/learn/${e.courseSlug || 'nirmaan'}`} className={`${CTA} ${isNirmaan ? 'bg-nirmaan-green hover:bg-nirmaan-green-dark' : 'bg-brand-crimson hover:bg-brand-crimson-dark'}`}>
                       {open
                         ? e.progress.completed > 0 ? 'Continue learning →' : 'Start learning →'
@@ -498,6 +526,7 @@ function SkillBuildPanel({ courses }) {
                     </Link>
                   )}
                 </div>
+                )}
               </div>
             )
           })

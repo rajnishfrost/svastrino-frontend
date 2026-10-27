@@ -7,6 +7,7 @@ import { downloadVideo, removeDownload, getDownloadInfo, listQualities, fmtMB } 
 import { enqueue, flush, pendingCount, pendingWithPrefix, onOutboxChange } from '../../../utils/outbox.js'
 import { openResourceWindow, writeWeekResource, closeResourceWindow } from '../../../utils/weekResource.js'
 import { LIMITS, MINIMUMS } from '../../../utils/validate.js'
+import { ShieldCheck } from 'lucide-react'
 import HlsPlayer from './HlsPlayer.jsx'
 import CourseExpired from './sections/CourseExpired.jsx'
 import PsychometricGate from './sections/PsychometricGate.jsx'
@@ -569,7 +570,7 @@ export default function Learn() {
           <p className="learn-eyebrow">Skill Build</p>
           <h1>{course.skillBuild.name}</h1>
           <p className="learn-start-sub">
-            {course.packageName} plan · {course.sessions.length} sessions. One video opens each week,
+            {course.packageName} plan · {course.sessions.filter((s) => s.order > 0).length} weeks. One video opens each week,
             with 6 short questions that unlock one per day.
           </p>
           <p className="learn-start-motiv">
@@ -609,8 +610,9 @@ export default function Learn() {
     )
   }
 
-  const { progress } = course
-  const doneCount = course.sessions.filter((s) => s.completed).length
+  // Counted in weeks: the introduction (order 0) is a session, not a week.
+  const weeks = course.sessions.filter((s) => s.order > 0)
+  const doneCount = weeks.filter((s) => s.completed).length
 
   return (
     <section className="section">
@@ -640,13 +642,6 @@ export default function Learn() {
                 <h1>{course.skillBuild.name}</h1>
               </>
             )}
-          </div>
-          <div className="learn-progress">
-            <div className="learn-progress-top">
-              <span>{doneCount} of {course.sessions.length} weeks done</span>
-              <strong>{progress.percent}%</strong>
-            </div>
-            <div className="learn-progress-track"><span style={{ width: `${Math.max(progress.percent, progress.percent > 0 ? 3 : 0)}%` }} /></div>
           </div>
         </header>
 
@@ -718,7 +713,7 @@ export default function Learn() {
         <nav className="learn-weeks" aria-label="Weeks">
           <div className="learn-weeks-head">
             <span>Your weeks</span>
-            <em>{doneCount}/{course.sessions.length} done</em>
+            <em>{doneCount}/{weeks.length} done</em>
           </div>
           <div className="learn-weeks-row" ref={stripRef}>
             {course.sessions.map((s) => (
@@ -742,7 +737,7 @@ export default function Learn() {
           <aside className="learn-sidebar" id="learn-all-weeks">
             <div className="learn-sidebar-head">
               <h3>All weeks</h3>
-              <span>{doneCount}/{course.sessions.length} done</span>
+              <span>{doneCount}/{weeks.length} done</span>
             </div>
             <ol className="learn-list">
               {course.sessions.map((s) => (
@@ -915,7 +910,9 @@ function QuestionsPanel({ session, answerText, setAnswerText, submitting, onSubm
   if (total === 0) return null
 
   let body
-  if (!session.videoDone) {
+  // A task already open (only in the server's open-all mode, before the video
+  // is watched) is shown rather than the "finish the video" note.
+  if (!session.videoDone && !q.current) {
     body = <p className="learn-q-msg">Finish watching the video (90%) to unlock Question 1 — it opens the next day.</p>
   } else if (q.sessionCompleted) {
     body = <p className="learn-q-msg learn-q-msg--done">✓ All {total} questions done. {session.completed ? 'The next video opens tomorrow.' : ''}</p>
@@ -1052,23 +1049,88 @@ function WeekResource({ slug, session }) {
 // — what it actually is belongs to the program, not to this component.
 const STREAK_REWARD = 'Rewards are waiting for the students who keep it going.'
 
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
+
 /**
- * The streak line, written for the situation the student is actually in. The
- * reset rule is said out loud on every one of them, because a counter that
- * only ever goes up is not a reason to come back tomorrow.
+ * The line under the streak card: what to do today, then the rules once. The
+ * numbers themselves are on the card, so this stays short.
  */
 function streakNote({ days, best, todayDone, brokenAfter }) {
-  const d = `${days} day${days === 1 ? '' : 's'}`
-  if (days > 0 && !todayDone) {
-    return `🔥 ${d} in a row — today's step makes it ${days + 1}. Miss a whole day and it goes back to zero. ${STREAK_REWARD}`
-  }
-  if (days > 0) {
-    return `🔥 ${d} in a row, and today is done. Come back tomorrow to keep it — one missed day takes it back to zero. ${STREAK_REWARD}`
-  }
+  const rules = 'Every 7 days in a row earns a badge and a grace day. Miss a day with no grace day left and your streak and badges start again from zero. ' + STREAK_REWARD
+  if (days > 0 && !todayDone) return <><strong>Take today's step to keep your streak going.</strong> {rules}</>
+  if (days > 0) return <><strong>Today is done — come back tomorrow.</strong> {rules}</>
   if (brokenAfter) {
-    return `A missed day took your streak back to zero${best > 1 ? ` — your best run was ${best} days` : ''}. Take today's step and start a new one. ${STREAK_REWARD}`
+    return <><strong>Your streak was reset{best > 1 ? ` (best: ${best} days)` : ''}.</strong> Start again today. {rules}</>
   }
-  return `Take a step every day and your streak starts counting. Miss a day and it goes back to zero. ${STREAK_REWARD}`
+  return <><strong>Take a step every day to build your streak.</strong> {rules}</>
+}
+
+/**
+ * The streak emblem, drawn as one SVG. Round the badge: seven arcs with even
+ * gaps, one per day towards the next badge. Round those, four labels on the
+ * circle, a quarter each: "Current streak" over the top, the count down the
+ * right, the badge name along the bottom and the grace days up the left.
+ * Everything comes from the server's computeStreak, so the emblem cannot
+ * disagree with the rules.
+ */
+const EMBLEM = 150
+const RING_R = 44
+const TEXT_R = 54
+
+// Angles in degrees, clockwise from the top.
+const polar = (r, deg) => {
+  const rad = ((deg - 90) * Math.PI) / 180
+  return `${(EMBLEM / 2 + r * Math.cos(rad)).toFixed(2)} ${(EMBLEM / 2 + r * Math.sin(rad)).toFixed(2)}`
+}
+// Clockwise arcs carry text upright over the top and along the sides; the
+// bottom runs the other way round (and a little further out) so its letters
+// stay the right way up.
+const arc = (r, from, to) => `M ${polar(r, from)} A ${r} ${r} 0 0 1 ${polar(r, to)}`
+const arcBack = (r, from, to) => `M ${polar(r, from)} A ${r} ${r} 0 0 0 ${polar(r, to)}`
+
+function StreakCard({ streak }) {
+  const { days = 0, badge, nextBadge, nextBadgeIn = 7, graceDays = 0 } = streak
+  // A badge just earned shows the ring full until the next step, rather than
+  // an empty ring on the very day it was won.
+  const step = !nextBadge || (days > 0 && nextBadgeIn === 7) ? 7 : 7 - nextBadgeIn
+  const GAP = 14 // degrees between the day arcs
+  const paths = {
+    top: arc(TEXT_R, 305, 415),
+    right: arc(TEXT_R, 55, 125),
+    bottom: arcBack(TEXT_R + 8, 235, 125),
+    left: arc(TEXT_R, 235, 305),
+  }
+  const label = (key, className, children) => (
+    <text className={className}>
+      <textPath href={`#streak-${key}`} startOffset="50%" textAnchor="middle">{children}</textPath>
+    </text>
+  )
+  return (
+    <div
+      className={`learn-streakcard${badge ? '' : ' is-empty'}`}
+      role="img"
+      aria-label={`Current streak ${days} ${days === 1 ? 'day' : 'days'}. ${badge ? `Badge: ${badge.name}.` : 'No badge yet.'} ${graceDays} grace ${graceDays === 1 ? 'day' : 'days'}.${nextBadge ? ` ${step} of 7 days towards ${nextBadge.name}.` : ''}`}
+    >
+      <svg viewBox={`0 0 ${EMBLEM} ${EMBLEM}`} aria-hidden>
+        <defs>
+          {Object.entries(paths).map(([k, d]) => <path key={k} id={`streak-${k}`} d={d} />)}
+        </defs>
+        {Array.from({ length: 7 }, (_, i) => (
+          <path key={i} className={`learn-streakcard-day${i < step ? ' is-on' : ''}`}
+                d={arc(RING_R, i * (360 / 7) + GAP / 2, (i + 1) * (360 / 7) - GAP / 2)} />
+        ))}
+        {label('top', 'learn-streakcard-label', 'Current streak')}
+        {label('right', 'learn-streakcard-count', <>
+          <tspan className="learn-streakcard-num">{days}</tspan> {days === 1 ? 'day' : 'days'}
+        </>)}
+        {label('bottom', 'learn-streakcard-name', badge ? badge.name : 'No badge yet')}
+        {label('left', `learn-streakcard-grace${graceDays ? '' : ' is-none'}`, <>
+          <tspan className="learn-streakcard-num">{graceDays}</tspan> grace {graceDays === 1 ? 'day' : 'days'}
+        </>)}
+      </svg>
+      <span className="learn-streakcard-emoji" aria-hidden>{badge ? badge.emoji : '🔥'}</span>
+    </div>
+  )
 }
 
 function ReportStrip({ report }) {
@@ -1077,10 +1139,6 @@ function ReportStrip({ report }) {
   const streak = report.streak || { days: 0, best: 0, todayDone: false, brokenAfter: false }
   return (
     <div className="learn-report">
-      <div className="learn-report-item">
-        <span>Day</span>
-        <strong>{report.daysElapsed} of {report.targetDays}</strong>
-      </div>
       {done ? (
         <>
           <div className="learn-report-item"><span>Completed in</span><strong>{report.actualDays} days</strong></div>
@@ -1089,29 +1147,23 @@ function ReportStrip({ report }) {
           )}
         </>
       ) : (
-        <div className="learn-report-item">
-          <span>Streak</span>
-          <strong className={`learn-streak${streak.days > 0 ? ' is-alive' : ''}`}>
-            {streak.days > 0 ? `🔥 ${streak.days} day${streak.days === 1 ? '' : 's'}` : '—'}
-          </strong>
+        <StreakCard streak={streak} />
+      )}
+      {done && <span className="learn-report-badge is-done">✓ Completed</span>}
+
+      {/* Beside the emblem on a wide screen, under it on a phone. */}
+      {!done && (
+        <div className="learn-report-body">
+          {/* The SAME "what's due today" line the reminder e-mail uses */}
+          {task && (
+            <p className="learn-report-task">
+              🎯 {task.label}
+              {task.type === 'waiting' && task.unlockAt ? ` — opens ${fmtIst(task.unlockAt)}` : ''}
+            </p>
+          )}
+          <p className="learn-report-streak">{streakNote(streak)}</p>
         </div>
       )}
-      <span className={`learn-report-badge${done ? ' is-done' : report.onTrack ? ' is-ok' : ' is-late'}`}>
-        {done
-          ? '✓ Completed'
-          : report.onTrack
-            ? 'On track'
-            : `${report.behindDays} day${report.behindDays > 1 ? 's' : ''} behind · est. ${report.estimatedDays} days`}
-      </span>
-
-      {/* The SAME "what's due today" line the reminder e-mail uses */}
-      {!done && task && (
-        <p className="learn-report-task">
-          🎯 {task.label}
-          {task.type === 'waiting' && task.unlockAt ? ` — opens ${fmtIst(task.unlockAt)}` : ''}
-        </p>
-      )}
-      {!done && <p className="learn-report-streak">{streakNote(streak)}</p>}
     </div>
   )
 }

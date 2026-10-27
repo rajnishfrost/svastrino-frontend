@@ -316,8 +316,6 @@
   padding: 5px 12px;
   border-radius: var(--radius-pill);
 }
-.learn-report-badge.is-ok { background: #e9f7ef; color: #1b7a43; }
-.learn-report-badge.is-late { background: #fdf0e3; color: #9a5b16; }
 .learn-report-badge.is-done { background: var(--color-accent-soft); color: var(--color-accent-hover); }
 /* ---- Questions panel ---- */
 .learn-q {
@@ -339,7 +337,7 @@
    as a warning rather than as a word target. */
 .learn-q-left { margin-top: 6px; font-size: 12.5px; color: var(--color-text-muted); }
 .learn-q-num { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--color-accent); margin-bottom: 6px; }
-.learn-q-prompt { font-size: 15.5px; color: var(--color-text); margin-bottom: 12px; line-height: 1.5; }
+.learn-q-prompt { font-size: 15.5px; color: var(--color-text); margin-bottom: 12px; line-height: 1.5; white-space: pre-line; }
 .learn-q-input {
   width: 100%;
   border: 1px solid var(--gray-200);
@@ -369,7 +367,7 @@
 .learn-q-past { margin-bottom: 14px; }
 .learn-q-past summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-muted); }
 .learn-q-pastitem { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
-.learn-q-pastq { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.learn-q-pastq { font-size: 13px; font-weight: 600; color: var(--color-text); white-space: pre-line; }
 .learn-q-pasta { font-size: 13.5px; color: var(--color-text-muted); margin-top: 3px; white-space: pre-wrap; }
 /* Gate / errors */
 .learn-gate {
@@ -510,10 +508,42 @@
 .learn-resource-note { margin: 8px 0 0; font-size: 12px; color: var(--color-text-muted); }
 .learn-resource-err { margin: 8px 0 0; font-size: 13px; color: #9a3412; }
 
-/* The streak count, and the line that says why it is worth keeping. A run that
-   is alive is coloured; a dash is left muted so a zero does not shout. */
-.learn-streak { font-variant-numeric: tabular-nums; color: var(--color-text-muted); }
-.learn-streak.is-alive { color: #9a5b16; }
+/* ---- Streak card ----
+   One round emblem: the badge in the middle, seven day arcs round it, and the
+   four labels set on the circle outside them (see StreakCard). Warm amber for
+   the streak, the Nirmaan green for grace days. */
+.learn-streakcard { position: relative; flex: none; width: 168px; height: 168px; }
+.learn-streakcard svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.learn-streakcard-day { fill: none; stroke: var(--gray-200); stroke-width: 5.5; stroke-linecap: round; }
+.learn-streakcard-day.is-on { stroke: #e8962f; }
+.learn-streakcard-emoji {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  font-size: 36px;
+  line-height: 1;
+  background: radial-gradient(circle at 30% 25%, #fff7e6, #fde3b4 70%);
+  box-shadow: 0 6px 14px -8px rgba(154, 91, 22, 0.6);
+}
+.learn-streakcard.is-empty .learn-streakcard-emoji { background: var(--gray-50, #f6f7f9); box-shadow: none; filter: grayscale(0.35); }
+.learn-streakcard text { font-family: inherit; text-transform: uppercase; letter-spacing: 0.8px; }
+.learn-streakcard-label { font-size: 7.5px; font-weight: 700; fill: var(--color-text-muted); }
+.learn-streakcard-count { font-size: 7.5px; font-weight: 700; fill: #9a5b16; }
+.learn-streakcard-name { font-size: 9.5px; font-weight: 800; fill: var(--color-heading); }
+.learn-streakcard-grace { font-size: 7.5px; font-weight: 700; fill: #1f6b41; }
+.learn-streakcard-grace.is-none { fill: var(--color-text-muted); }
+.learn-streakcard-num { font-size: 11px; font-weight: 800; letter-spacing: 0; }
+
+/* Today's task and the note, beside the emblem. */
+.learn-report-body { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.learn-report-body .learn-report-task,
+.learn-report-body .learn-report-streak { margin: 0; }
 .learn-report-streak {
   flex-basis: 100%;
   margin: 4px 0 0;
@@ -798,6 +828,8 @@
     line-height: 1.45;
   }
   .learn-report-streak { grid-column: 1 / -1; margin: 0; font-size: 12.5px; }
+  .learn-streakcard { grid-column: 1 / -1; justify-self: center; }
+  .learn-report-body { grid-column: 1 / -1; }
 
   /* Psychometric report card: smaller type and button on a phone. */
   .learn-psyready { padding: 14px 16px; gap: 12px; border-radius: 16px; border-left-width: 4px; margin-bottom: 12px; }

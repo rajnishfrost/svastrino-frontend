@@ -348,7 +348,7 @@ function SubMenu({ item, onNavigate }) {
 
 /**
  * Signed-in account menu. Shows the user's avatar (Google photo, else initials)
- * and a dropdown with Dashboard · Settings · Sign out. Click-to-open on desktop
+ * and a dropdown with Dashboard · Sign out (the rest lives on the dashboard). Click-to-open on desktop
  * (closes on outside click); on mobile it renders inline inside the drawer.
  */
 function ProfileMenu({ user, onNavigate }) {
@@ -440,12 +440,6 @@ function ProfileMenu({ user, onNavigate }) {
             <Link to="/dashboard" className="nav-profile-item" role="menuitem" onClick={closeAll}>
               <GridIcon /> Dashboard
             </Link>
-            <Link to="/dashboard/downloads" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-              <DownloadIcon /> Downloads
-            </Link>
-            <Link to="/dashboard/settings" className="nav-profile-item" role="menuitem" onClick={closeAll}>
-              <GearIcon /> Settings
-            </Link>
           </>
         )}
         <button
@@ -478,25 +472,6 @@ function GridIcon() {
       <rect x="14" y="3" width="7" height="7" rx="1.5" />
       <rect x="3" y="14" width="7" height="7" rx="1.5" />
       <rect x="14" y="14" width="7" height="7" rx="1.5" />
-    </svg>
-  )
-}
-
-function DownloadIcon() {
-  return (
-    <svg className="nav-profile-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 3v12" />
-      <path d="M7 11l5 5 5-5" />
-      <path d="M4 20h16" />
-    </svg>
-  )
-}
-
-function GearIcon() {
-  return (
-    <svg className="nav-profile-ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   )
 }

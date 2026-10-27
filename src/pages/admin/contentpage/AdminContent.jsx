@@ -404,7 +404,7 @@ function AnswersViewer({ session, onClose }) {
           <p className="adm-sub" style={{ marginBottom: 12 }}>{data.totalAnswers} answer(s) across {data.questions.length} question(s).</p>
           {data.questions.map((q) => (
             <div key={q.id} style={{ marginBottom: 14 }}>
-              <p style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 6 }}>Q{q.order}. {q.prompt}</p>
+              <p style={{ fontSize: 13.5, fontWeight: 600, marginBottom: 6, whiteSpace: 'pre-line' }}>Q{q.order}. {q.prompt}</p>
               {q.answers.length === 0 ? (
                 <p className="adm-sub" style={{ margin: '0 0 0 14px' }}>— no answers yet</p>
               ) : (
