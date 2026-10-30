@@ -41,6 +41,10 @@ import './PsychometricTest.css'
  *   assessment   GET /user/assessment/:product
  *   onChange     receives a fresh assessment after anything here changes it
  *   onFinished   called once "I've finished it" is recorded
+ *   buttonClass  class for the primary action button (Take/Continue/See/View
+ *                report) — so a caller embedding this in its own card (e.g.
+ *                the dashboard) can match its own button style. Defaults to
+ *                this component's own 'btn btn-primary'.
  */
 // What the guide pop-up shows while no video is set for that step.
 const GUIDE_STEPS = {
@@ -102,7 +106,7 @@ function openPendingTab(label) {
 // session — about two seconds on a phone, so double that).
 const SIGN_IN_MS = 4500
 
-export default function PsychometricActions({ product, assessment, onChange, onFinished }) {
+export default function PsychometricActions({ product, assessment, onChange, onFinished, buttonClass = 'btn btn-primary' }) {
   const [busy, setBusy] = useState(false)
   // True from the click until the browser leaves for the test.
   const [opening, setOpening] = useState(false)
@@ -308,7 +312,7 @@ export default function PsychometricActions({ product, assessment, onChange, onF
 
       <div className="ptest-actions">
         {(status === 'not_started' || status === 'in_progress') && (
-          <button type="button" className="btn btn-primary" onClick={openTest} disabled={busy}>
+          <button type="button" className={buttonClass} onClick={openTest} disabled={busy}>
             {opening ? 'Opening…' : status === 'not_started' ? 'Take the test' : 'Continue your test'}
           </button>
         )}
@@ -318,12 +322,12 @@ export default function PsychometricActions({ product, assessment, onChange, onF
           </button>
         )}
         {done && (
-          <button type="button" className="btn btn-primary" onClick={openTest} disabled={busy}>
+          <button type="button" className={buttonClass} onClick={openTest} disabled={busy}>
             {opening ? 'Opening…' : 'See your report'}
           </button>
         )}
         {status === 'completed' && reportUrl && (
-          <a className="btn btn-primary" href={reportUrl} target="_blank" rel="noopener noreferrer">
+          <a className={buttonClass} href={reportUrl} target="_blank" rel="noopener noreferrer">
             View your report
           </a>
         )}
