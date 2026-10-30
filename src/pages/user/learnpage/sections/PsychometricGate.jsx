@@ -12,21 +12,12 @@ import PsychometricActions from '../../../../common_component/user/PsychometricT
  *
  * The block is enforced on the server (learn.service.js); this is the part that
  * tells them what to do about it, because a locked course with no explanation
- * is just a bug as far as the student is concerned. The buttons themselves are
- * PsychometricActions, shared with the psychometric page.
+ * is just a bug as far as the student is concerned. The steps, coupon code and
+ * buttons themselves are PsychometricActions, shared with the psychometric page
+ * and the dashboard.
  */
-
-// With the test site's token login there is nothing to sign up for and no code
-// to copy — the old four steps described a journey that no longer exists.
-const API_STEPS = [
-  'Tap “Take the test” — you are signed in to the test automatically. No separate account or code is needed.',
-  'Complete every section of the test.',
-  'Come back here when you are done. We see that the test is complete, and the course opens by itself.',
-]
-
 export default function PsychometricGate({ slug, status, onDone }) {
   const [assess, setAssess] = useState(null)
-  const [copied, setCopied] = useState(false)
 
   // Reading the status is also what asks the test site whether the student has
   // finished (API mode). If it says they have, the gate is already lifted on
@@ -45,22 +36,11 @@ export default function PsychometricGate({ slug, status, onDone }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
-  const copyCode = async () => {
-    try {
-      await navigator.clipboard.writeText(assess.accessCode)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch { /* clipboard blocked — the code is on screen to copy by hand */ }
-  }
-
   // The freshest status we hold. The prop comes from the course payload, which
   // is only re-read when the gate lifts — so on its own it still says
   // "not_started" right after the student has opened the test, and the way to
   // say they have finished never appears.
   const current = assess ? assess : { status }
-  // Handoff mode still walks the student through signing up on the test site
-  // themselves, so its steps and coupon come from the server as before.
-  const steps = assess?.mode === 'api' ? API_STEPS : assess?.steps || []
 
   return (
     <div className="learn-psygate" role="note">
@@ -70,21 +50,6 @@ export default function PsychometricGate({ slug, status, onDone }) {
         your report. Take the test first — the introduction and the weekly videos open as soon as it
         is complete.
       </p>
-
-      {steps.length > 0 && (
-        <ol className="learn-psygate-steps">
-          {steps.map((step, i) => <li key={i}>{step}</li>)}
-        </ol>
-      )}
-
-      {assess?.accessCode && (
-        <p className="learn-psygate-code">
-          Your coupon code: <strong>{assess.accessCode}</strong>
-          <button type="button" className="learn-psygate-copy" onClick={copyCode}>
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </p>
-      )}
 
       <PsychometricActions
         product={slug}

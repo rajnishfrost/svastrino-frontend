@@ -592,31 +592,6 @@
   color: #6b4c05;
   max-width: 70ch;
 }
-.learn-psygate-steps {
-  margin: 12px 0 12px 18px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 13.5px;
-  color: #6b4c05;
-}
-.learn-psygate-code {
-  font-size: 13.5px;
-  color: #6b4c05;
-  margin-bottom: 12px;
-}
-.learn-psygate-copy {
-  margin-left: 8px;
-  background: #ffe9b8;
-  border: 1px solid #e8c877;
-  border-radius: 6px;
-  padding: 2px 8px;
-  font-size: 12.5px;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  color: #6b4c05;
-}
 .learn-psygate-actions {
   display: flex;
   align-items: center;

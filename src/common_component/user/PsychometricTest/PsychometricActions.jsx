@@ -46,6 +46,15 @@ import './PsychometricTest.css'
  *                the dashboard) can match its own button style. Defaults to
  *                this component's own 'btn btn-primary'.
  */
+// Handoff mode's steps, when there is nothing else to say (API mode has its
+// own copy from the server, see toDTO in assessment.service.js — this is the
+// fallback for API mode's own "nothing to sign up for" explanation).
+const API_STEPS = [
+  'Tap "Take the test" — you are signed in to the test automatically. No separate account or code is needed.',
+  'Complete every section of the test.',
+  'Come back here when you are done. We see that the test is complete, and the course opens by itself.',
+]
+
 // What the guide pop-up shows while no video is set for that step.
 const GUIDE_STEPS = {
   test: [
@@ -117,6 +126,8 @@ export default function PsychometricActions({ product, assessment, onChange, onF
   // The test-site link, when the browser blocked the new tab and the student
   // has to tap once more to open it.
   const [readyUrl, setReadyUrl] = useState('')
+  // Briefly swaps the coupon "Copy" button's label after a successful copy.
+  const [codeCopied, setCodeCopied] = useState(false)
 
   const status = assessment?.status || 'not_started'
   const apiMode = assessment?.mode === 'api'
@@ -155,6 +166,10 @@ export default function PsychometricActions({ product, assessment, onChange, onF
   // does not, and once it is done the report is the thing to show.
   const progress = assessment?.progress
   const showProgress = status === 'in_progress' && progress != null && progress > 0
+  // What the student needs to do before the test opens — only relevant before
+  // it is done. Handoff mode's steps (sign up, enter the coupon code, ...)
+  // come straight from the server; API mode has nothing to sign up for.
+  const steps = done ? [] : apiMode ? API_STEPS : assessment?.steps || []
 
   // The guide pop-up first, always.
   const openTest = () => {
@@ -224,6 +239,14 @@ export default function PsychometricActions({ product, assessment, onChange, onF
     setAskDetails(false)
     await reload().catch(() => {})
     goToTest()
+  }
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(assessment.accessCode)
+      setCodeCopied(true)
+      setTimeout(() => setCodeCopied(false), 2000)
+    } catch { /* clipboard blocked — the code is on screen to copy by hand */ }
   }
 
   const markDone = async () => {
@@ -307,6 +330,21 @@ export default function PsychometricActions({ product, assessment, onChange, onF
       )}
 
       {showProgress && <TestProgress percent={progress} />}
+
+      {steps.length > 0 && (
+        <ol className="ptest-steps">
+          {steps.map((step, i) => <li key={i}>{step}</li>)}
+        </ol>
+      )}
+
+      {!done && assessment?.accessCode && (
+        <p className="ptest-code">
+          Your coupon code: <strong>{assessment.accessCode}</strong>
+          <button type="button" className="ptest-copy" onClick={copyCode}>
+            {codeCopied ? 'Copied' : 'Copy'}
+          </button>
+        </p>
+      )}
 
       {err && <p className="ptest-err">{err}</p>}
 
