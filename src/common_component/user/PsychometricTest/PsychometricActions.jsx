@@ -17,8 +17,8 @@ import './PsychometricTest.css'
  *                when it is done: the test site's own status completes it,
  *                read every time the page asks. Handoff mode has no such
  *                signal, so there the student still taps "I've finished it".
- *   completed    "See your report" — the report lives on the test site, so
- *                this signs them in there and opens the report page. Or "View
+ *   completed    "See your report" — opens the report PDF in a new tab (API
+ *                mode; handoff mode opens the test site's report page). Or "View
  *                your report" for an older record that an admin attached a
  *                report to back when we re-hosted them.
  *   submitted    handoff mode's "I've finished it"; treated as done
@@ -27,7 +27,11 @@ import './PsychometricTest.css'
  * test before "Take the test" / "Continue your test", how to find the report
  * before "See your report". It plays the video set in Admin → Settings, or
  * shows the same walk-through as short steps while none is set. Its one button
- * is "Continue": to the test's questions, or to the report page.
+ * is "Continue": to the test's questions, or to the report.
+ *
+ * The report, in API mode: the full report PDF from Mindler (download-report),
+ * opened in a new tab — no stop on the test site. Handoff mode, which has no
+ * such call, still signs them in on the test site's report page.
  *
  * Taking the test: in API mode the account may first need its class and phone
  * (asked in a pop-up, then carried straight on), then the server signs the
@@ -66,6 +70,11 @@ const GUIDE_STEPS = {
   report: [
     'You are signed in to the test site automatically and taken straight to your results.',
     'Step through each part of your results, then open “My Report” in the menu for your full report.',
+    'Read the weekly videos against it. They are built around what your report says.',
+  ],
+  // API mode: the report is a PDF, opened straight in a new tab.
+  reportPdf: [
+    'Tap “Continue” and your full report opens as a PDF in a new tab. You can save or print it from there.',
     'Read the weekly videos against it. They are built around what your report says.',
   ],
 }
@@ -190,6 +199,14 @@ export default function PsychometricActions({ product, assessment, onChange, onF
   const goToTest = async (tab = null) => {
     setErr(''); setReadyUrl(''); setBusy(true); setOpening(true)
     try {
+      // Finished, in API mode: the report PDF itself, in the new tab.
+      if (done && assessment?.reportPdf) {
+        const { url } = await api(`/user/assessment/${product}/report-pdf`, { auth: 'user' })
+        if (tab && !tab.closed) tab.location.href = url
+        else if (!window.open(url, '_blank')) { setReadyUrl(url); setBusy(false); return }
+        setOpening(false); setBusy(false)
+        return
+      }
       const a = await api(`/user/assessment/${product}/start`, { method: 'POST', auth: 'user' })
       onChange?.(a)
       // The report page needs the student signed in on the test site first;
@@ -277,7 +294,7 @@ export default function PsychometricActions({ product, assessment, onChange, onF
       {guide && toBody(
         <GuideVideoModal
           src={guides[guide] || null}
-          steps={GUIDE_STEPS[guide]}
+          steps={GUIDE_STEPS[guide === 'report' && assessment?.reportPdf ? 'reportPdf' : guide]}
           progress={guide === 'test' && showProgress ? progress : null}
           title={guide === 'report' ? 'How to open your report' : 'How to take the test'}
           sub={guide === 'report'
@@ -319,9 +336,11 @@ export default function PsychometricActions({ product, assessment, onChange, onF
             ) : (
               <>
                 <div className="ptest-load-spinner" aria-hidden />
-                <p className="ptest-load-title">{done ? 'Opening your report' : 'Setting up your test'}</p>
+                <p className="ptest-load-title">{done ? 'Preparing your report' : 'Setting up your test'}</p>
                 <p className="ptest-load-sub">
-                  We are signing you in to the assessment. It opens in a new tab in a few seconds.
+                  {done && assessment?.reportPdf
+                    ? 'Your report PDF opens in a new tab in a few seconds.'
+                    : 'We are signing you in to the assessment. It opens in a new tab in a few seconds.'}
                 </p>
               </>
             )}

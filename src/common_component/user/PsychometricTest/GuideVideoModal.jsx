@@ -28,7 +28,7 @@ export default function GuideVideoModal({
   const videoRef = useRef(null)
   const [tab, setTab] = useState('first')
   const tabs = alwaysTabs || !!src
-
+  const sides = ['first', 'guide']
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     document.addEventListener('keydown', onKey)
@@ -84,8 +84,9 @@ export default function GuideVideoModal({
 
         {tabs ? (
           <>
-            <div className="ptest-switch" role="tablist" aria-label="Guide">
-              <span className={`ptest-switch-thumb${tab === 'guide' ? ' is-right' : ''}`} aria-hidden />
+            <div className="ptest-switch" role="tablist" aria-label="Guide"
+                 style={{ '--ptest-sides': sides.length, '--ptest-at': sides.indexOf(tab) }}>
+              <span className="ptest-switch-thumb" aria-hidden />
               <button
                 type="button" role="tab" id="guide-tab-first" aria-controls="guide-panel-first"
                 aria-selected={tab === 'first'}
