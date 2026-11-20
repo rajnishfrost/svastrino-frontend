@@ -30,16 +30,19 @@ const ICON = {
 const NAV = [
   { label: 'Dashboard', to: '/organisation', end: true, icon: 'dashboard' }, // always visible
   { label: 'Students', to: '/organisation/students', icon: 'students', module: 'students' },
-  { label: 'Student Reports', to: '/organisation/reports', icon: 'reports' }, // always visible
+  // Only when the sponsored course includes the psychometric test.
+  { label: 'Psychometric Report', to: '/organisation/reports', icon: 'reports', needs: 'psychometric' },
   { label: 'Institute', to: '/organisation/profile', icon: 'profile', module: 'profile' },
 ]
 
 export default function OrgSidebar({ open, onClose }) {
   const navigate = useNavigate()
   const { logout: authLogout } = useAuth()
-  const { organisation, typeLabel, modules, user } = useOrg()
+  const { organisation, typeLabel, modules, psychometric } = useOrg()
 
-  const canSee = (item) => !item.module || (modules || []).includes(item.module)
+  const canSee = (item) =>
+    (!item.module || (modules || []).includes(item.module)) &&
+    (item.needs !== 'psychometric' || psychometric)
 
   // One shared session, so signing out here signs out the whole account.
   const logout = () => {
@@ -64,9 +67,11 @@ export default function OrgSidebar({ open, onClose }) {
             end={item.end}
             onClick={onClose}
             className={({ isActive }) => (isActive ? 'admin-nav-item active' : 'admin-nav-item')}
+            title={item.label}
           >
             <span className="admin-nav-icon" aria-hidden>{ICON[item.icon]}</span>
-            {item.label}
+            {/* A label too long for the menu ends in "…"; the title shows it whole. */}
+            <span className="admin-nav-label">{item.label}</span>
           </NavLink>
         ))}
       </nav>

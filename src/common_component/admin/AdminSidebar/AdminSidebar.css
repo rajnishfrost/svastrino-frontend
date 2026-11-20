@@ -156,3 +156,7 @@
     box-shadow: var(--shadow-lg);
   }
 }
+
+/* A menu label that does not fit ends in "…" (the link's title shows it whole). */
+.admin-nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-nav-item .admin-nav-icon { flex-shrink: 0; }
