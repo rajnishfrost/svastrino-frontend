@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import OrgSidebar from '../OrgSidebar/OrgSidebar.jsx'
 import { OrgProvider, useOrg } from '../OrgContext/OrgContext.jsx'
 // Same shell as the admin panel — sidebar + top bar + content slot.
@@ -14,19 +14,14 @@ import { SkeletonTable } from '../../Skeleton/Skeleton.jsx'
  * approved, active organisation, so a failure means "not an organisation" and we
  * bounce to the site rather than showing an empty portal.
  */
-// Pages that want the whole width: the menu folds away when one opens (the ☰
-// button brings it back) and returns on any other page.
-const WIDE_PAGES = ['/organisation/reports']
-const isWide = (path) => WIDE_PAGES.some((p) => path.startsWith(p))
+// The menu stays where the user left it on every page — no page folds it away
+// by itself. Only the ☰ button hides or shows it.
 const isPhone = () => window.matchMedia('(max-width: 899px)').matches
 
 function Shell({ children }) {
   const [navOpen, setNavOpen] = useState(false)         // phone: drawer open
-  const { pathname } = useLocation()
-  const [collapsed, setCollapsed] = useState(() => isWide(pathname)) // desktop: menu hidden
+  const [collapsed, setCollapsed] = useState(false)     // desktop: menu hidden
   const { state, organisation } = useOrg()
-
-  useEffect(() => { setCollapsed(isWide(pathname)) }, [pathname])
 
   // One button for both: the drawer on a phone, folding the menu on a desktop.
   const toggleNav = () => (isPhone() ? setNavOpen((v) => !v) : setCollapsed((v) => !v))

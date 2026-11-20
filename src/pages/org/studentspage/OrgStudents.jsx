@@ -46,6 +46,36 @@ function ProgressCells({ course }) {
   )
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * The Account cell for a student who has not set their password: how long the
+ * invite link has left, or — once it has run out — a button to send a new one.
+ */
+function InviteCell({ r, busy, onReinvite }) {
+  const left = r.inviteExpiresAt ? new Date(r.inviteExpiresAt).getTime() - Date.now() : 0
+  if (left > 0) {
+    const days = Math.ceil(left / DAY_MS)
+    const hours = Math.ceil(left / (60 * 60 * 1000))
+    return (
+      <div className="adm-badge-stack">
+        <span className="adm-badge adm-badge--warn">Invite sent</span>
+        <span className="adm-sub" style={{ margin: 0, fontSize: 12.5 }}>
+          {left < DAY_MS ? `Link expires in ${hours} hour${hours === 1 ? '' : 's'}` : `${days} day${days === 1 ? '' : 's'} left to sign in`}
+        </span>
+      </div>
+    )
+  }
+  return (
+    <div className="adm-badge-stack">
+      <span className="adm-badge adm-badge--muted">Invite expired</span>
+      <button className="adm-btn adm-btn--sm" onClick={() => onReinvite(r)} disabled={busy}>
+        {busy ? 'Sending…' : 'Reinvite'}
+      </button>
+    </div>
+  )
+}
+
 export default function OrgStudents() {
   const { organisation, sponsoredCourses = [], refresh } = useOrg()
   const [rows, setRows] = useState(null)
@@ -54,6 +84,8 @@ export default function OrgStudents() {
   const [showImport, setShowImport] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
   const [del, setDel] = useState(null)
+  const [reinviting, setReinviting] = useState(null) // student id
+  const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
 
   const load = (search = q) =>
@@ -71,6 +103,15 @@ export default function OrgStudents() {
       await api(`/org/students/${del.id}`, { method: 'DELETE', auth: 'user' })
       setDel(null); afterChange()
     } catch (e) { setError(e.message); setDel(null) } finally { setBusy(false) }
+  }
+
+  const reinvite = async (r) => {
+    setReinviting(r.id); setError(''); setNotice('')
+    try {
+      await api(`/org/students/${r.id}/reinvite`, { method: 'POST', auth: 'user' })
+      setNotice(`A new invite has been emailed to ${r.email}. The link works for 7 days.`)
+      load()
+    } catch (e) { setError(e.message) } finally { setReinviting(null) }
   }
 
   const downloadSample = async () => {
@@ -105,6 +146,7 @@ export default function OrgStudents() {
       </div>
 
       {error && <p className="adm-error">{error}</p>}
+      {notice && <p className="adm-sub" role="status"><strong>✓</strong> {notice}</p>}
 
       {!rows ? <SkeletonTable /> : rows.length === 0 ? (
         <p className="adm-empty">No students yet — download the sample sheet, fill it in, then use “Bulk add from sheet”.</p>
@@ -132,7 +174,7 @@ export default function OrgStudents() {
                         ? <span className="adm-badge adm-badge--muted">Removed</span>
                         : r.status === 'active'
                           ? <span className="adm-badge adm-badge--ok">Active</span>
-                          : <span className="adm-badge adm-badge--warn">Invite sent</span>}
+                          : <InviteCell r={r} busy={reinviting === r.id} onReinvite={reinvite} />}
                     </td>
                     <td>
                       {/* Null when the organisation sponsors nothing — the
