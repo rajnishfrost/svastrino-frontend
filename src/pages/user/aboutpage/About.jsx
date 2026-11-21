@@ -32,11 +32,11 @@ const TEAM = [
   { name: 'Rohit Gala', role: 'Founder & Chief Career Mentor', years: '17+ years', photo: '/assets/images/team/rohit-gala.png', linkedin: null },
   { name: 'Miloni Gala', role: 'Administrative Manager', years: '10+ years', photo: '/assets/images/team/miloni-gala.png', linkedin: null },
   { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
-  // Ravindra's photo is raviSir3.jpeg re-cut onto the same beige backdrop and
-  // 1080x1220 frame as everyone else's, so the circles match.
-  { name: 'Ravindra Yadav', role: 'Technical Consultant & Developer', years: '10+ years', photo: '/assets/images/team/ravindra-yadav-team.jpg', linkedin: null },
   { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
   { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
+  // Rajneesh's photo is the original, unedited. It is a taller 3:4 frame, so the
+  // circle is anchored near the top to keep the full head in view.
+  { name: 'Rajneesh Yadav', role: 'Technical Consultant & Developer', years: '4+ years', photo: '/assets/images/team/rajneesh-yadav.png', photoPosition: 'center 10%', linkedin: null },
 ]
 
 const SERVICES = [
@@ -200,7 +200,7 @@ export default function About() {
               >
                 <div className="flex aspect-square w-full max-w-60 items-center justify-center overflow-hidden rounded-full bg-brand-rose font-display text-2xl font-bold text-brand-crimson">
                   {m.photo ? (
-                    <img src={m.photo} alt={m.name} loading="lazy" className="h-full w-full object-cover" />
+                    <img src={m.photo} alt={m.name} loading="lazy" className="h-full w-full object-cover" style={m.photoPosition ? { objectPosition: m.photoPosition } : undefined} />
                   ) : (
                     <span aria-hidden>{initials(m.name)}</span>
                   )}
