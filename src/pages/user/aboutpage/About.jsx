@@ -34,9 +34,10 @@ const TEAM = [
   { name: 'Divya Shah', role: 'Recruitments', years: '10+ years', photo: '/assets/images/team/divya-shah.png', linkedin: null },
   { name: 'Pooja Gindra', role: 'Legal Consultant', years: '5+ years', photo: '/assets/images/team/pooja-gindra.png', linkedin: null },
   { name: 'Vanshika Parmar', role: 'Creative Head', years: '4+ years', photo: '/assets/images/team/vanshika-parmar.png', linkedin: null },
-  // Rajneesh's photo is the original, unedited. It is a taller 3:4 frame, so the
-  // circle is anchored near the top to keep the full head in view.
-  { name: 'Rajneesh Yadav', role: 'Technical Consultant & Developer', years: '4+ years', photo: '/assets/images/team/rajneesh-yadav.png', photoPosition: 'center 10%', linkedin: null },
+  // Rajnish's photo is a cut-out on the team beige, with extra backdrop above the
+  // head; the circle is pinned to the top so the head sits at the same height as
+  // everyone else's (only the bottom of the jacket is trimmed).
+  { name: 'Rajnish Yadav', role: 'Technical Consultant & Developer', years: '4+ years', photo: '/assets/images/team/rajneesh-yadav.png', photoPosition: 'center top', linkedin: null },
 ]
 
 const SERVICES = [
